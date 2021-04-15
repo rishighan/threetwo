@@ -1,0 +1,9 @@
+.idea/
+.DS_Store
+comics/
+dist/
+server/
+node_modules/
+src/**/*.jsx
+tests/__coverage__/
+tests/**/*.jsx

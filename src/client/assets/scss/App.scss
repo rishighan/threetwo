@@ -1,0 +1,52 @@
+@import "../../../../node_modules/bulma/bulma.sass";
+$fa-font-path : "~@fortawesome/fontawesome-free/webfonts";
+@import "../../../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "../../../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
+$bg-color: yellow;
+$border-color: red;
+
+.app {
+  font-family: helvetica, arial, sans-serif;
+  padding: 2em;
+  border: 5px solid $border-color;
+
+  p {
+    background-color: $bg-color;
+  }
+}
+
+.navbar-item.is-mega {
+  position: static;
+
+  .is-mega-menu-title {
+    margin-bottom: 0;
+    padding: .375rem 1rem;
+  }
+}
+
+
+// comicvine search results
+.search-results-container {
+  margin: 15px 0 0 0;
+  border: 1px solid hsl(0, 0%, 98%);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: $box-shadow;
+
+  > :nth-of-type(odd) {
+    background-color: hsl(0, 0%, 98%);
+  }
+
+  .search-result {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    .cover-image {
+      border-radius: 5px;
+      margin: 0 0 10px 0;
+    }
+    .search-result-details {
+      margin-left: 10px;
+    }
+  }
+}
