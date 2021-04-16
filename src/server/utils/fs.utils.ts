@@ -32,8 +32,13 @@ export const unzip = () => {
     });
 };
 
-export const extractArchive = async (pathName) => {
+export const extractArchive = async (fileObject: IFolderData) => {
   const extractedFile = await unrar("./comics");
+
+  switch(fileObject.extension) {
+    case '.cbz':
+      break;
+  }
   const myBuffer = extractedFile.extraction;
   logger.info(`Attempting to write ${extractedFile.fileHeader.name}`);
   fs.writeFile(pathName + extractedFile.fileHeader.name, myBuffer, (err) => {
@@ -47,13 +52,9 @@ export const extractArchive = async (pathName) => {
   });
 };
 
-export const walkFolder = async (folder: string): Promise<[IFolderData]> => {
+export const walkFolder = async (folder: string): Promise<IFolderData[]> => {
   const result: IFolderData[] = [];
-  return await Walk.walk(folder, async (err, pathname, dirent) => {
-    // err is failure to lstat a file or directory
-    // pathname is relative path, including the file or folder name
-    // dirent = { name, isDirectory(), isFile(), isSymbolicLink(), ... }
-
+  await Walk.walk(folder, async (err, pathname, dirent) => {
     if (err) {
       logger.error("Failed to lstat directory", { error: err });
       return false;
@@ -70,4 +71,5 @@ export const walkFolder = async (folder: string): Promise<[IFolderData]> => {
     );
     result.push(walkResult);
   });
+  return result;
 };

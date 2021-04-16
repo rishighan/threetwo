@@ -1,7 +1,7 @@
 import router from "../router";
 import { walkFolder, extractArchive } from "../../utils/fs.utils";
 import { Request, Response } from "express";
-import { ParsedQs } from "qs";
+
 router.route("/getComicCovers").get((req: Request, res: Response) => {
   res.json({
     jagan: "trupti",
