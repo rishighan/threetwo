@@ -14,3 +14,9 @@ export interface IFolderData {
   isFile: boolean;
   isLink: boolean;
 }
+
+export interface IComicBookCover {
+    path: string;
+    containedIn: string;
+    fileSize:string;
+}

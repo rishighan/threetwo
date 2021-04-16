@@ -38,6 +38,8 @@ export const extractArchive = async (fileObject: IFolderData) => {
   switch(fileObject.extension) {
     case '.cbz':
       break;
+    case '.cbr':
+      break;
   }
   const myBuffer = extractedFile.extraction;
   logger.info(`Attempting to write ${extractedFile.fileHeader.name}`);
