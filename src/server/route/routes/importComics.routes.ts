@@ -1,7 +1,7 @@
 import router from "../router";
 import { walkFolder, extractArchive } from "../../utils/fs.utils";
 import { Request, Response } from "express";
-
+import { ParsedQs } from "qs";
 router.route("/getComicCovers").get((req: Request, res: Response) => {
   res.json({
     jagan: "trupti",
@@ -9,7 +9,11 @@ router.route("/getComicCovers").get((req: Request, res: Response) => {
 });
 
 router.route("/walkFolder").get(async (req: Request, res: Response) => {
-  const results = await walkFolder(req.params.basePathToWalk);
+  const basePathToWalk =
+    typeof req.query.basePathToWalk === "string"
+      ? req.query.basePathToWalk
+      : "";
+  const results = await walkFolder(basePathToWalk);
   res.json(results);
 });
 
