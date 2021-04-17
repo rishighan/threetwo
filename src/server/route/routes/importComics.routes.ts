@@ -3,15 +3,17 @@ import {
   walkFolder,
   extractArchive,
   unrar,
+  unzip,
   extractMetadataFromImage,
 } from "../../utils/fs.utils";
 import { Request, Response } from "express";
 
 router.route("/getComicCovers").get(async (req: Request, res: Response) => {
-  // unrar("./comics/covers/");
-  const foo = await extractMetadataFromImage(
-    "./comics/covers/Ghosts and Ruins-001.jpg",
-  );
+  // const foo = await unrar("./comics/covers/");
+  // const foo = await extractMetadataFromImage(
+  //   "./comics/covers/Ghosts and Ruins-001.jpg",
+  // );
+  const foo = await unzip("st");
   res.json({
     jagan: "trupti",
     foo,

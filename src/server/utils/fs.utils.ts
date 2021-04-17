@@ -2,6 +2,7 @@ import { default as unzipper } from "unzipper";
 const etl = require("etl");
 const sharp = require("sharp");
 const imgHash = require("imghash");
+const stream = require("stream");
 const unrarer = require("node-unrar-js");
 const Walk = require("@root/walk");
 import fs from "fs";
@@ -43,6 +44,7 @@ export const unrar = async (
         resolve({
           name: `${extractedFile.fileHeader.name}`,
           path: `${filePath}`,
+          fileSize: `${extractedFile.fileHeader.packSize}`,
         });
       }
     });
@@ -60,17 +62,30 @@ export const extractMetadataFromImage = async (
   return image;
 };
 
-export const unzip = () => {
-  fs.createReadStream("./comics/30 Days of Night 01-003.cbz")
-    .pipe(unzipper.ParseOne())
-    .pipe(etl.toFile("./comics/covers/cover.jpg"))
-    .promise()
-    .then(() => {
-      logger.info("done");
-    })
-    .catch((e) => {
-      logger.info("error", e);
-    });
+export const unzip = async (
+  filePath: string,
+): Promise<IExtractedComicBookCoverFile> => {
+  let foo: IExtractedComicBookCoverFile = { name: "", path: "", fileSize: "" };
+  const zip = fs
+    .createReadStream(
+      "./comics/Lovecraft - The Myth of Cthulhu (2018) (Maroto) (fylgja).cbz",
+    )
+    .pipe(unzipper.Parse({ forceStream: true }));
+  for await (const entry of zip) {
+    const fileName = entry.path;
+    const type = entry.type; // 'Directory' or 'File'
+    const size = entry.vars.uncompressedSize; // There is also compressedSize;
+    foo = {
+      name: fileName,
+      fileSize: size,
+      path: filePath,
+    };
+    entry.pipe(fs.createWriteStream("./comics/covers/cover.jpg"));
+    entry.autodrain();
+  }
+  return new Promise((resolve, reject) => {
+    resolve(foo);
+  });
 };
 
 export const extractArchive = async (

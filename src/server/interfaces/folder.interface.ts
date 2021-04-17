@@ -30,4 +30,5 @@ export interface IComicBookCoverMetadata {
 export interface IExtractedComicBookCoverFile {
   name: string;
   path: string;
+  fileSize: string;
 }
