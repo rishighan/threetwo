@@ -15,8 +15,19 @@ export interface IFolderData {
   isLink: boolean;
 }
 
-export interface IComicBookCover {
-    path: string;
-    containedIn: string;
-    fileSize:string;
+export interface IComicBookCoverMetadata {
+  name: string;
+  path: string;
+  containedIn: string;
+  fileSize: string;
+  imageHash: string;
+  dimensions: {
+    width: string;
+    height: string;
+  };
+}
+
+export interface IExtractedComicBookCoverFile {
+  name: string;
+  path: string;
 }
