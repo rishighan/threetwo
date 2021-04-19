@@ -5,6 +5,7 @@ import {
   unrar,
   unzip,
   extractMetadataFromImage,
+  unzipOne,
 } from "../../utils/fs.utils";
 import { Request, Response } from "express";
 
@@ -13,7 +14,8 @@ router.route("/getComicCovers").get(async (req: Request, res: Response) => {
   // const foo = await extractMetadataFromImage(
   //   "./comics/covers/Ghosts and Ruins-001.jpg",
   // );
-  const foo = await unzip("st");
+  // const foo = await unzipOne();
+  const foo = await unzip("asd");
   res.json({
     jagan: "trupti",
     foo,

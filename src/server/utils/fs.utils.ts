@@ -44,7 +44,7 @@ export const unrar = async (
         resolve({
           name: `${extractedFile.fileHeader.name}`,
           path: `${filePath}`,
-          fileSize: `${extractedFile.fileHeader.packSize}`,
+          fileSize: extractedFile.fileHeader.packSize,
         });
       }
     });
@@ -64,8 +64,8 @@ export const extractMetadataFromImage = async (
 
 export const unzip = async (
   filePath: string,
-): Promise<IExtractedComicBookCoverFile> => {
-  let foo: IExtractedComicBookCoverFile = { name: "", path: "", fileSize: "" };
+): Promise<IExtractedComicBookCoverFile[]> => {
+  const foo: IExtractedComicBookCoverFile[] = [];
   const zip = fs
     .createReadStream(
       "./comics/Lovecraft - The Myth of Cthulhu (2018) (Maroto) (fylgja).cbz",
@@ -73,18 +73,36 @@ export const unzip = async (
     .pipe(unzipper.Parse({ forceStream: true }));
   for await (const entry of zip) {
     const fileName = entry.path;
-    const type = entry.type; // 'Directory' or 'File'
     const size = entry.vars.uncompressedSize; // There is also compressedSize;
-    foo = {
+    foo.push({
       name: fileName,
       fileSize: size,
       path: filePath,
-    };
-    entry.pipe(fs.createWriteStream("./comics/covers/cover.jpg"));
+    });
+    entry.pipe(fs.createWriteStream("./comics/covers/" + fileName));
     entry.autodrain();
   }
   return new Promise((resolve, reject) => {
     resolve(foo);
+  });
+};
+
+export const unzipOne = async (): Promise<IExtractedComicBookCoverFile> => {
+  const directory = await unzipper.Open.file(
+    "./comics/Lovecraft - The Myth of Cthulhu (2018) (Maroto) (fylgja).cbz",
+  );
+  return new Promise((resolve, reject) => {
+    directory.files[0]
+      .stream()
+      .pipe(fs.createWriteStream("./comics/covers/yelaveda.jpg"))
+      .on("error", reject)
+      .on("finish", () =>
+        resolve({
+          name: directory.files[0].path,
+          fileSize: directory.files[0].uncompressedSize,
+          path: "ll",
+        }),
+      );
   });
 };
 
