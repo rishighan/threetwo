@@ -28,17 +28,15 @@ export const unrar = async (
         extractionOptions.folderDetails.name,
     ),
   ).buffer;
-
+  const extractor = await unrarer.createExtractorFromData({ data: buf });
   switch (extractionOptions.extractTarget) {
     // extract the first file only
     case "cover":
-      const extractor = await unrarer.createExtractorFromData({ data: buf });
       const list = extractor.getFileList();
       const fileHeaders = [...list.fileHeaders];
-      const file = [...fileHeaders];
-      console.log(file);
+      const file = extractor.extract({ files: [fileHeaders[0].name] });
 
-      const extractedFile = file[0];
+      const extractedFile = [...file.files][0];
       const fileArrayBuffer = extractedFile.extraction;
 
       logger.info(`Attempting to write ${extractedFile.fileHeader.name}`);
@@ -65,34 +63,34 @@ export const unrar = async (
         );
       });
     case "all":
-      const extractedFileHeaders = extractor.extract({});
-      const files = [...extractedFileHeaders.files];
-      const extractedFiles = files[0];
-      const filesBuffer = extractedFile.extraction;
+      const files = extractor.extract({});
 
-      logger.info(`Attempting to write ${extractedFiles.fileHeader.name}`);
+      const extractedFiles = [...files.files];
+      console.log(extractedFiles);
 
-      return new Promise((resolve, reject) => {
-        fs.writeFile(
-          comicCoversTargetPath + extractedFiles.fileHeader.name,
-          filesBuffer,
-          (err) => {
-            if (err) {
-              logger.error("Failed to write file", err);
-              reject(err);
-            } else {
-              logger.info(
-                `The file ${extractedFile.fileHeader.name} was saved to disk.`,
-              );
-              resolve({
-                name: `${extractedFile.fileHeader.name}`,
-                path: comicCoversTargetPath,
-                fileSize: extractedFile.fileHeader.packSize,
-              });
-            }
-          },
-        );
-      });
+      // logger.info(`Attempting to write ${extractedFiles.fileHeader.name}`);
+
+      // return new Promise((resolve, reject) => {
+      //   fs.writeFile(
+      //     comicCoversTargetPath + extractedFiles.fileHeader.name,
+      //     filesBuffer,
+      //     (err) => {
+      //       if (err) {
+      //         logger.error("Failed to write file", err);
+      //         reject(err);
+      //       } else {
+      //         logger.info(
+      //           `The file ${extractedFile.fileHeader.name} was saved to disk.`,
+      //         );
+      //         resolve({
+      //           name: `${extractedFile.fileHeader.name}`,
+      //           path: comicCoversTargetPath,
+      //           fileSize: extractedFile.fileHeader.packSize,
+      //         });
+      //       }
+      //     },
+      //   );
+      // });
     default:
       return {
         message: "File format not supported, yet.",
@@ -169,7 +167,7 @@ export const extractArchive = async (
   const targetComicCoversFolder = "covers";
   const extractionOptions: IExtractionOptions = {
     folderDetails: fileObject,
-    extractTarget: "cover",
+    extractTarget: "all",
     sourceFolder,
     targetComicCoversFolder,
   };
