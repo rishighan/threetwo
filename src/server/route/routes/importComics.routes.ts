@@ -10,12 +10,18 @@ import {
 import { Request, Response } from "express";
 
 router.route("/getComicCovers").get(async (req: Request, res: Response) => {
-  // const foo = await unrar("./comics/covers/");
+  const foo = await extractArchive({
+    name: "Dante's Inferno 02 (2010) (noads) (Legion-CPS).cbr",
+    extension: ".cbr",
+    containedIn: "comics/Dante's Inferno",
+    isFile: true,
+    isLink: false,
+  });
   // const foo = await extractMetadataFromImage(
   //   "./comics/covers/Ghosts and Ruins-001.jpg",
   // );
   // const foo = await unzipOne();
-  const foo = await unzip("asd");
+  // const foo = await unzip("asd");
   res.json({
     jagan: "trupti",
     foo,

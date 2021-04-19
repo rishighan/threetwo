@@ -14,46 +14,90 @@ import {
 
 export const unrar = async (
   extractionOptions: IExtractionOptions,
-): Promise<IExtractedComicBookCoverFile> => {
+): Promise<
+  IExtractedComicBookCoverFile | IExtractComicBookCoverErrorResponse
+> => {
   const comicCoversTargetPath =
-    extractionOptions.sourceFolder + extractionOptions.extractTarget;
+    extractionOptions.sourceFolder +
+    extractionOptions.targetComicCoversFolder +
+    "/";
   const buf = Uint8Array.from(
     fs.readFileSync(
-      extractionOptions.sourceFolder + extractionOptions.folderDetails.name,
+      extractionOptions.folderDetails.containedIn +
+        "/" +
+        extractionOptions.folderDetails.name,
     ),
   ).buffer;
   const extractor = await unrarer.createExtractorFromData({ data: buf });
   const list = extractor.getFileList();
   const fileHeaders = [...list.fileHeaders];
-  // extract the first file only
-  const extracted = extractor.extract({ files: [fileHeaders[0].name] });
-  const files = [...extracted.files];
-  const extractedFile = files[0];
-  const myBuffer = extractedFile.extraction;
+  switch (extractionOptions.extractTarget) {
+    // extract the first file only
+    case "cover":
+      const arcHeader = extractor.extract({ files: [fileHeaders[0].name] });
+      const file = [...arcHeader.files];
+      const extractedFile = file[0];
+      const fileArrayBuffer = extractedFile.extraction;
 
-  logger.info(`Attempting to write ${extractedFile.fileHeader.name}`);
+      logger.info(`Attempting to write ${extractedFile.fileHeader.name}`);
 
-  return new Promise((resolve, reject) => {
-    fs.writeFile(
-      comicCoversTargetPath + extractedFile.fileHeader.name,
-      myBuffer,
-      (err) => {
-        if (err) {
-          logger.error("Failed to write file", err);
-          reject(err);
-        } else {
-          logger.info(
-            `The file ${extractedFile.fileHeader.name} was saved to disk.`,
-          );
-          resolve({
-            name: `${extractedFile.fileHeader.name}`,
-            path: comicCoversTargetPath,
-            fileSize: extractedFile.fileHeader.packSize,
-          });
-        }
-      },
-    );
-  });
+      return new Promise((resolve, reject) => {
+        fs.writeFile(
+          comicCoversTargetPath + extractedFile.fileHeader.name,
+          fileArrayBuffer,
+          (err) => {
+            if (err) {
+              logger.error("Failed to write file", err);
+              reject(err);
+            } else {
+              logger.info(
+                `The file ${extractedFile.fileHeader.name} was saved to disk.`,
+              );
+              resolve({
+                name: `${extractedFile.fileHeader.name}`,
+                path: comicCoversTargetPath,
+                fileSize: extractedFile.fileHeader.packSize,
+              });
+            }
+          },
+        );
+      });
+    case "all":
+      const extractedFileHeaders = extractor.extract({});
+      const files = [...extractedFileHeaders.files];
+      const extractedFiles = files[0];
+      const filesBuffer = extractedFile.extraction;
+
+      logger.info(`Attempting to write ${extractedFiles.fileHeader.name}`);
+
+      return new Promise((resolve, reject) => {
+        fs.writeFile(
+          comicCoversTargetPath + extractedFiles.fileHeader.name,
+          filesBuffer,
+          (err) => {
+            if (err) {
+              logger.error("Failed to write file", err);
+              reject(err);
+            } else {
+              logger.info(
+                `The file ${extractedFile.fileHeader.name} was saved to disk.`,
+              );
+              resolve({
+                name: `${extractedFile.fileHeader.name}`,
+                path: comicCoversTargetPath,
+                fileSize: extractedFile.fileHeader.packSize,
+              });
+            }
+          },
+        );
+      });
+    default:
+      return {
+        message: "File format not supported, yet.",
+        errorCode: "90",
+        data: "asda",
+      };
+  }
 };
 
 export const extractMetadataFromImage = async (
