@@ -1,8 +1,5 @@
 import { default as unzipper } from "unzipper";
-const etl = require("etl");
 const sharp = require("sharp");
-const imgHash = require("imghash");
-const stream = require("stream");
 const unrarer = require("node-unrar-js");
 const Walk = require("@root/walk");
 import fs from "fs";
@@ -10,15 +7,16 @@ import path from "path";
 import { logger } from "./logger.utils";
 import {
   IExtractedComicBookCoverFile,
+  IExtractionOptions,
   IFolderData,
 } from "../interfaces/folder.interface";
 
 export const unrar = async (
-  filePath: string,
+  extractionOptions: IExtractionOptions,
 ): Promise<IExtractedComicBookCoverFile> => {
   const buf = Uint8Array.from(
     fs.readFileSync(
-      "./comics/Ghosts and Ruins (2013) (digital) (Mr Norrell-Empire).cbr",
+      extractionOptions.sourceFolder + extractionOptions.folderDetails.name,
     ),
   ).buffer;
   const extractor = await unrarer.createExtractorFromData({ data: buf });
@@ -65,7 +63,7 @@ export const extractMetadataFromImage = async (
 export const unzip = async (
   filePath: string,
 ): Promise<IExtractedComicBookCoverFile[]> => {
-  const foo: IExtractedComicBookCoverFile[] = [];
+  const extractedFiles: IExtractedComicBookCoverFile[] = [];
   const zip = fs
     .createReadStream(
       "./comics/Lovecraft - The Myth of Cthulhu (2018) (Maroto) (fylgja).cbz",
@@ -74,7 +72,7 @@ export const unzip = async (
   for await (const entry of zip) {
     const fileName = entry.path;
     const size = entry.vars.uncompressedSize; // There is also compressedSize;
-    foo.push({
+    extractedFiles.push({
       name: fileName,
       fileSize: size,
       path: filePath,
@@ -83,7 +81,7 @@ export const unzip = async (
     entry.autodrain();
   }
   return new Promise((resolve, reject) => {
-    resolve(foo);
+    resolve(extractedFiles);
   });
 };
 
@@ -108,12 +106,20 @@ export const unzipOne = async (): Promise<IExtractedComicBookCoverFile> => {
 
 export const extractArchive = async (
   fileObject: IFolderData,
-): Promise<void> => {
+): Promise<IExtractedComicBookCoverFile | IExtractedComicBookCoverFile[]> => {
+  const sourceFolder = "./comics/";
+  const targetComicCoversFolder = "covers";
+  const extractionOptions: IExtractionOptions = {
+    ...fileObject,
+    extractTarget: "cover",
+    sourceFolder,
+    targetComicCoversFolder,
+  };
   switch (fileObject.extension) {
     case ".cbz":
-      break;
+      return await unzip(extractionOptions);
     case ".cbr":
-      break;
+      return await unrar(extractionOptions);
   }
 };
 

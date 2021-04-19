@@ -2,6 +2,13 @@ export interface IFolderResponse {
   data: Array<IFolderData>;
 }
 
+export interface IExtractionOptions {
+  folderDetails: IFolderData;
+  extractTarget: string;
+  sourceFolder: string;
+  targetComicCoversFolder: string;
+}
+
 export interface IComicVineSearchMatch {
   description: string;
   id: number;
