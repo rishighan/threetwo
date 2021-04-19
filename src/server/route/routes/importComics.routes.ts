@@ -11,9 +11,9 @@ import { Request, Response } from "express";
 
 router.route("/getComicCovers").get(async (req: Request, res: Response) => {
   const foo = await extractArchive({
-    name: "Dante's Inferno 02 (2010) (noads) (Legion-CPS).cbr",
+    name: "Old Man Logan 01.cbr",
     extension: ".cbr",
-    containedIn: "comics/Dante's Inferno",
+    containedIn: "comics/Old Man Logan",
     isFile: true,
     isLink: false,
   });

@@ -28,14 +28,16 @@ export const unrar = async (
         extractionOptions.folderDetails.name,
     ),
   ).buffer;
-  const extractor = await unrarer.createExtractorFromData({ data: buf });
-  const list = extractor.getFileList();
-  const fileHeaders = [...list.fileHeaders];
+
   switch (extractionOptions.extractTarget) {
     // extract the first file only
     case "cover":
-      const arcHeader = extractor.extract({ files: [fileHeaders[0].name] });
-      const file = [...arcHeader.files];
+      const extractor = await unrarer.createExtractorFromData({ data: buf });
+      const list = extractor.getFileList();
+      const fileHeaders = [...list.fileHeaders];
+      const file = [...fileHeaders];
+      console.log(file);
+
       const extractedFile = file[0];
       const fileArrayBuffer = extractedFile.extraction;
 
