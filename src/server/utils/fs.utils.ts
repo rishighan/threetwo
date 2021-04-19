@@ -6,6 +6,7 @@ import fs from "fs";
 import path from "path";
 import { logger } from "./logger.utils";
 import {
+  IExtractComicBookCoverErrorResponse,
   IExtractedComicBookCoverFile,
   IExtractionOptions,
   IFolderData,
@@ -14,6 +15,8 @@ import {
 export const unrar = async (
   extractionOptions: IExtractionOptions,
 ): Promise<IExtractedComicBookCoverFile> => {
+  const comicCoversTargetPath =
+    extractionOptions.sourceFolder + extractionOptions.extractTarget;
   const buf = Uint8Array.from(
     fs.readFileSync(
       extractionOptions.sourceFolder + extractionOptions.folderDetails.name,
@@ -31,21 +34,25 @@ export const unrar = async (
   logger.info(`Attempting to write ${extractedFile.fileHeader.name}`);
 
   return new Promise((resolve, reject) => {
-    fs.writeFile(filePath + extractedFile.fileHeader.name, myBuffer, (err) => {
-      if (err) {
-        logger.error("Failed to write file", err);
-        reject(err);
-      } else {
-        logger.info(
-          `The file ${extractedFile.fileHeader.name} was saved to disk.`,
-        );
-        resolve({
-          name: `${extractedFile.fileHeader.name}`,
-          path: `${filePath}`,
-          fileSize: extractedFile.fileHeader.packSize,
-        });
-      }
-    });
+    fs.writeFile(
+      comicCoversTargetPath + extractedFile.fileHeader.name,
+      myBuffer,
+      (err) => {
+        if (err) {
+          logger.error("Failed to write file", err);
+          reject(err);
+        } else {
+          logger.info(
+            `The file ${extractedFile.fileHeader.name} was saved to disk.`,
+          );
+          resolve({
+            name: `${extractedFile.fileHeader.name}`,
+            path: comicCoversTargetPath,
+            fileSize: extractedFile.fileHeader.packSize,
+          });
+        }
+      },
+    );
   });
 };
 
@@ -81,6 +88,7 @@ export const unzip = async (
     entry.autodrain();
   }
   return new Promise((resolve, reject) => {
+    logger.info("");
     resolve(extractedFiles);
   });
 };
@@ -106,20 +114,30 @@ export const unzipOne = async (): Promise<IExtractedComicBookCoverFile> => {
 
 export const extractArchive = async (
   fileObject: IFolderData,
-): Promise<IExtractedComicBookCoverFile | IExtractedComicBookCoverFile[]> => {
+): Promise<
+  | IExtractedComicBookCoverFile
+  | IExtractedComicBookCoverFile[]
+  | IExtractComicBookCoverErrorResponse
+> => {
   const sourceFolder = "./comics/";
   const targetComicCoversFolder = "covers";
   const extractionOptions: IExtractionOptions = {
-    ...fileObject,
+    folderDetails: fileObject,
     extractTarget: "cover",
     sourceFolder,
     targetComicCoversFolder,
   };
   switch (fileObject.extension) {
     case ".cbz":
-      return await unzip(extractionOptions);
+      return await unzip("j");
     case ".cbr":
       return await unrar(extractionOptions);
+    default:
+      return {
+        message: "File format not supported, yet.",
+        errorCode: "90",
+        data: "asda",
+      };
   }
 };
 

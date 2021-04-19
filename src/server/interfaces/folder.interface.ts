@@ -39,3 +39,9 @@ export interface IExtractedComicBookCoverFile {
   path: string;
   fileSize: number;
 }
+
+export interface IExtractComicBookCoverErrorResponse {
+  message: string;
+  errorCode: string;
+  data: string;
+}
