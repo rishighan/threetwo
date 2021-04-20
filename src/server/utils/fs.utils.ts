@@ -94,18 +94,18 @@ export const unrar = async (
                     logger.info(
                       `The file ${file.fileHeader.name} was saved to disk.`,
                     );
+                    const comicBookCoverObject = {
+                      name: `${file.fileHeader.name}`,
+                      path: targetPath,
+                      fileSize: file.fileHeader.packSize,
+                    };
+                    comicBookCoverFiles.push(comicBookCoverObject);
                   }
                 },
               );
-              comicBookCoverFiles.push({
-                name: `${file.fileHeader.name}`,
-                path: targetPath,
-                fileSize: file.fileHeader.packSize,
-              });
             }
           });
         }
-        console.log(comicBookCoverFiles);
         resolve(comicBookCoverFiles);
       });
 
