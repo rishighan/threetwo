@@ -12,9 +12,9 @@ import { Request, Response } from "express";
 
 router.route("/getComicCovers").get(async (req: Request, res: Response) => {
   const foo = await extractArchive({
-    name: "Hellboy - The Chained Coffin and Others Ch3.cbr",
+    name: "Dollar Bill 001.cbr",
     extension: ".cbr",
-    containedIn: "comics/Hellboy. The Chained Coffin and Others (1998) (of 1)",
+    containedIn: "comics/(2012) Before Watchmen - Dollar Bill",
     isFile: true,
     isLink: false,
   });

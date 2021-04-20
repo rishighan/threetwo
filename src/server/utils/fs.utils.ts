@@ -25,15 +25,15 @@ export const unrar = async (
 > => {
   const comicCoversTargetPath =
     extractionOptions.sourceFolder + extractionOptions.targetComicCoversFolder;
-
-  const buf = Uint8Array.from(
-    fs.readFile(
+  const fileBuffer = await fs
+    .readFile(
       extractionOptions.folderDetails.containedIn +
         "/" +
         extractionOptions.folderDetails.name,
-    ),
-  ).buffer;
-  const extractor = await unrarer.createExtractorFromData({ data: buf });
+    )
+    .catch((err) => console.error("Failed to read file", err));
+  // const buf = Uint8Array.from(fs.readFile(fileBuffer);
+  const extractor = await unrarer.createExtractorFromData({ data: fileBuffer });
   switch (extractionOptions.extractTarget) {
     // extract the first file only
     case "cover":
@@ -84,19 +84,24 @@ export const unrar = async (
             comicCoversTargetPath + "/" + pathFragments.exploded.join("/");
           try {
             await fse.ensureDir(targetPath, options);
-            console.log("success!");
+            logger.info(`${targetPath} was created or already exists.`);
             try {
-              await fs.writeFile(file.fileHeader.name, fileBuffer); // need to be in an async function
+              await fs.writeFile(
+                targetPath + "/" + pathFragments.fileName,
+                fileBuffer,
+              );
               comicBookCoverFiles.push({
                 name: `${file.fileHeader.name}`,
                 path: targetPath,
                 fileSize: file.fileHeader.packSize,
               });
             } catch (error) {
-              console.log(error);
+              logger.error(error);
+              reject(error);
             }
           } catch (err) {
-            console.error(err);
+            logger.error(err);
+            reject(err);
           }
         }
         resolve(comicBookCoverFiles);
