@@ -4,7 +4,7 @@ const unrarer = require("node-unrar-js");
 const Walk = require("@root/walk");
 const mkdirp = require("mkdirp");
 const fse = require("fs-extra");
-import fs from "fs";
+const fs = require("fs").promises;
 import path from "path";
 import _ from "lodash";
 import { logger } from "./logger.utils";
@@ -27,7 +27,7 @@ export const unrar = async (
     extractionOptions.sourceFolder + extractionOptions.targetComicCoversFolder;
 
   const buf = Uint8Array.from(
-    fs.readFileSync(
+    fs.readFile(
       extractionOptions.folderDetails.containedIn +
         "/" +
         extractionOptions.folderDetails.name,
@@ -68,43 +68,36 @@ export const unrar = async (
         );
       });
     case "all":
-      const comicBookCoverFiles: IExtractedComicBookCoverFile[] = [];
       const files = extractor.extract({});
       const extractedFiles = [...files.files];
+      const options = {
+        mode: 0o2775,
+      };
 
       return new Promise(async (resolve, reject) => {
+        const comicBookCoverFiles: IExtractedComicBookCoverFile[] = [];
         for (const file of extractedFiles) {
           logger.info(`Attempting to write ${file.fileHeader.name}`);
           const fileBuffer = file.extraction;
           const pathFragments = explodePath(file.fileHeader.name);
           const targetPath =
             comicCoversTargetPath + "/" + pathFragments.exploded.join("/");
-          fse.ensureDir(targetPath, (err) => {
-            if (err) {
-              console.log(err);
-            } else {
-              fs.writeFile(
-                targetPath + "/" + pathFragments.fileName,
-                fileBuffer,
-                (err) => {
-                  if (err) {
-                    logger.error(err);
-                    reject(err);
-                  } else {
-                    logger.info(
-                      `The file ${file.fileHeader.name} was saved to disk.`,
-                    );
-                    const comicBookCoverObject = {
-                      name: `${file.fileHeader.name}`,
-                      path: targetPath,
-                      fileSize: file.fileHeader.packSize,
-                    };
-                    comicBookCoverFiles.push(comicBookCoverObject);
-                  }
-                },
-              );
+          try {
+            await fse.ensureDir(targetPath, options);
+            console.log("success!");
+            try {
+              await fs.writeFile(file.fileHeader.name, fileBuffer); // need to be in an async function
+              comicBookCoverFiles.push({
+                name: `${file.fileHeader.name}`,
+                path: targetPath,
+                fileSize: file.fileHeader.packSize,
+              });
+            } catch (error) {
+              console.log(error);
             }
-          });
+          } catch (err) {
+            console.error(err);
+          }
         }
         resolve(comicBookCoverFiles);
       });
