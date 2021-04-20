@@ -6,7 +6,7 @@ export interface IExtractionOptions {
   folderDetails: IFolderData;
   extractTarget: string;
   sourceFolder: string;
-  targetComicCoversFolder: string;
+  targetExtractionFolder: string;
 }
 
 export interface IComicVineSearchMatch {

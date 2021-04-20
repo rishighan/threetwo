@@ -23,8 +23,11 @@ export const unrar = async (
   | IExtractedComicBookCoverFile[]
   | IExtractComicBookCoverErrorResponse
 > => {
-  const comicCoversTargetPath =
-    extractionOptions.sourceFolder + extractionOptions.targetComicCoversFolder;
+  const extractionTargetPath =
+    extractionOptions.sourceFolder + extractionOptions.targetExtractionFolder;
+  const directoryOptions = {
+    mode: 0o2775,
+  };
   const fileBuffer = await fs
     .readFile(
       extractionOptions.folderDetails.containedIn +
@@ -43,36 +46,38 @@ export const unrar = async (
 
       const extractedFile = [...file.files][0];
       const fileArrayBuffer = extractedFile.extraction;
+      const pathFragments = explodePath(extractedFile.fileHeader.name);
+      const targetPath =
+        extractionTargetPath + "/" + pathFragments.exploded.join("/");
 
       logger.info(`Attempting to write ${extractedFile.fileHeader.name}`);
 
-      return new Promise((resolve, reject) => {
-        fs.writeFile(
-          comicCoversTargetPath + extractedFile.fileHeader.name,
-          fileArrayBuffer,
-          (err) => {
-            if (err) {
-              logger.error("Failed to write file", err);
-              reject(err);
-            } else {
-              logger.info(
-                `The file ${extractedFile.fileHeader.name} was saved to disk.`,
-              );
-              resolve({
-                name: `${extractedFile.fileHeader.name}`,
-                path: comicCoversTargetPath,
-                fileSize: extractedFile.fileHeader.packSize,
-              });
-            }
-          },
-        );
+      return new Promise(async (resolve, reject) => {
+        try {
+          await fse.ensureDir(targetPath, directoryOptions);
+          logger.info(`${targetPath} was created or already exists.`);
+          try {
+            await fs.writeFile(
+              targetPath + "/" + pathFragments.fileName,
+              fileArrayBuffer,
+            );
+            resolve({
+              name: `${extractedFile.fileHeader.name}`,
+              path: targetPath,
+              fileSize: extractedFile.fileHeader.packSize,
+            });
+          } catch (error) {
+            logger.error(`${error}: Couldn't write file.`);
+            reject(error);
+          }
+        } catch (error) {
+          logger.error(`${error}: Coudln't create directory.`);
+          reject(error);
+        }
       });
     case "all":
       const files = extractor.extract({});
       const extractedFiles = [...files.files];
-      const options = {
-        mode: 0o2775,
-      };
 
       return new Promise(async (resolve, reject) => {
         const comicBookCoverFiles: IExtractedComicBookCoverFile[] = [];
@@ -81,9 +86,9 @@ export const unrar = async (
           const fileBuffer = file.extraction;
           const pathFragments = explodePath(file.fileHeader.name);
           const targetPath =
-            comicCoversTargetPath + "/" + pathFragments.exploded.join("/");
+            extractionTargetPath + "/" + pathFragments.exploded.join("/");
           try {
-            await fse.ensureDir(targetPath, options);
+            await fse.ensureDir(targetPath, directoryOptions);
             logger.info(`${targetPath} was created or already exists.`);
             try {
               await fs.writeFile(
@@ -181,12 +186,12 @@ export const extractArchive = async (
   | IExtractComicBookCoverErrorResponse
 > => {
   const sourceFolder = "./comics/";
-  const targetComicCoversFolder = "covers";
+  const targetExtractionFolder = "covers";
   const extractionOptions: IExtractionOptions = {
     folderDetails: fileObject,
-    extractTarget: "all",
+    extractTarget: "cover",
     sourceFolder,
-    targetComicCoversFolder,
+    targetExtractionFolder,
   };
   switch (fileObject.extension) {
     case ".cbz":
