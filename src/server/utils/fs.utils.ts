@@ -3,7 +3,8 @@ const sharp = require("sharp");
 const unrarer = require("node-unrar-js");
 const Walk = require("@root/walk");
 const fse = require("fs-extra");
-const fs = require("fs").promises;
+import { createReadStream, createWriteStream } from "fs";
+const { writeFile, readFile } = require("fs").promises;
 import path from "path";
 import _ from "lodash";
 import { logger } from "./logger.utils";
@@ -27,17 +28,14 @@ export const unrar = async (
   const directoryOptions = {
     mode: 0o2775,
   };
-  const fileBuffer = await fs
-    .readFile(
-      extractionOptions.folderDetails.containedIn +
-        "/" +
-        extractionOptions.folderDetails.name,
-    )
-    .catch((err) => console.error("Failed to read file", err));
-  // const buf = Uint8Array.from(fs.readFile(fileBuffer);
+  const fileBuffer = await readFile(
+    extractionOptions.folderDetails.containedIn +
+      "/" +
+      extractionOptions.folderDetails.name,
+  ).catch((err) => console.error("Failed to read file", err));
+
   const extractor = await unrarer.createExtractorFromData({ data: fileBuffer });
   switch (extractionOptions.extractTarget) {
-    // extract the first file only
     case "cover":
       const list = extractor.getFileList();
       const fileHeaders = [...list.fileHeaders];
@@ -56,7 +54,7 @@ export const unrar = async (
           await fse.ensureDir(targetPath, directoryOptions);
           logger.info(`${targetPath} was created or already exists.`);
           try {
-            await fs.writeFile(
+            await writeFile(
               targetPath + "/" + pathFragments.fileName,
               fileArrayBuffer,
             );
@@ -84,13 +82,13 @@ export const unrar = async (
           logger.info(`Attempting to write ${file.fileHeader.name}`);
           const fileBuffer = file.extraction;
           const pathFragments = explodePath(file.fileHeader.name);
-          const targetPath =
-            extractionTargetPath + "/" + pathFragments.exploded.join("/");
+          const fragment = determineFolderNameForExtraction(pathFragments);
+          const targetPath = extractionTargetPath + "/" + fragment;
           try {
             await fse.ensureDir(targetPath, directoryOptions);
             logger.info(`${targetPath} was created or already exists.`);
             try {
-              await fs.writeFile(
+              await writeFile(
                 targetPath + "/" + pathFragments.fileName,
                 fileBuffer,
               );
@@ -143,13 +141,9 @@ export const unzip = async (
     extractionOptions.sourceFolder +
     "/" +
     extractionOptions.targetExtractionFolder;
-  const zip = await fs
-    .createReadStream(
-      extractionOptions.sourceFolder +
-        "/" +
-        extractionOptions.folderDetails.name,
-    )
-    .pipe(unzipper.Parse({ forceStream: true }));
+  const zip = createReadStream(
+    extractionOptions.sourceFolder + "/" + extractionOptions.folderDetails.name,
+  ).pipe(unzipper.Parse({ forceStream: true }));
   for await (const entry of zip) {
     try {
       await fse.ensureDir(targetPath, directoryOptions);
@@ -161,7 +155,7 @@ export const unzip = async (
         fileSize: size,
         path: targetPath,
       });
-      entry.pipe(fs.createWriteStream(targetPath + fileName));
+      entry.pipe(createWriteStream(targetPath + fileName));
       entry.autodrain();
     } catch (error) {
       logger.error(`${error} Couldn't create directory.`);
@@ -180,7 +174,7 @@ export const unzipOne = async (): Promise<IExtractedComicBookCoverFile> => {
   return new Promise((resolve, reject) => {
     directory.files[0]
       .stream()
-      .pipe(fs.createWriteStream("./comics/covers/yelaveda.jpg"))
+      .pipe(createWriteStream("./comics/covers/yelaveda.jpg"))
       .on("error", reject)
       .on("finish", () =>
         resolve({
@@ -252,4 +246,14 @@ export const explodePath = (filePath: string): IExplodedPathResponse => {
     exploded,
     fileName,
   };
+};
+
+export const determineFolderNameForExtraction = (
+  pathFragments: IExplodedPathResponse,
+): string | string[] => {
+  if (pathFragments.exploded.length === 0) {
+    return pathFragments.fileName;
+  } else {
+    return pathFragments.exploded.join("/");
+  }
 };
