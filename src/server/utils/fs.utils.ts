@@ -2,7 +2,6 @@ import { default as unzipper } from "unzipper";
 const sharp = require("sharp");
 const unrarer = require("node-unrar-js");
 const Walk = require("@root/walk");
-const mkdirp = require("mkdirp");
 const fse = require("fs-extra");
 const fs = require("fs").promises;
 import path from "path";
@@ -134,24 +133,39 @@ export const extractMetadataFromImage = async (
 };
 
 export const unzip = async (
-  filePath: string,
+  extractionOptions: IExtractionOptions,
 ): Promise<IExtractedComicBookCoverFile[]> => {
   const extractedFiles: IExtractedComicBookCoverFile[] = [];
-  const zip = fs
+  const directoryOptions = {
+    mode: 0o2775,
+  };
+  const targetPath =
+    extractionOptions.sourceFolder +
+    "/" +
+    extractionOptions.targetExtractionFolder;
+  const zip = await fs
     .createReadStream(
-      "./comics/Lovecraft - The Myth of Cthulhu (2018) (Maroto) (fylgja).cbz",
+      extractionOptions.sourceFolder +
+        "/" +
+        extractionOptions.folderDetails.name,
     )
     .pipe(unzipper.Parse({ forceStream: true }));
   for await (const entry of zip) {
-    const fileName = entry.path;
-    const size = entry.vars.uncompressedSize; // There is also compressedSize;
-    extractedFiles.push({
-      name: fileName,
-      fileSize: size,
-      path: filePath,
-    });
-    entry.pipe(fs.createWriteStream("./comics/covers/" + fileName));
-    entry.autodrain();
+    try {
+      await fse.ensureDir(targetPath, directoryOptions);
+      logger.info(`${targetPath} was created or already exists.`);
+      const fileName = entry.path;
+      const size = entry.vars.uncompressedSize; // There is also compressedSize;
+      extractedFiles.push({
+        name: fileName,
+        fileSize: size,
+        path: targetPath,
+      });
+      entry.pipe(fs.createWriteStream(targetPath + fileName));
+      entry.autodrain();
+    } catch (error) {
+      logger.error(`${error} Couldn't create directory.`);
+    }
   }
   return new Promise((resolve, reject) => {
     logger.info("");
@@ -186,16 +200,16 @@ export const extractArchive = async (
   | IExtractComicBookCoverErrorResponse
 > => {
   const sourceFolder = "./comics/";
-  const targetExtractionFolder = "covers";
+  const targetExtractionFolder = "expanded";
   const extractionOptions: IExtractionOptions = {
     folderDetails: fileObject,
-    extractTarget: "cover",
+    extractTarget: "all",
     sourceFolder,
     targetExtractionFolder,
   };
   switch (fileObject.extension) {
     case ".cbz":
-      return await unzip("j");
+      return await unzip(extractionOptions);
     case ".cbr":
       return await unrar(extractionOptions);
     default:

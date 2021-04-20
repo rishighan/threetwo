@@ -12,9 +12,9 @@ import { Request, Response } from "express";
 
 router.route("/getComicCovers").get(async (req: Request, res: Response) => {
   const foo = await extractArchive({
-    name: "Dollar Bill 001.cbr",
-    extension: ".cbr",
-    containedIn: "comics/(2012) Before Watchmen - Dollar Bill",
+    name: "Neonomicon 01 (of 04) (2010) (Project Comic Con cover) (Minutemen-DTs).cbz",
+    extension: ".cbz",
+    containedIn: "comics/Neonomicon",
     isFile: true,
     isLink: false,
   });
