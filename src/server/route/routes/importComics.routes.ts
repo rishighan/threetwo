@@ -6,14 +6,15 @@ import {
   unzip,
   extractMetadataFromImage,
   unzipOne,
+  explodePath,
 } from "../../utils/fs.utils";
 import { Request, Response } from "express";
 
 router.route("/getComicCovers").get(async (req: Request, res: Response) => {
   const foo = await extractArchive({
-    name: "Dante's Inferno 02 (2010) (noads) (Legion-CPS).cbr",
+    name: "Hellboy - The Chained Coffin and Others Ch3.cbr",
     extension: ".cbr",
-    containedIn: "comics/Dante's Inferno",
+    containedIn: "comics/Hellboy. The Chained Coffin and Others (1998) (of 1)",
     isFile: true,
     isLink: false,
   });
@@ -22,6 +23,7 @@ router.route("/getComicCovers").get(async (req: Request, res: Response) => {
   // );
   // const foo = await unzipOne();
   // const foo = await unzip("asd");
+  // const foo = explodePath("Chapter Three/HELLBOY - The Chained Coffin - 069.jpg");
   res.json({
     jagan: "trupti",
     foo,

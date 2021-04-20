@@ -2,10 +2,14 @@ import { default as unzipper } from "unzipper";
 const sharp = require("sharp");
 const unrarer = require("node-unrar-js");
 const Walk = require("@root/walk");
+const mkdirp = require("mkdirp");
+const fse = require("fs-extra");
 import fs from "fs";
 import path from "path";
+import _ from "lodash";
 import { logger } from "./logger.utils";
 import {
+  IExplodedPathResponse,
   IExtractComicBookCoverErrorResponse,
   IExtractedComicBookCoverFile,
   IExtractionOptions,
@@ -15,12 +19,13 @@ import {
 export const unrar = async (
   extractionOptions: IExtractionOptions,
 ): Promise<
-  IExtractedComicBookCoverFile | IExtractComicBookCoverErrorResponse
+  | IExtractedComicBookCoverFile
+  | IExtractedComicBookCoverFile[]
+  | IExtractComicBookCoverErrorResponse
 > => {
   const comicCoversTargetPath =
-    extractionOptions.sourceFolder +
-    extractionOptions.targetComicCoversFolder +
-    "/";
+    extractionOptions.sourceFolder + extractionOptions.targetComicCoversFolder;
+
   const buf = Uint8Array.from(
     fs.readFileSync(
       extractionOptions.folderDetails.containedIn +
@@ -63,34 +68,48 @@ export const unrar = async (
         );
       });
     case "all":
+      const comicBookCoverFiles: IExtractedComicBookCoverFile[] = [];
       const files = extractor.extract({});
-
       const extractedFiles = [...files.files];
-      console.log(extractedFiles);
 
-      // logger.info(`Attempting to write ${extractedFiles.fileHeader.name}`);
+      return new Promise(async (resolve, reject) => {
+        for (const file of extractedFiles) {
+          logger.info(`Attempting to write ${file.fileHeader.name}`);
+          const fileBuffer = file.extraction;
+          const pathFragments = explodePath(file.fileHeader.name);
+          const targetPath =
+            comicCoversTargetPath + "/" + pathFragments.exploded.join("/");
+          fse.ensureDir(targetPath, (err) => {
+            if (err) {
+              console.log(err);
+            } else {
+              fs.writeFile(
+                targetPath + "/" + pathFragments.fileName,
+                fileBuffer,
+                (err) => {
+                  if (err) {
+                    logger.error(err);
+                    reject(err);
+                  } else {
+                    logger.info(
+                      `The file ${file.fileHeader.name} was saved to disk.`,
+                    );
+                  }
+                },
+              );
+              comicBookCoverFiles.push({
+                name: `${file.fileHeader.name}`,
+                path: targetPath,
+                fileSize: file.fileHeader.packSize,
+              });
+            }
+          });
+        }
+        console.log(comicBookCoverFiles);
+        resolve(comicBookCoverFiles);
+      });
 
-      // return new Promise((resolve, reject) => {
-      //   fs.writeFile(
-      //     comicCoversTargetPath + extractedFiles.fileHeader.name,
-      //     filesBuffer,
-      //     (err) => {
-      //       if (err) {
-      //         logger.error("Failed to write file", err);
-      //         reject(err);
-      //       } else {
-      //         logger.info(
-      //           `The file ${extractedFile.fileHeader.name} was saved to disk.`,
-      //         );
-      //         resolve({
-      //           name: `${extractedFile.fileHeader.name}`,
-      //           path: comicCoversTargetPath,
-      //           fileSize: extractedFile.fileHeader.packSize,
-      //         });
-      //       }
-      //     },
-      //   );
-      // });
+    // });
     default:
       return {
         message: "File format not supported, yet.",
@@ -205,4 +224,15 @@ export const walkFolder = async (folder: string): Promise<IFolderData[]> => {
     result.push(walkResult);
   });
   return result;
+};
+
+export const explodePath = (filePath: string): IExplodedPathResponse => {
+  const exploded = filePath.split("/");
+  const fileName = _.remove(exploded, (item) => {
+    return _.indexOf(exploded, item) === exploded.length - 1;
+  });
+  return {
+    exploded,
+    fileName,
+  };
 };

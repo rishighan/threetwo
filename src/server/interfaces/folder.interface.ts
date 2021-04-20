@@ -22,6 +22,11 @@ export interface IFolderData {
   isLink: boolean;
 }
 
+export interface IExplodedPathResponse {
+  exploded: Array<string>;
+  fileName: string | Array<string>;
+}
+
 export interface IComicBookCoverMetadata {
   name: string;
   path: string;
