@@ -1,8 +1,9 @@
-import { default as unzipper } from "unzipper";
 const sharp = require("sharp");
 const unrarer = require("node-unrar-js");
 const Walk = require("@root/walk");
 const fse = require("fs-extra");
+
+import { default as unzipper } from "unzipper";
 import { createReadStream, createWriteStream } from "fs";
 const { writeFile, readFile } = require("fs").promises;
 import path from "path";
@@ -99,7 +100,6 @@ export const unrar = async (
         resolve(comicBookCoverFiles);
       });
 
-    // });
     default:
       return {
         message: "File format not supported, yet.",
@@ -122,7 +122,9 @@ export const extractMetadataFromImage = async (
 
 export const unzip = async (
   extractionOptions: IExtractionOptions,
-): Promise<IExtractedComicBookCoverFile[]> => {
+): Promise<
+  IExtractedComicBookCoverFile[] | IExtractComicBookCoverErrorResponse
+> => {
   const extractedFiles: IExtractedComicBookCoverFile[] = [];
   const directoryOptions = {
     mode: 0o2775,
@@ -144,49 +146,61 @@ export const unzip = async (
   try {
     await fse.ensureDir(targetPath, directoryOptions);
     logger.info(`${targetPath} was created or already exists.`);
-    for await (const entry of zip) {
-      const fileName = explodePath(entry.path).fileName;
-      const size = entry.vars.uncompressedSize; // There is also compressedSize;
-
-      if (fileName !== "") {
-        entry.pipe(createWriteStream(targetPath + "/" + fileName));
-      }
-      extractedFiles.push({
-        name: fileName,
-        fileSize: size,
-        path: targetPath,
-      });
-      entry.autodrain();
-    }
   } catch (error) {
     logger.error(`${error} Couldn't create directory.`);
   }
 
-  return new Promise(async (resolve, reject) => {
-    logger.info("");
-    resolve(extractedFiles);
-  });
-};
+  switch (extractionOptions.extractTarget) {
+    case "all":
+      for await (const entry of zip) {
+        const fileName = explodePath(entry.path).fileName;
+        const size = entry.vars.uncompressedSize;
 
-export const unzipOne = async (
-  extractionOptions: IExtractionOptions,
-): Promise<IExtractedComicBookCoverFile> => {
-  const directory = await unzipper.Open.file(
-    "./comics/Lovecraft - The Myth of Cthulhu (2018) (Maroto) (fylgja).cbz",
-  );
-  return new Promise((resolve, reject) => {
-    directory.files[0]
-      .stream()
-      .pipe(createWriteStream("./comics/covers/yelaveda.jpg"))
-      .on("error", reject)
-      .on("finish", () =>
-        resolve({
-          name: directory.files[0].path,
-          fileSize: directory.files[0].uncompressedSize,
-          path: "ll",
-        }),
-      );
-  });
+        if (fileName !== "") {
+          entry.pipe(createWriteStream(targetPath + "/" + fileName));
+        }
+        extractedFiles.push({
+          name: fileName,
+          fileSize: size,
+          path: targetPath,
+        });
+        entry.autodrain();
+      }
+
+      return new Promise(async (resolve, reject) => {
+        logger.info("");
+        resolve(extractedFiles);
+      });
+
+    case "cover":
+      for await (const entry of zip) {
+        const fileName = explodePath(entry.path).fileName;
+
+        if (fileName !== "" && entry.type !== "Directory") {
+          const size = entry.vars.uncompressedSize;
+          entry.pipe(createWriteStream(targetPath + "/" + fileName));
+          extractedFiles.push({
+            name: fileName,
+            fileSize: size,
+            path: targetPath,
+          });
+          entry.autodrain();
+          break;
+        }
+      }
+
+      return new Promise(async (resolve, reject) => {
+        logger.info("");
+        resolve(extractedFiles);
+      });
+
+    default:
+      return {
+        message: "File format not supported, yet.",
+        errorCode: "90",
+        data: "asda",
+      };
+  }
 };
 
 export const extractArchive = async (
@@ -197,7 +211,7 @@ export const extractArchive = async (
   | IExtractComicBookCoverErrorResponse
 > => {
   const sourceFolder = "./comics";
-  const targetExtractionFolder = "expanded";
+  const targetExtractionFolder = "covers";
   const extractionOptions: IExtractionOptions = {
     folderDetails: fileObject,
     extractTarget: "cover",
@@ -245,10 +259,7 @@ export const explodePath = (filePath: string): IExplodedPathResponse => {
   const fileName = _.remove(exploded, (item) => {
     return _.indexOf(exploded, item) === exploded.length - 1;
   }).join("");
-  console.log({
-    exploded,
-    fileName,
-  });
+
   return {
     exploded,
     fileName,

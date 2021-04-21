@@ -5,14 +5,13 @@ import {
   unrar,
   unzip,
   extractMetadataFromImage,
-  unzipOne,
   explodePath,
 } from "../../utils/fs.utils";
 import { Request, Response } from "express";
 
 router.route("/getComicCovers").get(async (req: Request, res: Response) => {
   const options = {
-    name: "Gyo v01 (2003) (Digital) (LostNerevarine-Empire)",
+    name: "Gyo v02 (2004) (Digital) (LostNerevarine-Empire)",
     extension: ".cbz",
     containedIn: "comics/ITOU Junji - Gyo",
     isFile: true,
@@ -22,7 +21,7 @@ router.route("/getComicCovers").get(async (req: Request, res: Response) => {
   // const foo = await extractMetadataFromImage(
   //   "./comics/covers/Ghosts and Ruins-001.jpg",
   // );
-  // const foo = await unzipOne();
+  // const foo = await unzipOne(options);
   // const foo = await unzip("asd");
   // const foo = explodePath("Chapter Three/HELLBOY - The Chained Coffin - 069.jpg");
   res.json({
