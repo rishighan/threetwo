@@ -34,6 +34,16 @@ export const unrar = async (
       extractionOptions.folderDetails.name,
   ).catch((err) => console.error("Failed to read file", err));
 
+  const targetPath =
+    extractionTargetPath + "/" + extractionOptions.folderDetails.name;
+
+  try {
+    await fse.ensureDir(targetPath, directoryOptions);
+    logger.info(`${targetPath} was created or already exists.`);
+  } catch (error) {
+    logger.error(`${error}: Couldn't create directory.`);
+  }
+
   const extractor = await unrarer.createExtractorFromData({ data: fileBuffer });
   switch (extractionOptions.extractTarget) {
     case "cover":
@@ -43,32 +53,22 @@ export const unrar = async (
 
       const extractedFile = [...file.files][0];
       const fileArrayBuffer = extractedFile.extraction;
-      const pathFragments = explodePath(extractedFile.fileHeader.name);
-      const targetPath =
-        extractionTargetPath + "/" + pathFragments.exploded.join("/");
 
       logger.info(`Attempting to write ${extractedFile.fileHeader.name}`);
 
       return new Promise(async (resolve, reject) => {
         try {
-          await fse.ensureDir(targetPath, directoryOptions);
-          logger.info(`${targetPath} was created or already exists.`);
-          try {
-            await writeFile(
-              targetPath + "/" + pathFragments.fileName,
-              fileArrayBuffer,
-            );
-            resolve({
-              name: `${extractedFile.fileHeader.name}`,
-              path: targetPath,
-              fileSize: extractedFile.fileHeader.packSize,
-            });
-          } catch (error) {
-            logger.error(`${error}: Couldn't write file.`);
-            reject(error);
+          const fileName = explodePath(extractedFile.fileHeader.name).fileName;
+          if (fileName !== "") {
+            await writeFile(targetPath + "/" + fileName, fileArrayBuffer);
           }
+          resolve({
+            name: `${extractedFile.fileHeader.name}`,
+            path: targetPath,
+            fileSize: extractedFile.fileHeader.packSize,
+          });
         } catch (error) {
-          logger.error(`${error}: Coudln't create directory.`);
+          logger.error(`${error}: Couldn't write file.`);
           reject(error);
         }
       });
@@ -81,29 +81,19 @@ export const unrar = async (
         for (const file of extractedFiles) {
           logger.info(`Attempting to write ${file.fileHeader.name}`);
           const fileBuffer = file.extraction;
-          const pathFragments = explodePath(file.fileHeader.name);
-          const fragment = determineFolderNameForExtraction(pathFragments);
-          const targetPath = extractionTargetPath + "/" + fragment;
+          const fileName = explodePath(file.fileHeader.name).fileName;
           try {
-            await fse.ensureDir(targetPath, directoryOptions);
-            logger.info(`${targetPath} was created or already exists.`);
-            try {
-              await writeFile(
-                targetPath + "/" + pathFragments.fileName,
-                fileBuffer,
-              );
-              comicBookCoverFiles.push({
-                name: `${file.fileHeader.name}`,
-                path: targetPath,
-                fileSize: file.fileHeader.packSize,
-              });
-            } catch (error) {
-              logger.error(error);
-              reject(error);
+            if (fileName !== "") {
+              await writeFile(targetPath + "/" + fileName, fileBuffer);
             }
-          } catch (err) {
-            logger.error(err);
-            reject(err);
+            comicBookCoverFiles.push({
+              name: `${file.fileHeader.name}`,
+              path: targetPath,
+              fileSize: file.fileHeader.packSize,
+            });
+          } catch (error) {
+            logger.error(error);
+            reject(error);
           }
         }
         resolve(comicBookCoverFiles);
@@ -140,34 +130,47 @@ export const unzip = async (
   const targetPath =
     extractionOptions.sourceFolder +
     "/" +
-    extractionOptions.targetExtractionFolder;
+    extractionOptions.targetExtractionFolder +
+    "/" +
+    extractionOptions.folderDetails.name;
+
   const zip = createReadStream(
-    extractionOptions.sourceFolder + "/" + extractionOptions.folderDetails.name,
+    extractionOptions.folderDetails.containedIn +
+      "/" +
+      extractionOptions.folderDetails.name +
+      extractionOptions.folderDetails.extension,
   ).pipe(unzipper.Parse({ forceStream: true }));
-  for await (const entry of zip) {
-    try {
-      await fse.ensureDir(targetPath, directoryOptions);
-      logger.info(`${targetPath} was created or already exists.`);
-      const fileName = entry.path;
+
+  try {
+    await fse.ensureDir(targetPath, directoryOptions);
+    logger.info(`${targetPath} was created or already exists.`);
+    for await (const entry of zip) {
+      const fileName = explodePath(entry.path).fileName;
       const size = entry.vars.uncompressedSize; // There is also compressedSize;
+
+      if (fileName !== "") {
+        entry.pipe(createWriteStream(targetPath + "/" + fileName));
+      }
       extractedFiles.push({
         name: fileName,
         fileSize: size,
         path: targetPath,
       });
-      entry.pipe(createWriteStream(targetPath + fileName));
       entry.autodrain();
-    } catch (error) {
-      logger.error(`${error} Couldn't create directory.`);
     }
+  } catch (error) {
+    logger.error(`${error} Couldn't create directory.`);
   }
-  return new Promise((resolve, reject) => {
+
+  return new Promise(async (resolve, reject) => {
     logger.info("");
     resolve(extractedFiles);
   });
 };
 
-export const unzipOne = async (): Promise<IExtractedComicBookCoverFile> => {
+export const unzipOne = async (
+  extractionOptions: IExtractionOptions,
+): Promise<IExtractedComicBookCoverFile> => {
   const directory = await unzipper.Open.file(
     "./comics/Lovecraft - The Myth of Cthulhu (2018) (Maroto) (fylgja).cbz",
   );
@@ -193,11 +196,11 @@ export const extractArchive = async (
   | IExtractedComicBookCoverFile[]
   | IExtractComicBookCoverErrorResponse
 > => {
-  const sourceFolder = "./comics/";
+  const sourceFolder = "./comics";
   const targetExtractionFolder = "expanded";
   const extractionOptions: IExtractionOptions = {
     folderDetails: fileObject,
-    extractTarget: "all",
+    extractTarget: "cover",
     sourceFolder,
     targetExtractionFolder,
   };
@@ -241,19 +244,13 @@ export const explodePath = (filePath: string): IExplodedPathResponse => {
   const exploded = filePath.split("/");
   const fileName = _.remove(exploded, (item) => {
     return _.indexOf(exploded, item) === exploded.length - 1;
+  }).join("");
+  console.log({
+    exploded,
+    fileName,
   });
   return {
     exploded,
     fileName,
   };
-};
-
-export const determineFolderNameForExtraction = (
-  pathFragments: IExplodedPathResponse,
-): string | string[] => {
-  if (pathFragments.exploded.length === 0) {
-    return pathFragments.fileName;
-  } else {
-    return pathFragments.exploded.join("/");
-  }
 };

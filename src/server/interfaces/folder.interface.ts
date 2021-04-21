@@ -24,7 +24,7 @@ export interface IFolderData {
 
 export interface IExplodedPathResponse {
   exploded: Array<string>;
-  fileName: string | Array<string>;
+  fileName: string;
 }
 
 export interface IComicBookCoverMetadata {

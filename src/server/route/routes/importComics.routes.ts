@@ -11,13 +11,14 @@ import {
 import { Request, Response } from "express";
 
 router.route("/getComicCovers").get(async (req: Request, res: Response) => {
-  const foo = await extractArchive({
-    name: "Ozymandias 001.cbr",
-    extension: ".cbr",
-    containedIn: "comics/(2012) Before Watchmen - Ozymandias",
+  const options = {
+    name: "Gyo v01 (2003) (Digital) (LostNerevarine-Empire)",
+    extension: ".cbz",
+    containedIn: "comics/ITOU Junji - Gyo",
     isFile: true,
     isLink: false,
-  });
+  };
+  const foo = await extractArchive(options);
   // const foo = await extractMetadataFromImage(
   //   "./comics/covers/Ghosts and Ruins-001.jpg",
   // );
