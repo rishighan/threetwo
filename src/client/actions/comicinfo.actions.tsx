@@ -9,9 +9,9 @@ import {
 import { COMICBOOKINFO_SERVICE_URI } from "../constants/endpoints";
 
 const http = rateLimiter(axios.create(), {
-    maxRequests: 1,
-    perMilliseconds: 1000,
-    maxRPS: 1,
+  maxRequests: 1,
+  perMilliseconds: 1000,
+  maxRPS: 1,
 });
 
 export const comicinfoAPICall = (options) => async (dispatch) => {

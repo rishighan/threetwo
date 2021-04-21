@@ -16,6 +16,7 @@ import {
   IExtractionOptions,
   IFolderData,
 } from "../interfaces/folder.interface";
+import { WriteStream } from "node:fs";
 
 export const unrar = async (
   extractionOptions: IExtractionOptions,
@@ -123,7 +124,9 @@ export const extractMetadataFromImage = async (
 export const unzip = async (
   extractionOptions: IExtractionOptions,
 ): Promise<
-  IExtractedComicBookCoverFile[] | IExtractComicBookCoverErrorResponse
+  | IExtractedComicBookCoverFile[]
+  | IExtractedComicBookCoverFile
+  | IExtractComicBookCoverErrorResponse
 > => {
   const extractedFiles: IExtractedComicBookCoverFile[] = [];
   const directoryOptions = {
@@ -136,12 +139,15 @@ export const unzip = async (
     "/" +
     extractionOptions.folderDetails.name;
 
-  const zip = createReadStream(
+  const inputFilePath =
     extractionOptions.folderDetails.containedIn +
-      "/" +
-      extractionOptions.folderDetails.name +
-      extractionOptions.folderDetails.extension,
-  ).pipe(unzipper.Parse({ forceStream: true }));
+    "/" +
+    extractionOptions.folderDetails.name +
+    extractionOptions.folderDetails.extension;
+
+  const zip = createReadStream(inputFilePath).pipe(
+    unzipper.Parse({ forceStream: true }),
+  );
 
   try {
     await fse.ensureDir(targetPath, directoryOptions);
@@ -150,48 +156,36 @@ export const unzip = async (
     logger.error(`${error} Couldn't create directory.`);
   }
 
+  for await (const entry of zip) {
+    const fileName = explodePath(entry.path).fileName;
+    const size = entry.vars.uncompressedSize;
+    if (fileName !== "" && entry.type !== "Directory") {
+      extractedFiles.push({
+        name: fileName,
+        fileSize: size,
+        path: targetPath,
+      });
+    }
+    entry.autodrain();
+  }
+
   switch (extractionOptions.extractTarget) {
     case "all":
       for await (const entry of zip) {
-        const fileName = explodePath(entry.path).fileName;
-        const size = entry.vars.uncompressedSize;
-
-        if (fileName !== "") {
-          entry.pipe(createWriteStream(targetPath + "/" + fileName));
-        }
-        extractedFiles.push({
-          name: fileName,
-          fileSize: size,
-          path: targetPath,
-        });
+        const writeableFileName = explodePath(entry.path).fileName;
+        entry.pipe(createWriteStream(targetPath + "/" + writeableFileName));
         entry.autodrain();
       }
-
       return new Promise(async (resolve, reject) => {
         logger.info("");
         resolve(extractedFiles);
       });
 
     case "cover":
-      for await (const entry of zip) {
-        const fileName = explodePath(entry.path).fileName;
-
-        if (fileName !== "" && entry.type !== "Directory") {
-          const size = entry.vars.uncompressedSize;
-          entry.pipe(createWriteStream(targetPath + "/" + fileName));
-          extractedFiles.push({
-            name: fileName,
-            fileSize: size,
-            path: targetPath,
-          });
-          entry.autodrain();
-          break;
-        }
-      }
-
-      return new Promise(async (resolve, reject) => {
-        logger.info("");
-        resolve(extractedFiles);
+      console.log(zip);
+      createWriteStream(targetPath + "/" + extractedFiles[0].name);
+      return new Promise((resolve, reject) => {
+        resolve(extractedFiles[0]);
       });
 
     default:

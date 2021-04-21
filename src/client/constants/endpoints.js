@@ -1,3 +1,3 @@
 export const COMICBOOKINFO_SERVICE_URI =
   "http://localhost:6050/api/comicbookinfo/";
-export const FOLDERUTIL_URI = "http://localhost:3000/walkfolder";
+export const FOLDERUTIL_URI = "http://localhost:8050/api/";

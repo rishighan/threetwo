@@ -1,17 +1,34 @@
 import axios from "axios";
 import { IFolderData } from "../interfaces/comicinfo.interfaces";
-import { FOLDERUTIL_URI } from "../../constants/endpoints";
+import {
+  IExtractComicBookCoverErrorResponse,
+  IExtractedComicBookCoverFile,
+  IExtractionOptions,
+} from "../../../server/interfaces/folder.interface";
+import { FS_API_BASE_URI } from "../../constants/endpoints";
 
 export async function folderWalk(): Promise<Array<IFolderData>> {
   return axios
     .request<Array<IFolderData>>({
-      url: FOLDERUTIL_URI,
+      url: FS_API_BASE_URI + "/walkFolder",
       transformResponse: (r: string) => JSON.parse(r),
     })
     .then((response) => {
       const { data } = response;
       return data;
     });
+}
+
+export async function extractCoverFromComicBookArchive(
+  options: IExtractionOptions,
+): Promise<
+  | IExtractedComicBookCoverFile
+  | IExtractedComicBookCoverFile[]
+  | IExtractComicBookCoverErrorResponse
+> {
+  return await axios.request({
+    url: FS_API_BASE_URI + "/getComicCovers",
+  });
 }
 
 export async function foo() {

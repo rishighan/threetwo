@@ -9,11 +9,11 @@ import {
 } from "../../utils/fs.utils";
 import { Request, Response } from "express";
 
-router.route("/getComicCovers").get(async (req: Request, res: Response) => {
+router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   const options = {
-    name: "Gyo v02 (2004) (Digital) (LostNerevarine-Empire)",
+    name: "Beautiful Darkness (2014) (scan) (Anonymous) (resized)",
     extension: ".cbz",
-    containedIn: "comics/ITOU Junji - Gyo",
+    containedIn: "comics",
     isFile: true,
     isLink: false,
   };
