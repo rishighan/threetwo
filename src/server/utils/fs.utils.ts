@@ -24,29 +24,17 @@ export const unrar = async (
   | IExtractedComicBookCoverFile[]
   | IExtractComicBookCoverErrorResponse
 > => {
-  const targetPath =
-    extractionOptions.sourceFolder +
-    "/" +
-    extractionOptions.targetExtractionFolder +
-    "/" +
-    extractionOptions.folderDetails.name;
-
-  const inputFilePath =
-    extractionOptions.folderDetails.containedIn +
-    "/" +
-    extractionOptions.folderDetails.name +
-    extractionOptions.folderDetails.extension;
-
+  const paths = constructPaths(extractionOptions);
   const directoryOptions = {
     mode: 0o2775,
   };
-  const fileBuffer = await readFile(inputFilePath).catch((err) =>
+  const fileBuffer = await readFile(paths.inputFilePath).catch((err) =>
     console.error("Failed to read file", err),
   );
 
   try {
-    await fse.ensureDir(targetPath, directoryOptions);
-    logger.info(`${targetPath} was created or already exists.`);
+    await fse.ensureDir(paths.targetPath, directoryOptions);
+    logger.info(`${paths.targetPath} was created or already exists.`);
   } catch (error) {
     logger.error(`${error}: Couldn't create directory.`);
   }
@@ -69,11 +57,11 @@ export const unrar = async (
             fileName !== "" &&
             extractedFile.fileHeader.flags.directory === false
           ) {
-            await writeFile(targetPath + "/" + fileName, fileArrayBuffer);
+            await writeFile(paths.targetPath + "/" + fileName, fileArrayBuffer);
           }
           resolve({
             name: `${extractedFile.fileHeader.name}`,
-            path: targetPath,
+            path: paths.targetPath,
             fileSize: extractedFile.fileHeader.packSize,
           });
         } catch (error) {
@@ -93,11 +81,11 @@ export const unrar = async (
           const fileName = explodePath(file.fileHeader.name).fileName;
           try {
             if (fileName !== "" && file.fileHeader.flags.directory === false) {
-              await writeFile(targetPath + "/" + fileName, fileBuffer);
+              await writeFile(paths.targetPath + "/" + fileName, fileBuffer);
             }
             comicBookCoverFiles.push({
               name: `${file.fileHeader.name}`,
-              path: targetPath,
+              path: paths.targetPath,
               fileSize: file.fileHeader.packSize,
             });
           } catch (error) {
@@ -138,28 +126,17 @@ export const unzip = async (
   const directoryOptions = {
     mode: 0o2775,
   };
-  const targetPath =
-    extractionOptions.sourceFolder +
-    "/" +
-    extractionOptions.targetExtractionFolder +
-    "/" +
-    extractionOptions.folderDetails.name;
-
-  const inputFilePath =
-    extractionOptions.folderDetails.containedIn +
-    "/" +
-    extractionOptions.folderDetails.name +
-    extractionOptions.folderDetails.extension;
+  const paths = constructPaths(extractionOptions);
 
   try {
-    await fse.ensureDir(targetPath, directoryOptions);
-    logger.info(`${targetPath} was created or already exists.`);
+    await fse.ensureDir(paths.targetPath, directoryOptions);
+    logger.info(`${paths.targetPath} was created or already exists.`);
   } catch (error) {
     logger.error(`${error} Couldn't create directory.`);
   }
 
   const extractedFiles: IExtractedComicBookCoverFile[] = [];
-  const zip = createReadStream(inputFilePath).pipe(
+  const zip = createReadStream(paths.inputFilePath).pipe(
     unzipper.Parse({ forceStream: true }),
   );
   for await (const entry of zip) {
@@ -172,11 +149,11 @@ export const unzip = async (
       break;
     }
     if (fileName !== "" && entry.type !== "Directory") {
-      entry.pipe(createWriteStream(targetPath + "/" + fileName));
+      entry.pipe(createWriteStream(paths.targetPath + "/" + fileName));
       extractedFiles.push({
         name: fileName,
         fileSize: size,
-        path: targetPath,
+        path: paths.targetPath,
       });
     }
     entry.autodrain();
@@ -248,5 +225,21 @@ export const explodePath = (filePath: string): IExplodedPathResponse => {
   return {
     exploded,
     fileName,
+  };
+};
+
+const constructPaths = (extractionOptions: IExtractionOptions) => {
+  return {
+    targetPath:
+      extractionOptions.sourceFolder +
+      "/" +
+      extractionOptions.targetExtractionFolder +
+      "/" +
+      extractionOptions.folderDetails.name,
+    inputFilePath:
+      extractionOptions.folderDetails.containedIn +
+      "/" +
+      extractionOptions.folderDetails.name +
+      extractionOptions.folderDetails.extension,
   };
 };

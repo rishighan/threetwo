@@ -11,8 +11,8 @@ import { Request, Response } from "express";
 
 router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   const options = {
-    name: "Fatale 004 (2012) (Digital) (Zone-Empire)",
-    extension: ".cbr",
+    name: "30 Days of Night # 30 äíåé íî÷è # 01-001",
+    extension: ".cbz",
     containedIn: "comics",
     isFile: true,
     isLink: false,
