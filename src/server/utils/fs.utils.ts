@@ -151,61 +151,34 @@ export const unzip = async (
     logger.error(`${error} Couldn't create directory.`);
   }
 
-  switch (extractionOptions.extractTarget) {
-    case "all":
-      const extractedFiles: IExtractedComicBookCoverFile[] = [];
-      const zip = createReadStream(inputFilePath).pipe(
-        unzipper.Parse({ forceStream: true }),
-      );
-      for await (const entry of zip) {
-        const fileName = explodePath(entry.path).fileName;
-        const size = entry.vars.uncompressedSize;
-        entry.pipe(createWriteStream(targetPath + "/" + fileName));
-        if (fileName !== "" && entry.type !== "Directory") {
-          extractedFiles.push({
-            name: fileName,
-            fileSize: size,
-            path: targetPath,
-          });
-        }
-        entry.autodrain();
-      }
-
-      return new Promise(async (resolve, reject) => {
-        logger.info("");
-        resolve(extractedFiles);
+  const extractedFiles: IExtractedComicBookCoverFile[] = [];
+  const zip = createReadStream(inputFilePath).pipe(
+    unzipper.Parse({ forceStream: true }),
+  );
+  for await (const entry of zip) {
+    const fileName = explodePath(entry.path).fileName;
+    const size = entry.vars.uncompressedSize;
+    if (
+      extractedFiles.length === 1 &&
+      extractionOptions.extractTarget === "cover"
+    ) {
+      break;
+    }
+    if (fileName !== "" && entry.type !== "Directory") {
+      entry.pipe(createWriteStream(targetPath + "/" + fileName));
+      extractedFiles.push({
+        name: fileName,
+        fileSize: size,
+        path: targetPath,
       });
-
-    case "cover":
-      const extractedFile: IExtractedComicBookCoverFile[] = [];
-      const singleZip = createReadStream(inputFilePath).pipe(
-        unzipper.Parse({ forceStream: true }),
-      );
-      for await (const item of singleZip) {
-        const writeableFileName = explodePath(item.path).fileName;
-        if (extractedFile.length === 1) {
-          break;
-        }
-        if (writeableFileName !== "" && item.type !== "Directory") {
-          item.pipe(createWriteStream(targetPath + "/" + writeableFileName));
-          extractedFile.push({
-            name: writeableFileName,
-            fileSize: item.size,
-            path: targetPath,
-          });
-        }
-      }
-      return new Promise((resolve, reject) => {
-        resolve(extractedFile[0]);
-      });
-
-    default:
-      return {
-        message: "File format not supported, yet.",
-        errorCode: "90",
-        data: "asda",
-      };
+    }
+    entry.autodrain();
   }
+
+  return new Promise(async (resolve, reject) => {
+    logger.info("");
+    resolve(extractedFiles);
+  });
 };
 
 export const extractArchive = async (
@@ -216,10 +189,10 @@ export const extractArchive = async (
   | IExtractComicBookCoverErrorResponse
 > => {
   const sourceFolder = "./comics";
-  const targetExtractionFolder = "covers";
+  const targetExtractionFolder = "expanded";
   const extractionOptions: IExtractionOptions = {
     folderDetails: fileObject,
-    extractTarget: "cover",
+    extractTarget: "all",
     sourceFolder,
     targetExtractionFolder,
   };

@@ -11,9 +11,9 @@ import { Request, Response } from "express";
 
 router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   const options = {
-    name: "Beautiful Darkness (2014) (scan) (Anonymous) (resized)",
+    name: "Gyo v02 (2004) (Digital) (LostNerevarine-Empire)",
     extension: ".cbz",
-    containedIn: "comics",
+    containedIn: "comics/ITOU Junji - Gyo",
     isFile: true,
     isLink: false,
   };
