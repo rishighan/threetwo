@@ -57,7 +57,6 @@ export const unrar = async (
       const list = extractor.getFileList();
       const fileHeaders = [...list.fileHeaders];
       const file = extractor.extract({ files: [fileHeaders[0].name] });
-
       const extractedFile = [...file.files][0];
       const fileArrayBuffer = extractedFile.extraction;
 
@@ -197,10 +196,10 @@ export const extractArchive = async (
   | IExtractComicBookCoverErrorResponse
 > => {
   const sourceFolder = "./comics";
-  const targetExtractionFolder = "expanded";
+  const targetExtractionFolder = "covers";
   const extractionOptions: IExtractionOptions = {
     folderDetails: fileObject,
-    extractTarget: "all",
+    extractTarget: "cover",
     sourceFolder,
     targetExtractionFolder,
   };
