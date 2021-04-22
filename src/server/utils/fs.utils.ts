@@ -16,7 +16,6 @@ import {
   IExtractionOptions,
   IFolderData,
 } from "../interfaces/folder.interface";
-import { WriteStream } from "node:fs";
 
 export const unrar = async (
   extractionOptions: IExtractionOptions,
@@ -25,19 +24,25 @@ export const unrar = async (
   | IExtractedComicBookCoverFile[]
   | IExtractComicBookCoverErrorResponse
 > => {
-  const extractionTargetPath =
-    extractionOptions.sourceFolder + extractionOptions.targetExtractionFolder;
+  const targetPath =
+    extractionOptions.sourceFolder +
+    "/" +
+    extractionOptions.targetExtractionFolder +
+    "/" +
+    extractionOptions.folderDetails.name;
+
+  const inputFilePath =
+    extractionOptions.folderDetails.containedIn +
+    "/" +
+    extractionOptions.folderDetails.name +
+    extractionOptions.folderDetails.extension;
+
   const directoryOptions = {
     mode: 0o2775,
   };
-  const fileBuffer = await readFile(
-    extractionOptions.folderDetails.containedIn +
-      "/" +
-      extractionOptions.folderDetails.name,
-  ).catch((err) => console.error("Failed to read file", err));
-
-  const targetPath =
-    extractionTargetPath + "/" + extractionOptions.folderDetails.name;
+  const fileBuffer = await readFile(inputFilePath).catch((err) =>
+    console.error("Failed to read file", err),
+  );
 
   try {
     await fse.ensureDir(targetPath, directoryOptions);
@@ -61,7 +66,10 @@ export const unrar = async (
       return new Promise(async (resolve, reject) => {
         try {
           const fileName = explodePath(extractedFile.fileHeader.name).fileName;
-          if (fileName !== "") {
+          if (
+            fileName !== "" &&
+            extractedFile.fileHeader.flags.directory === false
+          ) {
             await writeFile(targetPath + "/" + fileName, fileArrayBuffer);
           }
           resolve({
@@ -85,7 +93,7 @@ export const unrar = async (
           const fileBuffer = file.extraction;
           const fileName = explodePath(file.fileHeader.name).fileName;
           try {
-            if (fileName !== "") {
+            if (fileName !== "" && file.fileHeader.flags.directory === false) {
               await writeFile(targetPath + "/" + fileName, fileBuffer);
             }
             comicBookCoverFiles.push({

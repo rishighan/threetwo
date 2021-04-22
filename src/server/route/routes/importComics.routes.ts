@@ -11,9 +11,9 @@ import { Request, Response } from "express";
 
 router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   const options = {
-    name: "Gyo v02 (2004) (Digital) (LostNerevarine-Empire)",
-    extension: ".cbz",
-    containedIn: "comics/ITOU Junji - Gyo",
+    name: "Fatale 004 (2012) (Digital) (Zone-Empire)",
+    extension: ".cbr",
+    containedIn: "comics",
     isFile: true,
     isLink: false,
   };
