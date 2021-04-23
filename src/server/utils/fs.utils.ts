@@ -166,21 +166,13 @@ export const unzip = async (
 };
 
 export const extractArchive = async (
-  fileObject: IFolderData,
+  extractionOptions: IExtractionOptions,
 ): Promise<
   | IExtractedComicBookCoverFile
   | IExtractedComicBookCoverFile[]
   | IExtractComicBookCoverErrorResponse
 > => {
-  const sourceFolder = "./comics";
-  const targetExtractionFolder = "covers";
-  const extractionOptions: IExtractionOptions = {
-    folderDetails: fileObject,
-    extractTarget: "cover",
-    sourceFolder,
-    targetExtractionFolder,
-  };
-  switch (fileObject.extension) {
+  switch (extractionOptions.folderDetails.extension) {
     case ".cbz":
       return await unzip(extractionOptions);
     case ".cbr":

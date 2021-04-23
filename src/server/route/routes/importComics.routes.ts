@@ -30,7 +30,7 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   });
 });
 
-router.route("/walkFolder").get(async (req: Request, res: Response) => {
+router.route("/walkFolder").post(async (req: Request, res: Response) => {
   const basePathToWalk =
     typeof req.query.basePathToWalk === "string"
       ? req.query.basePathToWalk
