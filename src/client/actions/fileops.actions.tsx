@@ -1,11 +1,11 @@
 import axios from "axios";
-import { IFolderData } from "../interfaces/comicinfo.interfaces";
+import { IFolderData } from "../shared/interfaces/comicinfo.interfaces";
 import {
   IExtractComicBookCoverErrorResponse,
   IExtractedComicBookCoverFile,
   IExtractionOptions,
-} from "../../../server/interfaces/folder.interface";
-import { FS_API_BASE_URI } from "../../constants/endpoints";
+} from "../../server/interfaces/folder.interface";
+import { FS_API_BASE_URI } from "../constants/endpoints";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
