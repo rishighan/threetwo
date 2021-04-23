@@ -7,7 +7,7 @@ import {
 } from "../../../server/interfaces/folder.interface";
 import { FS_API_BASE_URI } from "../../constants/endpoints";
 
-export async function folderWalk(): Promise<Array<IFolderData>> {
+export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
     .request<Array<IFolderData>>({
       url: FS_API_BASE_URI + "/walkFolder",
@@ -28,6 +28,9 @@ export async function extractCoverFromComicBookArchive(
 > {
   return await axios.request({
     url: FS_API_BASE_URI + "/getComicCovers",
+    data: {
+      ...options,
+    },
   });
 }
 

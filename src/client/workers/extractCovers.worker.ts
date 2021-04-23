@@ -1,4 +1,5 @@
 import * as Comlink from "comlink";
+import { extractCoverFromComicBookArchive } from "../shared/utils/folder.utils";
 
 function add(a, b) {
   return a + b;
