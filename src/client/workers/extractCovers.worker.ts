@@ -1,8 +1,9 @@
 import * as Comlink from "comlink";
 import { walkFolder } from "../actions/fileops.actions";
 import { IExtractionOptions } from "../../server/interfaces/folder.interface";
+import { IFolderData } from "../shared/interfaces/comicinfo.interfaces";
 
-async function importComicBooks() {
+async function importComicBooks(): Promise<IFolderData[]> {
   // 1. Walk the folder structure
   // 2. Scan for .cbz, .cbr
   // 3. extract cover image
@@ -12,6 +13,7 @@ async function importComicBooks() {
   // 6. Save model to mongo
 
   const fileObjects = await walkFolder("./comics");
+  return fileObjects;
 }
 
 Comlink.expose({

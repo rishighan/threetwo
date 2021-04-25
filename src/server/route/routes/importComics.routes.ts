@@ -7,17 +7,14 @@ import {
   extractMetadataFromImage,
   explodePath,
 } from "../../utils/fs.utils";
+import { IExtractionOptions } from "../../interfaces/folder.interface";
 import { Request, Response } from "express";
 
 router.route("/getComicCovers").post(async (req: Request, res: Response) => {
-  const options = {
-    name: "30 Days of Night # 30 äíåé íî÷è # 01-001",
-    extension: ".cbz",
-    containedIn: "comics",
-    isFile: true,
-    isLink: false,
-  };
-  const foo = await extractArchive(options);
+  typeof req.body.extractionOptions === "object"
+    ? req.body.extractionOptions
+    : {};
+  const foo = await extractArchive(req.body.extractionOptions);
   // const foo = await extractMetadataFromImage(
   //   "./comics/covers/Ghosts and Ruins-001.jpg",
   // );

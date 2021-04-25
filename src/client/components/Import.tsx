@@ -5,13 +5,7 @@ import axios from "axios";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { comicinfoAPICall } from "../actions/comicinfo.actions";
-import MatchResult from "./MatchResult";
-import {
-  IFolderData,
-  IComicVineSearchMatch,
-} from "../shared/interfaces/comicinfo.interfaces";
-import { folderWalk } from "../shared/utils/folder.utils";
-// import {} from "../constants/comicvine.mock";
+import { IFolderData } from "../shared/interfaces/comicinfo.interfaces";
 import * as Comlink from "comlink";
 import WorkerAdd from "../workers/extractCovers.worker";
 interface IProps {
@@ -26,7 +20,7 @@ class Import extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      folderWalkResults: undefined,
+      folderWalkResults: [],
       searchPaneIndex: undefined,
     };
   }
@@ -37,16 +31,9 @@ class Import extends React.Component<IProps, IState> {
     });
   }
 
-  public async init() {
-    // WebWorkers use `postMessage` and therefore work with Comlink.
-    const { add } = Comlink.wrap(new WorkerAdd());
-    const res = await add(1, 3);
-    console.log(res);
-  }
-
   public async startFolderWalk(): Promise<void> {
-    this.init();
-    const folderWalkResults = await folderWalk();
+    const { importComicBooks } = Comlink.wrap(new WorkerAdd());
+    const folderWalkResults = await importComicBooks;
     this.setState({
       folderWalkResults,
     });
@@ -96,61 +83,9 @@ class Import extends React.Component<IProps, IState> {
           </p>
           {/* Folder walk results */}
           {!_.isUndefined(this.state.folderWalkResults) ? (
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Format</th>
-                  <th>Is File</th>
-                </tr>
-                {!_.isUndefined(this.state.folderWalkResults) &&
-                  this.state.folderWalkResults.map((result, idx) => (
-                    <tr key={idx}>
-                      <td>
-                        {!result.isLink && !result.isFile ? (
-                          <span className="icon-text">
-                            <span className="icon">
-                              <i className="fas fa-folder"></i>
-                            </span>
-                            <span>{result.name}</span>
-                          </span>
-                        ) : (
-                          <span className="ml-5">{result.name}</span>
-                        )}
-
-                        {this.state.searchPaneIndex === idx &&
-                        !_.isUndefined(this.props.matches) ? (
-                          <MatchResult
-                            queryData={result}
-                            matchData={this.props.matches}
-                            visible={true}
-                          />
-                        ) : null}
-                      </td>
-                      <td>
-                        {!_.isEmpty(result.extension) ? (
-                          <span className="tag is-info">
-                            {result.extension}
-                          </span>
-                        ) : null}
-                      </td>
-                      <td>{result.isFile.toString()}</td>
-                      <td>
-                        <button
-                          key={idx}
-                          className="button is-small is-primary is-outlined"
-                          onClick={(e) => {
-                            this.props.findMatches(e, result);
-                            this.toggleSearchResultsPane(idx);
-                          }}
-                        >
-                          Find Match
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-              </thead>
-            </table>
+            <>
+              <div>poopie</div>
+            </>
           ) : null}
         </section>
       </div>
@@ -158,29 +93,14 @@ class Import extends React.Component<IProps, IState> {
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state: IState) {
   return {
-    matches: state.comicInfo.searchResults,
+    // matches: state.comicInfo.searchResults,
   };
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  findMatches(e, results) {
-    dispatch(
-      comicinfoAPICall({
-        callURIAction: "search",
-        callMethod: "get",
-        callParams: {
-          format: "json",
-          query: results.name,
-          limit: 10,
-          offset: 5,
-          sort: "name:asc",
-          resources: "issue",
-        },
-      }),
-    );
-  },
+  name: "rishi",
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Import);

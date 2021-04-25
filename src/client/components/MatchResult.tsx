@@ -25,6 +25,65 @@ class MatchResult extends React.Component<IProps, IState> {
   }
 
   public render() {
+    {
+      /* 
+    <table className="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Format</th>
+                  <th>Is File</th>
+                </tr>
+                {!_.isUndefined(this.state.folderWalkResults) &&
+                  this.state.folderWalkResults.map((result, idx) => (
+                    <tr key={idx}>
+                      <td>
+                        {!result.isLink && !result.isFile ? (
+                          <span className="icon-text">
+                            <span className="icon">
+                              <i className="fas fa-folder"></i>
+                            </span>
+                            <span>{result.name}</span>
+                          </span>
+                        ) : (
+                          <span className="ml-5">{result.name}</span>
+                        )}
+
+                        {this.state.searchPaneIndex === idx &&
+                        !_.isUndefined(this.props.matches) ? (
+                          <MatchResult
+                            queryData={result}
+                            matchData={this.props.matches}
+                            visible={true}
+                          />
+                        ) : null}
+                      </td>
+                      <td>
+                        {!_.isEmpty(result.extension) ? (
+                          <span className="tag is-info">
+                            {result.extension}
+                          </span>
+                        ) : null}
+                      </td>
+                      <td>{result.isFile.toString()}</td>
+                      <td>
+                        <button
+                          key={idx}
+                          className="button is-small is-primary is-outlined"
+                          onClick={(e) => {
+                            this.props.findMatches(e, result);
+                            this.toggleSearchResultsPane(idx);
+                          }}
+                        >
+                          Find Match
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+              </thead>
+            </table>
+    */
+    }
     return this.props.visible ? (
       <div>
         <h3>Matches</h3>
