@@ -5,7 +5,7 @@
     "allowSyntheticDefaultImports": true,
     "target": "es2019",
     "jsx": "react",
-    "module": "commonjs",
+    "module": "system",
     "sourceMap": true,
     "outDir": "./dist/",
     "skipLibCheck": true,

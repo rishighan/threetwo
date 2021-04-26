@@ -9839,6 +9839,11 @@ react-dom@^17.0.1:
     object-assign "^4.1.1"
     scheduler "^0.20.2"
 
+react-hooks-worker@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-hooks-worker/-/react-hooks-worker-1.0.0.tgz#1f715542cf6ce151b33140c3d81716e2c7da21b9"
+  integrity sha512-N+W1SLGb4rEuuTLZCcfZaAWQScscYzd+WS7aa5eS3pXC0nL/vMbJV/HUOWS2c0cupUqDUFZqgXa+rOZM8ckdSA==
+
 react-hot-loader@^4.13.0:
   version "4.13.0"
   resolved "https://registry.yarnpkg.com/react-hot-loader/-/react-hot-loader-4.13.0.tgz#c27e9408581c2a678f5316e69c061b226dc6a202"
@@ -12473,6 +12478,13 @@ worker-loader@^3.0.8:
   dependencies:
     loader-utils "^2.0.0"
     schema-utils "^3.0.0"
+
+worker-plugin@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/worker-plugin/-/worker-plugin-5.0.0.tgz#113b5fe1f4a5d6a957cecd29915bedafd70bb537"
+  integrity sha512-AXMUstURCxDD6yGam2r4E34aJg6kW85IiaeX72hi+I1cxyaMUtrvVY6sbfpGKAj5e7f68Acl62BjQF5aOOx2IQ==
+  dependencies:
+    loader-utils "^1.1.0"
 
 wrap-ansi@^2.0.0:
   version "2.1.0"
