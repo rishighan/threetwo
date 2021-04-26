@@ -33,7 +33,3 @@ export async function extractCoverFromComicBookArchive(
     },
   });
 }
-
-export async function foo() {
-  return { as: "af" };
-}

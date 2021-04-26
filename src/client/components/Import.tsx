@@ -1,13 +1,8 @@
 import * as React from "react";
-import { hot } from "react-hot-loader";
 import _ from "lodash";
-import axios from "axios";
-import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { comicinfoAPICall } from "../actions/comicinfo.actions";
-import { IFolderData } from "../shared/interfaces/comicinfo.interfaces";
 import * as Comlink from "comlink";
-import WorkerAdd from "../workers/extractCovers.worker";
+import { wrap, proxy } from "comlink";
 interface IProps {
   matches: unknown;
 }
@@ -31,14 +26,16 @@ class Import extends React.Component<IProps, IState> {
     });
   }
 
-  public async startFolderWalk(): Promise<void> {
-    const { importComicBooks } = Comlink.wrap(new WorkerAdd());
-    const folderWalkResults = await importComicBooks;
-    this.setState({
-      folderWalkResults,
-    });
+  public async startFolderWalk() {
+    const multiply = wrap(
+      new Worker(
+        "http://localhost:3000/src/client/workers/extractCovers.worker.js",
+        { type: "module" },
+      ),
+    );
+    const sutarfeni = await proxy(multiply);
+    console.log("foo", sutarfeni());
   }
-
   public render() {
     return (
       <div>

@@ -14,7 +14,7 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   typeof req.body.extractionOptions === "object"
     ? req.body.extractionOptions
     : {};
-  const foo = await extractArchive(req.body.extractionOptions);
+  const extractedData = await extractArchive(req.body.extractionOptions);
   // const foo = await extractMetadataFromImage(
   //   "./comics/covers/Ghosts and Ruins-001.jpg",
   // );
@@ -22,8 +22,7 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   // const foo = await unzip("asd");
   // const foo = explodePath("Chapter Three/HELLBOY - The Chained Coffin - 069.jpg");
   res.json({
-    jagan: "trupti",
-    foo,
+    extractedData,
   });
 });
 
