@@ -10,7 +10,11 @@ import { FS_API_BASE_URI } from "../constants/endpoints";
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
     .request<Array<IFolderData>>({
-      url: FS_API_BASE_URI + "/walkFolder",
+      url: FS_API_BASE_URI + "walkFolder",
+      method: "POST",
+      params: {
+        basePathToWalk: path,
+      },
       transformResponse: (r: string) => JSON.parse(r),
     })
     .then((response) => {

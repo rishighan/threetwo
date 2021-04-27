@@ -27,7 +27,7 @@ class Import extends React.Component<IProps, IState> {
   }
 
   public async startFolderWalk() {
-    console.log(await greet('dog'));
+    console.log(await greet("./comics"));
   }
   public render() {
     return (
