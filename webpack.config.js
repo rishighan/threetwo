@@ -1,7 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const WorkerPlugin = require("worker-plugin");
 const outputDirectory = "dist";
 
 module.exports = {
@@ -13,10 +12,6 @@ module.exports = {
   devtool: "source-map",
   module: {
     rules: [
-      // {
-      //   test: /\.worker\.ts$/,
-      //   use: { loader: "worker-loader" },
-      // },
       {
         test: /\.worker\.(js|ts)$/i,
         use: [
@@ -33,7 +28,6 @@ module.exports = {
         use: ["babel-loader"],
         exclude: /node_modules/,
       },
-
       {
         enforce: "pre",
         test: /\.js$/,
@@ -73,7 +67,6 @@ module.exports = {
   },
   plugins: [
     // new CleanWebpackPlugin([outputDirectory]),
-    // new WorkerPlugin(),
     new HtmlWebpackPlugin({
       template: "./public/index.html",
       favicon: "./public/favicon.ico",

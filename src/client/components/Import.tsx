@@ -2,8 +2,7 @@ import * as React from "react";
 import _ from "lodash";
 import { connect } from "react-redux";
 import * as Comlink from "comlink";
-import ExpensiveProcessor from "comlink-loader!../workers/extractCovers.worker";
-
+import { greet } from "../workers/extractCovers.worker";
 interface IProps {
   matches: unknown;
 }
@@ -28,8 +27,7 @@ class Import extends React.Component<IProps, IState> {
   }
 
   public async startFolderWalk() {
-    const worker = Comlink.proxy(new ExpensiveProcessor());
-    console.log(new worker());
+    console.log(await greet('dog'));
   }
   public render() {
     return (
