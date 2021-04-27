@@ -13,13 +13,13 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.worker\.ts$/,
-        use: { loader: "worker-loader" },
-      },
-      {
         test: [/\.js?$/, /\.jsx?$/, /\.tsx?$/],
         use: ["babel-loader"],
         exclude: /node_modules/,
+      },
+      {
+        test: /\.worker\.ts$/,
+        use: { loader: "worker-loader" },
       },
 
       {

@@ -3479,6 +3479,13 @@ clone@^1.0.2:
   resolved "https://registry.yarnpkg.com/clone/-/clone-1.0.4.tgz#da309cc263df15994c688ca902179ca3c7cd7c7e"
   integrity sha1-2jCcwmPfFZlMaIypAheco8fNfH4=
 
+clooney@^0.6.6:
+  version "0.6.6"
+  resolved "https://registry.yarnpkg.com/clooney/-/clooney-0.6.6.tgz#0b480843c30dd289ee558ec8c2336dbbb3fd38cd"
+  integrity sha512-kux3thg0N+uWZXTpYbthellECgsDw8PJ3IZmiVVyuavAEb/gBbC/u0ksZ6kHpZe5YT4H1Xs3TVSIQkzUfRqi8A==
+  dependencies:
+    comlinkjs "2.3.6"
+
 cmd-shim@^4.0.1:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/cmd-shim/-/cmd-shim-4.1.0.tgz#b3a904a6743e9fede4148c6f3800bf2a08135bdd"
@@ -3592,6 +3599,11 @@ comlink@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/comlink/-/comlink-4.3.0.tgz#80b3366baccd87897dab3638ebfcfae28b2f87c7"
   integrity sha512-mu4KKKNuW8TvkfpW/H88HBPeILubBS6T94BdD1VWBXNXfiyqVtwUCVNO1GeNOBTsIswzsMjWlycYr+77F5b84g==
+
+comlinkjs@2.3.6:
+  version "2.3.6"
+  resolved "https://registry.yarnpkg.com/comlinkjs/-/comlinkjs-2.3.6.tgz#a756c2530062af292a705372484d4e2eff47729f"
+  integrity sha512-4WDd2iMM5AhnIRgUNMLWEj3gtIfEfu+JjSPUCYAa/K5IzJRvx/JAMC5jF53Exim7d67vnkRGd0i6vx27rGF2yA==
 
 commander@^2.12.1, commander@^2.20.0, commander@^2.8.1:
   version "2.20.3"
@@ -12478,13 +12490,6 @@ worker-loader@^3.0.8:
   dependencies:
     loader-utils "^2.0.0"
     schema-utils "^3.0.0"
-
-worker-plugin@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/worker-plugin/-/worker-plugin-5.0.0.tgz#113b5fe1f4a5d6a957cecd29915bedafd70bb537"
-  integrity sha512-AXMUstURCxDD6yGam2r4E34aJg6kW85IiaeX72hi+I1cxyaMUtrvVY6sbfpGKAj5e7f68Acl62BjQF5aOOx2IQ==
-  dependencies:
-    loader-utils "^1.1.0"
 
 wrap-ansi@^2.0.0:
   version "2.1.0"

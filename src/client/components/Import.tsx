@@ -1,9 +1,7 @@
 import * as React from "react";
 import _ from "lodash";
 import { connect } from "react-redux";
-import * as Comlink from "comlink";
-import { wrap, proxy } from "comlink";
-import { useWorker } from "react-hooks-worker";
+import main from "../workers/extractCovers.worker";
 interface IProps {
   matches: unknown;
 }
@@ -12,16 +10,6 @@ interface IState {
   searchPaneIndex: number;
 }
 
-const createWorker = () =>
-  // new Worker("../workers/extractCovers.worker.js", {
-  //   type: "module",
-  // });
-  new Worker(new URL("../workers/extractCovers.worker.js", import.meta.url));
-const CalcFib = ({ count }) => {
-  const con = useWorker(createWorker, count);
-  console.log(con);
- return <div>jagnya</div>
-};
 class Import extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
@@ -37,7 +25,10 @@ class Import extends React.Component<IProps, IState> {
     });
   }
 
-  public async startFolderWalk() {}
+  public async startFolderWalk() {
+    const foo = await main();
+    console.log("as", foo);
+  }
   public render() {
     return (
       <div>
@@ -83,12 +74,7 @@ class Import extends React.Component<IProps, IState> {
           {/* Folder walk results */}
           {!_.isUndefined(this.state.folderWalkResults) ? (
             <>
-              <div>
-                poopie
-                <div>
-                  <CalcFib count={5} />
-                </div>
-              </div>
+              <div>poopie</div>
             </>
           ) : null}
         </section>

@@ -21,6 +21,7 @@
     "@types/react-router-dom": "^5.1.7",
     "@types/sharp": "^0.28.0",
     "babel-polyfill": "^6.26.0",
+    "clooney": "^0.6.6",
     "express": "^4.17.1",
     "fs-extra": "^9.1.0",
     "imghash": "^0.0.8",
@@ -29,7 +30,7 @@
     "react-dom": "^17.0.1",
     "react-hooks-worker": "^1.0.0",
     "sharp": "^0.28.1",
-    "worker-plugin": "^5.0.0"
+    "worker-loader": "^3.0.8"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.10",
@@ -116,7 +117,6 @@
     "webpack": "^5.33.2",
     "webpack-cli": "^4.6.0",
     "webpack-dev-server": "^3.11.2",
-    "webpack-merge": "^5.7.3",
-    "worker-loader": "^3.0.8"
+    "webpack-merge": "^5.7.3"
   }
 }
