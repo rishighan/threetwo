@@ -13,9 +13,20 @@ module.exports = {
   devtool: "source-map",
   module: {
     rules: [
+      // {
+      //   test: /\.worker\.ts$/,
+      //   use: { loader: "worker-loader" },
+      // },
       {
-        test: /\.worker\.ts$/,
-        use: { loader: "worker-loader" },
+        test: /\.worker\.(js|ts)$/i,
+        use: [
+          {
+            loader: "comlink-loader",
+            options: {
+              singleton: true,
+            },
+          },
+        ],
       },
       {
         test: [/\.js?$/, /\.jsx?$/, /\.tsx?$/],

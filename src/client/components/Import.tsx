@@ -2,7 +2,7 @@ import * as React from "react";
 import _ from "lodash";
 import { connect } from "react-redux";
 import * as Comlink from "comlink";
-import ExpensiveProcessor from "worker-loader!../workers/extractCovers.worker";
+import ExpensiveProcessor from "comlink-loader!../workers/extractCovers.worker";
 
 interface IProps {
   matches: unknown;
