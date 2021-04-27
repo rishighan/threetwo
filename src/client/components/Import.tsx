@@ -1,6 +1,9 @@
 import * as React from "react";
 import _ from "lodash";
 import { connect } from "react-redux";
+import * as Comlink from "comlink";
+import ExpensiveProcessor from "worker-loader!../workers/extractCovers.worker";
+
 interface IProps {
   matches: unknown;
 }
@@ -25,11 +28,8 @@ class Import extends React.Component<IProps, IState> {
   }
 
   public async startFolderWalk() {
-    const worker = new Worker(
-      new URL("../workers/extractCovers.worker", import.meta.url),
-    );
-
-    console.log(worker);
+    const worker = Comlink.proxy(new ExpensiveProcessor());
+    console.log(new worker());
   }
   public render() {
     return (

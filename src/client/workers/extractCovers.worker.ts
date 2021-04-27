@@ -1,17 +1,19 @@
+// const worker: DedicatedWorkerGlobalScope = self as any;
+
+// worker.onmessage = ({ data }) => {
+//   if (data instanceof Array) {
+//     worker.postMessage(data.join(" ") + "!");
+//   }
+// };
+
 import { expose } from "comlink";
 
-const foo = (value: string) => {
-  return "rishi" + " " + value;
-};
+class ExpensiveProcessor {
+  _foo: string;
+  /* ... async methods here ... */
+  constructor() {
+    this._foo = "rishi";
+  }
+}
 
-const bar = (value: number) => {
-  return value + 10;
-};
-
-const exported = {
-  foo,
-  bar,
-};
-
-export type Worker = typeof exported;
-expose(exported);
+expose(ExpensiveProcessor, self);

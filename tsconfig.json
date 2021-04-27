@@ -5,9 +5,10 @@
     "allowSyntheticDefaultImports": true,
     "target": "es2019",
     "jsx": "react",
-    "module": "esnext",
+    "module": "commonjs",
     "sourceMap": true,
     "outDir": "./dist/",
+    "noImplicitAny": true,
     "skipLibCheck": true,
     "lib": [
       "dom",
