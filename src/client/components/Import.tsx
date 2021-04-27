@@ -28,6 +28,7 @@ class Import extends React.Component<IProps, IState> {
     const worker = new Worker(
       new URL("../workers/extractCovers.worker", import.meta.url),
     );
+
     console.log(worker);
   }
   public render() {
