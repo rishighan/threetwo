@@ -1,7 +1,6 @@
 import * as React from "react";
 import _ from "lodash";
 import { connect } from "react-redux";
-import main from "../workers/extractCovers.worker";
 interface IProps {
   matches: unknown;
 }
@@ -26,8 +25,10 @@ class Import extends React.Component<IProps, IState> {
   }
 
   public async startFolderWalk() {
-    const foo = await main();
-    console.log("as", foo);
+    const worker = new Worker(
+      new URL("../workers/extractCovers.worker", import.meta.url),
+    );
+    console.log(worker);
   }
   public render() {
     return (

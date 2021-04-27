@@ -1,10 +1,17 @@
-import strategy from "clooney";
+import { expose } from "comlink";
 
-class Actor {
-  timeoutThing() {
-    return new Promise(resolve => setTimeout(_ => resolve('ohai'), 1000));
-  }
-}
+const foo = (value: string) => {
+  return "rishi" + " " + value;
+};
 
-const instance = await strategy.spawn(Actor);
-alert(await instance.timeoutThing()); // Will alert() after 1 second
+const bar = (value: number) => {
+  return value + 10;
+};
+
+const exported = {
+  foo,
+  bar,
+};
+
+export type Worker = typeof exported;
+expose(exported);

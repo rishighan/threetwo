@@ -5,13 +5,14 @@
     "allowSyntheticDefaultImports": true,
     "target": "es2019",
     "jsx": "react",
-    "module": "commonjs",
+    "module": "esnext",
     "sourceMap": true,
     "outDir": "./dist/",
     "skipLibCheck": true,
     "lib": [
-      "DOM",
-      "webworker"
+      "dom",
+      "dom.iterable",
+      "esnext"
     ]
   },
   "settings": {
