@@ -42,22 +42,19 @@ export const unrar = async (
   const extractor = await unrarer.createExtractorFromData({ data: fileBuffer });
   switch (extractionOptions.extractTarget) {
     case "cover":
-      debugger;
-      const list = extractor.getFileList();
-      const fileHeaders = [...list.fileHeaders];
-      const file = extractor.extract({ files: [fileHeaders[0].name] });
-      const extractedFile = [...file.files][0];
-      const fileArrayBuffer = extractedFile.extraction;
-
-      logger.info(`Attempting to write ${extractedFile.fileHeader.name}`);
-
       return new Promise(async (resolve, reject) => {
         try {
+          const list = extractor.getFileList();
+          const fileHeaders = [...list.fileHeaders];
+          const file = extractor.extract({ files: [fileHeaders[0].name] });
+          const extractedFile = [...file.files][0];
+          const fileArrayBuffer = extractedFile.extraction;
           const fileName = explodePath(extractedFile.fileHeader.name).fileName;
           if (
             fileName !== "" &&
             extractedFile.fileHeader.flags.directory === false
           ) {
+            logger.info(`Attempting to write ${extractedFile.fileHeader.name}`);
             await writeFile(paths.targetPath + "/" + fileName, fileArrayBuffer);
           }
           resolve({
