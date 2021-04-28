@@ -13,16 +13,17 @@ export const greet = async (
   const targetOptions = {
     sourceFolder: path,
     extractTarget: "cover",
-    targetExtractionFolder: "../covers",
+    targetExtractionFolder: "./userdata/covers",
   };
   const fileObjects = await walkFolder("./comics");
   _.map(fileObjects, async (fileObject) => {
     console.log(fileObject);
     if (SUPPORTED_COMIC_ARCHIVES.includes(fileObject.extension)) {
-       await extractCoverFromComicBookArchive({
+      console.log({ ...targetOptions, folderDetails: fileObject });
+      await extractCoverFromComicBookArchive({
         ...targetOptions,
         folderDetails: fileObject,
       });
     }
   });
-}
+};

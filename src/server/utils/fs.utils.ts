@@ -172,6 +172,7 @@ export const extractArchive = async (
   | IExtractedComicBookCoverFile[]
   | IExtractComicBookCoverErrorResponse
 > => {
+  console.log(extractionOptions);
   switch (extractionOptions.folderDetails.extension) {
     case ".cbz":
       return await unzip(extractionOptions);
