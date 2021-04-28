@@ -42,6 +42,7 @@ export const unrar = async (
   const extractor = await unrarer.createExtractorFromData({ data: fileBuffer });
   switch (extractionOptions.extractTarget) {
     case "cover":
+      debugger;
       const list = extractor.getFileList();
       const fileHeaders = [...list.fileHeaders];
       const file = extractor.extract({ files: [fileHeaders[0].name] });
@@ -69,6 +70,7 @@ export const unrar = async (
           reject(error);
         }
       });
+
     case "all":
       const files = extractor.extract({});
       const extractedFiles = [...files.files];
@@ -172,7 +174,6 @@ export const extractArchive = async (
   | IExtractedComicBookCoverFile[]
   | IExtractComicBookCoverErrorResponse
 > => {
-  console.log(extractionOptions);
   switch (extractionOptions.folderDetails.extension) {
     case ".cbz":
       return await unzip(extractionOptions);

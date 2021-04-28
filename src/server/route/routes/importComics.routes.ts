@@ -14,8 +14,8 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   typeof req.body.extractionOptions === "object"
     ? req.body.extractionOptions
     : {};
-    console.log(req.body)
-  const extractedData = await extractArchive(req.body.extractionOptions);
+    console.log("ASDASDASDASDASD", req.body)
+  const extractedData = await extractArchive(req.body);
   // const foo = await extractMetadataFromImage(
   //   "./comics/covers/Ghosts and Ruins-001.jpg",
   // );

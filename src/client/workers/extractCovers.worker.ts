@@ -17,7 +17,6 @@ export const greet = async (
   };
   const fileObjects = await walkFolder("./comics");
   _.map(fileObjects, async (fileObject) => {
-    console.log(fileObject);
     if (SUPPORTED_COMIC_ARCHIVES.includes(fileObject.extension)) {
       console.log({ ...targetOptions, folderDetails: fileObject });
       await extractCoverFromComicBookArchive({
