@@ -1,7 +1,6 @@
 import * as React from "react";
 import _ from "lodash";
 import { connect } from "react-redux";
-import * as Comlink from "comlink";
 import { greet } from "../workers/extractCovers.worker";
 interface IProps {
   matches: unknown;

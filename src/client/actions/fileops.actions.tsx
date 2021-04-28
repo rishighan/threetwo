@@ -31,7 +31,8 @@ export async function extractCoverFromComicBookArchive(
   | IExtractComicBookCoverErrorResponse
 > {
   return await axios.request({
-    url: FS_API_BASE_URI + "/getComicCovers",
+    url: FS_API_BASE_URI + "getComicCovers",
+    method: "POST",
     data: {
       ...options,
     },

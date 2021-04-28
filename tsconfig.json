@@ -8,17 +8,17 @@
     "module": "commonjs",
     "sourceMap": true,
     "outDir": "./dist/",
-    "noImplicitAny": true,
     "skipLibCheck": true,
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "esnext",
+      "webworker"
     ]
   },
   "settings": {
     "eslint.workingDirectories": [
-      {"directory": "./node_modules", "changeProcessCWD": true }
+      { "directory": "./node_modules", "changeProcessCWD": true }
     ]
   },
   "exclude": [

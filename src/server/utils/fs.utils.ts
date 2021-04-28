@@ -223,8 +223,6 @@ export const explodePath = (filePath: string): IExplodedPathResponse => {
 const constructPaths = (extractionOptions: IExtractionOptions) => {
   return {
     targetPath:
-      extractionOptions.sourceFolder +
-      "/" +
       extractionOptions.targetExtractionFolder +
       "/" +
       extractionOptions.folderDetails.name,
