@@ -31,36 +31,44 @@ export const unrar = async (
   const fileBuffer = await readFile(paths.inputFilePath).catch((err) =>
     console.error("Failed to read file", err),
   );
-
   try {
     await fse.ensureDir(paths.targetPath, directoryOptions);
-    logger.info(`${paths.targetPath} was created or already exists.`);
+    logger.info(`${paths.targetPath} was created.`);
   } catch (error) {
     logger.error(`${error}: Couldn't create directory.`);
   }
 
   const extractor = await unrarer.createExtractorFromData({ data: fileBuffer });
+
   switch (extractionOptions.extractTarget) {
     case "cover":
       return new Promise(async (resolve, reject) => {
         try {
+          let fileNameToExtract = "";
           const list = extractor.getFileList();
           const fileHeaders = [...list.fileHeaders];
-          const file = extractor.extract({ files: [fileHeaders[0].name] });
-          const extractedFile = [...file.files][0];
-          const fileArrayBuffer = extractedFile.extraction;
-          const fileName = explodePath(extractedFile.fileHeader.name).fileName;
-          if (
-            fileName !== "" &&
-            extractedFile.fileHeader.flags.directory === false
-          ) {
-            logger.info(`Attempting to write ${extractedFile.fileHeader.name}`);
-            await writeFile(paths.targetPath + "/" + fileName, fileArrayBuffer);
-          }
-          resolve({
-            name: `${extractedFile.fileHeader.name}`,
-            path: paths.targetPath,
-            fileSize: extractedFile.fileHeader.packSize,
+          _.each(fileHeaders, async (fileHeader) => {
+            const fileName = explodePath(fileHeader.name).fileName;
+            if (
+              fileName !== "" &&
+              fileHeader.flags.directory === false &&
+              _.isEmpty(fileNameToExtract)
+            ) {
+              logger.info(`Attempting to write ${fileHeader.name}`);
+              fileNameToExtract = fileHeader.name;
+              const file = extractor.extract({ files: [fileHeader.name] });
+              const extractedFile = [...file.files][0];
+              const fileArrayBuffer = extractedFile.extraction;
+              await writeFile(
+                paths.targetPath + "/" + fileName,
+                fileArrayBuffer,
+              );
+            }
+            resolve({
+              name: `${fileHeader.name}`,
+              path: paths.targetPath,
+              fileSize: fileHeader.packSize,
+            });
           });
         } catch (error) {
           logger.error(`${error}: Couldn't write file.`);
