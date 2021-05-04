@@ -1,39 +1,6 @@
-/*
- * MIT License
- *
- * Copyright (c) 2021 Rishi Ghan
- *
- MIT License
-
-Copyright (c) Facebook, Inc. and its affiliates.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
- 
- */
-
-/*
- * Revision History:
- *     Initial:        2021/05/04        Rishi Ghan
- */
-
 const sharp = require("sharp");
 const unrarer = require("node-unrar-js");
+import { UnrarError } from "node-unrar-js";
 const Walk = require("@root/walk");
 const fse = require("fs-extra");
 
@@ -111,16 +78,16 @@ export const unrar = async (
       });
 
     case "all":
-      const files = extractor.extract({});
-      const extractedFiles = [...files.files];
-
       return new Promise(async (resolve, reject) => {
-        const comicBookCoverFiles: IExtractedComicBookCoverFile[] = [];
-        for (const file of extractedFiles) {
-          logger.info(`Attempting to write ${file.fileHeader.name}`);
-          const fileBuffer = file.extraction;
-          const fileName = explodePath(file.fileHeader.name).fileName;
-          try {
+        try {
+          const files = extractor.extract({});
+          const extractedFiles = [...files.files];
+          const comicBookCoverFiles: IExtractedComicBookCoverFile[] = [];
+          for (const file of extractedFiles) {
+            logger.info(`Attempting to write ${file.fileHeader.name}`);
+            const fileBuffer = file.extraction;
+            const fileName = explodePath(file.fileHeader.name).fileName;
+
             if (fileName !== "" && file.fileHeader.flags.directory === false) {
               await writeFile(paths.targetPath + "/" + fileName, fileBuffer);
             }
@@ -129,16 +96,15 @@ export const unrar = async (
               path: paths.targetPath,
               fileSize: file.fileHeader.packSize,
             });
-          } catch (error) {
-            logger.error(error);
-            reject({
-              message: `${error}`,
-              errorCode: "500",
-              data: error,
-            });
           }
+          resolve(comicBookCoverFiles);
+        } catch (error) {
+          resolve({
+            message: `${error}`,
+            errorCode: "500",
+            data: extractionOptions.folderDetails.name,
+          });
         }
-        resolve(comicBookCoverFiles);
       });
 
     default:

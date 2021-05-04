@@ -21,13 +21,16 @@ export const greet = async (
   };
 
   const fileObjects = await walkFolder("./comics");
-  _.map(fileObjects, async (fileObject) => {
+  const extractedDataPromises = _.map(fileObjects, async (fileObject) => {
     if (SUPPORTED_COMIC_ARCHIVES.includes(fileObject.extension)) {
-      await extractCoverFromComicBookArchive({
+      return await extractCoverFromComicBookArchive({
         ...targetOptions,
         paginationOptions: pagingConfig,
         folderDetails: fileObject,
       });
     }
+  });
+  Promise.all(extractedDataPromises).then((data) => {
+    console.log(data.data);
   });
 };

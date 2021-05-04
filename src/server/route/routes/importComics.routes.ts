@@ -17,7 +17,10 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
     ? req.body.extractionOptions
     : {};
   const extractedData = await extractArchive(req.body);
-  if (_.isArray(extractedData)) {
+  if (
+    _.isArray(extractedData) &&
+    !_.isUndefined(req.body.paginationOptions.pageLimit)
+  ) {
     const pageCount = Math.ceil(
       extractedData.length / req.body.paginationOptions.pageLimit,
     );
@@ -27,11 +30,6 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
       has_more: paginate.hasNextPages(req)(pageCount),
       pageCount,
       itemCount: extractedData.length,
-      pages: paginate.getArrayPages(req)(
-        3,
-        pageCount,
-        req.body.paginationOptions.page,
-      ),
       extractedData,
     });
   }
