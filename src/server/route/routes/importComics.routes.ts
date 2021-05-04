@@ -21,7 +21,8 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
     const pageCount = Math.ceil(
       extractedData.length / req.body.paginationOptions.pageLimit,
     );
-    res.json({
+
+    return res.json({
       object: "list",
       has_more: paginate.hasNextPages(req)(pageCount),
       pageCount,
@@ -40,7 +41,7 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   // const foo = await unzipOne(options);
   // const foo = await unzip("asd");
   // const foo = explodePath("Chapter Three/HELLBOY - The Chained Coffin - 069.jpg");
-  res.json({
+  return res.json({
     extractedData,
   });
 });

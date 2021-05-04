@@ -7,8 +7,13 @@ export interface IExtractionOptions {
   extractTarget: string;
   sourceFolder: string;
   targetExtractionFolder: string;
+  paginationOptions: IPaginationOptions;
 }
 
+export interface IPaginationOptions {
+  pageLimit: number;
+  page: number;
+}
 export interface IComicVineSearchMatch {
   description: string;
   id: number;
