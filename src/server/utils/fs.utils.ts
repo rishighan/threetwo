@@ -97,7 +97,11 @@ export const unrar = async (
             });
           } catch (error) {
             logger.error(error);
-            reject(error);
+            reject({
+              message: `${error}`,
+              errorCode: "500",
+              data: error,
+            });
           }
         }
         resolve(comicBookCoverFiles);
