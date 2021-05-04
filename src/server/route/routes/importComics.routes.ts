@@ -8,6 +8,7 @@ import {
   extractMetadataFromImage,
   explodePath,
 } from "../../utils/fs.utils";
+import _ from "lodash";
 import { IExtractionOptions } from "../../interfaces/folder.interface";
 import { Request, Response } from "express";
 
@@ -16,8 +17,23 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
     ? req.body.extractionOptions
     : {};
   const extractedData = await extractArchive(req.body);
-  console.log(extractedData);
-  // const pageCount = Math.ceil( / req.body.paginationOptions.pageLimit);
+  if (_.isArray(extractedData)) {
+    const pageCount = Math.ceil(
+      extractedData.length / req.body.paginationOptions.pageLimit,
+    );
+    res.json({
+      object: "list",
+      has_more: paginate.hasNextPages(req)(pageCount),
+      pageCount,
+      itemCount: extractedData.length,
+      pages: paginate.getArrayPages(req)(
+        3,
+        pageCount,
+        req.body.paginationOptions.page,
+      ),
+      extractedData,
+    });
+  }
   // const foo = await extractMetadataFromImage(
   //   "./comics/covers/Ghosts and Ruins-001.jpg",
   // );
