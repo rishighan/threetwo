@@ -12,8 +12,8 @@ export const greet = async (
   console.log(path);
   const targetOptions = {
     sourceFolder: path,
-    extractTarget: "cover",
-    targetExtractionFolder: "./userdata/covers",
+    extractTarget: "all",
+    targetExtractionFolder: "./userdata/expanded",
   };
   const fileObjects = await walkFolder("./comics");
   _.map(fileObjects, async (fileObject) => {

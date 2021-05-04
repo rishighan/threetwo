@@ -63,12 +63,12 @@ export const unrar = async (
                 paths.targetPath + "/" + fileName,
                 fileArrayBuffer,
               );
+              resolve({
+                name: `${fileName}`,
+                path: paths.targetPath,
+                fileSize: fileHeader.packSize,
+              });
             }
-            resolve({
-              name: `${fileHeader.name}`,
-              path: paths.targetPath,
-              fileSize: fileHeader.packSize,
-            });
           });
         } catch (error) {
           logger.error(`${error}: Couldn't write file.`);
