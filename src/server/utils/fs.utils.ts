@@ -52,12 +52,13 @@ import {
 
 export const unrar = async (
   extractionOptions: IExtractionOptions,
+  walkedFolder: IFolderData,
 ): Promise<
   | IExtractedComicBookCoverFile
   | IExtractedComicBookCoverFile[]
   | IExtractComicBookCoverErrorResponse
 > => {
-  const paths = constructPaths(extractionOptions);
+  const paths = constructPaths(extractionOptions, walkedFolder);
   const directoryOptions = {
     mode: 0o2775,
   };
@@ -134,7 +135,7 @@ export const unrar = async (
           resolve({
             message: `${error}`,
             errorCode: "500",
-            data: extractionOptions.folderDetails.name,
+            data: walkedFolder.name,
           });
         }
       });
@@ -161,6 +162,7 @@ export const extractMetadataFromImage = async (
 
 export const unzip = async (
   extractionOptions: IExtractionOptions,
+  walkedFolder: IFolderData,
 ): Promise<
   | IExtractedComicBookCoverFile[]
   | IExtractedComicBookCoverFile
@@ -169,7 +171,7 @@ export const unzip = async (
   const directoryOptions = {
     mode: 0o2775,
   };
-  const paths = constructPaths(extractionOptions);
+  const paths = constructPaths(extractionOptions, walkedFolder);
 
   try {
     await fse.ensureDir(paths.targetPath, directoryOptions);
@@ -210,16 +212,17 @@ export const unzip = async (
 
 export const extractArchive = async (
   extractionOptions: IExtractionOptions,
+  walkedFolder: IFolderData,
 ): Promise<
   | IExtractedComicBookCoverFile
   | IExtractedComicBookCoverFile[]
   | IExtractComicBookCoverErrorResponse
 > => {
-  switch (extractionOptions.folderDetails.extension) {
+  switch (walkedFolder.extension) {
     case ".cbz":
-      return await unzip(extractionOptions);
+      return await unzip(extractionOptions, walkedFolder);
     case ".cbr":
-      return await unrar(extractionOptions);
+      return await unrar(extractionOptions, walkedFolder);
     default:
       return {
         message: "File format not supported, yet.",
@@ -231,20 +234,23 @@ export const extractArchive = async (
 
 export const getCovers = async (
   options: IExtractionOptions,
+  walkedFolders: Array<IFolderData>,
 ): Promise<
   IExtractedComicBookCoverFile[] | IExtractedComicBookCoverFile | unknown
 > => {
   switch (options.extractionMode) {
     case "bulk":
-      const extractedDataPromises = _.map(payload, (folderObject) => {
-        extractArchive({
-          extractTarget: options.extractTarget,
-          sourceFolder: options.sourceFolder,
-          targetExtractionFolder: options.targetExtractionFolder,
-          folderDetails: folderObject,
-          paginationOptions: options.paginationOptions,
-          extractionMode: options.extractionMode,
-        });
+      const extractedDataPromises = _.map(walkedFolders, (folder) => {
+        extractArchive(
+          {
+            extractTarget: options.extractTarget,
+            sourceFolder: options.sourceFolder,
+            targetExtractionFolder: options.targetExtractionFolder,
+            paginationOptions: options.paginationOptions,
+            extractionMode: options.extractionMode,
+          },
+          folder,
+        );
       });
       return Promise.all(extractedDataPromises).then((data) => data);
     case "single":
@@ -286,16 +292,17 @@ export const explodePath = (filePath: string): IExplodedPathResponse => {
   };
 };
 
-const constructPaths = (extractionOptions: IExtractionOptions) => {
+const constructPaths = (
+  extractionOptions: IExtractionOptions,
+  walkedFolder: IFolderData,
+) => {
   return {
     targetPath:
-      extractionOptions.targetExtractionFolder +
-      "/" +
-      extractionOptions.folderDetails.name,
+      extractionOptions.targetExtractionFolder + "/" + walkedFolder.name,
     inputFilePath:
-      extractionOptions.folderDetails.containedIn +
+      walkedFolder.containedIn +
       "/" +
-      extractionOptions.folderDetails.name +
-      extractionOptions.folderDetails.extension,
+      walkedFolder.name +
+      walkedFolder.extension,
   };
 };

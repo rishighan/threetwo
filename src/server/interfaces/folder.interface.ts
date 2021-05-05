@@ -3,7 +3,6 @@ export interface IFolderResponse {
 }
 
 export interface IExtractionOptions {
-  folderDetails: IFolderData;
   extractTarget: string;
   sourceFolder: string;
   targetExtractionFolder: string;
