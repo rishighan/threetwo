@@ -1,11 +1,11 @@
 /*
  * MIT License
  *
- * Copyright (c) 2015 Rishi Ghan
+ * Copyright (c) 2021 Rishi Ghan
  *
  The MIT License (MIT)
 
-Copyright (c) 2015 Rishi Ghan
+Copyright (c) 2021 Rishi Ghan
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -236,25 +236,23 @@ export const getCovers = async (
   options: IExtractionOptions,
   walkedFolders: Array<IFolderData>,
 ): Promise<
-  IExtractedComicBookCoverFile[] | IExtractedComicBookCoverFile | unknown
+  | IExtractedComicBookCoverFile
+  | IExtractComicBookCoverErrorResponse
+  | IExtractedComicBookCoverFile[]
+  | (
+      | IExtractedComicBookCoverFile
+      | IExtractComicBookCoverErrorResponse
+      | IExtractedComicBookCoverFile[]
+    )[]
 > => {
   switch (options.extractionMode) {
     case "bulk":
       const extractedDataPromises = _.map(walkedFolders, async (folder) => {
-        return await extractArchive(
-          {
-            extractTarget: options.extractTarget,
-            sourceFolder: options.sourceFolder,
-            targetExtractionFolder: options.targetExtractionFolder,
-            paginationOptions: options.paginationOptions,
-            extractionMode: options.extractionMode,
-          },
-          folder,
-        );
+        return await extractArchive(options, folder);
       });
       return Promise.all(extractedDataPromises).then((data) => data);
     case "single":
-      break;
+      return await extractArchive(options, walkedFolders[0]);
   }
 };
 
