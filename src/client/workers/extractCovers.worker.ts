@@ -31,6 +31,6 @@ export const greet = async (
     }
   });
   Promise.all(extractedDataPromises).then((data) => {
-    console.log(data.data);
+    console.log(data);
   });
 };

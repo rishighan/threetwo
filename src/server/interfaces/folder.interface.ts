@@ -8,6 +8,7 @@ export interface IExtractionOptions {
   sourceFolder: string;
   targetExtractionFolder: string;
   paginationOptions: IPaginationOptions;
+  extractionMode: string;
 }
 
 export interface IPaginationOptions {
