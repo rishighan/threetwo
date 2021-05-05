@@ -255,29 +255,37 @@ export const getCovers = async (
 
 export const walkFolder = async (folder: string): Promise<IFolderData[]> => {
   const result: IFolderData[] = [];
-  await Walk.walk(folder, async (err, pathname, dirent) => {
+  let walkResult: IFolderData = {
+    name: "",
+    extension: "",
+    containedIn: "",
+    isFile: false,
+    isLink: true,
+  };
+
+  const walk = Walk.create({ sort: filterOutDotFiles });
+  await walk(folder, async (err, pathname, dirent) => {
     if (err) {
       logger.error("Failed to lstat directory", { error: err });
       return false;
     }
-    const walkResult = {
-      name: path.basename(dirent.name, path.extname(dirent.name)),
-      extension: path.extname(dirent.name),
-      containedIn: path.dirname(pathname),
-      isFile: dirent.isFile(),
-      isLink: dirent.isSymbolicLink(),
-    };
-    logger.info(
-      `Scanned ${dirent.name} contained in ${path.dirname(pathname)}`,
-    );
-    result.push(walkResult);
+    if ([".cbz", ".cbr"].includes(path.extname(dirent.name))) {
+      walkResult = {
+        name: path.basename(dirent.name, path.extname(dirent.name)),
+        extension: path.extname(dirent.name),
+        containedIn: path.dirname(pathname),
+        isFile: dirent.isFile(),
+        isLink: dirent.isSymbolicLink(),
+      };
+      logger.info(
+        `Scanned ${dirent.name} contained in ${path.dirname(pathname)}`,
+      );
+      result.push(walkResult);
+    }
   });
   return result;
 };
 
-const filterNonComicBookExtensions = (entities) => {
-    return entities.filter((entity) => entity.extname)
-}
 export const explodePath = (filePath: string): IExplodedPathResponse => {
   const exploded = filePath.split("/");
   const fileName = remove(exploded, (item) => {
@@ -314,4 +322,8 @@ export const extractMetadataFromImage = async (
       return metadata;
     });
   return image;
+};
+
+const filterOutDotFiles = (entities) => {
+  return entities.filter((ent) => !ent.name.startsWith("."));
 };
