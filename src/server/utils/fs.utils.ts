@@ -149,17 +149,6 @@ export const unrar = async (
   }
 };
 
-export const extractMetadataFromImage = async (
-  imageFilePath: string,
-): Promise<unknown> => {
-  const image = await sharp(imageFilePath)
-    .metadata()
-    .then(function (metadata) {
-      return metadata;
-    });
-  return image;
-};
-
 export const unzip = async (
   extractionOptions: IExtractionOptions,
   walkedFolder: IFolderData,
@@ -227,7 +216,7 @@ export const extractArchive = async (
       return {
         message: "File format not supported, yet.",
         errorCode: "90",
-        data: "asda",
+        data: `${extractionOptions}`,
       };
   }
 };
@@ -255,10 +244,11 @@ export const getCovers = async (
     case "single":
       return await extractArchive(options, walkedFolders[0]);
     default:
+      logger.error("Unknown extraction mode selected.");
       return {
-        message: "File format not supported, yet.",
+        message: "Unknown extraction mode selected.",
         errorCode: "90",
-        data: "asda",
+        data: `${options}`,
       };
   }
 };
@@ -285,6 +275,9 @@ export const walkFolder = async (folder: string): Promise<IFolderData[]> => {
   return result;
 };
 
+const filterNonComicBookExtensions = (entities) => {
+    return entities.filter((entity) => entity.extname)
+}
 export const explodePath = (filePath: string): IExplodedPathResponse => {
   const exploded = filePath.split("/");
   const fileName = remove(exploded, (item) => {
@@ -310,4 +303,15 @@ const constructPaths = (
       walkedFolder.name +
       walkedFolder.extension,
   };
+};
+
+export const extractMetadataFromImage = async (
+  imageFilePath: string,
+): Promise<unknown> => {
+  const image = await sharp(imageFilePath)
+    .metadata()
+    .then(function (metadata) {
+      return metadata;
+    });
+  return image;
 };

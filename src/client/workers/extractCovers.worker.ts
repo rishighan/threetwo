@@ -21,7 +21,7 @@ export const greet = async (
   };
 
   const fileObjects = await walkFolder("./comics");
-  const extractedDataPromises = _.map(fileObjects, async (fileObject) => {
+{
     if (SUPPORTED_COMIC_ARCHIVES.includes(fileObject.extension)) {
       return await extractCoverFromComicBookArchive({
         ...targetOptions,
@@ -30,7 +30,5 @@ export const greet = async (
       });
     }
   });
-  Promise.all(extractedDataPromises).then((data) => {
-    console.log(data);
-  });
+  
 };
