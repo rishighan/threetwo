@@ -240,8 +240,8 @@ export const getCovers = async (
 > => {
   switch (options.extractionMode) {
     case "bulk":
-      const extractedDataPromises = _.map(walkedFolders, (folder) => {
-        extractArchive(
+      const extractedDataPromises = _.map(walkedFolders, async (folder) => {
+        return await extractArchive(
           {
             extractTarget: options.extractTarget,
             sourceFolder: options.sourceFolder,
