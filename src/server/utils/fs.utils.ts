@@ -231,23 +231,22 @@ export const extractArchive = async (
 
 export const getCovers = async (
   options: IExtractionOptions,
-): Promise<IExtractedComicBookCoverFile[]> => {
+): Promise<
+  IExtractedComicBookCoverFile[] | IExtractedComicBookCoverFile | unknown
+> => {
   switch (options.extractionMode) {
     case "bulk":
-      const extractedDataPromises = _.map(
-        options.folderObjects,
-        (folderObject) => {
-          extractArchive({
-            extractTarget: options.extractTarget,
-            sourceFolder: options.sourceFolder,
-            targetExtractionFolder: options.targetExtractionFolder,
-            folderDetails: folderObject,
-            paginationOptions: options.paginationOptions,
-            extractionMode: options.extractionMode,
-          });
-        },
-      );
-      return Promise.all(extractedDataPromises).then((data) => data.data);
+      const extractedDataPromises = _.map(payload, (folderObject) => {
+        extractArchive({
+          extractTarget: options.extractTarget,
+          sourceFolder: options.sourceFolder,
+          targetExtractionFolder: options.targetExtractionFolder,
+          folderDetails: folderObject,
+          paginationOptions: options.paginationOptions,
+          extractionMode: options.extractionMode,
+        });
+      });
+      return Promise.all(extractedDataPromises).then((data) => data);
     case "single":
       break;
   }

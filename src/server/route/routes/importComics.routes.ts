@@ -9,8 +9,9 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   typeof req.body.extractionOptions === "object"
     ? req.body.extractionOptions
     : {};
-  const foo = await getCovers(req.body);
-  return res.json({ foo });
+    console.log(req.body)
+  // const foo = await getCovers(req.body, req.bod);
+  return res.json({ foo: "madi" });
   // const extractedData = await extractArchive(req.body);
   // if (
   //   _.isArray(extractedData) &&
