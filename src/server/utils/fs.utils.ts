@@ -40,7 +40,7 @@ import { default as unzipper } from "unzipper";
 import { createReadStream, createWriteStream } from "fs";
 const { writeFile, readFile } = require("fs").promises;
 import path from "path";
-import _ from "lodash";
+import { each, isEmpty, map, remove, indexOf } from "lodash";
 import { logger } from "./logger.utils";
 import {
   IExplodedPathResponse,
@@ -81,12 +81,12 @@ export const unrar = async (
           let fileNameToExtract = "";
           const list = extractor.getFileList();
           const fileHeaders = [...list.fileHeaders];
-          _.each(fileHeaders, async (fileHeader) => {
+          each(fileHeaders, async (fileHeader) => {
             const fileName = explodePath(fileHeader.name).fileName;
             if (
               fileName !== "" &&
               fileHeader.flags.directory === false &&
-              _.isEmpty(fileNameToExtract)
+              isEmpty(fileNameToExtract)
             ) {
               logger.info(`Attempting to write ${fileHeader.name}`);
               fileNameToExtract = fileHeader.name;
@@ -244,15 +244,22 @@ export const getCovers = async (
       | IExtractComicBookCoverErrorResponse
       | IExtractedComicBookCoverFile[]
     )[]
+  | IExtractComicBookCoverErrorResponse
 > => {
   switch (options.extractionMode) {
     case "bulk":
-      const extractedDataPromises = _.map(walkedFolders, async (folder) => {
+      const extractedDataPromises = map(walkedFolders, async (folder) => {
         return await extractArchive(options, folder);
       });
       return Promise.all(extractedDataPromises).then((data) => data);
     case "single":
       return await extractArchive(options, walkedFolders[0]);
+    default:
+      return {
+        message: "File format not supported, yet.",
+        errorCode: "90",
+        data: "asda",
+      };
   }
 };
 
@@ -280,8 +287,8 @@ export const walkFolder = async (folder: string): Promise<IFolderData[]> => {
 
 export const explodePath = (filePath: string): IExplodedPathResponse => {
   const exploded = filePath.split("/");
-  const fileName = _.remove(exploded, (item) => {
-    return _.indexOf(exploded, item) === exploded.length - 1;
+  const fileName = remove(exploded, (item) => {
+    return indexOf(exploded, item) === exploded.length - 1;
   }).join("");
 
   return {
