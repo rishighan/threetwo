@@ -183,6 +183,7 @@ export const unzip = async (
       break;
     }
     if (fileName !== "" && entry.type !== "Directory") {
+      logger.info(`Attempting to write ${fileName}`);
       entry.pipe(createWriteStream(paths.targetPath + "/" + fileName));
       extractedFiles.push({
         name: fileName,

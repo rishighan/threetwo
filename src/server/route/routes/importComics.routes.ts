@@ -3,14 +3,8 @@ import { default as paginate } from "express-paginate";
 import { walkFolder, extractArchive, getCovers } from "../../utils/fs.utils";
 import _ from "lodash";
 import { Request, Response } from "express";
-import fs from "fs";
-
+import { default as oboe } from "oboe";
 import { IExtractionOptions } from "../../interfaces/folder.interface";
-const { chain } = require("stream-chain");
-const { parser } = require("stream-json");
-const { pick } = require("stream-json/filters/Pick");
-const { ignore } = require("stream-json/filters/Ignore");
-const { streamValues } = require("stream-json/streamers/StreamValues");
 
 router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   typeof req.body.extractionOptions === "object"
@@ -20,23 +14,13 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
     req.body.extractionOptions,
     req.body.walkedFolders,
   );
-  const pipeline = chain([
-    fs.createReadStream(foo),
-    parser(),
-    // pick({ filter: "data" }),
-    streamValues(),
-    (data) => {
-      const value = data.value;
-      return value;
-    },
-  ]);
 
-  let counter = 0;
-  pipeline.on("data", () => ++counter);
-  pipeline.on("end", () =>
-    console.log(`The accounting department has ${counter} employees.`),
-  );
-  return res.json(foo);
+  _.each(foo, (item, idx) => {
+    let jsonStr = JSON.stringify(item) + "\n";
+    jsonStr.toStream().pipe(res) 
+  });
+
+  // return res.json(foo);
   // if (
   //   _.isArray(foo) &&
   //   !_.isUndefined(req.body.extractionOptions.paginationOptions.pageLimit)
@@ -52,9 +36,9 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   //     extractedData,
   //   });
   // }
-  // return res.json({
-  //   extractedData,
-  // });
+  return res.json({
+    foo,
+  });
 });
 
 router.route("/walkFolder").post(async (req: Request, res: Response) => {
