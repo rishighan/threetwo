@@ -20,11 +20,12 @@ export const greet = async (
   };
 
   const fileObjects = await walkFolder("./comics");
-  return await extractCoverFromComicBookArchive(
+  const fo = await extractCoverFromComicBookArchive(
     {
       ...targetOptions,
       paginationOptions: pagingConfig,
     },
     fileObjects,
   );
+  return JSON.stringify(fo);
 };

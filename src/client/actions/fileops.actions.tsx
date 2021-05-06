@@ -24,7 +24,7 @@ export async function walkFolder(path: string): Promise<Array<IFolderData>> {
 }
 
 export async function extractCoverFromComicBookArchive(
-  options: IExtractionOptions,
+  extractionOptions: IExtractionOptions,
   walkedFolders: Array<IFolderData>,
 ): Promise<
   | IExtractedComicBookCoverFile
@@ -35,7 +35,7 @@ export async function extractCoverFromComicBookArchive(
     url: FS_API_BASE_URI + "getComicCovers",
     method: "POST",
     data: {
-      options,
+      extractionOptions,
       walkedFolders,
     },
   });

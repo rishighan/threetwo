@@ -13,7 +13,7 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
     req.body.extractionOptions,
     req.body.walkedFolders,
   );
-  return res.json({ foo });
+  return res.json(foo);
   // const extractedData = await extractArchive(req.body);
   // if (
   //   _.isArray(extractedData) &&
