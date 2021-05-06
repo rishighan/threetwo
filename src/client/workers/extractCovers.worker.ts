@@ -2,9 +2,7 @@ import {
   walkFolder,
   extractCoverFromComicBookArchive,
 } from "../actions/fileops.actions";
-import { SUPPORTED_COMIC_ARCHIVES } from "../constants/importer.config";
 import { IExtractedComicBookCoverFile } from "../../server/interfaces/folder.interface";
-import _ from "lodash";
 
 export const greet = async (
   path: string,
@@ -13,6 +11,7 @@ export const greet = async (
     sourceFolder: path,
     extractTarget: "all",
     targetExtractionFolder: "./userdata/expanded",
+    extractionMode: "bulk",
   };
 
   const pagingConfig = {
@@ -21,14 +20,11 @@ export const greet = async (
   };
 
   const fileObjects = await walkFolder("./comics");
-{
-    if (SUPPORTED_COMIC_ARCHIVES.includes(fileObject.extension)) {
-      return await extractCoverFromComicBookArchive({
-        ...targetOptions,
-        paginationOptions: pagingConfig,
-        folderDetails: fileObject,
-      });
-    }
-  });
-  
+  return await extractCoverFromComicBookArchive(
+    {
+      ...targetOptions,
+      paginationOptions: pagingConfig,
+    },
+    fileObjects,
+  );
 };
