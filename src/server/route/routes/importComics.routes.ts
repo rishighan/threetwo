@@ -14,20 +14,18 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
     req.body.walkedFolders,
   );
   return res.json(foo);
-  // const extractedData = await extractArchive(req.body);
   // if (
-  //   _.isArray(extractedData) &&
-  //   !_.isUndefined(req.body.paginationOptions.pageLimit)
+  //   _.isArray(foo) &&
+  //   !_.isUndefined(req.body.extractionOptions.paginationOptions.pageLimit)
   // ) {
   //   const pageCount = Math.ceil(
-  //     extractedData.length / req.body.paginationOptions.pageLimit,
+  //     foo.length / req.body.extractionOptions.paginationOptions.pageLimit,
   //   );
 
   //   return res.json({
-  //     object: "list",
   //     has_more: paginate.hasNextPages(req)(pageCount),
   //     pageCount,
-  //     itemCount: extractedData.length,
+  //     itemCount: foo.length,
   //     extractedData,
   //   });
   // }
