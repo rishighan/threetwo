@@ -39,9 +39,9 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   //     extractedData,
   //   });
   // }
-  // return res.json({
-  //   extractedData,
-  // });
+  return res.json({
+    foo,
+  });
 });
 
 router.route("/walkFolder").post(async (req: Request, res: Response) => {
