@@ -1,9 +1,12 @@
 import router from "../router";
 import { default as paginate } from "express-paginate";
 import { walkFolder, extractArchive, getCovers } from "../../utils/fs.utils";
-import _ from "lodash";
 import { IExtractionOptions } from "../../interfaces/folder.interface";
 import { Request, Response } from "express";
+const H = require("highland");
+import _ from "lodash";
+const toStream = require("streammagic").toStream;
+require("streammagic")();
 
 router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   typeof req.body.extractionOptions === "object"
@@ -13,7 +16,14 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
     req.body.extractionOptions,
     req.body.walkedFolders,
   );
-  return res.json(foo);
+    let jsonStr;
+  // For each page of data you get, loop over the items like you say
+  _.each(foo, (item) => {
+    _.each(item, (subItem) => {
+      jsonStr = JSON.stringify(subItem) + "\n";
+      toStream(jsonStr).pipe(res); // Assuming 'res' is the Express response object
+    });
+  });
   // if (
   //   _.isArray(foo) &&
   //   !_.isUndefined(req.body.extractionOptions.paginationOptions.pageLimit)

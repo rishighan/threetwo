@@ -27,13 +27,14 @@
     "express": "^4.17.1",
     "express-paginate": "^1.0.2",
     "fs-extra": "^9.1.0",
+    "highland": "^2.13.5",
     "imghash": "^0.0.8",
     "mongoose": "^5.10.11",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-hooks-worker": "^1.0.0",
     "sharp": "^0.28.1",
-    "stream-json": "^1.7.1"
+    "streammagic": "^1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.10",
