@@ -22,19 +22,17 @@
     "@types/react-router-dom": "^5.1.7",
     "@types/sharp": "^0.28.0",
     "babel-polyfill": "^6.26.0",
-    "clooney": "^0.6.6",
     "comlink-loader": "^2.0.0",
     "express": "^4.17.1",
     "express-paginate": "^1.0.2",
     "fs-extra": "^9.1.0",
-    "highland": "^2.13.5",
     "imghash": "^0.0.8",
     "mongoose": "^5.10.11",
-    "oboe": "^2.1.5",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-hooks-worker": "^1.0.0",
-    "sharp": "^0.28.1"
+    "sharp": "^0.28.1",
+    "through2": "^4.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.10",
