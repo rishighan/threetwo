@@ -12,17 +12,18 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   typeof req.body.extractionOptions === "object"
     ? req.body.extractionOptions
     : {};
-  axios
+  const foo = await axios
     .request({
-      url: "http://localhost:3853/api/import/getComicCovers",
+      url: "http://localhost:3000/api/import/getComicCovers",
       method: "POST",
       data: {
         extractionOptions: req.body.extractionOptions,
         walkedFolders: req.body.walkedFolders,
       },
     })
-    .then((data) => data)
+    .then((data) => data.data)
     .catch((error) => error);
+    res.json(foo);
 });
 
 router.route("/walkFolder").post(async (req: Request, res: Response) => {
