@@ -11,15 +11,22 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   typeof req.body.extractionOptions === "object"
     ? req.body.extractionOptions
     : {};
+  console.log(oboe);
   oboe({
-    url: "http://localhost:3853/api/import/getComicCovers",
+    url: "http://localhost:3000/api/import/getComicCovers",
     method: "POST",
-    data: {
+    body: {
       extractionOptions: req.body.extractionOptions,
       walkedFolders: req.body.walkedFolders,
-    }
-  })
-  res.json(foo);
+    },
+    headers: {
+      "Content-Type": "application/json",
+      "Content-Length": req.body.length,
+    },
+  }).node("{name path fileSize}", (data) => {
+    console.log(data);
+    return res.sendStatus(200);
+  });
 });
 
 router.route("/walkFolder").post(async (req: Request, res: Response) => {
