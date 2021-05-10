@@ -1,52 +1,42 @@
 import router from "../router";
 import { default as paginate } from "express-paginate";
-import { walkFolder, extractArchive, getCovers } from "../../utils/fs.utils";
 import { IExtractionOptions } from "../../interfaces/folder.interface";
 import { Request, Response } from "express";
 import _ from "lodash";
-import through2 from "through2";
-import { Readable } from "stream";
+import H from "highland";
+import intoStream from "into-stream";
+const ndjson = require("ndjson");
+import axios from "axios";
 
 router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   typeof req.body.extractionOptions === "object"
     ? req.body.extractionOptions
     : {};
-  const foo = await getCovers(
-    req.body.extractionOptions,
-    req.body.walkedFolders,
-  );
-  const stream = new Readable({
-    objectMode: true,
-    highWaterMark: 1,
-    read() {},
-  });
-
-  const ndjsonStream = through2(
-    { objectMode: true, highWaterMark: 1 },
-    (data, enc, cb) => {
-      cb(null, JSON.stringify(data) + "\n");
-    },
-  );
-
-  // Through pipe we do a double addressing, our reading stream goes through the transformation
-  // to finally go through the stream response..
-  stream.pipe(ndjsonStream).pipe(res);
-
-  stream.push(foo);
-  stream.push(null);
-
-  // return res.json({
-  //   foo,
-  // });
+  axios
+    .request({
+      url: "http://localhost:3853/api/import/getComicCovers",
+      method: "POST",
+      data: {
+        extractionOptions: req.body.extractionOptions,
+        walkedFolders: req.body.walkedFolders,
+      },
+    })
+    .then((data) => data)
+    .catch((error) => error);
 });
 
 router.route("/walkFolder").post(async (req: Request, res: Response) => {
   const basePathToWalk =
-    typeof req.query.basePathToWalk === "string"
-      ? req.query.basePathToWalk
-      : "";
-  const results = await walkFolder(basePathToWalk);
-  res.json(results);
+    typeof req.body.basePathToWalk === "string" ? req.body.basePathToWalk : "";
+  axios
+    .request({
+      method: "POST",
+      data: {
+        basePathToWalk,
+      },
+    })
+    .then((data) => data)
+    .catch((error) => error);
 });
 
 export default router;

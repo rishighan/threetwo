@@ -28,16 +28,5 @@ export const greet = async (
     },
     fileObjects,
   );
-  const reader = await ndjsonStream(fo).getReader();
-  reader.read().then(function process({ done, value }) {
-    if (done) {
-      console.log("done");
-      return;
-    }
-
-    console.log(value);
-
-    return reader.read().then(process);
-  });
   // return JSON.stringify(fo);
 };

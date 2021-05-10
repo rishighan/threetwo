@@ -37,6 +37,7 @@ const Walk = require("@root/walk");
 const fse = require("fs-extra");
 
 import { default as unzipper } from "unzipper";
+import _ from "lodash";
 import { createReadStream, createWriteStream } from "fs";
 const { writeFile, readFile } = require("fs").promises;
 import path from "path";
@@ -130,7 +131,7 @@ export const unrar = async (
               fileSize: file.fileHeader.packSize,
             });
           }
-          resolve(comicBookCoverFiles);
+          resolve(_.flatten(comicBookCoverFiles));
         } catch (error) {
           resolve({
             message: `${error}`,
@@ -196,7 +197,7 @@ export const unzip = async (
 
   return new Promise(async (resolve, reject) => {
     logger.info("");
-    resolve(extractedFiles);
+    resolve(_.flatten(extractedFiles));
   });
 };
 
@@ -241,7 +242,7 @@ export const getCovers = async (
       const extractedDataPromises = map(walkedFolders, async (folder) => {
         return await extractArchive(options, folder);
       });
-      return Promise.all(extractedDataPromises).then((data) => data);
+      return Promise.all(extractedDataPromises).then((data) => _.flatten(data));
     case "single":
       return await extractArchive(options, walkedFolders[0]);
     default:

@@ -27,13 +27,15 @@
     "express": "^4.17.1",
     "express-paginate": "^1.0.2",
     "fs-extra": "^9.1.0",
+    "highland": "^2.13.5",
     "imghash": "^0.0.8",
+    "into-stream": "^7.0.0",
     "mongoose": "^5.10.11",
+    "ndjson": "^2.0.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-hooks-worker": "^1.0.0",
-    "sharp": "^0.28.1",
-    "through2": "^4.0.2"
+    "sharp": "^0.28.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.10",
