@@ -1,24 +1,9 @@
 import router from "../router";
-import { default as paginate } from "express-paginate";
-import { IExtractedComicBookCoverFile, IExtractionOptions } from "../../interfaces/folder.interface";
 import { Request, Response } from "express";
-import _ from "lodash";
-import H from "highland";
 import axios from "axios";
-import oboe from "oboe";
-import fs from "fs";
 import { Readable } from "stream";
 import through2 from "through2";
 
-const getData = (source) => {
-  const response: { value: string }[] = [];
-
-  for (let index = 0; index < 100; index++) {
-    response.push({ value: "rishi " + index });
-  }
-
-  return response;
-};
 router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   typeof req.body.extractionOptions === "object"
     ? req.body.extractionOptions
