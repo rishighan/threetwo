@@ -23,8 +23,8 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   typeof req.body.extractionOptions === "object"
     ? req.body.extractionOptions
     : {};
-  const foo = await axios({
-    url: "http://localhost:3853/api/import/getComicCovers",
+  const comicBookCoversData = await axios({
+    url: "http://localhost:3000/api/import/getComicCovers",
     method: "POST",
     data: {
       extractionOptions: req.body.extractionOptions,
@@ -37,9 +37,6 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
     read() {},
   });
 
-  // We create the stream transform using through2 library..
-  // We instruct it to handle objects, buffer size and transform function,
-  // that is, we convert our object to text to be able to send it through the stream response, which does not handle objects..
   const ndjsonStream = through2(
     { objectMode: true, highWaterMark: 1 },
     (data, enc, cb) => {
@@ -47,11 +44,8 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
     },
   );
 
-  // console.log(ndjsonStream);
-  // Through pipe we do a double addressing, our reading stream goes through the transformation
-  // to finally go through the stream response..
   stream.pipe(ndjsonStream).pipe(res);
-  stream.push({ source1: foo.data });
+  stream.push({ data: comicBookCoversData.data });
   stream.push(null);
 });
 
@@ -60,7 +54,7 @@ router.route("/walkFolder").post(async (req: Request, res: Response) => {
     typeof req.body.basePathToWalk === "string" ? req.body.basePathToWalk : "";
   const walkedFolders = await axios
     .request({
-      url: "http://localhost:3853/api/import/walkFolders",
+      url: "http://localhost:3000/api/import/walkFolders",
       method: "POST",
       data: {
         basePathToWalk,

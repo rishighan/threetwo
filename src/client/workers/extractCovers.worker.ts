@@ -12,8 +12,8 @@ export const greet = async (
 ): Promise<IExtractedComicBookCoverFile[] | unknown | any> => {
   const targetOptions = {
     sourceFolder: path,
-    extractTarget: "all",
-    targetExtractionFolder: "./userdata/expanded",
+    extractTarget: "cover",
+    targetExtractionFolder: "./userdata/covers",
     extractionMode: "bulk",
   };
 
