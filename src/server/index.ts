@@ -1,7 +1,6 @@
 import express, { Request, Response, Router, Express } from "express";
 import bodyParser from "body-parser";
 import router from "./route";
-import { default as paginate } from "express-paginate";
 
 // call express
 const app: Express = express(); // define our app using express
@@ -9,7 +8,6 @@ const app: Express = express(); // define our app using express
 // configure app to use bodyParser for
 // Getting data from body of requests
 app.use(bodyParser.json());
-app.use(paginate.middleware(10, 50));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 

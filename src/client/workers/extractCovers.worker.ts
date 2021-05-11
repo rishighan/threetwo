@@ -4,12 +4,10 @@ import {
 } from "../actions/fileops.actions";
 import { IExtractedComicBookCoverFile } from "../../server/interfaces/folder.interface";
 const ndjsonStream = require("can-ndjson-stream");
-import fetch from "node-fetch";
-import { API_BASE_URI } from "../constants/endpoints";
 
 export const greet = async (
   path: string,
-): Promise<IExtractedComicBookCoverFile[] | unknown | any> => {
+): Promise<IExtractedComicBookCoverFile[]> => {
   const targetOptions = {
     sourceFolder: path,
     extractTarget: "cover",
@@ -32,7 +30,7 @@ export const greet = async (
   );
 
   const reader = await ndjsonStream(fetchedResource.body).getReader();
-  reader.read().then(function process({ done, value }) {
+  return reader.read().then(function process({ done, value }) {
     if (done) {
       console.log("done");
       return;

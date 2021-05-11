@@ -1,8 +1,6 @@
 import axios from "axios";
 import fetch, { Response } from "node-fetch";
 import {
-  IExtractComicBookCoverErrorResponse,
-  IExtractedComicBookCoverFile,
   IExtractionOptions,
   IFolderData,
 } from "../../server/interfaces/folder.interface";
