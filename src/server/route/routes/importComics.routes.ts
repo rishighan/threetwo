@@ -3,35 +3,22 @@ import { Request, Response } from "express";
 import axios from "axios";
 import { Readable } from "stream";
 import through2 from "through2";
+import hyperquest from "hyperquest";
+import es from "event-stream";
 
 router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   typeof req.body.extractionOptions === "object"
     ? req.body.extractionOptions
     : {};
-  const comicBookCoversData = await axios({
-    url: "http://localhost:3000/api/import/getComicCovers",
-    method: "POST",
-    data: {
+  const comicBookCoversData = hyperquest.post("http://localhost:3853/api/import/getComicCovers",
+    {
+      data: {
       extractionOptions: req.body.extractionOptions,
       walkedFolders: req.body.walkedFolders,
     },
   });
-  const stream = new Readable({
-    objectMode: true,
-    highWaterMark: 1,
-    read() {},
-  });
-
-  const ndjsonStream = through2(
-    { objectMode: true, highWaterMark: 1 },
-    (data, enc, cb) => {
-      cb(null, JSON.stringify(data) + "\n");
-    },
-  );
-
-  stream.pipe(ndjsonStream).pipe(res);
-  stream.push({ data: comicBookCoversData.data });
-  stream.push(null);
+  console.log(comicBookCoversData.data);
+  
 });
 
 router.route("/walkFolder").post(async (req: Request, res: Response) => {
