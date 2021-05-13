@@ -4,6 +4,7 @@ import axios from "axios";
 import stream from "stream";
 import through2 from "through2";
 import hyperquest from "hyperquest";
+import request from "request";
 import es from "event-stream";
 import JSONStream from "JSONStream";
 import oboe from "oboe";
@@ -12,17 +13,15 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   typeof req.body.extractionOptions === "object"
     ? req.body.extractionOptions
     : {};
-  oboe({
+  request({
     url: "http://localhost:3000/api/import/getComicCovers",
     method: "POST",
+    json: true,
     body: {
       extractionOptions: req.body.extractionOptions,
       walkedFolders: req.body.walkedFolders,
     },
-  }).on("node", ".*", (data) => {
-    console.log(data);
-    res.write(JSON.stringify(data));
-  });
+  }).pipe(res);
 });
 
 router.route("/walkFolder").post(async (req: Request, res: Response) => {
