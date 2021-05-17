@@ -7,6 +7,24 @@ import hyperquest from "hyperquest";
 import es from "event-stream";
 import JSONStream from "JSONStream";
 import oboe from "oboe";
+import { io } from "socket.io-client";
+
+const socket = io("ws://localhost:3853/", {});
+
+socket.on("connect", () => {
+    console.log(`connect ${socket.id}`);
+});
+
+socket.on("disconnect", () => {
+    console.log(`disconnect`);
+});
+
+setInterval(() => {
+    const start = Date.now();
+    socket.emit("ping", () => {
+        console.log(`pong (latency: ${Date.now() - start} ms)`);
+    });
+}, 1000);
 
 router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   typeof req.body.extractionOptions === "object"
