@@ -10,36 +10,36 @@ import JSONStream from "JSONStream";
 import oboe from "oboe";
 import { io } from "socket.io-client";
 
-const socket = io("ws://localhost:3853/", {});
+const socket = io("ws://localhost:3000/", {
+  reconnectionDelayMax: 10000,
+});
 
 socket.on("connect", () => {
-    console.log(`connect ${socket.id}`);
+  console.log(`connect ${socket.id}`);
 });
 
 socket.on("disconnect", () => {
-    console.log(`disconnect`);
+  console.log(`disconnect`);
 });
-
-setInterval(() => {
-    const start = Date.now();
-    socket.emit("ping", () => {
-        console.log(`pong (latency: ${Date.now() - start} ms)`);
-    });
-}, 1000);
 
 router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   typeof req.body.extractionOptions === "object"
     ? req.body.extractionOptions
     : {};
-  request({
-    url: "http://localhost:3000/api/import/getComicCovers",
-    method: "POST",
-    json: true,
-    body: {
-      extractionOptions: req.body.extractionOptions,
-      walkedFolders: req.body.walkedFolders,
+  const { extractionOptions, walkedFolders } = req.body;
+  socket.emit("call", {
+    action: "getComicCovers",
+    params: {
+      extractionOptions,
+      walkedFolders,
     },
-  }).pipe(res);
+    opts: { garam: "pasha" },
+  });
+  socket.on("comicBookCoverMetadata", (done) => {
+    console.log(done);
+  });
+  // socket.on("hello", (done) => done);
+  res.sendStatus(200);
 });
 
 router.route("/walkFolder").post(async (req: Request, res: Response) => {
