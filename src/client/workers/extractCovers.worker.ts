@@ -1,13 +1,7 @@
-import {
-  walkFolder,
-  extractCoverFromComicBookArchive,
-} from "../actions/fileops.actions";
-import { IExtractedComicBookCoverFile } from "../../server/interfaces/folder.interface";
-const ndjsonStream = require("can-ndjson-stream");
+import { walkFolder } from "../actions/fileops.actions";
+import { io } from "socket.io-client";
 
-export const greet = async (
-  path: string,
-): Promise<IExtractedComicBookCoverFile[]> => {
+export const greet = async (path: string): Promise<any> => {
   const targetOptions = {
     sourceFolder: path,
     extractTarget: "cover",
@@ -23,19 +17,29 @@ export const greet = async (
     ...targetOptions,
     paginationOptions: pagingConfig,
   };
-  const fileObjects = await walkFolder("./comics");
-  const fetchedResource = await extractCoverFromComicBookArchive(
-    extractionOptions,
-    fileObjects,
-  );
+  const walkedFolders = await walkFolder("./comics");
 
-  const reader = await ndjsonStream(fetchedResource.body).getReader();
-  return reader.read().then(function process({ done, value }) {
-    if (done) {
-      console.log("done");
-      return;
-    }
+  const socket = io("ws://localhost:3000/", {
+    reconnectionDelayMax: 10000,
+  });
 
-    return reader.read().then(process);
+  socket.on("connect", () => {
+    console.log(`connect ${socket.id}`);
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`disconnect`);
+  });
+  socket.emit("call", {
+    action: "getComicCovers",
+    params: {
+      extractionOptions,
+      walkedFolders,
+    },
+    opts: { garam: "pasha" },
+  });
+
+  socket.on("comicBookCoverMetadata", (data) => {
+    console.log(data);
   });
 };

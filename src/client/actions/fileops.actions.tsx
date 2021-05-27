@@ -1,9 +1,5 @@
 import axios from "axios";
-import fetch, { Response } from "node-fetch";
-import {
-  IExtractionOptions,
-  IFolderData,
-} from "../../server/interfaces/folder.interface";
+import { IFolderData } from "../../server/interfaces/folder.interface";
 import { API_BASE_URI } from "../constants/endpoints";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
@@ -20,21 +16,4 @@ export async function walkFolder(path: string): Promise<Array<IFolderData>> {
       const { data } = response;
       return data;
     });
-}
-
-export async function extractCoverFromComicBookArchive(
-  extractionOptions: IExtractionOptions,
-  walkedFolders: Array<IFolderData>,
-): Promise<Response> {
-  return await fetch(API_BASE_URI + "getComicCovers", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      extractionOptions,
-      walkedFolders,
-    }),
-  });
 }
