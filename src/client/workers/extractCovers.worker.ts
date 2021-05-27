@@ -1,9 +1,11 @@
 import { walkFolder } from "../actions/fileops.actions";
 import { io } from "socket.io-client";
+import { IMS_SOCKET_DATA_FETCHED } from "../constants/action-types";
 
-export const greet = async (path: string): Promise<any> => {
+export const fetchComicBookMetadata = (options) => async (dispatch) => {
+  console.log(options);
   const targetOptions = {
-    sourceFolder: path,
+    sourceFolder: options,
     extractTarget: "cover",
     targetExtractionFolder: "./userdata/covers",
     extractionMode: "bulk",
@@ -41,5 +43,10 @@ export const greet = async (path: string): Promise<any> => {
 
   socket.on("comicBookCoverMetadata", (data) => {
     console.log(data);
+    dispatch({
+      type: IMS_SOCKET_DATA_FETCHED,
+      comicBookMetadata: data,
+      dataTransferred: true,
+    });
   });
 };

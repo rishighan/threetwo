@@ -1,13 +1,18 @@
 import * as React from "react";
 import _ from "lodash";
 import { connect } from "react-redux";
-import { greet } from "../workers/extractCovers.worker";
+import { fetchComicBookMetadata } from "../actions/fileops.actions";
+import { IFolderData } from "../shared/interfaces/comicinfo.interfaces";
 interface IProps {
   matches: unknown;
+  fetchComicMetadata: any;
+  path: string;
+  garam: any;
 }
 interface IState {
   folderWalkResults?: Array<IFolderData>;
   searchPaneIndex: number;
+  fileOps: any;
 }
 
 class Import extends React.Component<IProps, IState> {
@@ -25,9 +30,12 @@ class Import extends React.Component<IProps, IState> {
     });
   }
 
-  public async startFolderWalk() {
-    console.log(await greet("./comics"));
+  public componentDidMount() {
+    if (typeof this.props.path !== "undefined") {
+      this.props.fetchComicMetadata();
+    }
   }
+
   public render() {
     return (
       <div>
@@ -53,10 +61,7 @@ class Import extends React.Component<IProps, IState> {
             </div>
           </article>
           <p className="buttons">
-            <button
-              className="button is-medium"
-              onClick={() => this.startFolderWalk()}
-            >
+            <button className="button is-medium">
               <span className="icon">
                 <i className="fas fa-file-import"></i>
               </span>
@@ -74,6 +79,7 @@ class Import extends React.Component<IProps, IState> {
           {!_.isUndefined(this.state.folderWalkResults) ? (
             <>
               <div>poopie</div>
+              <div>{JSON.stringify(this.props.garam)}</div>
             </>
           ) : null}
         </section>
@@ -83,13 +89,18 @@ class Import extends React.Component<IProps, IState> {
 }
 
 function mapStateToProps(state: IState) {
+  console.log("STATE", state);
   return {
     // matches: state.comicInfo.searchResults,
+    garam: state.fileOps.comicBookMetadata,
   };
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  name: "rishi",
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  fetchComicMetadata() {
+    console.log(ownProps);
+    dispatch(fetchComicBookMetadata(ownProps.path));
+  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Import);

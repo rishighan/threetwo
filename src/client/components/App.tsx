@@ -18,7 +18,7 @@ class App extends React.Component<Record<string, unknown>, undefined> {
               <Dashboard />
             </Route>
             <Route path="/import">
-              <Import />
+              <Import path={"./comics"} />
             </Route>
           </Switch>
         </Router>
