@@ -21,21 +21,15 @@ export async function walkFolder(path: string): Promise<Array<IFolderData>> {
 }
 
 export const fetchComicBookMetadata = (options) => async (dispatch) => {
-  console.log(options);
-  const targetOptions = {
+  const extractionOptions = {
     sourceFolder: options,
     extractTarget: "cover",
     targetExtractionFolder: "./userdata/covers",
     extractionMode: "bulk",
-  };
-
-  const pagingConfig = {
-    pageLimit: 25,
-    page: 1,
-  };
-  const extractionOptions = {
-    ...targetOptions,
-    paginationOptions: pagingConfig,
+    paginationOptions: {
+      pageLimit: 25,
+      page: 1,
+    },
   };
   const walkedFolders = await walkFolder("./comics");
 

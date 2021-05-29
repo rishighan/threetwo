@@ -3,6 +3,9 @@ import _ from "lodash";
 import { connect } from "react-redux";
 import { fetchComicBookMetadata } from "../actions/fileops.actions";
 import { IFolderData } from "../shared/interfaces/comicinfo.interfaces";
+import Card from "./Card2";
+import { io } from "socket.io-client";
+
 interface IProps {
   matches: unknown;
   fetchComicMetadata: any;
@@ -14,7 +17,7 @@ interface IState {
   searchPaneIndex: number;
   fileOps: any;
 }
-
+let socket;
 class Import extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
@@ -22,6 +25,13 @@ class Import extends React.Component<IProps, IState> {
       folderWalkResults: [],
       searchPaneIndex: undefined,
     };
+    socket = io("ws://localhost:3000/", {
+      reconnectionDelayMax: 10000,
+    });
+
+    socket.on("connect", () => {
+      console.log(`connect ${socket.id}`);
+    });
   }
 
   public toggleSearchResultsPane(paneId: number): void {
@@ -79,7 +89,7 @@ class Import extends React.Component<IProps, IState> {
           {!_.isUndefined(this.state.folderWalkResults) ? (
             <>
               <div>poopie</div>
-              <div>{JSON.stringify(this.props.garam)}</div>
+              <Card comicBookCoversMetadata={this.props.garam} />
             </>
           ) : null}
         </section>
@@ -98,9 +108,9 @@ function mapStateToProps(state: IState) {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   fetchComicMetadata() {
-    console.log(ownProps);
     dispatch(fetchComicBookMetadata(ownProps.path));
   },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Import);
+export { socket };
