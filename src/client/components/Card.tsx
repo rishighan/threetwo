@@ -7,62 +7,45 @@ import { walkFolder } from "../actions/fileops.actions";
 interface IProps {
   comicBookCoversMetadata: any;
 }
-interface IState {
-  comicBookCoversMetadata: any[];
-}
+interface IState {}
 
 class Card extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
-    this.state = {
-      comicBookCoversMetadata: [],
-    };
   }
-  public fetchComicBookCoversData = (metadata) => {
-    this.setState((prevState) => {
-      // Get previous state
-      const { comicBookCoversMetadata } = prevState;
-
-      // Add new item to array
-      comicBookCoversMetadata.push(metadata);
-
-      // Return new state
-      return { comicBookCoversMetadata };
-    });
-  };
-
-  public drawCoverCard = () => {
-    console.log("cover card", this.state.comicBookCoversMetadata);
-    if (this.state.comicBookCoversMetadata.length >= 1) {
-      return map(this.state.comicBookCoversMetadata, (metadata) => {
-        return <div>{JSON.stringify(metadata)}</div>;
-      });
+  private removeLeadingPeriod = (string) => {
+    if (string.charAt(0) == ".") {
+      string = string.substr(1);
     }
+    return string;
   };
-  public async componentDidMount() {
-    const extractionOptions = {
-      sourceFolder: "./comics",
-      extractTarget: "cover",
-      targetExtractionFolder: "./userdata/covers",
-      extractionMode: "bulk",
-      paginationOptions: {
-        pageLimit: 25,
-        page: 1,
-      },
-    };
-    const walkedFolders = await walkFolder("./comics");
-    socket.emit("call", {
-      action: "getComicCovers",
-      params: {
-        extractionOptions,
-        walkedFolders,
-      },
-      opts: { garam: "pasha" },
+  public drawCoverCard = (metadata) => {
+    return map(metadata, (item) => {
+      return (
+        <div className="card">
+          <div className="card-image">
+            <figure className="image">
+              <img
+                src={
+                  "http://localhost:3000" +
+                  this.removeLeadingPeriod(item.path) +
+                  "/" +
+                  item.name
+                }
+                alt="Placeholder image"
+              />
+            </figure>
+          </div>
+          <div className="card-content">
+            <div className="content">{item.name}</div>
+          </div>
+        </div>
+      );
     });
-    socket.on("comicBookCoverMetadata", this.fetchComicBookCoversData);
-  }
+  };
+
   public render() {
-    return <div className="card">{this.drawCoverCard()}</div>;
+    return <div>{this.drawCoverCard(this.props.comicBookCoversMetadata)}</div>;
   }
 }
 

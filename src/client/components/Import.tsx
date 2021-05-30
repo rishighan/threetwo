@@ -3,7 +3,7 @@ import _ from "lodash";
 import { connect } from "react-redux";
 import { fetchComicBookMetadata } from "../actions/fileops.actions";
 import { IFolderData } from "../shared/interfaces/comicinfo.interfaces";
-import Card from "./Card2";
+import Card from "./Card";
 import { io } from "socket.io-client";
 
 interface IProps {
@@ -40,11 +40,11 @@ class Import extends React.Component<IProps, IState> {
     });
   }
 
-  public componentDidMount() {
+  public initiateSocketConnection = () => {
     if (typeof this.props.path !== "undefined") {
       this.props.fetchComicMetadata();
     }
-  }
+  };
 
   public render() {
     return (
@@ -71,7 +71,10 @@ class Import extends React.Component<IProps, IState> {
             </div>
           </article>
           <p className="buttons">
-            <button className="button is-medium">
+            <button
+              className="button is-medium"
+              onClick={this.initiateSocketConnection}
+            >
               <span className="icon">
                 <i className="fas fa-file-import"></i>
               </span>

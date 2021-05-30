@@ -12,7 +12,6 @@ const initialState = {
 function fileOpsReducer(state = initialState, action) {
   switch (action.type) {
     case IMS_SOCKET_DATA_FETCHED:
-      console.log("ke me hu garam garam");
       return {
         ...state,
         comicBookMetadata: [...state.comicBookMetadata, action.data.data],

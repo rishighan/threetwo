@@ -25,11 +25,8 @@ $border-color: red;
 }
 
 .card {
-  border: 1px solid color(srgb 0.767 0.861 0.848);
-  margin: 0 10rem 10rem 0;
-  div {
-    margin: 10px;
-    border: 1px solid red;
+  img {
+    max-width: 200px;
   }
 }
 
