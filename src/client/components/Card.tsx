@@ -1,16 +1,17 @@
 import * as React from "react";
 import { IFolderData } from "../shared/interfaces/comicinfo.interfaces";
+import { IExtractedComicBookCoverFile } from "../../server/interfaces/folder.interface";
 import { isArray, map, isUndefined, isEmpty, flatten } from "lodash";
 import { socket } from "./Import";
 import { walkFolder } from "../actions/fileops.actions";
 
 interface IProps {
-  comicBookCoversMetadata: any;
+  comicBookCoversMetadata: IExtractedComicBookCoverFile[];
 }
 interface IState {}
 
 class Card extends React.Component<IProps, IState> {
-  constructor(props) {
+  constructor(props: IProps) {
     super(props);
   }
   private removeLeadingPeriod = (string) => {
@@ -19,8 +20,8 @@ class Card extends React.Component<IProps, IState> {
     }
     return string;
   };
-  public drawCoverCard = (metadata) => {
-    return map(metadata, (item) => {
+  public drawCoverCard = (metadata: IExtractedComicBookCoverFile[]) => {
+    return map(metadata, (item: IExtractedComicBookCoverFile) => {
       return (
         <div className="card">
           <div className="card-image">

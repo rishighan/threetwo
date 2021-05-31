@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { fetchComicBookMetadata } from "../actions/fileops.actions";
 import { IFolderData } from "../shared/interfaces/comicinfo.interfaces";
 import Card from "./Card";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 
 interface IProps {
   matches: unknown;
@@ -17,7 +17,7 @@ interface IState {
   searchPaneIndex: number;
   fileOps: any;
 }
-let socket;
+let socket: Socket;
 class Import extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
