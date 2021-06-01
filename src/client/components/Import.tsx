@@ -5,6 +5,7 @@ import { fetchComicBookMetadata } from "../actions/fileops.actions";
 import { IFolderData } from "../shared/interfaces/comicinfo.interfaces";
 import Card from "./Card";
 import { io, Socket } from "socket.io-client";
+import { SOCKET_BASE_URI } from "../constants/endpoints";
 
 interface IProps {
   matches: unknown;
@@ -25,13 +26,6 @@ class Import extends React.Component<IProps, IState> {
       folderWalkResults: [],
       searchPaneIndex: undefined,
     };
-    socket = io("ws://localhost:3000/", {
-      reconnectionDelayMax: 10000,
-    });
-
-    socket.on("connect", () => {
-      console.log(`connect ${socket.id}`);
-    });
   }
 
   public toggleSearchResultsPane(paneId: number): void {
@@ -42,6 +36,13 @@ class Import extends React.Component<IProps, IState> {
 
   public initiateSocketConnection = () => {
     if (typeof this.props.path !== "undefined") {
+      socket = io(SOCKET_BASE_URI, {
+        reconnectionDelayMax: 10000,
+      });
+
+      socket.on("connect", () => {
+        console.log(`connect ${socket.id}`);
+      });
       this.props.fetchComicMetadata();
     }
   };

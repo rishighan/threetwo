@@ -47,6 +47,7 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
     console.log(`connect ${socket.id}`);
     dispatch({
       type: IMS_SOCKET_CONNECTION_CONNECTED,
+      socketConnected: true,
     });
   });
 

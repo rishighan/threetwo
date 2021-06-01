@@ -7,6 +7,7 @@ import {
 const initialState = {
   dataTransferred: false,
   comicBookMetadata: [],
+  socketConnected: false,
 };
 
 function fileOpsReducer(state = initialState, action) {
@@ -16,6 +17,12 @@ function fileOpsReducer(state = initialState, action) {
         ...state,
         comicBookMetadata: [...state.comicBookMetadata, action.data.data],
         dataTransferred: true,
+      };
+
+    case IMS_SOCKET_CONNECTION_CONNECTED:
+      return {
+        ...state,
+        socketConnected: action.socketConnected,
       };
     default:
       return state;

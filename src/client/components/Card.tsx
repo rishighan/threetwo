@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { IExtractedComicBookCoverFile } from "../../server/interfaces/folder.interface";
 import { map } from "lodash";
 

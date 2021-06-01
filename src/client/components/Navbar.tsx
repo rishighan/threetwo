@@ -1,7 +1,10 @@
-import * as React from "react";
+import React from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const Navbar: React.FunctionComponent = (props) => {
+  const socketConnected = useSelector((state) => state.fileOps);
+
   return (
     <nav className="navbar ">
       <div className="navbar-brand">
@@ -14,23 +17,15 @@ const Navbar: React.FunctionComponent = (props) => {
           />
         </a>
 
-        <a
-          className="navbar-item is-hidden-desktop"
-          href="https://github.com/jgthms/bulma"
-          target="_blank"
-        >
+        <a className="navbar-item is-hidden-desktop">
           <span className="icon">
-            <i className="fa fa-github"></i>
+            <i className="fas fa-github"></i>
           </span>
         </a>
 
-        <a
-          className="navbar-item is-hidden-desktop"
-          href="https://twitter.com/jgthms"
-          target="_blank"
-        >
+        <a className="navbar-item is-hidden-desktop">
           <span className="icon">
-            <i className="fa fa-twitter"></i>
+            <i className="fas fa-twitter"></i>
           </span>
         </a>
 
@@ -87,9 +82,7 @@ const Navbar: React.FunctionComponent = (props) => {
             </div>
           </div>
           <div className="navbar-item has-dropdown is-hoverable is-mega">
-            <div className="navbar-link flex">
-              Blog 
-            </div>
+            <div className="navbar-link flex">Blog</div>
             <div id="blogDropdown" className="navbar-dropdown">
               <div className="container is-fluid">
                 <div className="columns">
@@ -192,14 +185,16 @@ const Navbar: React.FunctionComponent = (props) => {
         </div>
 
         <div className="navbar-end">
-          <a
-            className="navbar-item is-hidden-desktop-only"
-            href="https://github.com/jgthms/bulma"
-            target="_blank"
-          ></a>
+          <a className="navbar-item is-hidden-desktop-only"></a>
           <div className="navbar-item">
             <div className="field is-grouped">
-              <p className="control"></p>
+              <p className="control">
+                {socketConnected.socketConnected ? (
+                  <span className="icon is-small has-text-success">
+                    <i className="fas fa-plug"></i>
+                  </span>
+                ) : null}
+              </p>
               <p className="control">Settings</p>
             </div>
           </div>
