@@ -61,3 +61,5 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
     });
   });
 };
+
+export const validate = (object) => {};
