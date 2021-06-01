@@ -44,8 +44,8 @@ export function tokenize(inputString) {
 }
 
 export function refineQuery(queryString) {
-  let queryObj = tokenize(queryString);
-  let removedYears = _.xor(
+  const queryObj = tokenize(queryString);
+  const removedYears = _.xor(
     queryObj.sentences.normalized,
     queryObj.years.yearMatches,
   );
