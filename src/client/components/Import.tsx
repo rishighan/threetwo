@@ -1,5 +1,5 @@
 import * as React from "react";
-import _ from "lodash";
+import { isUndefined } from "lodash";
 import { connect } from "react-redux";
 import { fetchComicBookMetadata } from "../actions/fileops.actions";
 import { IFolderData } from "../shared/interfaces/comicinfo.interfaces";
@@ -48,7 +48,7 @@ class Import extends React.Component<IProps, IState> {
 
   public render() {
     return (
-      <div>
+      <div className="container">
         <section className="section is-small">
           <h1 className="title">Import</h1>
 
@@ -89,10 +89,10 @@ class Import extends React.Component<IProps, IState> {
             </button>
           </p>
 
-          {!_.isUndefined(this.state.folderWalkResults) ? (
-            <>
+          {!isUndefined(this.state.folderWalkResults) ? (
+            <div className="card-container">
               <Card comicBookCoversMetadata={this.props.garam} />
-            </>
+            </div>
           ) : null}
         </section>
       </div>

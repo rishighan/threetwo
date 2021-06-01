@@ -46,7 +46,7 @@ class Card extends React.Component<IProps, IState> {
   };
 
   public render() {
-    return <div>{this.drawCoverCard(this.props.comicBookCoversMetadata)}</div>;
+    return <>{this.drawCoverCard(this.props.comicBookCoversMetadata)}</>;
   }
 }
 

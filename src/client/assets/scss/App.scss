@@ -24,20 +24,24 @@ $border-color: red;
   }
 }
 
-.card {
-  max-width: 200px;
-  margin: 12px;
-  float: left;
-
-  .truncate {
-    width: 100px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  img {
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  column-gap: 0.5em;
+  row-gap: 1.2em;
+  .card {
     max-width: 200px;
+
+    .truncate {
+      width: 100px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    img {
+      max-width: 200px;
+    }
   }
 }
 
