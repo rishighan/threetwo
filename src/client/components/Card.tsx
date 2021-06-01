@@ -1,9 +1,7 @@
 import * as React from "react";
-import { IFolderData } from "../shared/interfaces/comicinfo.interfaces";
+
 import { IExtractedComicBookCoverFile } from "../../server/interfaces/folder.interface";
-import { isArray, map, isUndefined, isEmpty, flatten } from "lodash";
-import { socket } from "./Import";
-import { walkFolder } from "../actions/fileops.actions";
+import { map } from "lodash";
 
 interface IProps {
   comicBookCoversMetadata: IExtractedComicBookCoverFile[];
@@ -14,13 +12,15 @@ class Card extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
   }
-  private removeLeadingPeriod = (string) => {
-    if (string.charAt(0) == ".") {
-      string = string.substr(1);
+  private removeLeadingPeriod = (input: string): string => {
+    if (input.charAt(0) == ".") {
+      input = input.substr(1);
     }
-    return string;
+    return input;
   };
-  public drawCoverCard = (metadata: IExtractedComicBookCoverFile[]) => {
+  public drawCoverCard = (
+    metadata: IExtractedComicBookCoverFile[],
+  ): JSX.Element[] => {
     return map(metadata, (item: IExtractedComicBookCoverFile) => {
       return (
         <div className="card">
@@ -38,7 +38,7 @@ class Card extends React.Component<IProps, IState> {
             </figure>
           </div>
           <div className="card-content">
-            <div className="content">{item.name}</div>
+            <div className="content truncate">{item.name}</div>
           </div>
         </div>
       );

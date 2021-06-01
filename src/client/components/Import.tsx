@@ -88,10 +88,9 @@ class Import extends React.Component<IProps, IState> {
               <span>Import and Tag</span>
             </button>
           </p>
-          {/* Folder walk results */}
+
           {!_.isUndefined(this.state.folderWalkResults) ? (
             <>
-              <div>poopie</div>
               <Card comicBookCoversMetadata={this.props.garam} />
             </>
           ) : null}

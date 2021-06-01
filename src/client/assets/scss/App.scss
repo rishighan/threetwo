@@ -25,6 +25,17 @@ $border-color: red;
 }
 
 .card {
+  max-width: 200px;
+  margin: 12px;
+  float: left;
+
+  .truncate {
+    width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   img {
     max-width: 200px;
   }
