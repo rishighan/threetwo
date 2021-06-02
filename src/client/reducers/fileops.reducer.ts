@@ -4,12 +4,14 @@ import {
   IMS_SOCKET_DATA_FETCHED,
   IMS_SOCKET_ERROR,
   IMS_RAW_IMPORT_SUCCESSFUL,
+  IMS_RAW_IMPORT_FAILED,
 } from "../constants/action-types";
 const initialState = {
   dataTransferred: false,
   comicBookMetadata: [],
   socketConnected: false,
-  rawImportCompleted: {},
+  rawImportDetails: {},
+  rawImportError: {},
 };
 
 function fileOpsReducer(state = initialState, action) {
@@ -29,7 +31,12 @@ function fileOpsReducer(state = initialState, action) {
     case IMS_RAW_IMPORT_SUCCESSFUL:
       return {
         ...state,
-        rawImportCompleted: action.rawImportCompleted,
+        rawImportDetails: action.rawImportDetails,
+      };
+    case IMS_RAW_IMPORT_FAILED:
+      return {
+        ...state,
+        rawImportErorr: action.rawImportError,
       };
     default:
       return state;

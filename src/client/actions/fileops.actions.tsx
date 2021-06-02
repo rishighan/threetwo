@@ -9,6 +9,7 @@ import {
   IMS_SOCKET_DATA_FETCHED,
   IMS_SOCKET_CONNECTION_CONNECTED,
   IMS_RAW_IMPORT_SUCCESSFUL,
+  IMS_RAW_IMPORT_FAILED,
 } from "../constants/action-types";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
@@ -34,13 +35,20 @@ export const rawImportToDB = (payload: any) => async (dispatch) => {
     data: {
       payload,
     },
-  }).then((result) => {
-    dispatch({
-      type: IMS_RAW_IMPORT_SUCCESSFUL,
-      rawImportCompleted: result,
+  })
+    .then((result) => {
+      dispatch({
+        type: IMS_RAW_IMPORT_SUCCESSFUL,
+        rawImportDetails: result,
+      });
+      return result;
+    })
+    .catch((error) => {
+      dispatch({
+        type: IMS_RAW_IMPORT_FAILED,
+        rawImportDetails: error,
+      });
     });
-    return result;
-  });
 };
 
 export const fetchComicBookMetadata = (options) => async (dispatch) => {
