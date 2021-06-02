@@ -1,6 +1,6 @@
 import * as React from "react";
 import { IExtractedComicBookCoverFile } from "../../server/interfaces/folder.interface";
-import { map } from "lodash";
+import { map, isUndefined, isEmpty } from "lodash";
 
 interface IProps {
   comicBookCoversMetadata: IExtractedComicBookCoverFile[];
@@ -12,8 +12,10 @@ class Card extends React.Component<IProps, IState> {
     super(props);
   }
   private removeLeadingPeriod = (input: string): string => {
-    if (input.charAt(0) == ".") {
-      input = input.substr(1);
+    if (!isUndefined(this.props.comicBookCoversMetadata)) {
+      if (input.charAt(0) == ".") {
+        input = input.substr(1);
+      }
     }
     return input;
   };
@@ -45,7 +47,13 @@ class Card extends React.Component<IProps, IState> {
   };
 
   public render() {
-    return <>{this.drawCoverCard(this.props.comicBookCoversMetadata)}</>;
+    return (
+      <>
+        {!isUndefined(this.props.comicBookCoversMetadata) &&
+          !isEmpty(this.props.comicBookCoversMetadata) &&
+          this.drawCoverCard(this.props.comicBookCoversMetadata)}
+      </>
+    );
   }
 }
 
