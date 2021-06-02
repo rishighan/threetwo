@@ -8,12 +8,13 @@ import { io } from "socket.io-client";
 import {
   IMS_SOCKET_DATA_FETCHED,
   IMS_SOCKET_CONNECTION_CONNECTED,
+  IMS_RAW_IMPORT_SUCCESSFUL,
 } from "../constants/action-types";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
     .request<Array<IFolderData>>({
-      url: API_BASE_URI + "walkFolder",
+      url: "http://localhost:3000/api/import/walkFolders",
       method: "POST",
       data: {
         basePathToWalk: path,
@@ -23,8 +24,24 @@ export async function walkFolder(path: string): Promise<Array<IFolderData>> {
     .then((response) => {
       const { data } = response;
       return data;
-    });
+    })
+    .catch((error) => error);
 }
+export const rawImportToDB = (payload: any) => async (dispatch) => {
+  return axios({
+    method: "POST",
+    url: "http://localhost:3000/api/import/rawImportToDb",
+    data: {
+      payload,
+    },
+  }).then((result) => {
+    dispatch({
+      type: IMS_RAW_IMPORT_SUCCESSFUL,
+      rawImportCompleted: result,
+    });
+    return result;
+  });
+};
 
 export const fetchComicBookMetadata = (options) => async (dispatch) => {
   const extractionOptions = {
@@ -64,10 +81,27 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
   });
 
   socket.on("comicBookCoverMetadata", (data: IExtractedComicBookCoverFile) => {
+    console.log(data);
     dispatch({
       type: IMS_SOCKET_DATA_FETCHED,
       data,
       dataTransferred: true,
     });
+    dispatch(
+      rawImportToDB({
+        importStatus: {
+          isImported: true,
+          tagged: false,
+          matchedResult: {
+            score: "0",
+          },
+        },
+        rawFileDetails: data,
+      }),
+    );
+  });
+
+  socket.on("comicBookCoverMetadataSent", (status) => {
+    console.log(status);
   });
 };

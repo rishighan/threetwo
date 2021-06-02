@@ -57,7 +57,7 @@ module.exports = {
     extensions: ["*", ".ts", ".tsx", ".js", ".jsx", ".json"],
   },
   devServer: {
-    port: 3000,
+    port: 3050,
     open: true,
     hot: true,
     proxy: {

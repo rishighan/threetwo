@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const Navbar: React.FunctionComponent = (props) => {
-  const socketConnected = useSelector((state) => state.fileOps);
+  const socketConnection = useSelector((state) => state.fileOps);
 
   return (
     <nav className="navbar ">
@@ -189,7 +189,7 @@ const Navbar: React.FunctionComponent = (props) => {
           <div className="navbar-item">
             <div className="field is-grouped">
               <p className="control">
-                {socketConnected.socketConnected ? (
+                {socketConnection.socketConnected ? (
                   <span className="icon is-small has-text-success">
                     <i className="fas fa-plug"></i>
                   </span>

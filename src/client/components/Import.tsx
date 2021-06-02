@@ -102,7 +102,7 @@ class Import extends React.Component<IProps, IState> {
 }
 
 function mapStateToProps(state: IState) {
-  console.log("STATE", state);
+  console.log("state", state);
   return {
     // matches: state.comicInfo.searchResults,
     garam: state.fileOps.comicBookMetadata,

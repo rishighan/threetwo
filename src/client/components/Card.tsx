@@ -20,9 +20,9 @@ class Card extends React.Component<IProps, IState> {
   public drawCoverCard = (
     metadata: IExtractedComicBookCoverFile[],
   ): JSX.Element[] => {
-    return map(metadata, (item: IExtractedComicBookCoverFile) => {
+    return map(metadata, (item: IExtractedComicBookCoverFile, idx: number) => {
       return (
-        <div className="card">
+        <div className="card" key={idx}>
           <div className="card-image">
             <figure className="image">
               <img
