@@ -6,10 +6,8 @@ import {
 import { API_BASE_URI, SOCKET_BASE_URI } from "../constants/endpoints";
 import { io } from "socket.io-client";
 import {
-  IMS_SOCKET_DATA_FETCHED,
+  IMS_COMICBOOK_METADATA_FETCHED,
   IMS_SOCKET_CONNECTION_CONNECTED,
-  IMS_RAW_IMPORT_SUCCESSFUL,
-  IMS_RAW_IMPORT_FAILED,
 } from "../constants/action-types";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
@@ -28,28 +26,6 @@ export async function walkFolder(path: string): Promise<Array<IFolderData>> {
     })
     .catch((error) => error);
 }
-export const rawImportToDB = (payload: any) => async (dispatch) => {
-  return axios({
-    method: "POST",
-    url: "http://localhost:3000/api/import/rawImportToDb",
-    data: {
-      payload,
-    },
-  })
-    .then((result) => {
-      dispatch({
-        type: IMS_RAW_IMPORT_SUCCESSFUL,
-        rawImportDetails: result,
-      });
-      return result;
-    })
-    .catch((error) => {
-      dispatch({
-        type: IMS_RAW_IMPORT_FAILED,
-        rawImportDetails: error,
-      });
-    });
-};
 
 export const fetchComicBookMetadata = (options) => async (dispatch) => {
   const extractionOptions = {
@@ -79,7 +55,7 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
   socket.on("disconnect", () => {
     console.log(`disconnect`);
   });
-  socket.emit("call", {
+  socket.emit("importComicsInDB", {
     action: "getComicCovers",
     params: {
       extractionOptions,
@@ -89,24 +65,11 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
   });
 
   socket.on("comicBookCoverMetadata", (data: IExtractedComicBookCoverFile) => {
-    console.log(data);
     dispatch({
-      type: IMS_SOCKET_DATA_FETCHED,
+      type: IMS_COMICBOOK_METADATA_FETCHED,
       data,
       dataTransferred: true,
     });
-    dispatch(
-      rawImportToDB({
-        importStatus: {
-          isImported: true,
-          tagged: false,
-          matchedResult: {
-            score: "0",
-          },
-        },
-        rawFileDetails: data,
-      }),
-    );
   });
 
   socket.on("comicBookCoverMetadataSent", (status) => {

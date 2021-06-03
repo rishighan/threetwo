@@ -1,7 +1,7 @@
 import {
   IMS_SOCKET_CONNECTION_CONNECTED,
   IMS_SOCKET_CONNECTION_DISCONNECTED,
-  IMS_SOCKET_DATA_FETCHED,
+  IMS_COMICBOOK_METADATA_FETCHED,
   IMS_SOCKET_ERROR,
   IMS_RAW_IMPORT_SUCCESSFUL,
   IMS_RAW_IMPORT_FAILED,
@@ -10,13 +10,12 @@ const initialState = {
   dataTransferred: false,
   comicBookMetadata: [],
   socketConnected: false,
-  rawImportDetails: {},
   rawImportError: {},
 };
 
 function fileOpsReducer(state = initialState, action) {
   switch (action.type) {
-    case IMS_SOCKET_DATA_FETCHED:
+    case IMS_COMICBOOK_METADATA_FETCHED:
       return {
         ...state,
         comicBookMetadata: [...state.comicBookMetadata, action.data],

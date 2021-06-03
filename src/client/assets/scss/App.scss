@@ -24,22 +24,58 @@ $border-color: red;
 }
 
 .card-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  column-gap: 0.5em;
-  row-gap: 1.2em;
+  // display: grid;
+  // grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  // column-gap: 0.5em;
+  // row-gap: 1.2em;
+  //   .card {
+  //     max-width: 200px;
+  //
+  //     .truncate {
+  //       width: 100px;
+  //       white-space: nowrap;
+  //       overflow: hidden;
+  //       text-overflow: ellipsis;
+  //     }
+  //
+  //     img {
+  //       max-width: 200px;
+  //     }
+  // }
   .card {
-    max-width: 200px;
+    max-width: 500px;
+    margin: 0 0 15px 0;
+    .is-horizontal {
+      flex-direction: row;
+      display: flex;
+      flex-basis: 50ex;
+      flex-grow: 0;
+      flex-shrink: 1;
+      box-shadow: none;
 
-    .truncate {
-      width: 100px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    img {
-      max-width: 200px;
+      .card-image {
+        align-self: center;
+        .image {
+          max-width: 60px;
+          img {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-top-left-radius: 0.25em;
+            border-bottom-left-radius: 0.25em;
+          }
+        }
+      }
+      .card-content {
+        flex: 1;
+        padding-left: 1em;
+        padding-top: 0;
+        padding-bottom: 0;
+        font-size: 0.8em;
+      }
+      .is-divider {
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+      }
     }
   }
 }

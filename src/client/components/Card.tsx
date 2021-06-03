@@ -22,24 +22,32 @@ class Card extends React.Component<IProps, IState> {
   public drawCoverCard = (
     metadata: IExtractedComicBookCoverFile[],
   ): JSX.Element[] => {
-    return map(metadata, (item: IExtractedComicBookCoverFile, idx: number) => {
+    return map(metadata, (item: any, idx: number) => {
       return (
-        <div className="card" key={idx}>
-          <div className="card-image">
-            <figure className="image">
-              <img
-                src={
-                  "http://localhost:3000" +
-                  this.removeLeadingPeriod(item.path) +
-                  "/" +
-                  item.name
-                }
-                alt="Placeholder image"
-              />
-            </figure>
-          </div>
-          <div className="card-content">
-            <div className="content truncate">{item.name}</div>
+        <div key={idx}>
+          <div className="card">
+            <div className="is-horizontal">
+              <div className="card-image">
+                <figure className="image">
+                  <img
+                    src={
+                      "http://localhost:3000" +
+                      this.removeLeadingPeriod(
+                        item.comicBookCoverMetadata.path,
+                      ) +
+                      "/" +
+                      item.comicBookCoverMetadata.name
+                    }
+                    alt="Placeholder image"
+                  />
+                </figure>
+              </div>
+              <div className="card-content">
+                <div className="truncate">
+                  {item.comicBookCoverMetadata.name}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       );
