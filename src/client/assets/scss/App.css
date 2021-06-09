@@ -16299,6 +16299,22 @@ readers do not read off random characters that represent icons */
   padding: 0.375rem 1rem;
 }
 
+.min {
+  overflow: visible;
+}
+.min .tags {
+  display: inline;
+  margin-right: 5px;
+}
+.min .tags:first-child {
+  margin-left: 0;
+}
+.min pre {
+  border-radius: 0.4em;
+  margin: 10px 0 10px 0;
+  white-space: pre-wrap;
+}
+
 .card-container .card {
   max-width: 500px;
   margin: 0 0 15px 0;
@@ -16324,11 +16340,21 @@ readers do not read off random characters that represent icons */
   border-bottom-left-radius: 0.25em;
 }
 .card-container .card .is-horizontal .card-content {
+  align-self: center;
   flex: 1;
   padding-left: 1em;
   padding-top: 0;
   padding-bottom: 0;
   font-size: 0.8em;
+}
+.card-container .card .is-horizontal .card-content ul li.status {
+  margin-top: 10px;
+}
+.card-container .card .is-horizontal .card-content .truncate {
+  width: 400px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .card-container .card .is-horizontal .is-divider {
   margin-top: 1.5rem;

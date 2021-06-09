@@ -6,6 +6,7 @@ import { IFolderData } from "../shared/interfaces/comicinfo.interfaces";
 import Card from "./Card";
 import { io, Socket } from "socket.io-client";
 import { SOCKET_BASE_URI } from "../constants/endpoints";
+import DynamicList, { createCache } from "react-window-dynamic-list";
 
 interface IProps {
   matches: unknown;
@@ -46,6 +47,29 @@ class Import extends React.Component<IProps, IState> {
       this.props.fetchComicMetadata();
     }
   };
+
+  public cache = createCache();
+  public renderRow = ({ index, style }) => (
+    <div style={style} className="min is-size-7">
+      <span className="tag is-dark">{index}</span>
+      <div className="tags has-addons">
+        <span className="tag is-success">cover</span>
+        <span className="tag is-success is-light">
+          {this.props.garam[index].comicBookCoverMetadata.name}
+        </span>
+      </div>
+      imported from
+      <div className="tags has-addons">
+        <span className="tag is-success">path</span>
+        <span className="tag is-success is-light">
+          {this.props.garam[index].comicBookCoverMetadata.path}
+        </span>
+      </div>
+      <pre className="has-background-success-light">
+        {JSON.stringify(this.props.garam[index].dbImportResult, null, 2)}
+      </pre>
+    </div>
+  );
 
   public render() {
     return (
@@ -91,8 +115,16 @@ class Import extends React.Component<IProps, IState> {
           </p>
 
           {!isUndefined(this.state.folderWalkResults) ? (
-            <div className="card-container">
-              <Card comicBookCoversMetadata={this.props.garam} />
+            <div>
+              {/* <Card comicBookCoversMetadata={this.props.garam} /> */}
+              <DynamicList
+                data={this.props.garam}
+                cache={this.cache}
+                height={1000}
+                width={"100%"}
+              >
+                {this.renderRow}
+              </DynamicList>
             </div>
           ) : null}
         </section>

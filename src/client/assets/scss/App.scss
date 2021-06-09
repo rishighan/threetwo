@@ -23,6 +23,22 @@ $border-color: red;
   }
 }
 
+.min {
+  overflow: visible;
+  .tags {
+    display: inline;
+    margin-right: 5px;
+    margin-left: 5px;
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+  pre {
+    border-radius: 0.4em;
+    margin: 10px 0 10px 0;
+    white-space: pre-wrap;
+  }
+}
 .card-container {
   // display: grid;
   // grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -66,11 +82,24 @@ $border-color: red;
         }
       }
       .card-content {
+        align-self: center;
         flex: 1;
         padding-left: 1em;
         padding-top: 0;
         padding-bottom: 0;
         font-size: 0.8em;
+        ul {
+          li.status {
+            margin-top: 10px;
+          }
+        }
+
+        .truncate {
+          width: 400px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
       }
       .is-divider {
         margin-top: 1.5rem;

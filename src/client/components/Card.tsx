@@ -43,9 +43,26 @@ class Card extends React.Component<IProps, IState> {
                 </figure>
               </div>
               <div className="card-content">
-                <div className="truncate">
-                  {item.comicBookCoverMetadata.name}
-                </div>
+                <ul>
+                  <li className="has-text-weight-semibold">
+                    {item.comicBookCoverMetadata.name}
+                  </li>
+                  <li className="truncate">
+                    {item.comicBookCoverMetadata.path}
+                  </li>
+                  <li className="status">
+                    {item.dbImportResult.importStatus.isImported && (
+                      <div className="tags has-addons">
+                        <a className="tag">
+                          <span className="icon has-text-success-dark">
+                            <i className="fas fa-file-import"></i>
+                          </span>
+                        </a>
+                        <span className="tag is-success">Imported</span>
+                      </div>
+                    )}
+                  </li>
+                </ul>
               </div>
             </div>
           </div>

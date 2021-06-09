@@ -71,8 +71,4 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
       dataTransferred: true,
     });
   });
-
-  socket.on("comicBookCoverMetadataSent", (status) => {
-    console.log(status);
-  });
 };
