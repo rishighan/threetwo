@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { fetchComicBookMetadata } from "../actions/fileops.actions";
 import { IFolderData } from "../shared/interfaces/comicinfo.interfaces";
 import Card from "./Card";
+import { Collapse } from "react-collapse";
 import { io, Socket } from "socket.io-client";
 import { SOCKET_BASE_URI } from "../constants/endpoints";
 import DynamicList, { createCache } from "react-window-dynamic-list";
@@ -12,7 +13,7 @@ interface IProps {
   matches: unknown;
   fetchComicMetadata: any;
   path: string;
-  garam: any;
+  covers: any;
 }
 interface IState {
   folderWalkResults?: Array<IFolderData>;
@@ -49,25 +50,31 @@ class Import extends React.Component<IProps, IState> {
   };
 
   public cache = createCache();
+
   public renderRow = ({ index, style }) => (
     <div style={style} className="min is-size-7">
-      <span className="tag is-dark">{index}</span>
+      <span className="tag is-light">{index}</span>
       <div className="tags has-addons">
         <span className="tag is-success">cover</span>
         <span className="tag is-success is-light">
-          {this.props.garam[index].comicBookCoverMetadata.name}
+          {this.props.covers[index].comicBookCoverMetadata.name}
         </span>
       </div>
       imported from
       <div className="tags has-addons">
         <span className="tag is-success">path</span>
         <span className="tag is-success is-light">
-          {this.props.garam[index].comicBookCoverMetadata.path}
+          {this.props.covers[index].comicBookCoverMetadata.path}
         </span>
       </div>
-      <pre className="has-background-success-light">
-        {JSON.stringify(this.props.garam[index].dbImportResult, null, 2)}
-      </pre>
+      <div className="db-import-result-panel">
+        <pre className="has-background-success-light">
+          <span className="icon">
+            <i className="fas fa-database"></i>
+          </span>
+          {JSON.stringify(this.props.covers[index].dbImportResult, null, 2)}
+        </pre>
+      </div>
     </div>
   );
 
@@ -82,14 +89,14 @@ class Import extends React.Component<IProps, IState> {
               <p className="mb-2">
                 <span className="tag is-medium is-info is-light">
                   Import Only
-                </span>{" "}
+                </span>
                 will add comics identified from the mapped folder into the local
                 db.
               </p>
               <p>
                 <span className="tag is-medium is-info is-light">
                   Import and Tag
-                </span>{" "}
+                </span>
                 will scan the ComicVine, shortboxed APIs and import comics from
                 the mapped folder with the additional metadata.
               </p>
@@ -118,7 +125,7 @@ class Import extends React.Component<IProps, IState> {
             <div>
               {/* <Card comicBookCoversMetadata={this.props.garam} /> */}
               <DynamicList
-                data={this.props.garam}
+                data={this.props.covers}
                 cache={this.cache}
                 height={1000}
                 width={"100%"}
@@ -137,7 +144,7 @@ function mapStateToProps(state: IState) {
   console.log("state", state);
   return {
     // matches: state.comicInfo.searchResults,
-    garam: state.fileOps.comicBookMetadata,
+    covers: state.fileOps.comicBookMetadata,
   };
 }
 
