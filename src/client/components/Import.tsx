@@ -3,8 +3,6 @@ import { isUndefined } from "lodash";
 import { connect } from "react-redux";
 import { fetchComicBookMetadata } from "../actions/fileops.actions";
 import { IFolderData } from "../shared/interfaces/comicinfo.interfaces";
-import Card from "./Card";
-import { Collapse } from "react-collapse";
 import { io, Socket } from "socket.io-client";
 import { SOCKET_BASE_URI } from "../constants/endpoints";
 import DynamicList, { createCache } from "react-window-dynamic-list";
@@ -56,14 +54,14 @@ class Import extends React.Component<IProps, IState> {
       <span className="tag is-light">{index}</span>
       <div className="tags has-addons">
         <span className="tag is-success">cover</span>
-        <span className="tag is-success is-light">
+        <span className="tag is-success is-light has-text-weight-medium">
           {this.props.covers[index].comicBookCoverMetadata.name}
         </span>
       </div>
       imported from
       <div className="tags has-addons">
         <span className="tag is-success">path</span>
-        <span className="tag is-success is-light">
+        <span className="tag is-success is-light has-text-weight-medium">
           {this.props.covers[index].comicBookCoverMetadata.path}
         </span>
       </div>

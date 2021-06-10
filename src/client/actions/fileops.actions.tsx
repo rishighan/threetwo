@@ -8,6 +8,7 @@ import { io } from "socket.io-client";
 import {
   IMS_COMICBOOK_METADATA_FETCHED,
   IMS_SOCKET_CONNECTION_CONNECTED,
+  IMS_RECENT_COMICS_FETCHED,
 } from "../constants/action-types";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
@@ -61,7 +62,6 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
       extractionOptions,
       walkedFolders,
     },
-    opts: { garam: "pasha" },
   });
 
   socket.on("comicBookCoverMetadata", (data: IExtractedComicBookCoverFile) => {
@@ -71,4 +71,22 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
       dataTransferred: true,
     });
   });
+};
+
+export const getRecentlyImportedComicBooks = (options) => async (dispatch) => {
+  const { paginationOptions } = options;
+  return axios
+    .request({
+      url: "http://localhost:3000/api/import/getRecentlyImportedComicBooks",
+      method: "POST",
+      data: {
+        paginationOptions,
+      },
+    })
+    .then((response) => {
+      dispatch({
+        type: IMS_RECENT_COMICS_FETCHED,
+        data: response.data.docs,
+      });
+    });
 };

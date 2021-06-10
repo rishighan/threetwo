@@ -5,6 +5,8 @@ import {
   IMS_SOCKET_ERROR,
   IMS_RAW_IMPORT_SUCCESSFUL,
   IMS_RAW_IMPORT_FAILED,
+  IMS_RECENT_COMICS_FETCHED,
+  IMS_DATA_FETCH_ERROR,
 } from "../constants/action-types";
 const initialState = {
   dataTransferred: false,
@@ -36,6 +38,11 @@ function fileOpsReducer(state = initialState, action) {
       return {
         ...state,
         rawImportErorr: action.rawImportError,
+      };
+    case IMS_RECENT_COMICS_FETCHED:
+      return {
+        ...state,
+        recentComics: action.data,
       };
     default:
       return state;

@@ -16317,7 +16317,7 @@ readers do not read off random characters that represent icons */
 }
 
 .card-container .card {
-  max-width: 500px;
+  max-width: 200px;
   margin: 0 0 15px 0;
 }
 .card-container .card .is-horizontal {

@@ -3,7 +3,7 @@ import { IExtractedComicBookCoverFile } from "../../server/interfaces/folder.int
 import { map, isUndefined, isEmpty } from "lodash";
 
 interface IProps {
-  comicBookCoversMetadata: IExtractedComicBookCoverFile[];
+  comicBookCoversMetadata: IExtractedComicBookCoverFile;
 }
 interface IState {}
 
@@ -20,58 +20,38 @@ class Card extends React.Component<IProps, IState> {
     return input;
   };
   public drawCoverCard = (
-    metadata: IExtractedComicBookCoverFile[],
-  ): JSX.Element[] => {
-    return map(metadata, (item: any, idx: number) => {
-      return (
-        <div key={idx}>
-          <div className="card">
-            <div className="is-horizontal">
-              <div className="card-image">
-                <figure className="image">
-                  <img
-                    src={
-                      "http://localhost:3000" +
-                      this.removeLeadingPeriod(
-                        item.comicBookCoverMetadata.path,
-                      ) +
-                      "/" +
-                      item.comicBookCoverMetadata.name
-                    }
-                    alt="Placeholder image"
-                  />
-                </figure>
-              </div>
-              <div className="card-content">
-                <ul>
-                  <li className="has-text-weight-semibold">
-                    {item.comicBookCoverMetadata.name}
-                  </li>
-                  <li className="truncate">
-                    {item.comicBookCoverMetadata.path}
-                  </li>
-                  <li className="status">
-                    {item.dbImportResult.importStatus.isImported && (
-                      <div className="tags has-addons">
-                        <a className="tag">
-                          <span className="icon has-text-success-dark">
-                            <i className="fas fa-file-import"></i>
-                          </span>
-                        </a>
-                        <span className="tag is-success">Imported</span>
-                      </div>
-                    )}
-                  </li>
-                </ul>
-              </div>
+    metadata: IExtractedComicBookCoverFile,
+  ): JSX.Element => {
+    return (
+      <div>
+        <div className="card">
+          <div>
+            <div className="card-image">
+              <figure className="image">
+                <img
+                  src={
+                    "http://localhost:3000" +
+                    this.removeLeadingPeriod(metadata.path) +
+                    "/" +
+                    metadata.name
+                  }
+                  alt="Placeholder image"
+                />
+              </figure>
+            </div>
+            <div className="card-content">
+              <ul>
+                <li className="has-text-weight-semibold">{metadata.name}</li>
+              </ul>
             </div>
           </div>
         </div>
-      );
-    });
+      </div>
+    );
   };
 
   public render() {
+    console.log(this.props.comicBookCoversMetadata);
     return (
       <>
         {!isUndefined(this.props.comicBookCoversMetadata) &&
