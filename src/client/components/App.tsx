@@ -2,6 +2,7 @@ import * as React from "react";
 import { hot } from "react-hot-loader";
 import Dashboard from "./Dashboard";
 import Import from "./Import";
+import { ComicDetail } from "./ComicDetail";
 
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Navbar from "./Navbar";
@@ -20,6 +21,10 @@ class App extends React.Component<Record<string, unknown>, undefined> {
             <Route path="/import">
               <Import path={"./comics"} />
             </Route>
+            <Route
+              path={"/comic/details/:mongoObjId"}
+              component={ComicDetail}
+            />
           </Switch>
         </Router>
       </div>

@@ -1,15 +1,18 @@
 import * as React from "react";
 import { IExtractedComicBookCoverFile } from "../../server/interfaces/folder.interface";
-import { map, isUndefined, isEmpty } from "lodash";
+import { isUndefined, isEmpty } from "lodash";
+import { Link } from "react-router-dom";
 
 interface IProps {
   comicBookCoversMetadata: IExtractedComicBookCoverFile;
+  mongoObjId?: number;
 }
 interface IState {}
 
 class Card extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
+    console.log(props);
   }
   private removeLeadingPeriod = (input: string): string => {
     if (!isUndefined(this.props.comicBookCoversMetadata)) {
@@ -41,7 +44,9 @@ class Card extends React.Component<IProps, IState> {
             </div>
             <div className="card-content">
               <ul>
-                <li className="has-text-weight-semibold">{metadata.name}</li>
+                <Link to={"/comic/details/" + this.props.mongoObjId}>
+                  <li className="has-text-weight-semibold">{metadata.name}</li>
+                </Link>
               </ul>
             </div>
           </div>
@@ -51,7 +56,6 @@ class Card extends React.Component<IProps, IState> {
   };
 
   public render() {
-    console.log(this.props.comicBookCoversMetadata);
     return (
       <>
         {!isUndefined(this.props.comicBookCoversMetadata) &&

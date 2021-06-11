@@ -86,7 +86,7 @@ export const getRecentlyImportedComicBooks = (options) => async (dispatch) => {
     .then((response) => {
       dispatch({
         type: IMS_RECENT_COMICS_FETCHED,
-        data: response.data.docs,
+        data: response.data,
       });
     });
 };
