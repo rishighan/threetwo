@@ -1,5 +1,6 @@
 import * as React from "react";
 import { IExtractedComicBookCoverFile } from "../../server/interfaces/folder.interface";
+import { removeLeadingPeriod } from "../shared/utils/formatting.utils";
 import { isUndefined, isEmpty } from "lodash";
 import { Link } from "react-router-dom";
 
@@ -14,14 +15,7 @@ class Card extends React.Component<IProps, IState> {
     super(props);
     console.log(props);
   }
-  private removeLeadingPeriod = (input: string): string => {
-    if (!isUndefined(this.props.comicBookCoversMetadata)) {
-      if (input.charAt(0) == ".") {
-        input = input.substr(1);
-      }
-    }
-    return input;
-  };
+
   public drawCoverCard = (
     metadata: IExtractedComicBookCoverFile,
   ): JSX.Element => {
@@ -34,7 +28,7 @@ class Card extends React.Component<IProps, IState> {
                 <img
                   src={
                     "http://localhost:3000" +
-                    this.removeLeadingPeriod(metadata.path) +
+                    removeLeadingPeriod(metadata.path) +
                     "/" +
                     metadata.name
                   }

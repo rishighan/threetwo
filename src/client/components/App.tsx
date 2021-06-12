@@ -22,7 +22,7 @@ class App extends React.Component<Record<string, unknown>, undefined> {
               <Import path={"./comics"} />
             </Route>
             <Route
-              path={"/comic/details/:mongoObjId"}
+              path={"/comic/details/:comicObjectId"}
               component={ComicDetail}
             />
           </Switch>
