@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import ZeroState from "./ZeroState";
 import { RecentlyImported } from "./RecentlyImported";
 import { getRecentlyImportedComicBooks } from "../actions/fileops.actions";
-import { isUndefined } from "lodash";
 
 interface IProps {
   getRecentComics: Function;
@@ -15,9 +14,6 @@ interface IState {
 
 class Dashboard extends React.Component<IProps, IState> {
   componentDidMount() {
-    if (!isUndefined(this.props.recentComics)) {
-      console.log("asd");
-    }
     this.props.getRecentComics();
   }
   public render() {
