@@ -1,8 +1,5 @@
 import * as React from "react";
-import {
-  IComicVineSearchMatch,
-  IFolderData,
-} from "../shared/interfaces/comicinfo.interfaces";
+import { IComicVineSearchMatch, IFolderData } from "threetwo-ui-typings";
 import _ from "lodash";
 import { autoMatcher } from "../shared/utils/query.transformer";
 

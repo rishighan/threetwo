@@ -38,7 +38,8 @@
     "react-hooks-worker": "^1.0.0",
     "react-window-dynamic-list": "^2.3.5",
     "sharp": "^0.28.1",
-    "socket.io-client": "^4.1.2"
+    "socket.io-client": "^4.1.2",
+    "threetwo-ui-typings": "^1.0.1-0"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.10",

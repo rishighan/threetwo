@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IExtractedComicBookCoverFile } from "../../server/interfaces/folder.interface";
+import { IExtractedComicBookCoverFile } from "threetwo-ui-typings";
 import { removeLeadingPeriod } from "../shared/utils/formatting.utils";
 import { isUndefined, isEmpty } from "lodash";
 import { Link } from "react-router-dom";

@@ -11901,6 +11901,13 @@ text-table@^0.2.0, text-table@~0.2.0:
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=
 
+threetwo-ui-typings@^1.0.1-0:
+  version "1.0.1-0"
+  resolved "https://registry.yarnpkg.com/threetwo-ui-typings/-/threetwo-ui-typings-1.0.1-0.tgz#7bd3e8703c43458bb0e42dd2bd34b518043d34e7"
+  integrity sha512-APGV7WTDYsWl+XPNlP6jKIJcd7qNbRDfsmyExKIczrSIka52OU9I7uv+snC5RLEEH6bPjNHSGK5DuCgwTIWn4A==
+  dependencies:
+    typescript "^4.3.2"
+
 throat@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/throat/-/throat-5.0.0.tgz#c5199235803aad18754a667d659b5e72ce16764b"
@@ -12200,7 +12207,7 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typescript@^4.2.3:
+typescript@^4.2.3, typescript@^4.3.2:
   version "4.3.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.2.tgz#399ab18aac45802d6f2498de5054fcbbe716a805"
   integrity sha512-zZ4hShnmnoVnAHpVHWpTcxdv7dWP60S2FsydQLV8V5PbS3FifjWFFRiHSWpDJahly88PRyV5teTSLoq4eG7mKw==

@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import ZeroState from "./ZeroState";
 import { RecentlyImported } from "./RecentlyImported";
 import { getRecentlyImportedComicBooks } from "../actions/fileops.actions";
+import { isEmpty, isUndefined } from "lodash";
 
 interface IProps {
   getRecentComics: Function;

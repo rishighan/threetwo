@@ -25,11 +25,8 @@ SOFTWARE.
 */
 
 import _ from "lodash";
-import { IFolderData } from "../interfaces/comicinfo.interfaces";
+import { IFolderData } from "threetwo-ui-typings";
 import stringSimilarity from "string-similarity";
 import { logger } from "../utils/log.utils";
 
-
-export const autoMatcher = (query, matches) => {
-
-}
+export const autoMatcher = (query, matches) => {};

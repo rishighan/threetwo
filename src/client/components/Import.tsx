@@ -2,7 +2,7 @@ import * as React from "react";
 import { isUndefined } from "lodash";
 import { connect } from "react-redux";
 import { fetchComicBookMetadata } from "../actions/fileops.actions";
-import { IFolderData } from "../shared/interfaces/comicinfo.interfaces";
+import { IFolderData } from "threetwo-ui-typings";
 import { io, Socket } from "socket.io-client";
 import { SOCKET_BASE_URI } from "../constants/endpoints";
 import DynamicList, { createCache } from "react-window-dynamic-list";
@@ -34,6 +34,15 @@ class Import extends React.Component<IProps, IState> {
     });
   }
 
+  /**
+   * This initializes a socket.io connection instance with supplied configuration
+   *
+   * @return {void} A good string
+   *
+   * @example
+   *
+   *     initiateSocketConnection()
+   */
   public initiateSocketConnection = () => {
     if (typeof this.props.path !== "undefined") {
       socket = io(SOCKET_BASE_URI, {
@@ -121,7 +130,6 @@ class Import extends React.Component<IProps, IState> {
 
           {!isUndefined(this.state.folderWalkResults) ? (
             <div>
-              {/* <Card comicBookCoversMetadata={this.props.garam} /> */}
               <DynamicList
                 data={this.props.covers}
                 cache={this.cache}
