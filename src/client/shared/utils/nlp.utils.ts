@@ -8,7 +8,12 @@ nlp.extend(sentences);
 nlp.extend(numbers);
 nlp.extend(dates);
 
-export function tokenize(inputString) {
+/**
+ * Tokenizes a search string
+ * @function
+ * @param {string} inputString - The string used to search against CV, Shortboxed, and other APIs.
+ */
+export const tokenize = (inputString) => {
   const doc = nlp(inputString);
   const sentence = doc.sentences().json();
   const number = doc.numbers().fractions();
@@ -41,7 +46,7 @@ export function tokenize(inputString) {
     },
   };
   return queryObject;
-}
+};
 
 export function refineQuery(queryString) {
   const queryObj = tokenize(queryString);

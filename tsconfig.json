@@ -3,29 +3,20 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
+    "noImplicitAny": false,
     "target": "es2019",
     "jsx": "react",
     "module": "commonjs",
     "sourceMap": true,
     "outDir": "./dist/",
     "skipLibCheck": true,
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext",
-      "webworker"
-    ]
+    "lib": ["dom", "dom.iterable", "esnext", "webworker"]
   },
   "settings": {
     "eslint.workingDirectories": [
       { "directory": "./node_modules", "changeProcessCWD": true }
     ]
   },
-  "exclude": [
-    "./src/server "
-  ],
-  "include": [
-    "./src/client/*",
-    "./src/client/types/**/*.d.ts"
-  ]
+  "exclude": ["./src/server "],
+  "include": ["./src/client/*", "./src/client/types/**/*.d.ts"]
 }

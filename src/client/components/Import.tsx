@@ -1,3 +1,4 @@
+//@ts-ignore
 import * as React from "react";
 import { isUndefined } from "lodash";
 import { connect } from "react-redux";
@@ -20,11 +21,24 @@ interface IState {
 }
 let socket: Socket;
 class Import extends React.Component<IProps, IState> {
+  /**
+   * Returns the average of two numbers.
+   *
+   * @remarks
+   * This method is part of the {@link core-library#Statistics | Statistics subsystem}.
+   *
+   * @param x - The first input number
+   * @param y - The second input number
+   * @returns The arithmetic mean of `x` and `y`
+   *
+   * @beta
+   */
   constructor(props: IProps) {
     super(props);
     this.state = {
       folderWalkResults: [],
-      searchPaneIndex: undefined,
+      searchPaneIndex: 0,
+      fileOps: [],
     };
   }
 
@@ -34,15 +48,6 @@ class Import extends React.Component<IProps, IState> {
     });
   }
 
-  /**
-   * This initializes a socket.io connection instance with supplied configuration
-   *
-   * @return {void} A good string
-   *
-   * @example
-   *
-   *     initiateSocketConnection()
-   */
   public initiateSocketConnection = () => {
     if (typeof this.props.path !== "undefined") {
       socket = io(SOCKET_BASE_URI, {

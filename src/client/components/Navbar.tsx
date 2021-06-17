@@ -1,9 +1,10 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { RootState } from "threetwo-ui-typings";
 
 const Navbar: React.FunctionComponent = (props) => {
-  const socketConnection = useSelector((state) => state.fileOps);
+  const socketConnection = useSelector((state: RootState) => state.fileOps);
 
   return (
     <nav className="navbar ">

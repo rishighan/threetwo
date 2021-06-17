@@ -3,12 +3,15 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import Card from "./Card";
 import { isEmpty, isUndefined } from "lodash";
+import { IExtractedComicBookCoverFile } from "threetwo-ui-typings";
 type ComicDetailProps = {};
 
 export const ComicDetail = ({}: ComicDetailProps) => {
   const [page, setPage] = useState(1);
-  const [comicDetail, setComicDetail] = useState([]);
-  const { comicObjectId } = useParams();
+  const [comicDetail, setComicDetail] = useState<{
+    rawFileDetails: IExtractedComicBookCoverFile;
+  }>();
+  const { comicObjectId } = useParams<{ comicObjectId: string }>();
 
   useEffect(() => {
     axios

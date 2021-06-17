@@ -10,7 +10,8 @@
     "client": "webpack serve --mode development --devtool inline-source-map --hot",
     "server": "tsc -p tsconfig.server.json && node server/",
     "dev": "concurrently \"nodemon\" \"npm run client\"",
-    "server-dev": "nodemon"
+    "server-dev": "nodemon",
+    "docs": "jsdoc -c jsdoc.json"
   },
   "author": "Rishi Ghan",
   "license": "MIT",
@@ -26,6 +27,7 @@
     "@types/socket.io-client": "^3.0.0",
     "@types/through2": "^2.0.36",
     "babel-polyfill": "^6.26.0",
+    "better-docs": "^2.3.2",
     "comlink-loader": "^2.0.0",
     "event-stream": "^4.0.1",
     "express": "^4.17.1",

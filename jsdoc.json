@@ -1,0 +1,22 @@
+{
+  "tags": { "allowUnknownTags": true },
+  "source": {
+    "include": ["./src/"],
+    "includePattern": "\\.(jsx|js|ts|tsx)$"
+  },
+  "plugins": [
+    "better-docs/component",
+    "better-docs/category",
+    "plugins/markdown",
+    "node_modules/better-docs/typescript"
+  ],
+  "templates": { "better-docs": { "name": "My React components" } },
+  "opts": {
+    "destination": "docs/",
+    "readme": "README.md",
+    "recurse": true,
+    "encoding": "utf8",
+    "verbose": true,
+    "template": "node_modules/better-docs"
+  }
+}
