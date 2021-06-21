@@ -4,6 +4,7 @@ import axios from "axios";
 import Card from "./Card";
 import { isEmpty, isUndefined } from "lodash";
 import { IExtractedComicBookCoverFile } from "threetwo-ui-typings";
+import { fetchComicVineMatches } from "../actions/fileops.actions";
 type ComicDetailProps = {};
 
 export const ComicDetail = ({}: ComicDetailProps) => {
@@ -35,7 +36,24 @@ export const ComicDetail = ({}: ComicDetailProps) => {
       {!isEmpty(comicDetail) && !isUndefined(comicDetail) && (
         <>
           <h1 className="title">{comicDetail.rawFileDetails.name}</h1>
-          <Card comicBookCoversMetadata={comicDetail.rawFileDetails} />
+          <div className="columns">
+            <div className="column is-narrow">
+              <Card comicBookCoversMetadata={comicDetail.rawFileDetails} />
+            </div>
+            <div className="column">
+              <button
+                className="button"
+                onClick={fetchComicVineMatches(comicDetail, {
+                  bastard: "fucking guy",
+                })}
+              >
+                <span className="icon">
+                  <i className="fas fa-magic"></i>
+                </span>
+                <span>Match on Comic Vine</span>
+              </button>
+            </div>
+          </div>
         </>
       )}
     </section>

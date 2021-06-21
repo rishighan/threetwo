@@ -7,6 +7,7 @@ import {
   IMS_SOCKET_CONNECTION_CONNECTED,
   IMS_RECENT_COMICS_FETCHED,
 } from "../constants/action-types";
+import { tokenize } from "../shared/utils/nlp.utils";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
@@ -25,7 +26,8 @@ export async function walkFolder(path: string): Promise<Array<IFolderData>> {
     .catch((error) => error);
 }
 /**
- * Renders an entire login page with email and password fields
+ * Fetches comic book covers along with some metadata
+ *
  * using {@link Renderer}.
  *
  * Used by external plugins
@@ -96,4 +98,8 @@ export const getRecentlyImportedComicBooks = (options) => async (dispatch) => {
         data: response.data,
       });
     });
+};
+
+export const fetchComicVineMatches = (searchPayload, options) => (dispatch) => {
+  console.log(searchPayload);
 };

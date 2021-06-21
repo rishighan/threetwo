@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import ZeroState from "./ZeroState";
 import { RecentlyImported } from "./RecentlyImported";
 import { getRecentlyImportedComicBooks } from "../actions/fileops.actions";
-import { isEmpty, isUndefined } from "lodash";
+import { isEmpty } from "lodash";
 
 interface IProps {
   getRecentComics: Function;
@@ -22,9 +22,13 @@ class Dashboard extends React.Component<IProps, IState> {
       <div className="container">
         <section className="section">
           <h1 className="title">Dashboard</h1>
-          <h2 className="subtitle">Recently Imported</h2>
-          {this.props.recentComics ? (
-            <RecentlyImported comicBookCovers={this.props.recentComics} />
+
+          {!isEmpty(this.props.recentComics) &&
+          !isEmpty(this.props.recentComics.docs) ? (
+            <>
+              <h2 className="subtitle">Recently Imported</h2>
+              <RecentlyImported comicBookCovers={this.props.recentComics} />
+            </>
           ) : (
             <ZeroState
               header={"Set the source directory"}
@@ -40,7 +44,6 @@ class Dashboard extends React.Component<IProps, IState> {
 }
 
 function mapStateToProps(state: IState) {
-  console.log("state", state);
   return {
     recentComics: state.fileOps.recentComics,
   };
