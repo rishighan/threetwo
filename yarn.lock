@@ -12339,7 +12339,7 @@ text-table@^0.2.0, text-table@~0.2.0:
 
 threetwo-ui-typings@^1.0.1:
   version "1.0.1"
-  resolved "https://registry.yarnpkg.com/threetwo-ui-typings/-/threetwo-ui-typings-1.0.1.tgz#5e1c4aca9342e1655ef471fe2e50752bb844b788"
+  resolved "https://registry.npmjs.org/threetwo-ui-typings/-/threetwo-ui-typings-1.0.1.tgz"
   integrity sha512-g5FWa069AT1WfUHHEVFOQ1q6cfK+9UOzewfKblheuDBSsGN/e89MJMEVfuInBaHgxHM32/P+mNUFBqnBoeRSLQ==
   dependencies:
     typescript "^4.3.2"

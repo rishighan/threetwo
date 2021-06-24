@@ -102,4 +102,5 @@ export const getRecentlyImportedComicBooks = (options) => async (dispatch) => {
 
 export const fetchComicVineMatches = (searchPayload, options) => (dispatch) => {
   console.log(searchPayload);
+  tokenize(searchPayload);
 };
