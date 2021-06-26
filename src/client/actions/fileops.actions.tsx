@@ -7,7 +7,8 @@ import {
   IMS_SOCKET_CONNECTION_CONNECTED,
   IMS_RECENT_COMICS_FETCHED,
 } from "../constants/action-types";
-import { tokenize } from "../shared/utils/nlp.utils";
+import { refineQuery } from "../shared/utils/nlp.utils";
+import { assign } from "lodash";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
@@ -101,6 +102,25 @@ export const getRecentlyImportedComicBooks = (options) => async (dispatch) => {
 };
 
 export const fetchComicVineMatches = (searchPayload, options) => (dispatch) => {
-  console.log(searchPayload);
-  tokenize(searchPayload);
+  try {
+    const issueString = searchPayload.rawFileDetails.path.split("/").pop();
+    let seriesSearchQuery = {};
+    const issueSearchQuery = refineQuery(issueString);
+    if (searchPayload.rawFileDetails.containedIn !== "comics") {
+      seriesSearchQuery = refineQuery(
+        searchPayload.rawFileDetails.containedIn.split("/").pop(),
+      );
+    }
+    console.log({
+      issue: issueSearchQuery.searchParams,
+      series: seriesSearchQuery.searchParams,
+    });
+    axios.request({
+      url: "",
+      method: "POST",
+    });
+    return { issueSearchQuery, series: seriesSearchQuery.searchParams };
+  } catch (error) {
+    console.log(error);
+  }
 };

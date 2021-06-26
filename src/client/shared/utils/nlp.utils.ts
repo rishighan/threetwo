@@ -13,8 +13,7 @@ nlp.extend(dates);
  * @function
  * @param {string} inputString - The string used to search against CV, Shortboxed, and other APIs.
  */
-export const tokenize = (searchCriteriaPayload) => {
-  const { inputString } = searchCriteriaPayload;
+export const tokenize = (inputString) => {
   const doc = nlp(inputString);
   const sentence = doc.sentences().json();
   const number = doc.numbers().fractions();
@@ -40,8 +39,12 @@ export const tokenize = (searchCriteriaPayload) => {
     /^\s*\d+(\.\s+?|\s*-?\s*)/gim,
   );
 
-  const issues = inputString.match(/issue(\W?)(\_?)(\d+)/gi);
-  const issueHashes = inputString.match(/\#\d/gi);
+  let issueNumbers = "";
+  const issues = inputString.match(/(^|[_\s#])(-?\d*\.?\d\w*)/gi);
+  if (!_.isEmpty(issues)) {
+    issueNumbers = issues[0].trim();
+  }
+  // const issueHashes = inputString.match(/\#\d/gi);
   const yearMatches = inputString.match(/\d{4}/gi);
 
   const sentenceToProcess = sentence[0].normal.replace(/_/g, " ");
@@ -51,17 +54,22 @@ export const tokenize = (searchCriteriaPayload) => {
     .split(" ");
 
   const queryObject = {
-    comicbook_identifiers: {
-      issues,
-      issueHashes,
+    comicbook_identifier_tokens: {
+      issueNumbers,
       chapters,
+      pageCounts,
+      parantheses,
+      curlyBraces,
+      squareBrackets,
+      genericNumericRange,
+      hyphenatedNumericRange,
+      readingListIndicators,
       volumes,
-      issueRanges: number,
     },
     years: {
       yearMatches,
     },
-    sentences: {
+    sentence_tokens: {
       detailed: sentence,
       normalized: normalizedSentence,
     },
@@ -69,15 +77,24 @@ export const tokenize = (searchCriteriaPayload) => {
   return queryObject;
 };
 
-export function refineQuery(queryString) {
-  const queryObj = tokenize(queryString);
+export const refineQuery = (inputString) => {
+  const queryObj = tokenize(inputString);
   const removedYears = _.xor(
-    queryObj.sentences.normalized,
+    queryObj.sentence_tokens.normalized,
     queryObj.years.yearMatches,
   );
   return {
-    tokenized: removedYears,
-    normalized: removedYears.join(" "),
-    meta: queryObj,
+    searchParams: {
+      searchTerms: {
+        name: queryObj.sentence_tokens.detailed[0].text,
+        number: queryObj.comicbook_identifier_tokens.issueNumbers,
+      },
+      year: queryObj.years,
+    },
+    meta: {
+      queryObj,
+      tokenized: removedYears,
+      normalized: removedYears.join(" "),
+    },
   };
-}
+};
