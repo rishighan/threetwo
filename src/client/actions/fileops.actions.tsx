@@ -115,10 +115,23 @@ export const fetchComicVineMatches = (searchPayload, options) => (dispatch) => {
       issue: issueSearchQuery.searchParams,
       series: seriesSearchQuery.searchParams,
     });
-    axios.request({
-      url: "",
-      method: "POST",
-    });
+    axios
+      .request({
+        url: "http://localhost:3080/api/comicvine/fetchseries",
+        method: "POST",
+        data: {
+          format: "json",
+          sort: "name%3Aasc",
+          query: issueSearchQuery.searchParams.searchTerms.name,
+          fieldList: "",
+          limit: "10",
+          offset: "5",
+          resources: "issue",
+        },
+      })
+      .then((response) => {
+        console.log("CV says to fuck off:", response);
+      });
     return { issueSearchQuery, series: seriesSearchQuery.searchParams };
   } catch (error) {
     console.log(error);
