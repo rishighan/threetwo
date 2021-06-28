@@ -1,4 +1,3 @@
-//@ts-ignore
 import * as React from "react";
 import { isUndefined } from "lodash";
 import { connect } from "react-redux";

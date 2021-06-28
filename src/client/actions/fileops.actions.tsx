@@ -6,7 +6,10 @@ import {
   IMS_COMICBOOK_METADATA_FETCHED,
   IMS_SOCKET_CONNECTION_CONNECTED,
   IMS_RECENT_COMICS_FETCHED,
+  CV_API_CALL_IN_PROGRESS,
+  CV_SEARCH_SUCCESS,
 } from "../constants/action-types";
+
 import { refineQuery } from "../shared/utils/nlp.utils";
 import { assign } from "lodash";
 
@@ -101,7 +104,7 @@ export const getRecentlyImportedComicBooks = (options) => async (dispatch) => {
     });
 };
 
-export const fetchComicVineMatches = (searchPayload, options) => (dispatch) => {
+export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
   try {
     const issueString = searchPayload.rawFileDetails.path.split("/").pop();
     let seriesSearchQuery = {};
@@ -111,10 +114,6 @@ export const fetchComicVineMatches = (searchPayload, options) => (dispatch) => {
         searchPayload.rawFileDetails.containedIn.split("/").pop(),
       );
     }
-    console.log({
-      issue: issueSearchQuery.searchParams,
-      series: seriesSearchQuery.searchParams,
-    });
     axios
       .request({
         url: "http://localhost:3080/api/comicvine/fetchseries",
@@ -130,9 +129,14 @@ export const fetchComicVineMatches = (searchPayload, options) => (dispatch) => {
         },
       })
       .then((response) => {
-        console.log("CV says to fuck off:", response);
+        dispatch({
+          type: CV_SEARCH_SUCCESS,
+          searchResults: response.data,
+        });
       });
-    return { issueSearchQuery, series: seriesSearchQuery.searchParams };
+    {
+      /* return { issueSearchQuery, series: seriesSearchQuery.searchParams }; */
+    }
   } catch (error) {
     console.log(error);
   }

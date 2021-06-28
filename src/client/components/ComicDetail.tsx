@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Card from "./Card";
+import MatchResult from "./MatchResult";
 import { isEmpty, isUndefined } from "lodash";
-import { IExtractedComicBookCoverFile } from "threetwo-ui-typings";
+import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
 import { Drawer } from "antd";
 import "antd/dist/antd.css";
+
+import { useDispatch, useSelector } from "react-redux";
 
 type ComicDetailProps = {};
 
@@ -16,15 +19,11 @@ export const ComicDetail = ({}: ComicDetailProps) => {
   const [comicDetail, setComicDetail] = useState<{
     rawFileDetails: IExtractedComicBookCoverFile;
   }>();
+  const comicVineSearchResults = useSelector(
+    (state: RootState) => state.comicInfo.searchResults,
+  );
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
 
-  const showDrawer = () => {
-    setVisible(true);
-  };
-
-  const onClose = () => {
-    setVisible(false);
-  };
   useEffect(() => {
     axios
       .request({
@@ -36,11 +35,21 @@ export const ComicDetail = ({}: ComicDetailProps) => {
         },
       })
       .then((response) => {
-        console.log("fetched", response);
         setComicDetail(response.data);
       })
       .catch((error) => console.log(error));
   }, [page]);
+
+  const dispatch = useDispatch();
+
+  const openDrawerWithCVMatches = useCallback(() => {
+    setVisible(true);
+    dispatch(fetchComicVineMatches(comicDetail));
+  }, [dispatch, comicDetail, comicVineSearchResults]);
+
+  const onClose = () => {
+    setVisible(false);
+  };
 
   return (
     <section className="container">
@@ -52,7 +61,7 @@ export const ComicDetail = ({}: ComicDetailProps) => {
               <Card comicBookCoversMetadata={comicDetail.rawFileDetails} />
             </div>
             <div className="column">
-              <button className="button" onClick={showDrawer}>
+              <button className="button" onClick={openDrawerWithCVMatches}>
                 <span className="icon">
                   <i className="fas fa-magic"></i>
                 </span>
@@ -69,9 +78,11 @@ export const ComicDetail = ({}: ComicDetailProps) => {
             onClose={onClose}
             visible={visible}
           >
-            <p>Some contents...</p>
-            <p>Some contents...</p>
-            <p>Some contents...</p>
+            <div className="search-results-container">
+              {!isEmpty(comicVineSearchResults) && (
+                <MatchResult matchData={comicVineSearchResults} />
+              )}
+            </div>
           </Drawer>
         </>
       )}

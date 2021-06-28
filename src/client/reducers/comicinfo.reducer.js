@@ -3,7 +3,7 @@ import {
   CV_SEARCH_SUCCESS,
 } from "../constants/action-types";
 const initialState = {
-  showResultsPane: false,
+  searchResults: [],
 };
 
 function comicinfoReducer(state = initialState, action) {
@@ -12,13 +12,11 @@ function comicinfoReducer(state = initialState, action) {
       return {
         ...state,
         result: {},
-        showResultsPane: false,
       };
     case CV_SEARCH_SUCCESS:
       return {
         ...state,
-        searchResults: action.result,
-        showResultsPane: true,
+        searchResults: action.searchResults.results,
       };
     default:
       return state;

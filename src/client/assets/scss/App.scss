@@ -114,11 +114,11 @@ $border-color: red;
 // comicvine search results
 .search-results-container {
   margin: 15px 0 0 0;
-  border: 1px solid hsl(0, 0%, 98%);
-  border-radius: 10px;
   overflow: hidden;
-  box-shadow: $box-shadow;
 
+  table {
+    width: 100%;
+  }
   > :nth-of-type(odd) {
     background-color: hsl(0, 0%, 98%);
   }

@@ -16316,6 +16316,19 @@ readers do not read off random characters that represent icons */
   white-space: pre-wrap;
 }
 
+.card {
+  max-width: 200px;
+}
+.card .truncate {
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card img {
+  max-width: 200px;
+}
+
 .card-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -16324,23 +16337,56 @@ readers do not read off random characters that represent icons */
 }
 .card-container .card {
   max-width: 200px;
+  margin: 0 0 15px 0;
 }
-.card-container .card .truncate {
-  width: 100px;
+.card-container .card .is-horizontal {
+  flex-direction: row;
+  display: flex;
+  flex-basis: 50ex;
+  flex-grow: 0;
+  flex-shrink: 1;
+  box-shadow: none;
+}
+.card-container .card .is-horizontal .card-image {
+  align-self: center;
+}
+.card-container .card .is-horizontal .card-image .image {
+  max-width: 60px;
+}
+.card-container .card .is-horizontal .card-image .image img {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: 0.25em;
+  border-bottom-left-radius: 0.25em;
+}
+.card-container .card .is-horizontal .card-content {
+  align-self: center;
+  flex: 1;
+  padding-left: 1em;
+  padding-top: 0;
+  padding-bottom: 0;
+  font-size: 0.8em;
+}
+.card-container .card .is-horizontal .card-content ul li.status {
+  margin-top: 10px;
+}
+.card-container .card .is-horizontal .card-content .truncate {
+  width: 400px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.card-container .card img {
-  max-width: 200px;
+.card-container .card .is-horizontal .is-divider {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .search-results-container {
   margin: 15px 0 0 0;
-  border: 1px solid #fafafa;
-  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
+}
+.search-results-container table {
+  width: 100%;
 }
 .search-results-container > :nth-of-type(odd) {
   background-color: #fafafa;
