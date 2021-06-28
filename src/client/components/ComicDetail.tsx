@@ -5,15 +5,26 @@ import Card from "./Card";
 import { isEmpty, isUndefined } from "lodash";
 import { IExtractedComicBookCoverFile } from "threetwo-ui-typings";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
+import { Drawer } from "antd";
+import "antd/dist/antd.css";
+
 type ComicDetailProps = {};
 
 export const ComicDetail = ({}: ComicDetailProps) => {
   const [page, setPage] = useState(1);
+  const [visible, setVisible] = useState(false);
   const [comicDetail, setComicDetail] = useState<{
     rawFileDetails: IExtractedComicBookCoverFile;
   }>();
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
 
+  const showDrawer = () => {
+    setVisible(true);
+  };
+
+  const onClose = () => {
+    setVisible(false);
+  };
   useEffect(() => {
     axios
       .request({
@@ -41,12 +52,7 @@ export const ComicDetail = ({}: ComicDetailProps) => {
               <Card comicBookCoversMetadata={comicDetail.rawFileDetails} />
             </div>
             <div className="column">
-              <button
-                className="button"
-                onClick={fetchComicVineMatches(comicDetail, {
-                  bastard: "fucking guy",
-                })}
-              >
+              <button className="button" onClick={showDrawer}>
                 <span className="icon">
                   <i className="fas fa-magic"></i>
                 </span>
@@ -54,6 +60,19 @@ export const ComicDetail = ({}: ComicDetailProps) => {
               </button>
             </div>
           </div>
+
+          <Drawer
+            title="ComicVine Search Results"
+            placement="right"
+            width={640}
+            closable={false}
+            onClose={onClose}
+            visible={visible}
+          >
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+          </Drawer>
         </>
       )}
     </section>
