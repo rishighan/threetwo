@@ -40,7 +40,7 @@ $border-color: red;
   }
 }
 
-.card {
+.generic-card {
   max-width: 200px;
 
   .truncate {
@@ -111,6 +111,20 @@ $border-color: red;
   }
 }
 
+.comic-vine-match-drawer {
+  // comic detail drawer
+  .search-criteria-card {
+    width: 100%;
+    .card-content {
+      padding: 10px;
+    }
+  }
+
+  .field {
+    margin: 10px 0 0 0;
+  }
+}
+
 // comicvine search results
 .search-results-container {
   margin: 15px 0 0 0;
@@ -118,18 +132,20 @@ $border-color: red;
 
   table {
     width: 100%;
-  }
-  > :nth-of-type(odd) {
-    background-color: hsl(0, 0%, 98%);
+    tbody tr:nth-child(odd) {
+      background: #eee;
+      border-radius: 5px;
+    }
   }
 
   .search-result {
     display: flex;
     flex-direction: row;
     padding: 10px;
+    margin: 0 0 10px 0;
+
     .cover-image {
       border-radius: 5px;
-      margin: 0 0 10px 0;
     }
     .search-result-details {
       margin-left: 10px;

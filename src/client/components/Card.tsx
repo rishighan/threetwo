@@ -21,7 +21,7 @@ class Card extends React.Component<IProps, IState> {
   ): JSX.Element => {
     return (
       <div>
-        <div className="card">
+        <div className="card generic-card">
           <div>
             <div className="card-image">
               <figure className="image">

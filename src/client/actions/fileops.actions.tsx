@@ -132,6 +132,10 @@ export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
         dispatch({
           type: CV_SEARCH_SUCCESS,
           searchResults: response.data,
+          searchQueryObject: {
+            issue: issueSearchQuery,
+            series: seriesSearchQuery,
+          },
         });
       });
     {

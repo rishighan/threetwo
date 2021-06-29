@@ -4,6 +4,7 @@ import {
 } from "../constants/action-types";
 const initialState = {
   searchResults: [],
+  searchQuery: {},
 };
 
 function comicinfoReducer(state = initialState, action) {
@@ -14,9 +15,11 @@ function comicinfoReducer(state = initialState, action) {
         result: {},
       };
     case CV_SEARCH_SUCCESS:
+      console.log(action);
       return {
         ...state,
         searchResults: action.searchResults.results,
+        searchQuery: action.searchQueryObject,
       };
     default:
       return state;
