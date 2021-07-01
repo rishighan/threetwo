@@ -8,6 +8,7 @@ import {
   IMS_RECENT_COMICS_FETCHED,
   CV_API_CALL_IN_PROGRESS,
   CV_SEARCH_SUCCESS,
+  CV_CLEANUP,
 } from "../constants/action-types";
 
 import { refineQuery } from "../shared/utils/nlp.utils";
@@ -37,8 +38,6 @@ export async function walkFolder(path: string): Promise<Array<IFolderData>> {
  * Used by external plugins
  *
  * @param  {Object} options
- * @param  {String} options.action          login form action
- * @param  {String} [options.errorMessage]  optional messaga
  * @return {Promise<string>}                HTML of the page
  */
 export const fetchComicBookMetadata = (options) => async (dispatch) => {
@@ -138,10 +137,12 @@ export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
           },
         });
       });
-    {
-      /* return { issueSearchQuery, series: seriesSearchQuery.searchParams }; */
-    }
+
+    /* return { issueSearchQuery, series: seriesSearchQuery.searchParams }; */
   } catch (error) {
     console.log(error);
   }
+  dispatch({
+    type: "CV_CLEANUP",
+  });
 };

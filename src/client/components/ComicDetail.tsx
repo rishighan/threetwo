@@ -4,7 +4,6 @@ import axios from "axios";
 import Card from "./Card";
 import MatchResult from "./MatchResult";
 import ComicVineSearchForm from "./ComicVineSearchForm";
-import Collapsible from "react-collapsible";
 import { Divider } from "antd";
 import { isEmpty, isUndefined } from "lodash";
 import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";

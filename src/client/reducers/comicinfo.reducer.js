@@ -1,6 +1,7 @@
 import {
   CV_API_CALL_IN_PROGRESS,
   CV_SEARCH_SUCCESS,
+  CV_CLEANUP,
 } from "../constants/action-types";
 const initialState = {
   searchResults: [],
@@ -15,12 +16,13 @@ function comicinfoReducer(state = initialState, action) {
         result: {},
       };
     case CV_SEARCH_SUCCESS:
-      console.log(action);
       return {
         ...state,
         searchResults: action.searchResults.results,
         searchQuery: action.searchQueryObject,
       };
+    case CV_CLEANUP:
+      return initialState;
     default:
       return state;
   }
