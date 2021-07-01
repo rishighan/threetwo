@@ -4,6 +4,7 @@ comics/
 docs/
 userdata/
 dist/
+src/client/assets/scss/App.css
 server/
 node_modules/
 src/**/*.jsx
