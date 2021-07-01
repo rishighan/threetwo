@@ -117,11 +117,14 @@ $border-color: red;
     width: 100%;
     .card-content {
       padding: 10px;
+      .ant-divider-horizontal {
+        margin: 12px 0;
+      }
     }
   }
 
   .field {
-    margin: 10px 0 0 0;
+    margin: 5px 0 0 0;
   }
 }
 

@@ -16494,8 +16494,11 @@ readers do not read off random characters that represent icons */
 .comic-vine-match-drawer .search-criteria-card .card-content {
   padding: 10px;
 }
+.comic-vine-match-drawer .search-criteria-card .card-content .ant-divider-horizontal {
+  margin: 12px 0;
+}
 .comic-vine-match-drawer .field {
-  margin: 10px 0 0 0;
+  margin: 5px 0 0 0;
 }
 
 .search-results-container {

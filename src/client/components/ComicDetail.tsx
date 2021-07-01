@@ -3,6 +3,9 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import Card from "./Card";
 import MatchResult from "./MatchResult";
+import ComicVineSearchForm from "./ComicVineSearchForm";
+import Collapsible from "react-collapsible";
+import { Divider } from "antd";
 import { isEmpty, isUndefined } from "lodash";
 import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
@@ -32,7 +35,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     axios
       .request({
         url: `http://localhost:3000/api/import/getComicBookById`,
-
         method: "POST",
         data: {
           id: comicObjectId,
@@ -65,6 +67,8 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
               <Card comicBookCoversMetadata={comicDetail.rawFileDetails} />
             </div>
             <div className="column">
+              <p>{comicDetail.rawFileDetails.containedIn}</p>
+              <p>{comicDetail.rawFileDetails.fileSize}</p>
               <button className="button" onClick={openDrawerWithCVMatches}>
                 <span className="icon">
                   <i className="fas fa-magic"></i>
@@ -87,6 +91,8 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
             !isUndefined(comicVineSearchQueryObject) ? (
               <div className="card search-criteria-card">
                 <div className="card-content">
+                  <ComicVineSearchForm />
+                  <Divider />
                   <p className="is-size-6">Searching against:</p>
                   <div className="field is-grouped is-grouped-multiline">
                     <div className="control">
