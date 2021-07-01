@@ -1,7 +1,7 @@
 {
   "name": "threetwo",
   "version": "0.0.2",
-  "description": "ThreeTwo! A comic book curator and tagger.",
+  "description": "ThreeTwo! A comic book curator.",
   "main": "server/index.js",
   "typings": "server/index.js",
   "scripts": {
@@ -41,8 +41,7 @@
     "react-collapsible": "^2.8.3",
     "react-dom": "^17.0.1",
     "react-final-form": "^6.5.3",
-    "react-hooks-worker": "^1.0.0",
-    "react-loading-skeleton": "^2.2.0",
+    "react-spinners": "^0.11.0",
     "react-window-dynamic-list": "^2.3.5",
     "sharp": "^0.28.1",
     "socket.io-client": "^4.1.2",

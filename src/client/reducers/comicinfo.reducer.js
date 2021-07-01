@@ -6,6 +6,7 @@ import {
 const initialState = {
   searchResults: [],
   searchQuery: {},
+  inProgress: false,
 };
 
 function comicinfoReducer(state = initialState, action) {
@@ -13,16 +14,20 @@ function comicinfoReducer(state = initialState, action) {
     case CV_API_CALL_IN_PROGRESS:
       return {
         ...state,
-        result: {},
+        inProgress: true,
       };
     case CV_SEARCH_SUCCESS:
       return {
         ...state,
         searchResults: action.searchResults.results,
         searchQuery: action.searchQueryObject,
+        inProgress: false,
       };
     case CV_CLEANUP:
-      return initialState;
+      return {
+        searchResults: [],
+        searchQuery: {},
+      };
     default:
       return state;
   }

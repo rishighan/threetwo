@@ -136,7 +136,7 @@ $border-color: red;
   table {
     width: 100%;
     tbody tr:nth-child(odd) {
-      background: #eee;
+      background: #f6f6f6;
       border-radius: 5px;
     }
   }
@@ -153,5 +153,21 @@ $border-color: red;
     .search-result-details {
       margin-left: 10px;
     }
+  }
+}
+
+// progress
+.progress-indicator-container {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .indicator {
+    padding: 5px;
+    width: 120px;
+    height: 120px;
   }
 }

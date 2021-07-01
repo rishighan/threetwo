@@ -5,6 +5,8 @@ import Card from "./Card";
 import MatchResult from "./MatchResult";
 import ComicVineSearchForm from "./ComicVineSearchForm";
 import { Divider } from "antd";
+import { css } from "@emotion/react";
+import PuffLoader from "react-spinners/PuffLoader";
 import { isEmpty, isUndefined } from "lodash";
 import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
@@ -27,6 +29,9 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   );
   const comicVineSearchQueryObject = useSelector(
     (state: RootState) => state.comicInfo.searchQuery,
+  );
+  const comicVineAPICallProgress = useSelector(
+    (state: RootState) => state.comicInfo.inProgress,
   );
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
 
@@ -119,7 +124,13 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                   </div>
                 </div>
               </div>
-            ) : null}
+            ) : (
+              <div className="progress-indicator-container">
+                <div className="indicator">
+                  <PuffLoader loading={comicVineAPICallProgress} />
+                </div>
+              </div>
+            )}
 
             <div className="search-results-container">
               {!isEmpty(comicVineSearchResults) && (

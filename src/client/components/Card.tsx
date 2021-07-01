@@ -13,7 +13,6 @@ interface IState {}
 class Card extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
-    console.log(props);
   }
 
   public drawCoverCard = (

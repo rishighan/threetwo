@@ -113,6 +113,11 @@ export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
         searchPayload.rawFileDetails.containedIn.split("/").pop(),
       );
     }
+
+    dispatch({
+      type: CV_API_CALL_IN_PROGRESS,
+    });
+
     axios
       .request({
         url: "http://localhost:3080/api/comicvine/fetchseries",
@@ -143,6 +148,6 @@ export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
     console.log(error);
   }
   dispatch({
-    type: "CV_CLEANUP",
+    type: CV_CLEANUP,
   });
 };
