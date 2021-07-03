@@ -6,10 +6,6 @@ interface MatchResultProps {
 }
 
 export const MatchResult = (props: MatchResultProps) => {
-  useEffect(() => {
-    console.log("match", props.matchData);
-  }, [props.matchData]);
-
   return (
     <>
       <table>
@@ -26,8 +22,12 @@ export const MatchResult = (props: MatchResultProps) => {
                   <img className="cover-image" src={match.image.thumb_url} />
                 </td>
                 <td className="search-result-details">
+                  <div className="tag score is-primary is-medium is-pulled-right">
+                    {parseFloat(match.score).toFixed(2)}
+                  </div>
                   <div className="is-size-5">{match.name}</div>
                   <div className="is-size-6">{match.volume.name}</div>
+
                   <div className="field is-grouped is-grouped-multiline">
                     <div className="control">
                       <div className="tags has-addons">

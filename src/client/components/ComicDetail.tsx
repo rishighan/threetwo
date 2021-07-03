@@ -4,13 +4,14 @@ import axios from "axios";
 import Card from "./Card";
 import MatchResult from "./MatchResult";
 import ComicVineSearchForm from "./ComicVineSearchForm";
-import { Divider } from "antd";
+
 import { css } from "@emotion/react";
 import PuffLoader from "react-spinners/PuffLoader";
 import { isEmpty, isUndefined } from "lodash";
 import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
-import { Drawer } from "antd";
+import { Drawer, Divider } from "antd";
+const prettyBytes = require("pretty-bytes");
 import "antd/dist/antd.css";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -72,7 +73,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
             </div>
             <div className="column">
               <p>{comicDetail.rawFileDetails.containedIn}</p>
-              <p>{comicDetail.rawFileDetails.fileSize}</p>
+              <p>{prettyBytes(comicDetail.rawFileDetails.fileSize)}</p>
               <button className="button" onClick={openDrawerWithCVMatches}>
                 <span className="icon">
                   <i className="fas fa-magic"></i>

@@ -71,8 +71,14 @@ export const ComicVineSearchForm = () => {
             <div className="field-body">
               <div className="field">
                 <div className="control">
-                  <button type="submit" className="button is-info is-small">
-                    Apply Criteria
+                  <button
+                    type="submit"
+                    className="button is-info is-light is-outlined is-small"
+                  >
+                    <span className="icon">
+                      <i className="fas fa-hand-sparkles"></i>
+                    </span>
+                    <span>Search</span>
                   </button>
                 </div>
               </div>
@@ -85,7 +91,7 @@ export const ComicVineSearchForm = () => {
 
   return (
     <Collapsible
-      trigger={"Search Manually"}
+      trigger={"Match Manually"}
       triggerTagName="a"
       triggerClassName={"is-size-6"}
       triggerOpenedClassName={"is-size-6"}

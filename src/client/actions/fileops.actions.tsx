@@ -12,7 +12,8 @@ import {
 } from "../constants/action-types";
 
 import { refineQuery } from "../shared/utils/nlp.utils";
-import { assign } from "lodash";
+import { matchScorer } from "../shared/utils/searchmatchscorer.utils";
+import { assign, isNull } from "lodash";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
@@ -131,8 +132,18 @@ export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
           offset: "5",
           resources: "issue",
         },
+        transformResponse: [
+          (r) => {
+            const searchMatches = JSON.parse(r);
+            return matchScorer(searchMatches.results, {
+              issue: issueSearchQuery,
+              series: seriesSearchQuery,
+            });
+          },
+        ],
       })
       .then((response) => {
+        console.log(response);
         dispatch({
           type: CV_SEARCH_SUCCESS,
           searchResults: response.data,

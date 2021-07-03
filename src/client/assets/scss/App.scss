@@ -151,6 +151,10 @@ $border-color: red;
       border-radius: 5px;
     }
     .search-result-details {
+      width: 100%;
+      .score {
+        float: right;
+      }
       margin-left: 10px;
     }
   }
