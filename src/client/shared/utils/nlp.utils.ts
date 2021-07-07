@@ -8,6 +8,22 @@ nlp.extend(sentences);
 nlp.extend(numbers);
 nlp.extend(dates);
 
+export const preprocess = (inputString) => {
+  // see if the comic matches the following format, and if so, remove everything
+  // after the first number:
+  // "nnn series name #xx (etc) (etc)" -> "series name #xx (etc) (etc)"
+  const format1 = "124 series name #xx (etc) (etc)".match(
+    /^\s*(\d+)[\s._-]+?([^#]+)(\W+.*)/,
+  );
+
+  //   see if the comic matches the following format, and if so, remove everything
+  // after the first number that isn't in brackets:
+  // "series name #xxx - title (etc) (etc)" -> "series name #xxx (etc) (etc)
+  const format2 = "".match(
+    /^((?:[a-zA-Z,.-]+\s)+)(\#?(?:\d+[.0-9*])\s*(?:-))(.*((\(.*)?))$/gis,
+  );
+};
+
 /**
  * Tokenizes a search string
  * @function
@@ -20,8 +36,12 @@ export const tokenize = (inputString) => {
 
   // regexes to match constituent parts of the search string
   // and isolate the search terms
-  const chapters = inputString.match(/ch(a?p?t?e?r?)(\W?)(\_?)(\#?)(\d)/gi);
-  const volumes = inputString.match(
+
+  const chapters = inputString.replace(
+    /ch(a?p?t?e?r?)(\W?)(\_?)(\#?)(\d)/gi,
+    "",
+  );
+  const volumes = inputString.replace(
     /(\b(vo?l?u?m?e?)\.?)(\s*-|\s*_)?(\s*[0-9]+[.0-9a-z]*)/gi,
   );
   const pageCounts = inputString.match(

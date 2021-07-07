@@ -143,7 +143,6 @@ export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
         ],
       })
       .then((response) => {
-        console.log(response);
         dispatch({
           type: CV_SEARCH_SUCCESS,
           searchResults: response.data,
