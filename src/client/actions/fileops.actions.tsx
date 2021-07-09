@@ -127,9 +127,9 @@ export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
           format: "json",
           sort: "name%3Aasc",
           query: issueSearchQuery.searchParams.searchTerms.name,
-          fieldList: "",
+          fieldList: "id",
           limit: "10",
-          offset: "5",
+          offset: "0",
           resources: "issue",
         },
         transformResponse: [

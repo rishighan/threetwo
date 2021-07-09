@@ -2,13 +2,47 @@ import { default as nlp } from "compromise";
 import { default as dates } from "compromise-dates";
 import { default as sentences } from "compromise-sentences";
 import { default as numbers } from "compromise-numbers";
-import _ from "lodash";
+import xregexp from "xregexp";
+import { map, xor, isEmpty } from "lodash";
 
 nlp.extend(sentences);
 nlp.extend(numbers);
 nlp.extend(dates);
 
-export const preprocess = (inputString) => {
+interface M {
+  start: number;
+  end: number;
+  value: string;
+}
+
+function replaceRecursive(
+  text: string,
+  left: string,
+  right: string,
+  replacer: (match: string) => string,
+): string {
+  const r: M[] = xregexp.matchRecursive(text, left, right, "g", {
+    valueNames: [null, null, "match", null],
+  });
+  let offset = 0;
+  for (const m of r) {
+    const replacement = replacer(m.value);
+    text = replaceAt(text, m.start + offset, m.value.length, replacement);
+    offset += replacement.length - m.value.length;
+  }
+  return text;
+}
+
+function replaceAt(
+  string: string,
+  index: number,
+  length: number,
+  replacement: string,
+): string {
+  return string.substr(0, index) + replacement + string.substr(index + length);
+}
+
+export const preprocess = (inputString: string) => {
   // see if the comic matches the following format, and if so, remove everything
   // after the first number:
   // "nnn series name #xx (etc) (etc)" -> "series name #xx (etc) (etc)"
@@ -24,12 +58,17 @@ export const preprocess = (inputString) => {
   );
 };
 
+const recursivelyMatch = (regex, inputString) => {
+  const toReplace = xregexp.replace(inputString, regex, "");
+  return toReplace;
+};
+
 /**
  * Tokenizes a search string
  * @function
  * @param {string} inputString - The string used to search against CV, Shortboxed, and other APIs.
  */
-export const tokenize = (inputString) => {
+export const tokenize = (inputString: string) => {
   const doc = nlp(inputString);
   const sentence = doc.sentences().json();
   const number = doc.numbers().fractions();
@@ -49,6 +88,11 @@ export const tokenize = (inputString) => {
   );
 
   const parantheses = inputString.match(/\([^\(]*?\)/gi);
+  const foo = recursivelyMatch(
+    new RegExp(/\([^\(]*?\)/, "gi"),
+    "jagan milun sampatkar ((asdasd)(ASDASD)(sadasd))",
+  );
+  console.log(foo);
   const curlyBraces = inputString.match(/\{[^\{]*?\}/gi);
   const squareBrackets = inputString.match(/\[[^\[]*?\]/gi);
   const genericNumericRange = inputString.match(
@@ -61,7 +105,7 @@ export const tokenize = (inputString) => {
 
   let issueNumbers = "";
   const issues = inputString.match(/(^|[_\s#])(-?\d*\.?\d\w*)/gi);
-  if (!_.isEmpty(issues)) {
+  if (!isEmpty(issues)) {
     issueNumbers = issues[0].trim();
   }
   // const issueHashes = inputString.match(/\#\d/gi);
@@ -99,7 +143,7 @@ export const tokenize = (inputString) => {
 
 export const refineQuery = (inputString) => {
   const queryObj = tokenize(inputString);
-  const removedYears = _.xor(
+  const removedYears = xor(
     queryObj.sentence_tokens.normalized,
     queryObj.years.yearMatches,
   );
