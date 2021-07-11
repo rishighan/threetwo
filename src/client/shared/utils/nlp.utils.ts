@@ -58,11 +58,6 @@ export const preprocess = (inputString: string) => {
   );
 };
 
-const recursivelyMatch = (regex, inputString) => {
-  const toReplace = xregexp.replace(inputString, regex, "");
-  return toReplace;
-};
-
 /**
  * Tokenizes a search string
  * @function
@@ -75,24 +70,27 @@ export const tokenize = (inputString: string) => {
 
   // regexes to match constituent parts of the search string
   // and isolate the search terms
-
+  const foo = replaceRecursive(
+    "jagan sampatkar ((((asdasd)(Asdasd)(3019)))) (123) milun",
+    "\\(",
+    "\\)",
+    (match) => "",
+  );
+  console.log(foo);
   const chapters = inputString.replace(
     /ch(a?p?t?e?r?)(\W?)(\_?)(\#?)(\d)/gi,
     "",
   );
   const volumes = inputString.replace(
     /(\b(vo?l?u?m?e?)\.?)(\s*-|\s*_)?(\s*[0-9]+[.0-9a-z]*)/gi,
+    "",
   );
   const pageCounts = inputString.match(
     /\b[.,]?\s*\d+\s*(p|pg|pgs|pages)\b\s*/gi,
   );
 
   const parantheses = inputString.match(/\([^\(]*?\)/gi);
-  const foo = recursivelyMatch(
-    new RegExp(/\([^\(]*?\)/, "gi"),
-    "jagan milun sampatkar ((asdasd)(ASDASD)(sadasd))",
-  );
-  console.log(foo);
+
   const curlyBraces = inputString.match(/\{[^\{]*?\}/gi);
   const squareBrackets = inputString.match(/\[[^\[]*?\]/gi);
   const genericNumericRange = inputString.match(
