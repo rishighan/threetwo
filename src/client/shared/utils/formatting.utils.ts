@@ -4,3 +4,8 @@ export const removeLeadingPeriod = (input: string): string => {
   }
   return input;
 };
+
+export const escapePoundSymbol = (input: string): string => {
+  console.log(input.replace(/\#/gi, "%23"));
+  return input.replace(/\#/gi, "%23");
+};

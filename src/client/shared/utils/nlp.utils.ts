@@ -3,7 +3,7 @@ import { default as dates } from "compromise-dates";
 import { default as sentences } from "compromise-sentences";
 import { default as numbers } from "compromise-numbers";
 import xregexp from "xregexp";
-import { map, xor, isEmpty } from "lodash";
+import { map, xor, isEmpty, isNull } from "lodash";
 
 nlp.extend(sentences);
 nlp.extend(numbers);
@@ -70,13 +70,7 @@ export const tokenize = (inputString: string) => {
 
   // regexes to match constituent parts of the search string
   // and isolate the search terms
-  const foo = replaceRecursive(
-    "jagan sampatkar ((((asdasd)(Asdasd)(3019)))) (123) milun",
-    "\\(",
-    "\\)",
-    (match) => "",
-  );
-  console.log(foo);
+
   const chapters = inputString.replace(
     /ch(a?p?t?e?r?)(\W?)(\_?)(\#?)(\d)/gi,
     "",
@@ -85,18 +79,31 @@ export const tokenize = (inputString: string) => {
     /(\b(vo?l?u?m?e?)\.?)(\s*-|\s*_)?(\s*[0-9]+[.0-9a-z]*)/gi,
     "",
   );
-  const pageCounts = inputString.match(
+  const pageCounts = inputString.replace(
     /\b[.,]?\s*\d+\s*(p|pg|pgs|pages)\b\s*/gi,
+    "",
   );
 
-  const parantheses = inputString.match(/\([^\(]*?\)/gi);
+  // if the name has things like "4 of 5", remove the " of 5" part
+  // also, if the name has 3-6, remove the -6 part.  note that we'll
+  // try to handle the word "of" in a few common languages, like french/
+  // spanish (de), italian (di), german (von), dutch (van) or polish (z)
+  replaceRecursive(inputString, "\\(", "\\)", (match) => "");
+  replaceRecursive(inputString, "\\[", "\\]", (match) => "");
+  replaceRecursive(inputString, "\\{", "\\}", (match) => "");
+  const parantheses = inputString.replace(/\([^\(]*?\)/gi, "");
+  const curlyBraces = inputString.replace(/\{[^\{]*?\}/gi, "");
+  const squareBrackets = inputString.replace(/\[[^\[]*?\]/gi, "");
 
-  const curlyBraces = inputString.match(/\{[^\{]*?\}/gi);
-  const squareBrackets = inputString.match(/\[[^\[]*?\]/gi);
-  const genericNumericRange = inputString.match(
+  const genericNumericRange = inputString.replace(
     /([^\d]+)(\s*(of|de|di|von|van|z)\s*#*\d+)/gi,
+    "",
   );
-  const hyphenatedNumericRange = inputString.match(/([^\d])?(-\d+)/gi);
+  const hyphenatedIssueRange = inputString.match(/(\d)(-\d+)/gi);
+  if (!isNull(hyphenatedIssueRange) && hyphenatedIssueRange.length > 2) {
+    let issueNumber = hyphenatedIssueRange[0];
+  }
+
   const readingListIndicators = inputString.match(
     /^\s*\d+(\.\s+?|\s*-?\s*)/gim,
   );
@@ -124,7 +131,6 @@ export const tokenize = (inputString: string) => {
       curlyBraces,
       squareBrackets,
       genericNumericRange,
-      hyphenatedNumericRange,
       readingListIndicators,
       volumes,
     },

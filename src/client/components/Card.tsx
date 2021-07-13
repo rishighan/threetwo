@@ -1,6 +1,9 @@
 import * as React from "react";
 import { IExtractedComicBookCoverFile } from "threetwo-ui-typings";
-import { removeLeadingPeriod } from "../shared/utils/formatting.utils";
+import {
+  removeLeadingPeriod,
+  escapePoundSymbol,
+} from "../shared/utils/formatting.utils";
 import { isUndefined, isEmpty } from "lodash";
 import { Link } from "react-router-dom";
 
@@ -18,6 +21,13 @@ class Card extends React.Component<IProps, IState> {
   public drawCoverCard = (
     metadata: IExtractedComicBookCoverFile,
   ): JSX.Element => {
+    const filePath = encodeURI(
+      "http://localhost:3000" +
+        removeLeadingPeriod(metadata.path) +
+        "/" +
+        metadata.name,
+    );
+
     return (
       <div>
         <div className="card generic-card">
@@ -25,12 +35,7 @@ class Card extends React.Component<IProps, IState> {
             <div className="card-image">
               <figure className="image">
                 <img
-                  src={
-                    "http://localhost:3000" +
-                    removeLeadingPeriod(metadata.path) +
-                    "/" +
-                    metadata.name
-                  }
+                  src={escapePoundSymbol(filePath)}
                   alt="Placeholder image"
                 />
               </figure>

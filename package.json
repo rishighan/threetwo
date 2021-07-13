@@ -47,6 +47,7 @@
     "sharp": "^0.28.1",
     "socket.io-client": "^4.1.2",
     "threetwo-ui-typings": "^1.0.1",
+    "voca": "^1.4.0",
     "xregexp": "^5.0.2"
   },
   "devDependencies": {
