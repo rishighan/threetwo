@@ -6,6 +6,7 @@ import {
 } from "../shared/utils/formatting.utils";
 import { isUndefined, isEmpty } from "lodash";
 import { Link } from "react-router-dom";
+import ellipsize from "ellipsize";
 
 interface IProps {
   comicBookCoversMetadata: IExtractedComicBookCoverFile;
@@ -43,7 +44,9 @@ class Card extends React.Component<IProps, IState> {
             <div className="card-content">
               <ul>
                 <Link to={"/comic/details/" + this.props.mongoObjId}>
-                  <li className="has-text-weight-semibold">{metadata.name}</li>
+                  <li className="has-text-weight-semibold">
+                    {ellipsize(metadata.name, 18)}
+                  </li>
                 </Link>
               </ul>
             </div>

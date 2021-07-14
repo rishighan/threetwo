@@ -11,9 +11,8 @@ import {
   CV_CLEANUP,
 } from "../constants/action-types";
 
-import { refineQuery } from "../shared/utils/nlp.utils";
+import { refineQuery } from "../shared/utils/filenameparser.utils";
 import { matchScorer } from "../shared/utils/searchmatchscorer.utils";
-import { assign, isNull } from "lodash";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios

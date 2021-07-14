@@ -8,7 +8,6 @@ export const matchScorer = (searchMatches, searchQuery) => {
   // 4. Check if issue covers hash match strongly (score: +++)
   // 5. Check if issue year matches strongly (score: +)
   const score = 0;
-  console.log("yedvadkar", searchMatches);
   each(searchMatches, (match, idx) => {
     if (!isNull(searchQuery.issue.meta.normalized) && !isNull(match.name)) {
       const issueNameScore = stringSimilarity.compareTwoStrings(

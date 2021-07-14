@@ -3,6 +3,7 @@ import { default as dates } from "compromise-dates";
 import { default as sentences } from "compromise-sentences";
 import { default as numbers } from "compromise-numbers";
 import xregexp from "xregexp";
+import voca from "voca";
 import { map, xor, isEmpty, isNull } from "lodash";
 
 nlp.extend(sentences);
@@ -88,22 +89,23 @@ export const tokenize = (inputString: string) => {
   // also, if the name has 3-6, remove the -6 part.  note that we'll
   // try to handle the word "of" in a few common languages, like french/
   // spanish (de), italian (di), german (von), dutch (van) or polish (z)
-  replaceRecursive(inputString, "\\(", "\\)", (match) => "");
-  replaceRecursive(inputString, "\\[", "\\]", (match) => "");
-  replaceRecursive(inputString, "\\{", "\\}", (match) => "");
-  const parantheses = inputString.replace(/\([^\(]*?\)/gi, "");
-  const curlyBraces = inputString.replace(/\{[^\{]*?\}/gi, "");
-  const squareBrackets = inputString.replace(/\[[^\[]*?\]/gi, "");
+  replaceRecursive(inputString, "\\(", "\\)", () => "");
+  replaceRecursive(inputString, "\\[", "\\]", () => "");
+  replaceRecursive(inputString, "\\{", "\\}", () => "");
+  inputString.replace(/\([^\(]*?\)/gi, "");
+  inputString.replace(/\{[^\{]*?\}/gi, "");
+  inputString.replace(/\[[^\[]*?\]/gi, "");
 
-  const genericNumericRange = inputString.replace(
-    /([^\d]+)(\s*(of|de|di|von|van|z)\s*#*\d+)/gi,
-    "",
-  );
+  inputString.replace(/([^\d]+)(\s*(of|de|di|von|van|z)\s*#*\d+)/gi, "");
+
   const hyphenatedIssueRange = inputString.match(/(\d)(-\d+)/gi);
   if (!isNull(hyphenatedIssueRange) && hyphenatedIssueRange.length > 2) {
     let issueNumber = hyphenatedIssueRange[0];
   }
 
+  if (voca.includes(inputString, "_") && !voca.includes(inputString, " ")) {
+    inputString.replace(/[-_#]/gi, "");
+  }
   const readingListIndicators = inputString.match(
     /^\s*\d+(\.\s+?|\s*-?\s*)/gim,
   );
@@ -127,10 +129,7 @@ export const tokenize = (inputString: string) => {
       issueNumbers,
       chapters,
       pageCounts,
-      parantheses,
-      curlyBraces,
-      squareBrackets,
-      genericNumericRange,
+
       readingListIndicators,
       volumes,
     },
@@ -143,6 +142,12 @@ export const tokenize = (inputString: string) => {
     },
   };
   return queryObject;
+};
+
+export const extractNumerals = (inputString: string): string => {
+  // Searches through the given string left-to-right, building an ordered list of
+  //  "issue number-like" re.match objects.  For example, this method finds
+  //  matches substrings like:  3, #4, 5a, 6.00, 10.0b, .5, -1.0
 };
 
 export const refineQuery = (inputString) => {
