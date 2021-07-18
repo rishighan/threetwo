@@ -1,41 +1,86 @@
 import express, { Request, Response, Router, Express } from "express";
 import bodyParser from "body-parser";
-import path from "path";
+import path, { basename, extname } from "path";
 
-import { Server } from "r2-streamer-js";
-
-const OPDSServer = new Server({
-  disableDecryption: false, // deactivates the decryption of encrypted resources (Readium LCP).
-  disableOPDS: false, // deactivates the HTTP routes for the OPDS "micro services" (browser, converter)
-  disableReaders: false, // deactivates the built-in "readers" for ReadiumWebPubManifest (HTTP static host / route).
-  disableRemotePubUrl: false, // deactivates the HTTP route for loading a remote publication.
-  maxPrefetchLinks: 5, // Link HTTP header, with rel = prefetch, see server.ts MAX_PREFETCH_LINKS (default = 10)
-});
-
-const url = async () => await OPDSServer.start(5643, false);
-url().then(async (res) => {
-  console.log(res);
-  const publicationURLs = OPDSServer.addPublications([
-    "http://localhost:3000/comics/Iron Man/Iron Man - V1 193.cbz",
-  ]);
-  console.log(publicationURLs);
-  OPDSServer.publicationsOPDS();
-
-  const publication = await OPDSServer.loadOrGetCachedPublication(
-    "http://localhost:3000/comics/Iron Man/Iron Man - V1 193.cbz",
-  );
-  console.log(publication);
-  OPDSServer.publicationsOPDS();
-});
+import { buildAsync } from "calibre-opds";
+import initMain from "calibre-opds/lib/index";
+import { EnumLinkRel, EnumMIME } from "opds-extra/lib/const";
+import { async as FastGlob } from "@bluelovers/fast-glob/bluebird";
+import { Entry, Feed } from "opds-extra/lib/v1";
+import { Link } from "opds-extra/lib/v1/core";
+import { isUndefined } from "lodash";
 
 // call express
 const app: Express = express(); // define our app using express
+const router = Router();
+
+export function opdsRouter() {
+  const path_of_books = "/Users/rishi/work/threetwo/src/server/comics";
+  console.log(path_of_books);
+  router.use("/opds", async (req, res, next) => {
+    return buildAsync(
+      initMain({
+        title: `title`,
+        subtitle: `subtitle`,
+        icon: "/favicon.ico",
+      }),
+      [
+        async (feed: Feed) => {
+          feed.books = feed.books || [];
+          await FastGlob(["*.cbr", "*.cbz"], {
+            cwd: path_of_books,
+          }).each((file) => {
+            const ext = extname(file);
+            const title = basename(file, ext);
+
+            /**
+             * make ur download url
+             */
+            const href = encodeURI(
+              `/Users/rishi/work/threetwo/src/server/comics/${file}`,
+            );
+
+            /**
+             * mime for file
+             */
+            const type = "application/octet-stream";
+
+            const entry = Entry.deserialize<Entry>({
+              title,
+              links: [
+                {
+                  rel: EnumLinkRel.ACQUISITION,
+                  href,
+                  type,
+                } as Link,
+              ],
+            });
+
+            if (!isUndefined(feed) && !isUndefined(feed.books)) {
+              console.log("haramzada", feed.books);
+              feed.books.push(entry);
+            }
+          });
+
+          return feed;
+        },
+      ],
+    ).then((feed) => {
+      console.log(feed);
+      res.setHeader("Content-Type", "application/xml");
+      return res.end(feed.toXML());
+    });
+  });
+
+  return router;
+}
 
 // configure app to use bodyParser for
 // Getting data from body of requests
 app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(opdsRouter());
 
 const port: number = Number(process.env.PORT) || 8050; // set our port
 
