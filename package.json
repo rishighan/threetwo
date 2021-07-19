@@ -28,6 +28,8 @@
     "@types/socket.io": "^3.0.2",
     "@types/socket.io-client": "^3.0.0",
     "@types/through2": "^2.0.36",
+    "airdcpp-extension": "^1.5.0",
+    "airdcpp-extension-settings": "^1.2.1",
     "antd": "^4.16.5",
     "babel-polyfill": "^6.26.0",
     "better-docs": "^2.3.2",
