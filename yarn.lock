@@ -1835,6 +1835,11 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.171.tgz#f01b3a5fe3499e34b622c362a46a609fdb23573b"
   integrity sha512-7eQ2xYLLI/LsicL2nejW9Wyko3lcpN6O/z0ZLHrEQsg280zIdCv1t/0m6UtBjUHokCGBQ3gYTbHzDkZ1xOBwwg==
 
+"@types/mime-types@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@types/mime-types/-/mime-types-2.1.0.tgz#9ca52cda363f699c69466c2a6ccdaad913ea7a73"
+  integrity sha1-nKUs2jY/aZxpRmwqbM2q2RPqenM=
+
 "@types/mime@^1":
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-1.3.2.tgz#93e25bf9ee75fe0fd80b594bc4feb0e862111b5a"
@@ -6753,6 +6758,13 @@ http-proxy@^1.17.0:
     eventemitter3 "^4.0.0"
     follow-redirects "^1.0.0"
     requires-port "^1.0.0"
+
+http-response-stream@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/http-response-stream/-/http-response-stream-1.0.7.tgz#07e6104a8431c0788175578b3aebe3f0c7cf9925"
+  integrity sha512-d6PRAbo67f60BboWpG+RXS1wjPcWcMY6kq4LsACdUYscoh6Kw9HluRegy1/zweetrnatMxtD/dxtn1mO7XVvlQ==
+  dependencies:
+    tslib "^2.3.0"
 
 http-signature@~1.2.0:
   version "1.2.0"
