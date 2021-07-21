@@ -1,5 +1,5 @@
 Arguments: 
-  /Users/rishi/.nvm/versions/node/v12.21.0/bin/node /Users/rishi/.yarn/bin/yarn.js add @bluelovers/fast-glob/bluebird
+  /Users/rishi/.nvm/versions/node/v12.21.0/bin/node /Users/rishi/.yarn/bin/yarn.js add airdcpp-apisocket-js
 
 PATH: 
   /Users/rishi/.yarn/bin:/Users/rishi/.config/yarn/global/node_modules/.bin:/Users/rishi/.nvm/versions/node/v12.21.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin
@@ -14,8 +14,8 @@ Platform:
   darwin x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@bluelovers%2ffast-glob/bluebird: Request "https://registry.yarnpkg.com/@bluelovers%2ffast-glob/bluebird" returned a 405
-      at Request.params.callback [as _callback] (/Users/rishi/.yarn/lib/cli.js:66997:18)
+  Error: https://registry.yarnpkg.com/airdcpp-apisocket-js: Not found
+      at Request.params.callback [as _callback] (/Users/rishi/.yarn/lib/cli.js:66988:18)
       at Request.self.callback (/Users/rishi/.yarn/lib/cli.js:140749:22)
       at Request.emit (events.js:314:20)
       at Request.<anonymous> (/Users/rishi/.yarn/lib/cli.js:141721:10)
@@ -46,7 +46,9 @@ npm manifest:
     "license": "MIT",
     "dependencies": {
       "@babel/runtime": "^7.13.17",
+      "@bluelovers/fast-glob": "^3.0.4",
       "@types/event-stream": "^3.3.34",
+      "@types/mime-types": "^2.1.0",
       "@types/react": "^17.0.3",
       "@types/react-dom": "^17.0.2",
       "@types/react-redux": "^7.1.16",
@@ -66,6 +68,7 @@ npm manifest:
       "fastest-validator": "^1.11.0",
       "final-form": "^4.20.2",
       "fs-extra": "^9.1.0",
+      "http-response-stream": "^1.0.7",
       "imghash": "^0.0.8",
       "jsdoc": "^3.6.7",
       "opds-extra": "^3.0.9",
@@ -1227,6 +1230,14 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
     integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
   
+  "@bluelovers/fast-glob@^3.0.4":
+    version "3.0.4"
+    resolved "https://registry.yarnpkg.com/@bluelovers/fast-glob/-/fast-glob-3.0.4.tgz#6bb11e3e0274451a2b1362763e85fd50120f7ea3"
+    integrity sha512-djAOOjDWXolYArm5NXxOIX7Q7OGhAaRtMs5F968OxelWkMUU6PyU6tS66CFykVON4U5y8jXcsnVAFCaeuf1nEA==
+    dependencies:
+      bluebird "^3"
+      fast-glob "^3"
+  
   "@canvas/image-data@^1.0.0":
     version "1.0.0"
     resolved "https://registry.yarnpkg.com/@canvas/image-data/-/image-data-1.0.0.tgz#3bd2cd856e13fc9e2c25feff360a4056857b0367"
@@ -2004,6 +2015,11 @@ Lockfile:
     version "4.14.171"
     resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.171.tgz#f01b3a5fe3499e34b622c362a46a609fdb23573b"
     integrity sha512-7eQ2xYLLI/LsicL2nejW9Wyko3lcpN6O/z0ZLHrEQsg280zIdCv1t/0m6UtBjUHokCGBQ3gYTbHzDkZ1xOBwwg==
+  
+  "@types/mime-types@^2.1.0":
+    version "2.1.0"
+    resolved "https://registry.yarnpkg.com/@types/mime-types/-/mime-types-2.1.0.tgz#9ca52cda363f699c69466c2a6ccdaad913ea7a73"
+    integrity sha1-nKUs2jY/aZxpRmwqbM2q2RPqenM=
   
   "@types/mime@^1":
     version "1.3.2"
@@ -3420,7 +3436,7 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.1.tgz#d9551f9de98f1fcda1e683d17ee91a0602ee2eb9"
     integrity sha512-MKiLiV+I1AA596t9w1sQJ8jkiSr5+ZKi0WKrYGUn6d1Fx+Ij4tIj+m2WMQSGczs5jZVxV339chE8iwk6F64wjA==
   
-  bluebird@^3.4.7, bluebird@^3.5.1, bluebird@^3.7.2, bluebird@~3.7.2:
+  bluebird@^3, bluebird@^3.4.7, bluebird@^3.5.1, bluebird@^3.7.2, bluebird@~3.7.2:
     version "3.7.2"
     resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.7.2.tgz#9f229c15be272454ffa973ace0dbee79a1b0c36f"
     integrity sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==
@@ -5902,7 +5918,7 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/fast-diff/-/fast-diff-1.2.0.tgz#73ee11982d86caaf7959828d519cfe927fac5f03"
     integrity sha512-xJuoT5+L99XlZ8twedaRf6Ax2TgQVxvgZOYoPKqZufmJib0tL2tegPBOZb1pVNgIhlqDlA0eO0c3wBvQcmzx4w==
   
-  fast-glob@^3.0.3, fast-glob@^3.1.1:
+  fast-glob@^3, fast-glob@^3.0.3, fast-glob@^3.1.1:
     version "3.2.7"
     resolved "https://registry.yarnpkg.com/fast-glob/-/fast-glob-3.2.7.tgz#fd6cb7a2d7e9aa7a7846111e85a196d6b2f766a1"
     integrity sha512-rYGMRwip6lUMvYD3BTScMwT1HtAs2d71SMv66Vrxs0IekGZEjhM0pcMfjQPnknBt2zeCwQMEupiN02ZP4DiT1Q==
@@ -6923,6 +6939,13 @@ Lockfile:
       eventemitter3 "^4.0.0"
       follow-redirects "^1.0.0"
       requires-port "^1.0.0"
+  
+  http-response-stream@^1.0.7:
+    version "1.0.7"
+    resolved "https://registry.yarnpkg.com/http-response-stream/-/http-response-stream-1.0.7.tgz#07e6104a8431c0788175578b3aebe3f0c7cf9925"
+    integrity sha512-d6PRAbo67f60BboWpG+RXS1wjPcWcMY6kq4LsACdUYscoh6Kw9HluRegy1/zweetrnatMxtD/dxtn1mO7XVvlQ==
+    dependencies:
+      tslib "^2.3.0"
   
   http-signature@~1.2.0:
     version "1.2.0"

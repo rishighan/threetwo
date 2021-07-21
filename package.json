@@ -28,8 +28,7 @@
     "@types/socket.io": "^3.0.2",
     "@types/socket.io-client": "^3.0.0",
     "@types/through2": "^2.0.36",
-    "airdcpp-extension": "^1.5.0",
-    "airdcpp-extension-settings": "^1.2.1",
+    "airdcpp-apisocket": "^2.4.1",
     "antd": "^4.16.5",
     "babel-polyfill": "^6.26.0",
     "better-docs": "^2.3.2",
@@ -56,6 +55,8 @@
     "socket.io-client": "^4.1.2",
     "threetwo-ui-typings": "^1.0.1",
     "voca": "^1.4.0",
+    "websocket": "^1.0.34",
+    "ws": "^7.5.3",
     "ws-calibre": "bluelovers/ws-calibre",
     "xregexp": "^5.0.2"
   },

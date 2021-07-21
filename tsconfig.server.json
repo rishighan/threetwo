@@ -3,6 +3,7 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Node 12",
   "compilerOptions": {
+    "lib": ["DOM"],
     "module": "commonjs",
     "target": "es2019",
     "strict": true,
@@ -16,10 +17,6 @@
     "noImplicitAny": false
   },
   "compileOnSave": true,
-  "exclude": [
-    "./src/client"
-  ],
-  "include": [
-    "./src/server"
-  ]
+  "exclude": ["./src/client"],
+  "include": ["./src/server"]
 }

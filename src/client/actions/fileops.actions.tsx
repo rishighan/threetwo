@@ -10,7 +10,6 @@ import {
   CV_SEARCH_SUCCESS,
   CV_CLEANUP,
 } from "../constants/action-types";
-
 import { refineQuery } from "../shared/utils/filenameparser.utils";
 import { matchScorer } from "../shared/utils/searchmatchscorer.utils";
 

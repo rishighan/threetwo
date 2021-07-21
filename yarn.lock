@@ -2371,25 +2371,6 @@ airdcpp-apisocket@^2.4.1:
     is-in-browser "^1.1.3"
     promise "^8.1.0"
 
-airdcpp-extension-settings@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/airdcpp-extension-settings/-/airdcpp-extension-settings-1.2.1.tgz#361fd8f4e52b78fb9f586d60d9d3b3d74f30d79e"
-  integrity sha512-tMAkVOu3qf/w0C/GD0dhCsovDZaZOVu2gomZq8HfWknwshpXK5qEqMEyrlIVauuezaxdZJXqEfG6dZb3Y/+K+g==
-  dependencies:
-    "@babel/runtime" "^7.12.5"
-    invariant "^2.2.4"
-
-airdcpp-extension@^1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/airdcpp-extension/-/airdcpp-extension-1.5.0.tgz#f1a2f62113b6682ddbdbbe105d45e5b4051979c6"
-  integrity sha512-5hxT2xTq3Z15yxLYfBtiFs4H4zZc5uJuBvX52qYzbOHppLsOcViuS9HyLmmf+AV/5AWFAl85iAqDxwai59w71w==
-  dependencies:
-    airdcpp-apisocket "^2.4.1"
-    chalk "^4.1.0"
-    minimist "^1.2.5"
-    mkdirp "^1.0.4"
-    websocket "^1.0.33"
-
 ajv-errors@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/ajv-errors/-/ajv-errors-1.0.1.tgz#f35986aceb91afadec4102fbd85014950cefa64d"
@@ -14200,7 +14181,7 @@ websocket-extensions@>=0.1.1:
   resolved "https://registry.yarnpkg.com/websocket-extensions/-/websocket-extensions-0.1.4.tgz#7f8473bc839dfd87608adb95d7eb075211578a42"
   integrity sha512-OqedPIGOfsDlo31UNwYbCFMSaO9m9G/0faIHj5/dZFDMFqPTcx6UwqyOy3COEaEOg/9VsGIpdqn62W5KhoKSpg==
 
-websocket@^1.0.33:
+websocket@^1.0.34:
   version "1.0.34"
   resolved "https://registry.yarnpkg.com/websocket/-/websocket-1.0.34.tgz#2bdc2602c08bf2c82253b730655c0ef7dcab3111"
   integrity sha512-PRDso2sGwF6kM75QykIesBijKSVceR6jL2G8NGYyq2XrItNC2P5/qL5XeR056GhA+Ly7JMFvJb9I312mJfmqnQ==
@@ -14383,7 +14364,7 @@ ws@^6.2.1:
   dependencies:
     async-limiter "~1.0.0"
 
-ws@^7.4.5:
+ws@^7.4.5, ws@^7.5.3:
   version "7.5.3"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.3.tgz#160835b63c7d97bfab418fc1b8a9fced2ac01a74"
   integrity sha512-kQ/dHIzuLrS6Je9+uv81ueZomEwH0qVYstcAQ4/Z93K8zeko9gtAbttJWzoC5ukqXY1PpoouV3+VSOqEAFt5wg==
