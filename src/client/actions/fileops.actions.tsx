@@ -1,5 +1,9 @@
 import axios from "axios";
-import { IFolderData, IExtractedComicBookCoverFile } from "threetwo-ui-typings";
+import {
+  IFolderData,
+  IExtractedComicBookCoverFile,
+  IComicVineSearchQuery,
+} from "threetwo-ui-typings";
 import { API_BASE_URI, SOCKET_BASE_URI } from "../constants/endpoints";
 import { io } from "socket.io-client";
 import {
@@ -105,8 +109,8 @@ export const getRecentlyImportedComicBooks = (options) => async (dispatch) => {
 export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
   try {
     const issueString = searchPayload.rawFileDetails.path.split("/").pop();
-    let seriesSearchQuery = {};
-    const issueSearchQuery = refineQuery(issueString);
+    const issueSearchQuery: IComicVineSearchQuery = refineQuery(issueString);
+    let seriesSearchQuery: IComicVineSearchQuery = {} as IComicVineSearchQuery;
     if (searchPayload.rawFileDetails.containedIn !== "comics") {
       seriesSearchQuery = refineQuery(
         searchPayload.rawFileDetails.containedIn.split("/").pop(),

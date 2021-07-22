@@ -111,6 +111,7 @@ interface SearchInstance {
   searches_sent_ago: number;
 }
 app.use(opdsRouter());
+
 const foo = SocketService.connect("admin", "password");
 foo.then(async (data) => {
   const instance: SearchInstance = await SocketService.post("search");

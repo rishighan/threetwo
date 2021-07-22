@@ -3,8 +3,9 @@ import { default as dates } from "compromise-dates";
 import { default as sentences } from "compromise-sentences";
 import { default as numbers } from "compromise-numbers";
 import xregexp from "xregexp";
+import { MatchArray } from "xregexp/types";
 import voca from "voca";
-import { map, xor, isEmpty, isNull } from "lodash";
+import { xor, isEmpty, isNull } from "lodash";
 
 nlp.extend(sentences);
 nlp.extend(numbers);
@@ -72,18 +73,12 @@ export const tokenize = (inputString: string) => {
   // regexes to match constituent parts of the search string
   // and isolate the search terms
 
-  const chapters = inputString.replace(
-    /ch(a?p?t?e?r?)(\W?)(\_?)(\#?)(\d)/gi,
-    "",
-  );
-  const volumes = inputString.replace(
+  inputString.replace(/ch(a?p?t?e?r?)(\W?)(\_?)(\#?)(\d)/gi, "");
+  inputString.replace(
     /(\b(vo?l?u?m?e?)\.?)(\s*-|\s*_)?(\s*[0-9]+[.0-9a-z]*)/gi,
     "",
   );
-  const pageCounts = inputString.replace(
-    /\b[.,]?\s*\d+\s*(p|pg|pgs|pages)\b\s*/gi,
-    "",
-  );
+  inputString.replace(/\b[.,]?\s*\d+\s*(p|pg|pgs|pages)\b\s*/gi, "");
 
   // if the name has things like "4 of 5", remove the " of 5" part
   // also, if the name has 3-6, remove the -6 part.  note that we'll
@@ -103,19 +98,29 @@ export const tokenize = (inputString: string) => {
     let issueNumber = hyphenatedIssueRange[0];
   }
 
-  if (voca.includes(inputString, "_") && !voca.includes(inputString, " ")) {
-    inputString.replace(/[-_#]/gi, "");
-  }
   const readingListIndicators = inputString.match(
     /^\s*\d+(\.\s+?|\s*-?\s*)/gim,
   );
 
   let issueNumbers = "";
+  let parsedIssueNumber = "";
   const issues = inputString.match(/(^|[_\s#])(-?\d*\.?\d\w*)/gi);
-  if (!isEmpty(issues)) {
+
+  if (!isEmpty(issues) && !isNull(issues)) {
     issueNumbers = issues[0].trim();
+    const matches = extractNumerals(issueNumbers);
+    // if we parsed out some potential issue numbers, designate the LAST
+    // (rightmost) one as the actual issue number, and remove it from the name
+
+    if (matches.length > 0) {
+      parsedIssueNumber = matches[0].pop();
+    }
   }
-  // const issueHashes = inputString.match(/\#\d/gi);
+
+  inputString = voca.replace(inputString, parsedIssueNumber, "");
+  inputString = voca.replace(inputString, /_.-# /gi, "");
+  inputString = nlp(inputString).text("normal").trim();
+
   const yearMatches = inputString.match(/\d{4}/gi);
 
   const sentenceToProcess = sentence[0].normal.replace(/_/g, " ");
@@ -126,12 +131,8 @@ export const tokenize = (inputString: string) => {
 
   const queryObject = {
     comicbook_identifier_tokens: {
-      issueNumbers,
-      chapters,
-      pageCounts,
-
-      readingListIndicators,
-      volumes,
+      inputString,
+      parsedIssueNumber,
     },
     years: {
       yearMatches,
@@ -144,14 +145,20 @@ export const tokenize = (inputString: string) => {
   return queryObject;
 };
 
-export const extractNumerals = (inputString: string): string => {
+export const extractNumerals = (inputString: string): MatchArray[string] => {
   // Searches through the given string left-to-right, building an ordered list of
   //  "issue number-like" re.match objects.  For example, this method finds
   //  matches substrings like:  3, #4, 5a, 6.00, 10.0b, .5, -1.0
+  const matches: MatchArray[string] = [];
+  xregexp.forEach(inputString, /(^|[_\s#])(-?\d*\.?\d\w*)/gmu, (match) => {
+    matches.push(match);
+  });
+  return matches;
 };
 
 export const refineQuery = (inputString) => {
   const queryObj = tokenize(inputString);
+  console.log("QWEQWEQWE", queryObj);
   const removedYears = xor(
     queryObj.sentence_tokens.normalized,
     queryObj.years.yearMatches,
@@ -162,7 +169,6 @@ export const refineQuery = (inputString) => {
         name: queryObj.sentence_tokens.detailed[0].text,
         number: queryObj.comicbook_identifier_tokens.issueNumbers,
       },
-      year: queryObj.years,
     },
     meta: {
       queryObj,
