@@ -9,15 +9,33 @@ export const matchScorer = (searchMatches, searchQuery) => {
   // 5. Check if issue year matches strongly (score: +)
   const score = 0;
   each(searchMatches, (match, idx) => {
-    if (!isNull(searchQuery.issue.meta.normalized) && !isNull(match.name)) {
+    console.log("SEARCH QUERY IN SMS:", searchQuery);
+    console.log("MATCH NAME:", match);
+    match.score = 0;
+    if (
+      !isNull(searchQuery.issue.searchParams.searchTerms.name) &&
+      !isNull(match.name)
+    ) {
       const issueNameScore = stringSimilarity.compareTwoStrings(
-        searchQuery.issue.meta.normalized,
+        searchQuery.issue.searchParams.searchTerms.name,
         match.name,
       );
       match.score = issueNameScore;
       console.log("name score" + idx + ":", issueNameScore);
-    } else {
-      console.log("match not possible");
+    }
+
+    // issue number matches
+    if (
+      !isNull(searchQuery.issue.searchParams.searchTerms.number) &&
+      !isNull(match.issue_number)
+    ) {
+      if (
+        parseInt(searchQuery.issue.searchParams.searchTerms.number, 10) ===
+        parseInt(match.issue_number, 10)
+      ) {
+        match.score += 2;
+        console.log(match.score);
+      }
     }
   });
   return searchMatches;

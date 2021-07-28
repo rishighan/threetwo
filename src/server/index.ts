@@ -11,11 +11,6 @@ import { EnumLinkRel } from "opds-extra/lib/const";
 import { async as FastGlob } from "@bluelovers/fast-glob/bluebird";
 import { Entry, Feed } from "opds-extra/lib/v1";
 import { Link } from "opds-extra/lib/v1/core";
-import SocketService from "./utils/airdcpp.socket.service";
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 // call express
 const app: Express = express(); // define our app using express
@@ -48,9 +43,7 @@ export function opdsRouter() {
           }).each((file) => {
             const ext = extname(file);
             const title = basename(file, ext);
-
             const href = encodeURI(`/file/${file}`);
-
             const type = lookup(ext) || "application/octet-stream";
 
             const entry = Entry.deserialize<Entry>({
@@ -99,44 +92,8 @@ app.get("/", (req: Request, res: Response) => {
   console.log("sending index.html");
   res.sendFile("/dist/index.html");
 });
-interface SearchInstance {
-  current_search_id: string;
-  expires_in: number;
-  id: number;
-  owner: string;
-  query: Record<string, unknown>;
-  queue_time: number;
-  queued_count: number;
-  result_count: number;
-  searches_sent_ago: number;
-}
+
 app.use(opdsRouter());
-
-const foo = SocketService.connect("admin", "password");
-foo.then(async (data) => {
-  const instance: SearchInstance = await SocketService.post("search");
-  await sleep(10000);
-
-  const searchInfo = await SocketService.post(
-    `search/${instance.id}/hub_search`,
-    {
-      query: {
-        pattern: "H.P. Lovecraft",
-        file_type: "compressed",
-        extensions: ["cbz", "cbr"],
-      },
-      hub_urls: [
-        "nmdcs://piter.feardc.net:411",
-        "dchub://dc.rutrack.net",
-        "dchub://dc.elitedc.ru",
-      ],
-      priority: 1,
-    },
-  );
-  await sleep(10000);
-  const results = await SocketService.get(`search/${instance.id}/results/0/5`);
-  console.log(results);
-});
 
 // REGISTER ROUTES
 // all of the routes will be prefixed with /api

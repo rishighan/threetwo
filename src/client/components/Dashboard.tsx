@@ -55,7 +55,7 @@ const mapDispatchToProps = (dispatch) => ({
       getRecentlyImportedComicBooks({
         paginationOptions: {
           page: 0,
-          limit: 18,
+          limit: 31,
         },
       }),
     );

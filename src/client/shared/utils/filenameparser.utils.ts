@@ -166,8 +166,8 @@ export const refineQuery = (inputString) => {
   return {
     searchParams: {
       searchTerms: {
-        name: queryObj.sentence_tokens.detailed[0].text,
-        number: queryObj.comicbook_identifier_tokens.issueNumbers,
+        name: queryObj.comicbook_identifier_tokens.inputString,
+        number: queryObj.comicbook_identifier_tokens.parsedIssueNumber,
       },
     },
     meta: {

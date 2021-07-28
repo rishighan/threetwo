@@ -22,23 +22,17 @@ class Card extends React.Component<IProps, IState> {
   public drawCoverCard = (
     metadata: IExtractedComicBookCoverFile,
   ): JSX.Element => {
-    const filePath = encodeURI(
-      "http://localhost:3000" +
-        removeLeadingPeriod(metadata.path) +
-        "/" +
-        metadata.name,
+    const encodedFilePath = encodeURI(
+      "http://localhost:3000" + removeLeadingPeriod(metadata.path),
     );
-
+    const filePath = escapePoundSymbol(encodedFilePath);
     return (
       <div>
         <div className="card generic-card">
           <div>
             <div className="card-image">
               <figure className="image">
-                <img
-                  src={escapePoundSymbol(filePath)}
-                  alt="Placeholder image"
-                />
+                <img src={filePath} alt="Placeholder image" />
               </figure>
             </div>
             <div className="card-content">

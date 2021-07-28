@@ -6,5 +6,5 @@ export const removeLeadingPeriod = (input: string): string => {
 };
 
 export const escapePoundSymbol = (input: string): string => {
-  return input.replace(/\#/gi, "%23");
+  return input.replace(/\#/gm, "%23");
 };
