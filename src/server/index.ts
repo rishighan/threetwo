@@ -26,7 +26,7 @@ const port: number = Number(process.env.PORT) || 8050; // set our port
 // Send index.html on root request
 app.use(express.static("dist"));
 
-export function opdsRouter() {
+export const opdsRouter = () => {
   const path_of_books = "/Users/rishi/work/threetwo/src/server/comics";
   router.use("/opds", async (req, res, next) => {
     return buildAsync(
@@ -87,7 +87,8 @@ export function opdsRouter() {
   });
 
   return router;
-}
+};
+
 app.get("/", (req: Request, res: Response) => {
   console.log("sending index.html");
   res.sendFile("/dist/index.html");

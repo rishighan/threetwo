@@ -7,7 +7,7 @@ import ComicVineSearchForm from "./ComicVineSearchForm";
 
 import { css } from "@emotion/react";
 import PuffLoader from "react-spinners/PuffLoader";
-import { isEmpty, isUndefined } from "lodash";
+import { isEmpty, isUndefined, isEqual } from "lodash";
 import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
 import { Drawer, Divider } from "antd";
@@ -27,6 +27,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
 
   const comicVineSearchResults = useSelector(
     (state: RootState) => state.comicInfo.searchResults,
+
   );
   const comicVineSearchQueryObject = useSelector(
     (state: RootState) => state.comicInfo.searchQuery,
@@ -135,8 +136,8 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
 
             <div className="search-results-container">
               {!isEmpty(comicVineSearchResults) && (
-                <MatchResult matchData={comicVineSearchResults} />
-              )}
+                  <MatchResult matchData={comicVineSearchResults} />
+                )}
             </div>
           </Drawer>
         </>

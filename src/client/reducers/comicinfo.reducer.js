@@ -17,7 +17,7 @@ function comicinfoReducer(state = initialState, action) {
         inProgress: true,
       };
     case CV_SEARCH_SUCCESS:
-      console.log("ACTION", action);
+      console.log("ASDASD", action)
       return {
         ...state,
         searchResults: action.searchResults,

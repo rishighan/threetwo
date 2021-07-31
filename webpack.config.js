@@ -55,6 +55,7 @@ module.exports = {
   },
   resolve: {
     extensions: ["*", ".ts", ".tsx", ".js", ".jsx", ".json"],
+    aliasFields: ["browser", "browser.esm"],
   },
   devServer: {
     port: 3050,

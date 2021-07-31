@@ -15,7 +15,11 @@ import {
   CV_CLEANUP,
 } from "../constants/action-types";
 import { refineQuery } from "../shared/utils/filenameparser.utils";
-import { matchScorer } from "../shared/utils/searchmatchscorer.utils";
+import {
+  matchScorer,
+  compareCoverImageHashes,
+} from "../shared/utils/searchmatchscorer.utils";
+import { assign, each } from "lodash";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
@@ -108,7 +112,7 @@ export const getRecentlyImportedComicBooks = (options) => async (dispatch) => {
 
 export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
   try {
-    const issueString = searchPayload.rawFileDetails.path.split("/").pop();
+    const issueString = searchPayload.rawFileDetails.name;
     const issueSearchQuery: IComicVineSearchQuery = refineQuery(issueString);
     let seriesSearchQuery: IComicVineSearchQuery = {} as IComicVineSearchQuery;
     if (searchPayload.rawFileDetails.containedIn !== "comics") {
@@ -134,20 +138,27 @@ export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
           offset: "0",
           resources: "issue",
         },
-        transformResponse: [
-          (r) => {
-            const searchMatches = JSON.parse(r);
-            return matchScorer(searchMatches.results, {
-              issue: issueSearchQuery,
-              series: seriesSearchQuery,
-            });
-          },
-        ],
+        transformResponse: (r) => JSON.parse(r),
       })
       .then((response) => {
+        const searchMatches = response.data.results;
+        each(searchMatches, (match) => assign(match, { score: 0 }));
+        const results = matchScorer(
+          searchMatches,
+          {
+            issue: issueSearchQuery,
+            series: seriesSearchQuery,
+          },
+          searchPayload.rawFileDetails,
+        );
+        const scoredResults = compareCoverImageHashes(
+          searchPayload.rawFileDetails,
+          results,
+        );
+
         dispatch({
           type: CV_SEARCH_SUCCESS,
-          searchResults: response.data,
+          searchResults: scoredResults,
           searchQueryObject: {
             issue: issueSearchQuery,
             series: seriesSearchQuery,
@@ -159,6 +170,7 @@ export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
   } catch (error) {
     console.log(error);
   }
+
   dispatch({
     type: CV_CLEANUP,
   });

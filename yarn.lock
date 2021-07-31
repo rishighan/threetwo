@@ -1057,27 +1057,6 @@
     bluebird "^3"
     fast-glob "^3"
 
-"@canvas/image-data@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@canvas/image-data/-/image-data-1.0.0.tgz#3bd2cd856e13fc9e2c25feff360a4056857b0367"
-  integrity sha512-BxOqI5LgsIQP1odU5KMwV9yoijleOPzHL18/YvNqF9KFSGF2K/DLlYAbDQsWqd/1nbaFuSkYD/191dpMtNh4vw==
-
-"@canvas/image@^1.0.0":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@canvas/image/-/image-1.0.1.tgz#02bdd4bdf95352b1385e1bd3412fccb31f9269fc"
-  integrity sha512-nQ6Qt/marzeQkFikxw32qMep5Rs1U/7DdjqHlCn8ck78IX56CFnXjdfRCXOiM4kx8yvS4SmcPXuJjfpczRjFqA==
-  dependencies:
-    "@canvas/image-data" "^1.0.0"
-    "@cwasm/jpeg-turbo" "^0.1.1"
-    "@cwasm/lodepng" "^0.1.2"
-    "@cwasm/nsbmp" "^0.1.0"
-    "@cwasm/nsgif" "^0.1.0"
-    "@cwasm/webp" "^0.1.3"
-    fast-base64-decode "^1.0.0"
-    fast-base64-encode "^1.0.0"
-    fast-base64-length "^1.0.0"
-    simple-get "^3.1.0"
-
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.4.tgz#f864ae85004d0fcab6f50be9141c4da368d1656a"
@@ -1090,41 +1069,6 @@
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.0.tgz#c3c5ae543c897caa9c2a68630bed355be5f9990f"
   integrity sha512-JZButFdZ1+/xAfpguQHoabIXkcqRRKpMrWKBkpEZZyxfY9C1DpADFB8PEqGSTeFr135SaTRfKqGKx5xSCLI7ZQ==
-
-"@cwasm/jpeg-turbo@^0.1.1":
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/@cwasm/jpeg-turbo/-/jpeg-turbo-0.1.3.tgz#4f5e840d2fc58de9e876738456cd1bcb9c3424a3"
-  integrity sha512-FkZxwwC6r4zhzlqM0nYGaMj/MDSrZPxLOdPdM6ySlgsMfOpNAZcLQkpNF4jP+DmsuUvRoeUD0YSMBvg3jYfK6w==
-  dependencies:
-    "@canvas/image-data" "^1.0.0"
-
-"@cwasm/lodepng@^0.1.2":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@cwasm/lodepng/-/lodepng-0.1.4.tgz#6ffeb8e9c5922680f89d6f432a9793fd498cb85c"
-  integrity sha512-UY5iB3ywNTgonNF4RmcxEc/eeNcAZBnX9MlSeNUogyruG7ZNPgpKotwPyiLWbqOjlXULz4wdArPEko0Zm3+cGQ==
-  dependencies:
-    "@canvas/image-data" "^1.0.0"
-
-"@cwasm/nsbmp@^0.1.0":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@cwasm/nsbmp/-/nsbmp-0.1.2.tgz#521479dbcbf2bf2f742f0dd540a8aa9a930b3f9c"
-  integrity sha512-ZQGNDOI9ZxokqbNPmvcLKR8gBhfHjeFVuqE2eYysrbGiraQ93KeeIVrtiGKOMLW2JJOq9PbGBU0NX47qkpKWWA==
-  dependencies:
-    "@canvas/image-data" "^1.0.0"
-
-"@cwasm/nsgif@^0.1.0":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@cwasm/nsgif/-/nsgif-0.1.2.tgz#0f9687be119f982db1c64340dd2db017bf00cefe"
-  integrity sha512-LOD5HlL0O5jpnIAl+dLSZcB3v0RBNBjtoaymdCEPe2kyKzaP20BF+jy/QUyOZogQsgMVjusZES3tgwwoiiJ2rA==
-  dependencies:
-    "@canvas/image-data" "^1.0.0"
-
-"@cwasm/webp@^0.1.3":
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/@cwasm/webp/-/webp-0.1.5.tgz#b61014319aa9bb70b9f6d8a30f2838fed21779d1"
-  integrity sha512-ceIZQkyxK+s7mmItNcWqqHdOBiJAxYxTnrnPNgUNjldB1M9j+Bp/3eVIVwC8rUFyN/zoFwuT0331pyY3ackaNA==
-  dependencies:
-    "@canvas/image-data" "^1.0.0"
 
 "@discoveryjs/json-ext@^0.5.0":
   version "0.5.3"
@@ -3255,11 +3199,6 @@ bl@^4.0.3:
     buffer "^5.5.0"
     inherits "^2.0.4"
     readable-stream "^3.4.0"
-
-blockhash-core@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/blockhash-core/-/blockhash-core-0.1.0.tgz#dc25bd864b5af05c33e4266fb4d8f4e619462d04"
-  integrity sha512-Cv7BgBo0jjVPaeuel4cvxf9LqIGsYNIPz9DAGvvrF9LRlEq9Q3HXu+S8bklPCae0sCxAXic4HGMoImf3FeO3Nw==
 
 bluebird@3.5.1:
   version "3.5.1"
@@ -5730,21 +5669,6 @@ extsprintf@^1.2.0:
   resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.4.0.tgz#e2689f8f356fad62cca65a3a91c5df5f9551692f"
   integrity sha1-4mifjzVvrWLMplo6kcXfX5VRaS8=
 
-fast-base64-decode@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/fast-base64-decode/-/fast-base64-decode-1.0.0.tgz#b434a0dd7d92b12b43f26819300d2dafb83ee418"
-  integrity sha512-qwaScUgUGBYeDNRnbc/KyllVU88Jk1pRHPStuF/lO7B0/RTRLj7U0lkdTAutlBblY08rwZDff6tNU9cjv6j//Q==
-
-fast-base64-encode@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/fast-base64-encode/-/fast-base64-encode-1.0.0.tgz#883945eb67e139dbf5a877bcca57a89e6824c7d4"
-  integrity sha512-z2XCzVK4fde2cuTEHu2QGkLD6BPtJNKJPn0Z7oINvmhq/quUuIIVPYKUdN0gYeZqOyurjJjBH/bUzK5gafyHvw==
-
-fast-base64-length@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/fast-base64-length/-/fast-base64-length-1.0.0.tgz#080ec166a8ef6d77f8f612d9ce629dcaceb13a4a"
-  integrity sha512-MV+/ioblHx6SMjc/1l4EAnRJyAku6+6DxZ6RW0FoFCF1Aol/Ldb6FqwE3Kn3Ju1aam2m1KCIVoCljhgcG+Umzg==
-
 fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz#3a7d56b559d6cbc3eb512325244e619a65c6c525"
@@ -5866,7 +5790,7 @@ file-type@5.2.0, file-type@^5.2.0:
   resolved "https://registry.yarnpkg.com/file-type/-/file-type-5.2.0.tgz#2ddbea7c73ffe36368dfae49dc338c058c2b8ad6"
   integrity sha1-LdvqfHP/42No365J3DOMBYwritY=
 
-file-type@^10.10.0, file-type@^10.4.0, file-type@^10.5.0:
+file-type@^10.4.0, file-type@^10.5.0:
   version "10.11.0"
   resolved "https://registry.yarnpkg.com/file-type/-/file-type-10.11.0.tgz#2961d09e4675b9fb9a3ee6b69e9cd23f43fd1890"
   integrity sha512-uzk64HRpUZyTGZtVuvrjP0FYxzQrBf4rojot6J65YMEbwBLB0CWm0CLojVpwpmFmxcE/lkvYICgfcGozbBq6rw==
@@ -6871,13 +6795,6 @@ image-size@^1.0.0:
   dependencies:
     queue "6.0.2"
 
-image-type@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/image-type/-/image-type-4.1.0.tgz#72a88d64ff5021371ed67b9a466442100be57cd1"
-  integrity sha512-CFJMJ8QK8lJvRlTCEgarL4ro6hfDQKif2HjSvYCdQZESaIPV4v9imrf7BQHK+sQeTeNeMpWciR9hyC/g8ybXEg==
-  dependencies:
-    file-type "^10.10.0"
-
 image-webpack-loader@^7.0.1:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/image-webpack-loader/-/image-webpack-loader-7.0.1.tgz#5e5118e36a6ce17d40a0b835fe2bb39fc80eb9c7"
@@ -6962,16 +6879,6 @@ imagemin@^7.0.1:
     make-dir "^3.0.0"
     p-pipe "^3.0.0"
     replace-ext "^1.0.0"
-
-imghash@^0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/imghash/-/imghash-0.0.8.tgz#94455274bb90b4fd082d03db252478b3aed78a53"
-  integrity sha512-XNDlRVyuQc4HUCKqjV/lNRZST9sJS/EX3nt7YW3RCfr+Dmog5lUm4PNTUdmka0ZKsAWboPw+0Xr/l/jWzFiRPw==
-  dependencies:
-    "@canvas/image" "^1.0.0"
-    blockhash-core "^0.1.0"
-    image-type "^4.1.0"
-    jpeg-js "^0.4.1"
 
 "immutable@^3.8.1 || ^4.0.0-rc.1":
   version "4.0.0-rc.14"
@@ -8034,11 +7941,6 @@ joycon@^2.2.5:
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/joycon/-/joycon-2.2.5.tgz#8d4cf4cbb2544d7b7583c216fcdfec19f6be1615"
   integrity sha512-YqvUxoOcVPnCp0VU1/56f+iKSdvIRJYPznH22BdXV3xMk75SFXhWeJkZ8C9XxUWt1b5x2X1SxuFygW1U0FmkEQ==
-
-jpeg-js@^0.4.1:
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/jpeg-js/-/jpeg-js-0.4.3.tgz#6158e09f1983ad773813704be80680550eff977b"
-  integrity sha512-ru1HWKek8octvUHFHvE5ZzQ1yAsJmIvRdGWvSoKV52XKyuyYA437QWDttXT8eZXDSbuMpHlLzPDZUPd6idIz+Q==
 
 js-base64@^2.1.8:
   version "2.6.4"
@@ -11334,6 +11236,11 @@ react-dom@^17.0.1:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     scheduler "^0.20.2"
+
+react-fast-compare@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-3.2.0.tgz#641a9da81b6a6320f270e89724fb45a0b39e43bb"
+  integrity sha512-rtGImPZ0YyLrscKI9xTpV8psd6I8VAtjKCzQDlzyDvqJA8XOW78TXYQwNRNd8g8JZnDu8q9Fu/1v4HPAVwVdHA==
 
 react-final-form@^6.5.3:
   version "6.5.3"

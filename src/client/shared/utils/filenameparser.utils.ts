@@ -158,7 +158,6 @@ export const extractNumerals = (inputString: string): MatchArray[string] => {
 
 export const refineQuery = (inputString) => {
   const queryObj = tokenize(inputString);
-  console.log("QWEQWEQWE", queryObj);
   const removedYears = xor(
     queryObj.sentence_tokens.normalized,
     queryObj.years.yearMatches,
