@@ -5,7 +5,7 @@ docs/
 userdata/
 dist/
 src/client/assets/scss/App.css
-server/
+/server/
 node_modules/
 src/**/*.jsx
 tests/__coverage__/
