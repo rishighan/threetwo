@@ -68,7 +68,6 @@ export const preprocess = (inputString: string) => {
 export const tokenize = (inputString: string) => {
   const doc = nlp(inputString);
   const sentence = doc.sentences().json();
-  const number = doc.numbers().fractions();
 
   // regexes to match constituent parts of the search string
   // and isolate the search terms
@@ -147,8 +146,8 @@ export const tokenize = (inputString: string) => {
 
 export const extractNumerals = (inputString: string): MatchArray[string] => {
   // Searches through the given string left-to-right, building an ordered list of
-  //  "issue number-like" re.match objects.  For example, this method finds
-  //  matches substrings like:  3, #4, 5a, 6.00, 10.0b, .5, -1.0
+  // "issue number-like" re.match objects.  For example, this method finds
+  // matches substrings like:  3, #4, 5a, 6.00, 10.0b, .5, -1.0
   const matches: MatchArray[string] = [];
   xregexp.forEach(inputString, /(^|[_\s#])(-?\d*\.?\d\w*)/gmu, (match) => {
     matches.push(match);
@@ -156,7 +155,7 @@ export const extractNumerals = (inputString: string): MatchArray[string] => {
   return matches;
 };
 
-export const refineQuery = (inputString) => {
+export const refineQuery = (inputString: string) => {
   const queryObj = tokenize(inputString);
   const removedYears = xor(
     queryObj.sentence_tokens.normalized,

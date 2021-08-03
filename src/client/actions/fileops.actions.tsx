@@ -15,11 +15,7 @@ import {
   CV_CLEANUP,
 } from "../constants/action-types";
 import { refineQuery } from "../shared/utils/filenameparser.utils";
-import {
-  matchScorer,
-  compareCoverImageHashes,
-} from "../shared/utils/searchmatchscorer.utils";
-import { assign, each } from "lodash";
+import sortBy from "array-sort-by";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
@@ -134,31 +130,26 @@ export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
           sort: "name%3Aasc",
           query: issueSearchQuery.searchParams.searchTerms.name,
           fieldList: "id",
-          limit: "10",
+          limit: "20",
           offset: "0",
           resources: "issue",
+          scorerConfiguration: {
+            searchQuery: {
+              issue: issueSearchQuery,
+              series: seriesSearchQuery,
+            },
+            rawFileDetails: searchPayload.rawFileDetails,
+          },
         },
-        transformResponse: (r) => JSON.parse(r),
+        transformResponse: (r) => {
+          const matches = JSON.parse(r);
+          return sortBy(matches, (match) => -match.score);
+        },
       })
       .then((response) => {
-        const searchMatches = response.data.results;
-        each(searchMatches, (match) => assign(match, { score: 0 }));
-        const results = matchScorer(
-          searchMatches,
-          {
-            issue: issueSearchQuery,
-            series: seriesSearchQuery,
-          },
-          searchPayload.rawFileDetails,
-        );
-        const scoredResults = compareCoverImageHashes(
-          searchPayload.rawFileDetails,
-          results,
-        );
-
         dispatch({
           type: CV_SEARCH_SUCCESS,
-          searchResults: scoredResults,
+          searchResults: response.data,
           searchQueryObject: {
             issue: issueSearchQuery,
             series: seriesSearchQuery,

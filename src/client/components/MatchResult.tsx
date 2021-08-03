@@ -16,12 +16,9 @@ export const MatchResult = (props: MatchResultProps) => {
         </thead>
         <tbody>
           {map(props.matchData, (match, idx) => {
-        
             return (
-              
               <tr className="search-result" key={idx}>
                 <td>
-                {match.score}
                   <img className="cover-image" src={match.image.thumb_url} />
                 </td>
                 <td className="search-result-details">
