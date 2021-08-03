@@ -11340,6 +11340,11 @@ react-spinners@^0.11.0:
   dependencies:
     "@emotion/react" "^11.1.4"
 
+react-table@^7.7.0:
+  version "7.7.0"
+  resolved "https://registry.yarnpkg.com/react-table/-/react-table-7.7.0.tgz#e2ce14d7fe3a559f7444e9ecfe8231ea8373f912"
+  integrity sha512-jBlj70iBwOTvvImsU9t01LjFjy4sXEtclBovl3mTiqjz23Reu0DKnRza4zlLtOPACx6j2/7MrQIthIK1Wi+LIA==
+
 react-window-dynamic-list@^2.3.5:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/react-window-dynamic-list/-/react-window-dynamic-list-2.4.2.tgz#e9cabcd067cb066619613af00f5dd42bca9f4b19"

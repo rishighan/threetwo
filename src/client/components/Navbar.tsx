@@ -47,6 +47,9 @@ const Navbar: React.FunctionComponent = (props) => {
             Import
           </Link>
 
+          <Link to="/library" className="navbar-item">
+            Library
+          </Link>
           <div className="navbar-item has-dropdown is-hoverable">
             <a
               className="navbar-link  is-active"

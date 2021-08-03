@@ -4,6 +4,7 @@ import Dashboard from "./Dashboard";
 
 import Import from "./Import";
 import { ComicDetail } from "./ComicDetail";
+import Library from "./Library";
 
 import { Switch, Route } from "react-router";
 import Navbar from "./Navbar";
@@ -20,6 +21,9 @@ class App extends React.Component {
           </Route>
           <Route path="/import">
             <Import path={"./comics"} />
+          </Route>
+          <Route path="/library">
+            <Library />
           </Route>
           <Route
             path={"/comic/details/:comicObjectId"}
