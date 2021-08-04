@@ -11,6 +11,7 @@ import {
 } from "../shared/utils/formatting.utils";
 import { useTable } from "react-table";
 import prettyBytes from "pretty-bytes";
+import ellipsize from "ellipsize";
 
 import { useDispatch, useSelector } from "react-redux";
 
@@ -47,9 +48,19 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
                         </figure>
                       </div>
                       <ul className="card-content">
-                        <li>{props.cell.value.name}</li>
-                        <li>{props.cell.value.containedIn}</li>
-                        <li>{prettyBytes(props.cell.value.fileSize)}</li>
+                        <li className="name has-text-weight-medium">{ellipsize(props.cell.value.name, 18)}</li>
+                        <li>
+                          <div className="control">
+                            <div className="tags has-addons">
+                              <span className="tag is-primary is-light">
+                                {props.cell.value.extension}
+                              </span>
+                              <span className="tag is-info is-light">
+                                {prettyBytes(props.cell.value.fileSize)}
+                              </span>
+                            </div>
+                          </div>
+                        </li>
                       </ul>
                     </div>
                   </div>
@@ -60,7 +71,12 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
           {
             Header: "Import Status",
             accessor: "importStatus.isImported",
-            Cell: (props) => `${props.cell.value.toString()}`,
+            Cell: (props) =>
+              `${props.cell.value.toString()}` ? (
+                <span className="tag is-info is-light">Imported</span>
+              ) : (
+                "Not Imported"
+              ),
           },
         ],
       },
@@ -77,8 +93,11 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
       <div className="section">
         <h1 className="title">Library</h1>
         <div className="columns">
-          <div className="column">
-            <table {...getTableProps()}>
+          <div className="column library">
+            <table
+              {...getTableProps()}
+              className="table is-narrow is-hoverable"
+            >
               <thead>
                 {headerGroups.map((headerGroup, idx) => (
                   <tr key={idx} {...headerGroup.getHeaderGroupProps()}>

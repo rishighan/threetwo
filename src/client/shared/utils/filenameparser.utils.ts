@@ -48,14 +48,12 @@ export const preprocess = (inputString: string) => {
   // see if the comic matches the following format, and if so, remove everything
   // after the first number:
   // "nnn series name #xx (etc) (etc)" -> "series name #xx (etc) (etc)"
-  const format1 = "124 series name #xx (etc) (etc)".match(
-    /^\s*(\d+)[\s._-]+?([^#]+)(\W+.*)/,
-  );
+  const format1 = inputString.match(/^\s*(\d+)[\s._-]+?([^#]+)(\W+.*)/);
 
   //   see if the comic matches the following format, and if so, remove everything
   // after the first number that isn't in brackets:
   // "series name #xxx - title (etc) (etc)" -> "series name #xxx (etc) (etc)
-  const format2 = "".match(
+  const format2 = inputString.match(
     /^((?:[a-zA-Z,.-]+\s)+)(\#?(?:\d+[.0-9*])\s*(?:-))(.*((\(.*)?))$/gis,
   );
 };
@@ -94,7 +92,7 @@ export const tokenize = (inputString: string) => {
 
   const hyphenatedIssueRange = inputString.match(/(\d)(-\d+)/gi);
   if (!isNull(hyphenatedIssueRange) && hyphenatedIssueRange.length > 2) {
-    let issueNumber = hyphenatedIssueRange[0];
+    const issueNumber = hyphenatedIssueRange[0];
   }
 
   const readingListIndicators = inputString.match(

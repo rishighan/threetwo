@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import ZeroState from "./ZeroState";
 import { RecentlyImported } from "./RecentlyImported";
-import { getRecentlyImportedComicBooks } from "../actions/fileops.actions";
+import { getComicBooks } from "../actions/fileops.actions";
 import { isEmpty } from "lodash";
 
 interface IProps {
@@ -52,7 +52,7 @@ function mapStateToProps(state: IState) {
 const mapDispatchToProps = (dispatch) => ({
   getRecentComics() {
     dispatch(
-      getRecentlyImportedComicBooks({
+      getComicBooks({
         paginationOptions: {
           page: 0,
           limit: 5,

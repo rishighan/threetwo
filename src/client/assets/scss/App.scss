@@ -59,7 +59,6 @@ $border-color: red;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   column-gap: 0.5em;
   row-gap: 1.2em;
-  min-height: 30px;
 
   .card {
     max-width: 500px;
@@ -76,12 +75,11 @@ $border-color: red;
         align-self: center;
         .image {
           max-width: 60px;
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-            border-top-left-radius: 0.25em;
-            border-bottom-left-radius: 0.25em;
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+          border-top-left-radius: 0.25em;
+          border-bottom-left-radius: 0.25em;
         }
-         
       }
       .card-content {
         align-self: center;
@@ -107,6 +105,23 @@ $border-color: red;
         margin-top: 1.5rem;
         margin-bottom: 1rem;
       }
+    }
+  }
+}
+
+// Library
+.library {
+  table {
+    td {
+      border: 0 none;
+     .card {
+       .name {
+         margin: 0 0 4px 0;
+       }
+     }
+    }
+    tbody {
+      padding: 10px 0 0 0;
     }
   }
 }

@@ -71,7 +71,7 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
   socket.on("disconnect", () => {
     console.log(`disconnect`);
   });
-  socket.emit("importComicsInDB", {
+  socket.emit("importComicsToDB", {
     action: "getComicCovers",
     params: {
       extractionOptions,
@@ -80,6 +80,7 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
   });
 
   socket.on("comicBookCoverMetadata", (data: IExtractedComicBookCoverFile) => {
+    console.log("Recd cover");
     dispatch({
       type: IMS_COMICBOOK_METADATA_FETCHED,
       data,
@@ -88,11 +89,11 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
   });
 };
 
-export const getRecentlyImportedComicBooks = (options) => async (dispatch) => {
+export const getComicBooks = (options) => async (dispatch) => {
   const { paginationOptions } = options;
   return axios
     .request({
-      url: "http://localhost:3000/api/import/getRecentlyImportedComicBooks",
+      url: "http://localhost:3000/api/import/getComicBooks",
       method: "POST",
       data: {
         paginationOptions,
