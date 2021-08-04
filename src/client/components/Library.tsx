@@ -10,6 +10,7 @@ import {
   escapePoundSymbol,
 } from "../shared/utils/formatting.utils";
 import { useTable } from "react-table";
+import prettyBytes from "pretty-bytes";
 
 import { useDispatch, useSelector } from "react-redux";
 
@@ -27,8 +28,9 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
         Header: "Comic Metadata",
         columns: [
           {
-            Header: "Name",
+            Header: "File Details",
             accessor: "rawFileDetails",
+            // eslint-disable-next-line react/display-name
             Cell: (props) => {
               const encodedFilePath = encodeURI(
                 "http://localhost:3000" +
@@ -36,27 +38,29 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
               );
               const filePath = escapePoundSymbol(encodedFilePath);
               return (
-                  <div className="card-container">
-                <div className="card">
-                  <div className="is-horizontal">
-                    <div className="card-image">
-                      <figure>
-                        <img className="image" src={filePath} />
-                      </figure>
-                    </div>
-                    <div className="card-content">
-                        <p>{props.cell.value.name}</p>
-                        {props.cell.value.containedIn}
+                <div className="card-container">
+                  <div className="card">
+                    <div className="is-horizontal">
+                      <div className="card-image">
+                        <figure>
+                          <img className="image" src={filePath} />
+                        </figure>
+                      </div>
+                      <ul className="card-content">
+                        <li>{props.cell.value.name}</li>
+                        <li>{props.cell.value.containedIn}</li>
+                        <li>{prettyBytes(props.cell.value.fileSize)}</li>
+                      </ul>
                     </div>
                   </div>
-                </div>
                 </div>
               );
             },
           },
           {
             Header: "Import Status",
-            accessor: "",
+            accessor: "importStatus.isImported",
+            Cell: (props) => `${props.cell.value.toString()}`,
           },
         ],
       },

@@ -59,6 +59,7 @@ $border-color: red;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   column-gap: 0.5em;
   row-gap: 1.2em;
+  min-height: 30px;
 
   .card {
     max-width: 500px;
@@ -75,13 +76,12 @@ $border-color: red;
         align-self: center;
         .image {
           max-width: 60px;
-          img {
             border-top-right-radius: 0;
             border-bottom-right-radius: 0;
             border-top-left-radius: 0.25em;
             border-bottom-left-radius: 0.25em;
-          }
         }
+         
       }
       .card-content {
         align-self: center;
