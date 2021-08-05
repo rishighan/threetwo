@@ -23,6 +23,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
   const data = useSelector(
     (state: RootState) => state.fileOps.recentComics.docs,
   );
+
   const columns = useMemo(
     () => [
       {
@@ -48,7 +49,9 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
                         </figure>
                       </div>
                       <ul className="card-content">
-                        <li className="name has-text-weight-medium">{ellipsize(props.cell.value.name, 18)}</li>
+                        <li className="name has-text-weight-medium">
+                          {ellipsize(props.cell.value.name, 18)}
+                        </li>
                         <li>
                           <div className="control">
                             <div className="tags has-addons">

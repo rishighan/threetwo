@@ -53,3 +53,8 @@ export const comicinfoAPICall = (options) => async (dispatch) => {
     });
   }
 };
+
+export const applyComicVineMatch = options => async (dispatch) => {
+  console.log(options)
+
+}

@@ -1,11 +1,24 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
+import { useDispatch } from "react-redux";
 import { map } from "lodash";
+import { applyComicVineMatch } from "../actions/comicinfo.actions";
 
 interface MatchResultProps {
   matchData: any;
 }
 
+const handleBrokenImage = (e) => {
+  e.target.src = "http://localhost:3050/dist/img/noimage.svg";
+};
+
 export const MatchResult = (props: MatchResultProps) => {
+  const dispatch = useDispatch();
+  const applyCVMatch = useCallback(
+    (match) => {
+      dispatch(applyComicVineMatch(match));
+    },
+    [dispatch],
+  );
   return (
     <>
       <table>
@@ -19,7 +32,11 @@ export const MatchResult = (props: MatchResultProps) => {
             return (
               <tr className="search-result" key={idx}>
                 <td>
-                  <img className="cover-image" src={match.image.thumb_url} />
+                  <img
+                    className="cover-image"
+                    src={match.image.thumb_url}
+                    onError={handleBrokenImage}
+                  />
                 </td>
                 <td className="search-result-details">
                   <div className="tag score is-primary is-medium is-pulled-right">
@@ -46,6 +63,16 @@ export const MatchResult = (props: MatchResultProps) => {
                       </div>
                     </div>
                   </div>
+
+                  <button
+                    className="button is-small is-outlined is-primary is-light is-pulled-right"
+                    onClick={() => applyCVMatch(match)}
+                  >
+                    <span className="icon is-size-5">
+                      <i className="fas fa-clipboard-check"></i>
+                    </span>
+                    <span>Apply Match</span>
+                  </button>
                 </td>
               </tr>
             );
