@@ -49,10 +49,6 @@ $border-color: red;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-
-  img {
-    max-width: 200px;
-  }
 }
 .card-container {
   display: grid;
@@ -61,8 +57,18 @@ $border-color: red;
   row-gap: 1.2em;
 
   .card {
-    max-width: 500px;
+    // max-width: 500px;
     margin: 0 0 15px 0;
+    .card-image {
+        img {
+          border-top-left-radius: 0.3rem;
+          border-top-right-radius: 0.3rem;
+          border-bottom-left-radius: 0;
+          border-bottom-right-radius: 0;
+        }
+      
+    }
+
     .is-horizontal {
       flex-direction: row;
       display: flex;
@@ -109,16 +115,26 @@ $border-color: red;
   }
 }
 
+// Comic Detail
+
+.comic-detail {
+  dl {
+    dd {
+      margin: 0;
+    }
+  }
+}
+
 // Library
 .library {
   table {
     td {
       border: 0 none;
-     .card {
-       .name {
-         margin: 0 0 4px 0;
-       }
-     }
+      .card {
+        .name {
+          margin: 0 0 4px 0;
+        }
+      }
     }
     tbody {
       padding: 10px 0 0 0;

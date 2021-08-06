@@ -11,6 +11,8 @@ import ellipsize from "ellipsize";
 interface IProps {
   comicBookCoversMetadata: IExtractedComicBookCoverFile;
   mongoObjId?: number;
+  hasTitle: boolean;
+  isHorizontal: boolean;
 }
 interface IState {}
 
@@ -29,21 +31,23 @@ class Card extends React.Component<IProps, IState> {
     return (
       <div>
         <div className="card generic-card">
-          <div>
+          <div className={this.props.isHorizontal ? "is-horizontal" : ""}>
             <div className="card-image">
               <figure className="image">
                 <img src={filePath} alt="Placeholder image" />
               </figure>
             </div>
-            <div className="card-content">
-              <ul>
-                <Link to={"/comic/details/" + this.props.mongoObjId}>
-                  <li className="has-text-weight-semibold">
-                    {ellipsize(metadata.name, 18)}
-                  </li>
-                </Link>
-              </ul>
-            </div>
+            {this.props.title && (
+              <div className="card-content">
+                <ul>
+                  <Link to={"/comic/details/" + this.props.mongoObjId}>
+                    <li className="has-text-weight-semibold">
+                      {ellipsize(metadata.name, 18)}
+                    </li>
+                  </Link>
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>

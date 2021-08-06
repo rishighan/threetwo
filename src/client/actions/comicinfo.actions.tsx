@@ -5,6 +5,9 @@ import {
   CV_SEARCH_SUCCESS,
   CV_API_CALL_IN_PROGRESS,
   CV_API_GENERIC_FAILURE,
+  IMS_COMIC_BOOK_DB_OBJECT_CALL_IN_PROGRESS,
+  IMS_COMIC_BOOK_DB_OBJECT_CALL_FAILED,
+  IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
 } from "../constants/action-types";
 import { COMICBOOKINFO_SERVICE_URI } from "../constants/endpoints";
 
@@ -54,7 +57,44 @@ export const comicinfoAPICall = (options) => async (dispatch) => {
   }
 };
 
-export const applyComicVineMatch = options => async (dispatch) => {
-  console.log(options)
+export const getComicBookDetailById =
+  (comicBookObjectId: string) => async (dispatch) => {
+    dispatch({
+      type: IMS_COMIC_BOOK_DB_OBJECT_CALL_IN_PROGRESS,
+      IMS_inProgress: true,
+    });
 
-}
+    const result = await axios.request({
+      url: `http://localhost:3000/api/import/getComicBookById`,
+      method: "POST",
+      data: {
+        id: comicBookObjectId,
+      },
+    });
+    dispatch({
+      type: IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
+      comicBookDetail: result.data,
+      IMS_inProgress: false,
+    });
+  };
+
+export const applyComicVineMatch =
+  (match, comicObjectId) => async (dispatch) => {
+    dispatch({
+      type: IMS_COMIC_BOOK_DB_OBJECT_CALL_IN_PROGRESS,
+      IMS_inProgress: true,
+    });
+    const result = await axios.request({
+      url: "http://localhost:3000/api/import/applyComicVineMetadata",
+      method: "POST",
+      data: {
+        match,
+        comicObjectId,
+      },
+    });
+    dispatch({
+      type: IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
+      comicBookDetail: result.data,
+      IMS_inProgress: false,
+    });
+  };

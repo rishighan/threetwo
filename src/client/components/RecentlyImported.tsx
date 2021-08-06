@@ -16,6 +16,7 @@ export const RecentlyImported = ({
           key={idx}
           comicBookCoversMetadata={doc.rawFileDetails}
           mongoObjId={doc._id}
+          title
         />
       );
     })}

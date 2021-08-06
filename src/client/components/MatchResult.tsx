@@ -1,10 +1,11 @@
-import React, { useEffect, useCallback } from "react";
-import { useDispatch } from "react-redux";
+import React, { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { map } from "lodash";
 import { applyComicVineMatch } from "../actions/comicinfo.actions";
 
 interface MatchResultProps {
   matchData: any;
+  comicObjectId: string;
 }
 
 const handleBrokenImage = (e) => {
@@ -14,8 +15,8 @@ const handleBrokenImage = (e) => {
 export const MatchResult = (props: MatchResultProps) => {
   const dispatch = useDispatch();
   const applyCVMatch = useCallback(
-    (match) => {
-      dispatch(applyComicVineMatch(match));
+    (match, comicObjectId) => {
+      dispatch(applyComicVineMatch(match, comicObjectId));
     },
     [dispatch],
   );
@@ -66,7 +67,7 @@ export const MatchResult = (props: MatchResultProps) => {
 
                   <button
                     className="button is-small is-outlined is-primary is-light is-pulled-right"
-                    onClick={() => applyCVMatch(match)}
+                    onClick={() => applyCVMatch(match, props.comicObjectId)}
                   >
                     <span className="icon is-size-5">
                       <i className="fas fa-clipboard-check"></i>

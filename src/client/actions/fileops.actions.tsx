@@ -163,7 +163,7 @@ export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
     console.log(error);
   }
 
-  dispatch({
-    type: CV_CLEANUP,
-  });
+  // dispatch({
+  //   type: CV_CLEANUP,
+  // });
 };

@@ -7,9 +7,10 @@ import ComicVineSearchForm from "./ComicVineSearchForm";
 
 import { css } from "@emotion/react";
 import PuffLoader from "react-spinners/PuffLoader";
-import { isEmpty, isUndefined } from "lodash";
+import { isEmpty, isUndefined, isNil } from "lodash";
 import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
+import { getComicBookDetailById } from "../actions/comicinfo.actions";
 import { Drawer, Divider } from "antd";
 const prettyBytes = require("pretty-bytes");
 import "antd/dist/antd.css";
@@ -21,9 +22,6 @@ type ComicDetailProps = {};
 export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const [page, setPage] = useState(1);
   const [visible, setVisible] = useState(false);
-  const [comicDetail, setComicDetail] = useState<{
-    rawFileDetails: IExtractedComicBookCoverFile;
-  }>();
 
   const comicVineSearchResults = useSelector(
     (state: RootState) => state.comicInfo.searchResults,
@@ -34,29 +32,20 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const comicVineAPICallProgress = useSelector(
     (state: RootState) => state.comicInfo.inProgress,
   );
+  const comicBookDetailData = useSelector(
+    (state: RootState) => state.comicInfo.comicBookDetail,
+  );
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    axios
-      .request({
-        url: `http://localhost:3000/api/import/getComicBookById`,
-        method: "POST",
-        data: {
-          id: comicObjectId,
-        },
-      })
-      .then((response) => {
-        setComicDetail(response.data);
-      })
-      .catch((error) => console.log(error));
-  }, [page]);
-
-  const dispatch = useDispatch();
+    dispatch(getComicBookDetailById(comicObjectId));
+  }, [page, dispatch]);
 
   const openDrawerWithCVMatches = useCallback(() => {
     setVisible(true);
-    dispatch(fetchComicVineMatches(comicDetail));
-  }, [dispatch, comicDetail]);
+    dispatch(fetchComicVineMatches(comicBookDetailData));
+  }, [dispatch, comicBookDetailData]);
 
   const onClose = () => {
     setVisible(false);
@@ -64,83 +53,153 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
 
   return (
     <section className="container">
-      {!isEmpty(comicDetail) && !isUndefined(comicDetail) && (
-        <>
-          <h1 className="title">{comicDetail.rawFileDetails.name}</h1>
-          <div className="columns">
-            <div className="column is-narrow">
-              <Card comicBookCoversMetadata={comicDetail.rawFileDetails} />
+      <div className="section">
+        {!isEmpty(comicBookDetailData) && !isUndefined(comicBookDetailData) && (
+          <>
+            <h1 className="title">{comicBookDetailData.rawFileDetails.name}</h1>
+            <div className="columns">
+              <div className="column is-narrow">
+                <Card
+                  comicBookCoversMetadata={comicBookDetailData.rawFileDetails}
+                  hasTitle={false}
+                  isHorizontal={false}
+                />
+              </div>
+              <div className="column">
+                <div className="content comic-detail">
+                  <dl>
+                    <dt>
+                      <h6> Raw File Details</h6>
+                    </dt>
+                    <dd>{comicBookDetailData.rawFileDetails.containedIn}</dd>
+                    <dd>
+                      {prettyBytes(comicBookDetailData.rawFileDetails.fileSize)}
+                    </dd>
+                    <dd>{comicBookDetailData.rawFileDetails.path}</dd>
+                    <dd>
+                      <span className="tag is-primary">
+                        {comicBookDetailData.rawFileDetails.extension}
+                      </span>
+                    </dd>
+                  </dl>
+                </div>
+                {!isNil(comicBookDetailData.sourcedMetadata.comicvine) && (
+                  <div className="content comic-detail">
+                    <Divider />
+                    <dl>
+                      <dt>
+                        <h6>ComicVine Metadata</h6>
+                      </dt>
+                      <dd>
+                        <h6>
+                          {comicBookDetailData.sourcedMetadata.comicvine.name}
+                        </h6>
+                      </dd>
+                      <dd>
+                        {comicBookDetailData.sourcedMetadata.comicvine.number}
+                      </dd>
+                      <dd>
+                        <div className="field is-grouped is-grouped-multiline">
+                          <div className="control">
+                            <div className="tags has-addons">
+                              <span className="tag is-light">Type</span>
+                              <span className="tag is-warning">
+                                {
+                                  comicBookDetailData.sourcedMetadata.comicvine
+                                    .resource_type
+                                }
+                              </span>
+                            </div>
+                          </div>
+                          <div className="control">
+                            <div className="tags has-addons">
+                              <span className="tag is-light">
+                                ComicVine Issue ID
+                              </span>
+                              <span className="tag is-success">
+                                {
+                                  comicBookDetailData.sourcedMetadata.comicvine
+                                    .id
+                                }
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </dd>
+                    </dl>
+                  </div>
+                )}
+                <button className="button" onClick={openDrawerWithCVMatches}>
+                  <span className="icon">
+                    <i className="fas fa-magic"></i>
+                  </span>
+                  <span>Match on Comic Vine</span>
+                </button>
+              </div>
             </div>
-            <div className="column">
-              <p>{comicDetail.rawFileDetails.containedIn}</p>
-              <p>{prettyBytes(comicDetail.rawFileDetails.fileSize)}</p>
-              <button className="button" onClick={openDrawerWithCVMatches}>
-                <span className="icon">
-                  <i className="fas fa-magic"></i>
-                </span>
-                <span>Match on Comic Vine</span>
-              </button>
-            </div>
-          </div>
 
-          <Drawer
-            title="ComicVine Search Results"
-            placement="right"
-            width={640}
-            closable={false}
-            onClose={onClose}
-            visible={visible}
-            className="comic-vine-match-drawer"
-          >
-            {!isEmpty(comicVineSearchQueryObject) &&
-            !isUndefined(comicVineSearchQueryObject) ? (
-              <div className="card search-criteria-card">
-                <div className="card-content">
-                  <ComicVineSearchForm />
-                  <Divider />
-                  <p className="is-size-6">Searching against:</p>
-                  <div className="field is-grouped is-grouped-multiline">
-                    <div className="control">
-                      <div className="tags has-addons">
-                        <span className="tag">Title</span>
-                        <span className="tag is-info">
-                          {
-                            comicVineSearchQueryObject.issue.searchParams
-                              .searchTerms.name
-                          }
-                        </span>
+            <Drawer
+              title="ComicVine Search Results"
+              placement="right"
+              width={640}
+              closable={false}
+              onClose={onClose}
+              visible={visible}
+              className="comic-vine-match-drawer"
+            >
+              {!isEmpty(comicVineSearchQueryObject) &&
+              !isUndefined(comicVineSearchQueryObject) ? (
+                <div className="card search-criteria-card">
+                  <div className="card-content">
+                    <ComicVineSearchForm />
+                    <Divider />
+                    <p className="is-size-6">Searching against:</p>
+                    <div className="field is-grouped is-grouped-multiline">
+                      <div className="control">
+                        <div className="tags has-addons">
+                          <span className="tag">Title</span>
+                          <span className="tag is-info">
+                            {
+                              comicVineSearchQueryObject.issue.searchParams
+                                .searchTerms.name
+                            }
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="control">
-                      <div className="tags has-addons">
-                        <span className="tag">Number</span>
-                        <span className="tag is-info">
-                          {
-                            comicVineSearchQueryObject.issue.searchParams
-                              .searchTerms.number
-                          }
-                        </span>
+                      <div className="control">
+                        <div className="tags has-addons">
+                          <span className="tag">Number</span>
+                          <span className="tag is-info">
+                            {
+                              comicVineSearchQueryObject.issue.searchParams
+                                .searchTerms.number
+                            }
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ) : (
-              <div className="progress-indicator-container">
-                <div className="indicator">
-                  <PuffLoader loading={comicVineAPICallProgress} />
+              ) : (
+                <div className="progress-indicator-container">
+                  <div className="indicator">
+                    <PuffLoader loading={comicVineAPICallProgress} />
+                  </div>
                 </div>
-              </div>
-            )}
-
-            <div className="search-results-container">
-              {!isEmpty(comicVineSearchResults) && (
-                <MatchResult matchData={comicVineSearchResults} />
               )}
-            </div>
-          </Drawer>
-        </>
-      )}
+
+              <div className="search-results-container">
+                {!isEmpty(comicVineSearchResults) && (
+                  <MatchResult
+                    matchData={comicVineSearchResults}
+                    comicObjectId={comicObjectId}
+                  />
+                )}
+              </div>
+            </Drawer>
+          </>
+        )}
+      </div>
     </section>
   );
 };
