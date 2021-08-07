@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, ReactElement } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import Card from "./Card";
 import MatchResult from "./MatchResult";
 import ComicVineSearchForm from "./ComicVineSearchForm";
@@ -12,12 +11,22 @@ import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
 import { getComicBookDetailById } from "../actions/comicinfo.actions";
 import { Drawer, Divider } from "antd";
+import * as dayjs from "dayjs";
 const prettyBytes = require("pretty-bytes");
 import "antd/dist/antd.css";
 
 import { useDispatch, useSelector } from "react-redux";
 
 type ComicDetailProps = {};
+/**
+ * Component for displaying the metadata for a comic in greater detail.
+ *
+ * @component
+ * @example
+ * return (
+ *   <ComicDetail/>
+ * )
+ */
 
 export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const [page, setPage] = useState(1);
@@ -69,7 +78,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                 <div className="content comic-detail">
                   <dl>
                     <dt>
-                      <h6> Raw File Details</h6>
+                    Raw File Details
                     </dt>
                     <dd>{comicBookDetailData.rawFileDetails.containedIn}</dd>
                     <dd>
@@ -87,9 +96,13 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                   <div className="content comic-detail">
                     <Divider />
                     <dl>
-                      <dt>
-                        <h6>ComicVine Metadata</h6>
-                      </dt>
+                      <dt>ComicVine Metadata</dt>
+                      <dd className="is-size-7">
+                        Last scraped on{" "}
+                        {dayjs(comicBookDetailData.updatedAt).format(
+                          "MMM D YYYY [at] h:mm a",
+                        )}
+                      </dd>
                       <dd>
                         <h6>
                           {comicBookDetailData.sourcedMetadata.comicvine.name}
