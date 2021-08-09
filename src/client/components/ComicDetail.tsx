@@ -60,66 +60,82 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     setVisible(false);
   };
 
-  const tabs = ["Volume Information", "Other Metadata", "Acquistion Details"];
+  const [active, setActive] = useState(0);
 
-  const [active, setActive] = useState({ currentTab: tabs[0], markup: <></> });
-  const renderTabContent = (tab, data) => {
-    switch (tab) {
-      case "Volume Information":
-        setActive({
-          currentTab: tab,
-          markup: (
-            <div className="columns">
-              <div className="column is-narrow">
-                <figure className="card-image">
-                  <img
-                    src={
-                      data.data.sourcedMetadata.comicvine.volumeInformation
-                        .image.thumb_url
-                    }
-                  />
-                </figure>
-              </div>
-              <div className="column is-2">
-                <dl>
-                  <dt>
-                    {data.data.sourcedMetadata.comicvine.volumeInformation.name}
-                  </dt>
-                  <dd>
-                    Published by
-                    <span className="has-text-weight-semibold">
-                      {" "}
-                      {
-                        data.data.sourcedMetadata.comicvine.volumeInformation
-                          .publisher.name
-                      }
-                    </span>
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          ),
-        });
-        break;
-    }
-  };
-  const MetadataTabGroup = (data) => {
+  const tabGroup = [
+    {
+      id: 0,
+      name: "Volume Information",
+      content: !isNil(comicBookDetailData.sourcedMetadata) && (
+        <div className="columns">
+          <div className="column is-narrow">
+            <figure className="card-image">
+              <img
+                src={
+                  comicBookDetailData.sourcedMetadata.comicvine
+                    .volumeInformation.image.thumb_url
+                }
+              />
+            </figure>
+          </div>
+          <div className="column is-4">
+            <dl>
+              <dt>
+                Is a part of{" "}
+                <span className="has-text-info">
+                  {
+                    comicBookDetailData.sourcedMetadata.comicvine
+                      .volumeInformation.name
+                  }
+                </span>
+              </dt>
+              <dd>
+                Published by
+                <span className="has-text-weight-semibold">
+                  {" "}
+                  {
+                    comicBookDetailData.sourcedMetadata.comicvine
+                      .volumeInformation.publisher.name
+                  }
+                </span>
+              </dd>
+              <dd>
+                Total issues in this volume:{" "}
+                {
+                  comicBookDetailData.sourcedMetadata.comicvine
+                    .volumeInformation.count_of_issues
+                }
+              </dd>
+            </dl>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 1,
+      name: "Other Metadata",
+      content: <>bastard</>,
+    },
+  ];
+  const MetadataTabGroup = () => {
     return (
       <>
         <div className="tabs">
           <ul>
-            {tabs.map((tab, idx) => (
+            {tabGroup.map((tab, idx) => (
               <li
                 key={idx}
-                className={tab === active.currentTab ? "is-active" : ""}
-                onClick={() => renderTabContent(tab, data)}
+                className={tab.id === active ? "is-active" : ""}
+                onClick={() => setActive(idx)}
               >
-                <a>{tab}</a>
+                <a>{tab.name}</a>
               </li>
             ))}
           </ul>
         </div>
-        {active.markup}
+        {tabGroup.map(({ id, content }) => {
+          return active === id ? content : null;
+        })}
       </>
     );
   };
@@ -216,7 +232,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
               </div>
             </div>
 
-            <MetadataTabGroup data={comicBookDetailData} />
+            <MetadataTabGroup />
 
             <Drawer
               title="ComicVine Search Results"

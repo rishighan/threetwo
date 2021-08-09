@@ -42,9 +42,9 @@ function comicinfoReducer(state = initialState, action) {
       };
     case CV_CLEANUP:
       return {
+        ...state,
         searchResults: [],
         searchQuery: {},
-        comicBookDetail: {},
       };
     default:
       return state;
