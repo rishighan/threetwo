@@ -11,7 +11,7 @@ import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
 import { getComicBookDetailById } from "../actions/comicinfo.actions";
 import { Drawer, Divider } from "antd";
-import * as dayjs from "dayjs";
+import dayjs from "dayjs";
 const prettyBytes = require("pretty-bytes");
 import "antd/dist/antd.css";
 
@@ -60,10 +60,74 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     setVisible(false);
   };
 
+  const tabs = ["Volume Information", "Other Metadata", "Acquistion Details"];
+
+  const [active, setActive] = useState({ currentTab: tabs[0], markup: <></> });
+  const renderTabContent = (tab, data) => {
+    switch (tab) {
+      case "Volume Information":
+        setActive({
+          currentTab: tab,
+          markup: (
+            <div className="columns">
+              <div className="column is-narrow">
+                <figure className="card-image">
+                  <img
+                    src={
+                      data.data.sourcedMetadata.comicvine.volumeInformation
+                        .image.thumb_url
+                    }
+                  />
+                </figure>
+              </div>
+              <div className="column is-2">
+                <dl>
+                  <dt>
+                    {data.data.sourcedMetadata.comicvine.volumeInformation.name}
+                  </dt>
+                  <dd>
+                    Published by
+                    <span className="has-text-weight-semibold">
+                      {" "}
+                      {
+                        data.data.sourcedMetadata.comicvine.volumeInformation
+                          .publisher.name
+                      }
+                    </span>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          ),
+        });
+        break;
+    }
+  };
+  const MetadataTabGroup = (data) => {
+    return (
+      <>
+        <div className="tabs">
+          <ul>
+            {tabs.map((tab, idx) => (
+              <li
+                key={idx}
+                className={tab === active.currentTab ? "is-active" : ""}
+                onClick={() => renderTabContent(tab, data)}
+              >
+                <a>{tab}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        {active.markup}
+      </>
+    );
+  };
+
   return (
     <section className="container">
       <div className="section">
-        {!isEmpty(comicBookDetailData) && !isUndefined(comicBookDetailData) && (
+        {!isNil(comicBookDetailData) && !isEmpty(comicBookDetailData) && (
           <>
             <h1 className="title">{comicBookDetailData.rawFileDetails.name}</h1>
             <div className="columns">
@@ -77,9 +141,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
               <div className="column">
                 <div className="content comic-detail">
                   <dl>
-                    <dt>
-                    Raw File Details
-                    </dt>
+                    <dt>Raw File Details</dt>
                     <dd>{comicBookDetailData.rawFileDetails.containedIn}</dd>
                     <dd>
                       {prettyBytes(comicBookDetailData.rawFileDetails.fileSize)}
@@ -142,7 +204,10 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                     </dl>
                   </div>
                 )}
-                <button className="button" onClick={openDrawerWithCVMatches}>
+                <button
+                  className="button is-small"
+                  onClick={openDrawerWithCVMatches}
+                >
                   <span className="icon">
                     <i className="fas fa-magic"></i>
                   </span>
@@ -150,6 +215,8 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                 </button>
               </div>
             </div>
+
+            <MetadataTabGroup data={comicBookDetailData} />
 
             <Drawer
               title="ComicVine Search Results"

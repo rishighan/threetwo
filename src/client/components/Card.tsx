@@ -4,14 +4,15 @@ import {
   removeLeadingPeriod,
   escapePoundSymbol,
 } from "../shared/utils/formatting.utils";
-import { isUndefined, isEmpty } from "lodash";
+import { isUndefined, isEmpty, isNil } from "lodash";
 import { Link } from "react-router-dom";
 import ellipsize from "ellipsize";
 
 interface IProps {
-  comicBookCoversMetadata: IExtractedComicBookCoverFile;
+  comicBookCoversMetadata?: IExtractedComicBookCoverFile;
   mongoObjId?: number;
   hasTitle: boolean;
+  title?: string;
   isHorizontal: boolean;
 }
 interface IState {}
