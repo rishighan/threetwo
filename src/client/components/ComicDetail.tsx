@@ -61,54 +61,68 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   };
 
   const [active, setActive] = useState(0);
-
+  const createDescriptionMarkup = (html) => {
+    return { __html: html };
+  };
+  // Tab groups for ComicVine metadata
   const tabGroup = [
     {
       id: 0,
       name: "Volume Information",
       content: !isNil(comicBookDetailData.sourcedMetadata) && (
-        <div className="columns">
-          <div className="column is-narrow">
-            <figure className="card-image">
-              <img
-                src={
-                  comicBookDetailData.sourcedMetadata.comicvine
-                    .volumeInformation.image.thumb_url
-                }
-              />
-            </figure>
-          </div>
-          <div className="column is-4">
-            <dl>
-              <dt>
-                Is a part of{" "}
-                <span className="has-text-info">
+        <>
+          <div className="columns">
+            <div className="column is-narrow">
+              <figure className="card-image">
+                <img
+                  src={
+                    comicBookDetailData.sourcedMetadata.comicvine
+                      .volumeInformation.image.thumb_url
+                  }
+                />
+              </figure>
+            </div>
+            <div className="column is-4">
+              <dl>
+                <dt>
+                  Is a part of{" "}
+                  <span className="has-text-info">
+                    {
+                      comicBookDetailData.sourcedMetadata.comicvine
+                        .volumeInformation.name
+                    }
+                  </span>
+                </dt>
+                <dd>
+                  Published by
+                  <span className="has-text-weight-semibold">
+                    {" "}
+                    {
+                      comicBookDetailData.sourcedMetadata.comicvine
+                        .volumeInformation.publisher.name
+                    }
+                  </span>
+                </dd>
+                <dd>
+                  Total issues in this volume:{" "}
                   {
                     comicBookDetailData.sourcedMetadata.comicvine
-                      .volumeInformation.name
+                      .volumeInformation.count_of_issues
                   }
-                </span>
-              </dt>
-              <dd>
-                Published by
-                <span className="has-text-weight-semibold">
-                  {" "}
-                  {
-                    comicBookDetailData.sourcedMetadata.comicvine
-                      .volumeInformation.publisher.name
-                  }
-                </span>
-              </dd>
-              <dd>
-                Total issues in this volume:{" "}
-                {
-                  comicBookDetailData.sourcedMetadata.comicvine
-                    .volumeInformation.count_of_issues
-                }
-              </dd>
-            </dl>
+                </dd>
+              </dl>
+            </div>
           </div>
-        </div>
+          <div className="columns">
+            <div
+              className="column is-three-quarters"
+              dangerouslySetInnerHTML={createDescriptionMarkup(
+                comicBookDetailData.sourcedMetadata.comicvine.volumeInformation
+                  .description,
+              )}
+            ></div>
+          </div>
+        </>
       ),
     },
     {

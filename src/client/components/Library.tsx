@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  ReactElement,
-} from "react";
+import React, { useState, useEffect, useMemo, ReactElement } from "react";
 import {
   removeLeadingPeriod,
   escapePoundSymbol,
@@ -12,14 +6,27 @@ import {
 import { useTable } from "react-table";
 import prettyBytes from "pretty-bytes";
 import ellipsize from "ellipsize";
-
 import { useDispatch, useSelector } from "react-redux";
+import { getComicBooks } from "../actions/fileops.actions";
 
 interface IComicBookLibraryProps {
-  matches: unknown;
+  matches?: unknown;
 }
 
 export const Library = ({}: IComicBookLibraryProps): ReactElement => {
+  const [page, setPage] = useState(1);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(
+      getComicBooks({
+        paginationOptions: {
+          page: 0,
+          limit: 15,
+        },
+      }),
+    );
+  }, [page, dispatch]);
+
   const data = useSelector(
     (state: RootState) => state.fileOps.recentComics.docs,
   );

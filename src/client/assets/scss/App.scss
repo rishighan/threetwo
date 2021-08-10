@@ -60,13 +60,12 @@ $border-color: red;
     // max-width: 500px;
     margin: 0 0 15px 0;
     .card-image {
-        img {
-          border-top-left-radius: 0.3rem;
-          border-top-right-radius: 0.3rem;
-          border-bottom-left-radius: 0;
-          border-bottom-right-radius: 0;
-        }
-      
+      img {
+        border-top-left-radius: 0.3rem;
+        border-top-right-radius: 0.3rem;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
     }
 
     .is-horizontal {
@@ -124,7 +123,17 @@ $border-color: red;
     }
   }
 }
-
+// Search
+.search {
+  .main-search-bar {
+      border: 0;
+      border-bottom: 1px solid #999;
+      border-radius: 0;
+      outline: 0;
+      background: transparent;
+      box-shadow: none;
+  }
+}
 // Library
 .library {
   table {

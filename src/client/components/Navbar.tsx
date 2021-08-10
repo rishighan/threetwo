@@ -50,7 +50,7 @@ const Navbar: React.FunctionComponent = (props) => {
           <Link to="/library" className="navbar-item">
             Library
           </Link>
-          <Link to="/library" className="navbar-item">
+          <Link to="/search" className="navbar-item">
             Search
           </Link>
           <div className="navbar-item has-dropdown is-hoverable">
