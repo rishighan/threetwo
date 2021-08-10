@@ -124,7 +124,7 @@ export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
 
     axios
       .request({
-        url: "http://localhost:3080/api/comicvine/fetchseries",
+        url: "http://localhost:3080/api/comicvine/fetchresource",
         method: "POST",
         data: {
           format: "json",

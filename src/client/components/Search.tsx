@@ -1,4 +1,4 @@
-import React, { useMemo, ReactElement } from "react";
+import React, { useMemo, useCallback, ReactElement } from "react";
 import {
   removeLeadingPeriod,
   escapePoundSymbol,
@@ -7,11 +7,28 @@ import { useTable } from "react-table";
 import prettyBytes from "pretty-bytes";
 import ellipsize from "ellipsize";
 
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { comicinfoAPICall } from "../actions/comicinfo.actions";
 
 interface ISearchProps {}
 
 export const Search = ({}: ISearchProps): ReactElement => {
+  const dispatch = useDispatch();
+  const getCVSearchResults = useCallback(() => {
+    dispatch(
+      comicinfoAPICall({
+        callURIAction: "search",
+        method: "GET",
+        params: {
+          api_key: "a5fa0663683df8145a85d694b5da4b87e1c92c69",
+          format: "json",
+          limit: "10",
+          offset: "0",
+          field_list: "id,name,deck,api_detail_url",
+        },
+      }),
+    );
+  }, [dispatch]);
   return (
     <>
       <section className="container">
