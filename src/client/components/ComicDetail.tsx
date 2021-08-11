@@ -128,7 +128,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     {
       id: 1,
       name: "Other Metadata",
-      content: <>bastard</>,
+      content: <div>bastard</div>,
     },
   ];
   const MetadataTabGroup = () => {
@@ -136,13 +136,13 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       <>
         <div className="tabs">
           <ul>
-            {tabGroup.map((tab, idx) => (
+            {tabGroup.map(({ id, name }) => (
               <li
-                key={idx}
-                className={tab.id === active ? "is-active" : ""}
-                onClick={() => setActive(idx)}
+                key={id}
+                className={id === active ? "is-active" : ""}
+                onClick={() => setActive(id)}
               >
-                <a>{tab.name}</a>
+                <a>{name}</a>
               </li>
             ))}
           </ul>
