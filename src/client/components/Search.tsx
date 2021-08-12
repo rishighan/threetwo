@@ -6,7 +6,8 @@ import {
 import { useTable } from "react-table";
 import prettyBytes from "pretty-bytes";
 import ellipsize from "ellipsize";
-
+import { isNil, isUndefined, map, isEmpty } from "lodash";
+import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";
 import { useSelector, useDispatch } from "react-redux";
 import { comicinfoAPICall } from "../actions/comicinfo.actions";
 import { Form, Field } from "react-final-form";
@@ -20,14 +21,13 @@ export const Search = ({}: ISearchProps): ReactElement => {
   const dispatch = useDispatch();
   const getCVSearchResults = useCallback(
     (searchQuery) => {
-      console.log(searchQuery);
       dispatch(
         comicinfoAPICall({
           callURIAction: "search",
-          method: "GET",
-          params: {
+          callMethod: "GET",
+          callParams: {
             api_key: "a5fa0663683df8145a85d694b5da4b87e1c92c69",
-            query: searchQuery,
+            query: searchQuery.search,
             format: "json",
             limit: "10",
             offset: "0",
@@ -39,6 +39,11 @@ export const Search = ({}: ISearchProps): ReactElement => {
     },
     [dispatch],
   );
+
+  const comicVineSearchResults = useSelector(
+    (state: RootState) => state.comicInfo.searchResults,
+  );
+
   return (
     <>
       <section className="container">
@@ -72,19 +77,35 @@ export const Search = ({}: ISearchProps): ReactElement => {
               </form>
             )}
           />
-
-          <article className="message is-dark is-half">
-            <div className="message-body">
-              <p className="mb-2">
-                <span className="tag is-medium is-info is-light">
-                  Search the ComicVine database
-                </span>
-                Search and add issues, series and trade paperbacks to your
-                library. Then, download them using the configured AirDC++ or
-                torrent clients.
-              </p>
-            </div>
-          </article>
+          {!isNil(comicVineSearchResults) &&
+          !isEmpty(comicVineSearchResults) ? (
+            <>
+              {comicVineSearchResults.results.map(
+                ({ id, name, deck, api_detail_url }) => {
+                  return (
+                    <div key={id}>
+                      {id} {name}
+                      <p>{api_detail_url}</p>
+                      <p>{deck}</p>
+                    </div>
+                  );
+                },
+              )}
+            </>
+          ) : (
+            <article className="message is-dark is-half">
+              <div className="message-body">
+                <p className="mb-2">
+                  <span className="tag is-medium is-info is-light">
+                    Search the ComicVine database
+                  </span>
+                  Search and add issues, series and trade paperbacks to your
+                  library. Then, download them using the configured AirDC++ or
+                  torrent clients.
+                </p>
+              </div>
+            </article>
+          )}
         </div>
       </section>
     </>

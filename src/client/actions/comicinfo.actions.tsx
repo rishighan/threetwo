@@ -41,7 +41,7 @@ export const comicinfoAPICall = (options) => async (dispatch) => {
       case "search":
         dispatch({
           type: CV_SEARCH_SUCCESS,
-          result: response.data,
+          searchResults: response.data,
         });
         break;
 

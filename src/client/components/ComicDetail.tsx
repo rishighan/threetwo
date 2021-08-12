@@ -64,12 +64,15 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const createDescriptionMarkup = (html) => {
     return { __html: html };
   };
+  const isComicBookMetadataAvailable =
+    !isNil(comicBookDetailData.sourcedMetadata) &&
+    !isEmpty(comicBookDetailData.sourcedMetadata);
   // Tab groups for ComicVine metadata
   const tabGroup = [
     {
       id: 0,
       name: "Volume Information",
-      content: !isNil(comicBookDetailData.sourcedMetadata) && (
+      content: isComicBookMetadataAvailable && (
         <>
           <div className="columns">
             <div className="column is-narrow">
