@@ -31,7 +31,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
             format: "json",
             limit: "10",
             offset: "0",
-            field_list: "id,name,deck,api_detail_url",
+            field_list: "id,name,deck,api_detail_url,image,description",
             resources: "volume",
           },
         }),
@@ -77,16 +77,19 @@ export const Search = ({}: ISearchProps): ReactElement => {
               </form>
             )}
           />
-          {!isNil(comicVineSearchResults) &&
-          !isEmpty(comicVineSearchResults) ? (
+          {!isNil(comicVineSearchResults.results) &&
+          !isEmpty(comicVineSearchResults.results) ? (
             <>
               {comicVineSearchResults.results.map(
-                ({ id, name, deck, api_detail_url }) => {
+                ({ id, name, description, api_detail_url, image }) => {
                   return (
                     <div key={id}>
                       {id} {name}
                       <p>{api_detail_url}</p>
-                      <p>{deck}</p>
+                      <p>{description}</p>
+                      <figure>
+                        <img src={image.thumb_url} alt="name" />
+                      </figure>
                     </div>
                   );
                 },
