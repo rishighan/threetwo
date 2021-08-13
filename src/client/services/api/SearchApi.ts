@@ -1,4 +1,4 @@
-import SocketService from "../utils/airdcpp.socket.service";
+import SocketService from "../SearchService";
 export const foo = SocketService.connect("admin", "password");
 interface SearchInstance {
   current_search_id: string;
