@@ -10,6 +10,7 @@ import { isNil, isUndefined, map, isEmpty } from "lodash";
 import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";
 import { useSelector, useDispatch } from "react-redux";
 import { comicinfoAPICall } from "../actions/comicinfo.actions";
+import { search } from "../services/api/SearchApi";
 import { Form, Field } from "react-final-form";
 
 interface ISearchProps {}
@@ -40,6 +41,10 @@ export const Search = ({}: ISearchProps): ReactElement => {
     [dispatch],
   );
 
+  const getDCPPSearchResults = useCallback((searchQuery) => {
+    search(searchQuery);
+  }, []);
+
   const comicVineSearchResults = useSelector(
     (state: RootState) => state.comicInfo.searchResults,
   );
@@ -51,7 +56,22 @@ export const Search = ({}: ISearchProps): ReactElement => {
           <h1 className="title">Search</h1>
 
           <Form
-            onSubmit={getCVSearchResults}
+            onSubmit={() =>
+              getDCPPSearchResults({
+                query: {
+                  pattern: "Old Man Logan",
+                  // file_type: "any",
+                  // extensions: ["iso"],
+                },
+                hub_urls: [
+                  "nmdcs://piter.feardc.net:411",
+                  "dchub://dc.fly-server.ru",
+                  "dchub://dc.elitedc.ru",
+                  "dchub://dc.kcahdep.online",
+                ],
+                priority: 1,
+              })
+            }
             initialValues={{
               ...formData,
             }}

@@ -1,5 +1,4 @@
 import { Socket } from "airdcpp-apisocket";
-import WebSocket from "ws";
 
 const options = {
   url: "wss://sab.rishighan.com/api/v1/",
@@ -13,7 +12,7 @@ const options = {
   ],
 };
 
-const APISocket = Socket(options, WebSocket as any);
+const APISocket = Socket(options, window.WebSocket as any);
 type SocketType = typeof APISocket;
 export { SocketType as APISocket };
 
