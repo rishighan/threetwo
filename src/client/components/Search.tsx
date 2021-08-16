@@ -59,9 +59,9 @@ export const Search = ({}: ISearchProps): ReactElement => {
             onSubmit={() =>
               getDCPPSearchResults({
                 query: {
-                  pattern: "Old Man Logan",
-                  // file_type: "any",
-                  // extensions: ["iso"],
+                  pattern: "secret wars",
+                  // file_type: "compressed",
+                  extensions: ["cbz", "cbr"],
                 },
                 hub_urls: [
                   "nmdcs://piter.feardc.net:411",

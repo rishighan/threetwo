@@ -1,35 +1,41 @@
 import React, { useState, useEffect, useMemo, ReactElement } from "react";
+import PropTypes from 'prop-types';
 import {
   removeLeadingPeriod,
   escapePoundSymbol,
 } from "../shared/utils/formatting.utils";
-import { useTable } from "react-table";
+import { useTable, usePagination } from "react-table";
 import prettyBytes from "pretty-bytes";
 import ellipsize from "ellipsize";
 import { useDispatch, useSelector } from "react-redux";
 import { getComicBooks } from "../actions/fileops.actions";
+import { isNil } from "lodash";
 
 interface IComicBookLibraryProps {
   matches?: unknown;
 }
 
 export const Library = ({}: IComicBookLibraryProps): ReactElement => {
-  const [page, setPage] = useState(1);
+  const [comicPage, setComicPage] = useState(1);
+  const [isPageSizeDropdownCollapsed, collapsePageSizeDropdown] =
+    useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(
       getComicBooks({
         paginationOptions: {
-          page: 0,
+          page: comicPage,
           limit: 15,
         },
       }),
     );
-  }, [page, dispatch]);
+  }, [comicPage, dispatch]);
 
   const data = useSelector(
     (state: RootState) => state.fileOps.recentComics.docs,
   );
+  const togglePageSizeDropdown = () =>
+    collapsePageSizeDropdown(!isPageSizeDropdownCollapsed);
 
   const columns = useMemo(
     () => [
@@ -40,7 +46,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
             Header: "File Details",
             accessor: "rawFileDetails",
             // eslint-disable-next-line react/display-name
-            Cell: (props) => {
+            Cell(props) {
               const encodedFilePath = encodeURI(
                 "http://localhost:3000" +
                   removeLeadingPeriod(props.cell.value.path),
@@ -81,20 +87,106 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
           {
             Header: "Import Status",
             accessor: "importStatus.isImported",
-            Cell: (props) =>
-              `${props.cell.value.toString()}` ? (
+            Cell(props) {
+              return `${props.cell.value.toString()}` ? (
                 <span className="tag is-info is-light">Imported</span>
               ) : (
                 "Not Imported"
-              ),
+              );
+            },
+          },
+        ],
+      },
+      {
+        Header: "ComicVine Metadata",
+        columns: [
+          {
+            Header: "Issue #",
+            accessor: "sourcedMetadata",
+            Cell(props) {
+              return (
+                !isNil(props.cell.value.comicvine) && (
+                  <div>{props.cell.value.comicvine.issue_number}</div>
+                )
+              );
+            },
+          },
+
+          {
+            Header: "Publisher",
+            accessor: "sourcedMetadata.comicvine.volumeInformation.publisher",
+            Cell(props) {
+              return (
+                !isNil(props.cell.value) && <h6>{props.cell.value.name}</h6>
+              );
+            },
+          },
+
+          {
+            Header: "Type",
+            accessor: "sourcedMetadata.comicvine",
+            Cell(props) {
+              return (
+                !isNil(props.cell.value) && (
+                  <span className="tag is-info is-light">
+                    {props.cell.value.resource_type}
+                  </span>
+                )
+              );
+            },
+          },
+
+          {
+            Header: "Volume",
+            accessor: "sourcedMetadata.comicvine.volumeInformation",
+            Cell(props) {
+              return (
+                !isNil(props.cell.value) && <h6>{props.cell.value.name}</h6>
+              );
+            },
+          },
+
+          {
+            Header: "Match Score",
+            accessor: "sourcedMetadata.comicvine.score",
+            Cell(props) {
+              return (
+                !isNil(props.cell.value) && (
+                  <span className="tag is-success is-light">
+                    {parseInt(props.cell.value, 10)}
+                  </span>
+                )
+              );
+            },
           },
         ],
       },
     ],
     [],
   );
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data });
+
+  columns[0].columns[0].Cell.propTypes = {
+    value: PropTypes.object.isRequired,
+  };
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    page,
+    prepareRow,
+    pageOptions,
+    pageCount,
+    state: { pageIndex, pageSize },
+    gotoPage,
+    previousPage,
+    nextPage,
+    setPageSize,
+    canPreviousPage,
+    canNextPage,
+  } = useTable(
+    { columns, data, initialState: { pageIndex: 0 } },
+    usePagination,
+  );
 
   const comicBookLibraryItems = React.useMemo(() => {});
 
@@ -121,14 +213,17 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
               </thead>
 
               <tbody {...getTableBodyProps()}>
-                {rows.map((row, idx) => {
+                {page.map((row, idx) => {
                   prepareRow(row);
                   return (
                     <tr key={idx} {...row.getRowProps()}>
                       {row.cells.map((cell, idx) => {
-                        console.log(cell);
                         return (
-                          <td key={idx} {...cell.getCellProps()}>
+                          <td
+                            key={idx}
+                            {...cell.getCellProps()}
+                            className="is-vcentered"
+                          >
                             {cell.render("Cell")}
                           </td>
                         );
@@ -138,6 +233,102 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
                 })}
               </tbody>
             </table>
+
+            <nav
+              className="pagination"
+              role="navigation"
+              aria-label="pagination"
+            >
+              <div>
+                Page {pageIndex + 1} of {pageOptions.length}
+              </div>
+              <div className="field has-addons">
+                <p className="control">
+                  <button
+                    className="button"
+                    onClick={() => previousPage()}
+                    disabled={!canPreviousPage}
+                  >
+                    Previous Page
+                  </button>
+                </p>
+                <p className="control">
+                  <button
+                    className="button"
+                    onClick={() => nextPage()}
+                    disabled={!canNextPage}
+                  >
+                    <span>Next Page</span>
+                  </button>
+                </p>
+              </div>
+
+              <div className="field has-addons">
+                <p className="control">
+                  <button
+                    className="button"
+                    onClick={() => gotoPage(0)}
+                    disabled={!canPreviousPage}
+                  >
+                    <i className="fas fa-angle-double-left"></i>
+                  </button>
+                </p>
+                <p className="control">
+                  <button
+                    className="button"
+                    onClick={() => gotoPage(pageCount - 1)}
+                    disabled={!canNextPage}
+                  >
+                    <i className="fas fa-angle-double-right"></i>
+                  </button>
+                </p>
+              </div>
+              <span>
+                Go to page:
+                <input
+                  type="number"
+                  className="input"
+                  defaultValue={pageIndex + 1}
+                  onChange={(e) => {
+                    const page = e.target.value
+                      ? Number(e.target.value) - 1
+                      : 0;
+                    gotoPage(page);
+                  }}
+                  style={{ width: "100px" }}
+                />
+              </span>
+
+              <div
+                className={
+                  "dropdown " + (isPageSizeDropdownCollapsed ? "is-active" : "")
+                }
+                onBlur={() => togglePageSizeDropdown()}
+              >
+                <div className="dropdown-trigger">
+                  <button
+                    className="button"
+                    aria-haspopup="true"
+                    aria-controls="dropdown-menu"
+                    onClick={() => togglePageSizeDropdown()}
+                  >
+                    <span>Select Page Size</span>
+                    <span className="icon is-small">
+                      <i className="fas fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+                <div className="dropdown-menu" id="dropdown-menu" role="menu">
+                  <div className="dropdown-content">
+                    {[10, 20, 30, 40, 50].map((pageSize) => (
+                      <a href="#" className="dropdown-item" key={pageSize}>
+                        Show {pageSize}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </nav>
           </div>
         </div>
       </div>

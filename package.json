@@ -28,7 +28,7 @@
     "@types/socket.io": "^3.0.2",
     "@types/socket.io-client": "^3.0.0",
     "@types/through2": "^2.0.36",
-    "airdcpp-apisocket": "^2.4.1",
+    "airdcpp-apisocket": "^2.4.2",
     "antd": "^4.16.5",
     "array-sort-by": "^1.2.1",
     "babel-polyfill": "^6.26.0",
