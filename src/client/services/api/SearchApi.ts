@@ -5,7 +5,7 @@ import {
   PriorityEnum,
   SearchResponse,
 } from "threetwo-ui-typings";
-import SearchConstants from "../../constants/search.service";
+import SearchConstants from "../../constants/search.constants";
 
 interface SearchData {
   query: Pick<SearchQuery, "pattern"> & Partial<Omit<SearchQuery, "pattern">>;
@@ -22,11 +22,11 @@ export const search = async (data: SearchData) => {
   await sleep(10000);
   const instance: SearchInstance = await SocketService.post("search");
   await SocketService.post<SearchResponse>(
-    `search/${instance.id}/hub_search`,
+    `${SearchConstants.INSTANCES_URL}/${instance.id}/hub_search`,
     data,
   );
   await sleep(10000);
-  const results = await SocketService.get(`search/${instance.id}/results/0/5`);
+  const results = await SocketService.get(`search/${instance.id}/results/0/20`);
   console.log("results", results);
   SocketService.disconnect();
   return results;

@@ -64,10 +64,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
                   extensions: ["cbz", "cbr"],
                 },
                 hub_urls: [
-                  "nmdcs://piter.feardc.net:411",
-                  "dchub://dc.fly-server.ru",
-                  "dchub://dc.elitedc.ru",
-                  "dchub://dc.kcahdep.online",
+                  "adcs://novosibirsk.dc-dev.club:7111/?kp=SHA256/4XFHJFFBFEI2RS75FPRPPXPZMMKPXR764ABVVCC2QGJPQ34SDZGA",
                 ],
                 priority: 1,
               })

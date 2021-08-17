@@ -56,7 +56,7 @@
     "react-window-dynamic-list": "^2.3.5",
     "sharp": "^0.28.1",
     "socket.io-client": "^4.1.2",
-    "threetwo-ui-typings": "^1.0.2",
+    "threetwo-ui-typings": "^1.0.3",
     "voca": "^1.4.0",
     "websocket": "^1.0.34",
     "ws": "^7.5.3",
