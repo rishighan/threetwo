@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, ReactElement } from "react";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
+import { useHistory } from "react-router";
 import {
   removeLeadingPeriod,
   escapePoundSymbol,
@@ -16,26 +17,67 @@ interface IComicBookLibraryProps {
 }
 
 export const Library = ({}: IComicBookLibraryProps): ReactElement => {
-  const [comicPage, setComicPage] = useState(1);
   const [isPageSizeDropdownCollapsed, collapsePageSizeDropdown] =
     useState(false);
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(
-      getComicBooks({
-        paginationOptions: {
-          page: comicPage,
-          limit: 15,
-        },
-      }),
-    );
-  }, [comicPage, dispatch]);
 
   const data = useSelector(
     (state: RootState) => state.fileOps.recentComics.docs,
   );
+  const pageTotal = useSelector(
+    (state: RootState) => state.fileOps.recentComics.totalDocs,
+  );
   const togglePageSizeDropdown = () =>
     collapsePageSizeDropdown(!isPageSizeDropdownCollapsed);
+
+  // programatically navigate to comic detail
+  const history = useHistory();
+  const navigateToComicDetail = (id) => {
+    history.push(`/comic/details/${id}`);
+  };
+  // raw file details
+  const RawFileDetails = ({ value }) => {
+    const encodedFilePath = encodeURI(
+      "http://localhost:3000" + removeLeadingPeriod(value.path),
+    );
+    const filePath = escapePoundSymbol(encodedFilePath);
+    return (
+      <div className="card-container">
+        <div className="card">
+          <div className="is-horizontal">
+            <div className="card-image">
+              <figure>
+                <img className="image" src={filePath} />
+              </figure>
+            </div>
+            <ul className="card-content">
+              <li className="name has-text-weight-medium">
+                {ellipsize(value.name, 18)}
+              </li>
+              <li>
+                <div className="control">
+                  <div className="tags has-addons">
+                    <span className="tag is-primary is-light">
+                      {value.extension}
+                    </span>
+                    <span className="tag is-info is-light">
+                      {prettyBytes(value.fileSize)}
+                    </span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  const ImportStatus = ({ value }) => {
+    return `${value.toString()}` ? (
+      <span className="tag is-info is-light">Imported</span>
+    ) : (
+      "Not Imported"
+    );
+  };
 
   const columns = useMemo(
     () => [
@@ -45,55 +87,12 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
           {
             Header: "File Details",
             accessor: "rawFileDetails",
-            // eslint-disable-next-line react/display-name
-            Cell(props) {
-              const encodedFilePath = encodeURI(
-                "http://localhost:3000" +
-                  removeLeadingPeriod(props.cell.value.path),
-              );
-              const filePath = escapePoundSymbol(encodedFilePath);
-              return (
-                <div className="card-container">
-                  <div className="card">
-                    <div className="is-horizontal">
-                      <div className="card-image">
-                        <figure>
-                          <img className="image" src={filePath} />
-                        </figure>
-                      </div>
-                      <ul className="card-content">
-                        <li className="name has-text-weight-medium">
-                          {ellipsize(props.cell.value.name, 18)}
-                        </li>
-                        <li>
-                          <div className="control">
-                            <div className="tags has-addons">
-                              <span className="tag is-primary is-light">
-                                {props.cell.value.extension}
-                              </span>
-                              <span className="tag is-info is-light">
-                                {prettyBytes(props.cell.value.fileSize)}
-                              </span>
-                            </div>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              );
-            },
+            Cell: RawFileDetails,
           },
           {
             Header: "Import Status",
             accessor: "importStatus.isImported",
-            Cell(props) {
-              return `${props.cell.value.toString()}` ? (
-                <span className="tag is-info is-light">Imported</span>
-              ) : (
-                "Not Imported"
-              );
-            },
+            Cell: ImportStatus,
           },
         ],
       },
@@ -165,29 +164,57 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
     [],
   );
 
-  columns[0].columns[0].Cell.propTypes = {
-    value: PropTypes.object.isRequired,
+  RawFileDetails.propTypes = {
+    name: PropTypes.string,
+    path: PropTypes.string,
+    fileSize: PropTypes.number,
+    extension: PropTypes.string,
   };
+
+  ImportStatus.propTypes = {
+    value: PropTypes.bool.isRequired,
+  };
+
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    page,
     prepareRow,
-    pageOptions,
-    pageCount,
-    state: { pageIndex, pageSize },
-    gotoPage,
-    previousPage,
-    nextPage,
-    setPageSize,
+    page,
     canPreviousPage,
     canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    setPageSize,
+    state: { pageIndex, pageSize },
   } = useTable(
-    { columns, data, initialState: { pageIndex: 0 } },
+    {
+      columns,
+      data,
+      manualPagination: true,
+      initialState: {
+        pageIndex: 1,
+        pageSize: 15,
+      },
+      pageCount: pageTotal,
+    },
     usePagination,
   );
 
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(
+      getComicBooks({
+        paginationOptions: {
+          page: pageIndex,
+          limit: pageSize,
+        },
+      }),
+    );
+  }, [pageIndex, pageSize]);
   const comicBookLibraryItems = React.useMemo(() => {});
 
   return (
@@ -216,7 +243,11 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
                 {page.map((row, idx) => {
                   prepareRow(row);
                   return (
-                    <tr key={idx} {...row.getRowProps()}>
+                    <tr
+                      key={idx}
+                      {...row.getRowProps()}
+                      onClick={() => navigateToComicDetail(row.original._id)}
+                    >
                       {row.cells.map((cell, idx) => {
                         return (
                           <td
@@ -240,7 +271,8 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
               aria-label="pagination"
             >
               <div>
-                Page {pageIndex + 1} of {pageOptions.length}
+                Page {pageIndex} of {Math.ceil(pageTotal / pageSize)}
+                (Total resources: {pageTotal})
               </div>
               <div className="field has-addons">
                 <p className="control">
@@ -288,11 +320,9 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
                 <input
                   type="number"
                   className="input"
-                  defaultValue={pageIndex + 1}
+                  defaultValue={pageIndex}
                   onChange={(e) => {
-                    const page = e.target.value
-                      ? Number(e.target.value) - 1
-                      : 0;
+                    const page = e.target.value ? Number(e.target.value) : 0;
                     gotoPage(page);
                   }}
                   style={{ width: "100px" }}

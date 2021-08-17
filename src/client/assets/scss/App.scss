@@ -137,15 +137,18 @@ $border-color: red;
 // Library
 .library {
   table {
-    td {
-      border: 0 none;
-      .card {
-        margin: 8px 0 7px 0;
-        .name {
-          margin: 0 0 4px 0;
+    tr{
+      td {
+        border: 0 none;
+        .card {
+          margin: 8px 0 7px 0;
+          .name {
+            margin: 0 0 4px 0;
+          }
         }
       }
-    }
+    
+  }
     tbody {
       padding: 10px 0 0 0;
     }

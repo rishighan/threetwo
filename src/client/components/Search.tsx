@@ -59,7 +59,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
             onSubmit={() =>
               getDCPPSearchResults({
                 query: {
-                  pattern: "secret wars",
+                  pattern: "wolverine",
                   // file_type: "compressed",
                   extensions: ["cbz", "cbr"],
                 },

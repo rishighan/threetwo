@@ -65,14 +65,15 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     return { __html: html };
   };
   const isComicBookMetadataAvailable =
-    !isNil(comicBookDetailData.sourcedMetadata) &&
+    comicBookDetailData.sourcedMetadata &&
+    !isUndefined(comicBookDetailData.sourcedMetadata.comicvine) &&
     !isEmpty(comicBookDetailData.sourcedMetadata);
   // Tab groups for ComicVine metadata
   const tabGroup = [
     {
       id: 0,
       name: "Volume Information",
-      content: isComicBookMetadataAvailable && (
+      content: isComicBookMetadataAvailable ? (
         <>
           <div className="columns">
             <div className="column is-narrow">
@@ -126,7 +127,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
             ></div>
           </div>
         </>
-      ),
+      ) : null,
     },
     {
       id: 1,
@@ -249,7 +250,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
               </div>
             </div>
 
-            <MetadataTabGroup />
+            {isComicBookMetadataAvailable ? <MetadataTabGroup /> : null}
 
             <Drawer
               title="ComicVine Search Results"
