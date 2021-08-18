@@ -1,13 +1,7 @@
 import React, { useMemo, useCallback, ReactElement } from "react";
-import {
-  removeLeadingPeriod,
-  escapePoundSymbol,
-} from "../shared/utils/formatting.utils";
-import { useTable } from "react-table";
-import prettyBytes from "pretty-bytes";
-import ellipsize from "ellipsize";
-import { isNil, isUndefined, map, isEmpty } from "lodash";
+import { isNil, isEmpty } from "lodash";
 import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";
+import { importToDB } from "../actions/fileops.actions";
 import { useSelector, useDispatch } from "react-redux";
 import { comicinfoAPICall } from "../actions/comicinfo.actions";
 import { search } from "../services/api/SearchApi";
@@ -33,7 +27,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
             limit: "10",
             offset: "0",
             field_list: "id,name,deck,api_detail_url,image,description",
-            resources: "volume",
+            resources: "issue",
           },
         }),
       );
@@ -44,6 +38,23 @@ export const Search = ({}: ISearchProps): ReactElement => {
   const getDCPPSearchResults = useCallback((searchQuery) => {
     search(searchQuery);
   }, []);
+  const dcppQuery = {
+    query: {
+      pattern: "Iron Man - V1 194",
+      // file_type: "compressed",
+      extensions: ["cbz", "cbr"],
+    },
+    hub_urls: [
+      "adcs://novosibirsk.dc-dev.club:7111/?kp=SHA256/4XFHJFFBFEI2RS75FPRPPXPZMMKPXR764ABVVCC2QGJPQ34SDZGA",
+      "dc.fly-server.ru",
+    ],
+    priority: 1,
+  };
+
+  const addToLibrary = useCallback(
+    (comicData) => dispatch(importToDB(comicData)),
+    [],
+  );
 
   const comicVineSearchResults = useSelector(
     (state: RootState) => state.comicInfo.searchResults,
@@ -56,20 +67,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
           <h1 className="title">Search</h1>
 
           <Form
-            onSubmit={() =>
-              getDCPPSearchResults({
-                query: {
-                  pattern: "Iron Man - V1 194",
-                  // file_type: "compressed",
-                  extensions: ["cbz", "cbr"],
-                },
-                hub_urls: [
-                  "adcs://novosibirsk.dc-dev.club:7111/?kp=SHA256/4XFHJFFBFEI2RS75FPRPPXPZMMKPXR764ABVVCC2QGJPQ34SDZGA",
-                  "dc.fly-server.ru",
-                ],
-                priority: 1,
-              })
-            }
+            onSubmit={getCVSearchResults}
             initialValues={{
               ...formData,
             }}
@@ -98,20 +96,24 @@ export const Search = ({}: ISearchProps): ReactElement => {
           {!isNil(comicVineSearchResults.results) &&
           !isEmpty(comicVineSearchResults.results) ? (
             <>
-              {comicVineSearchResults.results.map(
-                ({ id, name, description, api_detail_url, image }) => {
-                  return (
-                    <div key={id}>
-                      {id} {name}
-                      <p>{api_detail_url}</p>
-                      <p>{description}</p>
-                      <figure>
-                        <img src={image.thumb_url} alt="name" />
-                      </figure>
-                    </div>
-                  );
-                },
-              )}
+              {comicVineSearchResults.results.map((result) => {
+                return (
+                  <div key={result.id}>
+                    {result.id} {result.name}
+                    <p>{result.api_detail_url}</p>
+                    <p>{result.description}</p>
+                    <figure>
+                      <img src={result.image.thumb_url} alt="name" />
+                    </figure>
+                    <button
+                      className="button"
+                      onClick={() => addToLibrary(result)}
+                    >
+                      Add to Library
+                    </button>
+                  </div>
+                );
+              })}
             </>
           ) : (
             <article className="message is-dark is-half">

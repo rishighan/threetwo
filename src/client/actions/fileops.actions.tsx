@@ -13,8 +13,12 @@ import {
   CV_API_CALL_IN_PROGRESS,
   CV_SEARCH_SUCCESS,
   CV_CLEANUP,
+  IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
+  IMS_CV_METADATA_IMPORT_SUCCESSFUL,
+  IMS_CV_METADATA_IMPORT_FAILED,
 } from "../constants/action-types";
 import { refineQuery } from "../shared/utils/filenameparser.utils";
+import { extend } from "lodash";
 import sortBy from "array-sort-by";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
@@ -80,7 +84,6 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
   });
 
   socket.on("comicBookCoverMetadata", (data: IExtractedComicBookCoverFile) => {
-    console.log("Recd cover");
     dispatch({
       type: IMS_COMICBOOK_METADATA_FETCHED,
       data,
@@ -107,6 +110,45 @@ export const getComicBooks = (options) => async (dispatch) => {
     });
 };
 
+export const importToDB = (payload) => (dispatch) => {
+  try {
+    const comicBookMetadata = extend(
+      {
+        importStatus: {
+          isImported: true,
+          tagged: false,
+          matchedResult: {
+            score: "0",
+          },
+        },
+      },
+      { sourcedMetadata: { comicvine: payload } },
+    );
+    dispatch({
+      type: IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
+    });
+
+    return axios
+      .request({
+        url: "http://localhost:3000/api/import/rawImportToDb",
+        method: "POST",
+        data: comicBookMetadata,
+        transformResponse: (r: string) => JSON.parse(r),
+      })
+      .then((response) => {
+        const { data } = response;
+        dispatch({
+          type: IMS_CV_METADATA_IMPORT_SUCCESSFUL,
+          importResult: data,
+        });
+      });
+  } catch (error) {
+    dispatch({
+      type: IMS_CV_METADATA_IMPORT_FAILED,
+      importError: error,
+    });
+  }
+};
 export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
   try {
     const issueString = searchPayload.rawFileDetails.name;

@@ -33,9 +33,10 @@ export const search = async (data: SearchData) => {
     `search/${instance.id}/hub_search`,
     data,
   );
+  return searchQueueInfo;
 };
 
-const onSearchSent = async (item, instance, unsubscribe, searchInfo): any => {
+const onSearchSent = async (item, instance, unsubscribe, searchInfo) => {
   // Collect the results for 5 seconds
   await sleep(5000);
 
@@ -53,7 +54,6 @@ const onSearchSent = async (item, instance, unsubscribe, searchInfo): any => {
     //   target_directory: item.target_directory,
     // });
   }
-  return results;
   // Remove listener for this search instance
   unsubscribe();
 };

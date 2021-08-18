@@ -165,10 +165,12 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
   );
 
   RawFileDetails.propTypes = {
-    name: PropTypes.string,
-    path: PropTypes.string,
-    fileSize: PropTypes.number,
-    extension: PropTypes.string,
+    value: PropTypes.shape({
+      name: PropTypes.string,
+      path: PropTypes.string,
+      fileSize: PropTypes.number,
+      extension: PropTypes.string,
+    }),
   };
 
   ImportStatus.propTypes = {
