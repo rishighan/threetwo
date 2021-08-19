@@ -1,6 +1,12 @@
-import React from "react";
-import Card from "./Card";
-import { map } from "lodash";
+import React, { ReactElement } from "react";
+import Card from "./Carda";
+import { Link } from "react-router-dom";
+import ellipsize from "ellipsize";
+import {
+  removeLeadingPeriod,
+  escapePoundSymbol,
+} from "../shared/utils/formatting.utils";
+import { isNil, map } from "lodash";
 
 type RecentlyImportedProps = {
   comicBookCovers: any;
@@ -8,17 +14,32 @@ type RecentlyImportedProps = {
 
 export const RecentlyImported = ({
   comicBookCovers,
-}: RecentlyImportedProps) => (
+}: RecentlyImportedProps): ReactElement => (
   <section className="card-container">
-    {map(comicBookCovers.docs, ({ _id, rawFileDetails }) => {
+    {map(comicBookCovers.docs, ({ _id, rawFileDetails, sourcedMetadata }) => {
+      let imagePath = "";
+      let comicName = "";
+      if (!isNil(rawFileDetails)) {
+        const encodedFilePath = encodeURI(
+          "http://localhost:3000" + removeLeadingPeriod(rawFileDetails.path),
+        );
+        imagePath = escapePoundSymbol(encodedFilePath);
+        comicName = rawFileDetails.name;
+      } else if (!isNil(sourcedMetadata)) {
+        imagePath = sourcedMetadata.comicvine.image.small_url;
+        comicName = sourcedMetadata.comicvine.name;
+      }
+      const titleElement = (
+        <Link to={"/comic/details/" + _id}>{ellipsize(comicName, 18)}</Link>
+      );
       return (
         <Card
           key={_id}
-          comicBookCoversMetadata={rawFileDetails}
-          mongoObjId={_id}
-          hasTitle
-          isHorizontal={false}
-        />
+          orientation={"vertical"}
+          imageUrl={imagePath}
+          hasDetails
+          title={comicName ? titleElement : null}
+        ></Card>
       );
     })}
   </section>

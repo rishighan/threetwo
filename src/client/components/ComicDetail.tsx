@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback, ReactElement } from "react";
 import { useParams } from "react-router-dom";
-import Card from "./Card";
+import Card from "./Carda";
 import MatchResult from "./MatchResult";
 import ComicVineSearchForm from "./ComicVineSearchForm";
 
 import { css } from "@emotion/react";
 import PuffLoader from "react-spinners/PuffLoader";
 import { isEmpty, isUndefined, isNil } from "lodash";
-import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";
+import { RootState } from "threetwo-ui-typings";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
 import { getComicBookDetailById } from "../actions/comicinfo.actions";
 import { Drawer, Divider } from "antd";
@@ -16,6 +16,10 @@ const prettyBytes = require("pretty-bytes");
 import "antd/dist/antd.css";
 
 import { useDispatch, useSelector } from "react-redux";
+import {
+  removeLeadingPeriod,
+  escapePoundSymbol,
+} from "../shared/utils/formatting.utils";
 
 type ComicDetailProps = {};
 /**
@@ -60,7 +64,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     setVisible(false);
   };
 
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(1);
   const createDescriptionMarkup = (html) => {
     return { __html: html };
   };
@@ -71,7 +75,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   // Tab groups for ComicVine metadata
   const tabGroup = [
     {
-      id: 0,
+      id: 1,
       name: "Volume Information",
       content: isComicBookMetadataAvailable ? (
         <>
@@ -130,7 +134,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       ) : null,
     },
     {
-      id: 1,
+      id: 2,
       name: "Other Metadata",
       content: <div>bastard</div>,
     },
@@ -158,85 +162,96 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     );
   };
 
+  const RawFileDetails = (props) => (
+    <div className="content comic-detail">
+      <dl>
+        <dt>Raw File Details</dt>
+        <dd>{props.data.containedIn}</dd>
+        <dd>{prettyBytes(props.data.fileSize)}</dd>
+        <dd>{props.data.path}</dd>
+        <dd>
+          <span className="tag is-primary">{props.data.extension}</span>
+        </dd>
+      </dl>
+    </div>
+  );
+
+  const ComicVineDetails = (props) => (
+    <div className="content comic-detail">
+      <dl>
+        <dt>ComicVine Metadata</dt>
+        <dd className="is-size-7">
+          Last scraped on{" "}
+          {dayjs(props.updatedAt).format("MMM D YYYY [at] h:mm a")}
+        </dd>
+        <dd>
+          <h6>{props.data.name}</h6>
+        </dd>
+        <dd>{props.data.number}</dd>
+        <dd>
+          <div className="field is-grouped is-grouped-multiline">
+            <div className="control">
+              <div className="tags has-addons">
+                <span className="tag is-light">Type</span>
+                <span className="tag is-warning">
+                  {props.data.resource_type}
+                </span>
+              </div>
+            </div>
+            <div className="control">
+              <div className="tags has-addons">
+                <span className="tag is-light">ComicVine Issue ID</span>
+                <span className="tag is-success">{props.data.id}</span>
+              </div>
+            </div>
+          </div>
+        </dd>
+      </dl>
+    </div>
+  );
+
+  let imagePath = "";
+  let comicBookTitle = "";
+  if (!isNil(comicBookDetailData.rawFilDetails)) {
+    const encodedFilePath = encodeURI(
+      "http://localhost:3000" +
+        removeLeadingPeriod(comicBookDetailData.rawFilDetails.path),
+    );
+    imagePath = escapePoundSymbol(encodedFilePath);
+    comicBookTitle = comicBookDetailData.rawFilDetails.name;
+  } else if (
+    !isNil(comicBookDetailData.sourcedMetadata) &&
+    !isNil(comicBookDetailData.sourcedMetadata.comicvine)
+  ) {
+    imagePath = comicBookDetailData.sourcedMetadata.comicvine.image.small_url;
+    comicBookTitle = comicBookDetailData.sourcedMetadata.comicvine.name;
+  }
   return (
     <section className="container">
       <div className="section">
         {!isNil(comicBookDetailData) && !isEmpty(comicBookDetailData) && (
           <>
-            <h1 className="title">{comicBookDetailData.rawFileDetails.name}</h1>
+            <h1 className="title">{comicBookTitle}</h1>
             <div className="columns">
               <div className="column is-narrow">
                 <Card
-                  comicBookCoversMetadata={comicBookDetailData.rawFileDetails}
-                  hasTitle={false}
-                  isHorizontal={false}
+                  imageUrl={imagePath}
+                  orientation={"vertical"}
+                  hasDetails={false}
                 />
               </div>
               <div className="column">
-                <div className="content comic-detail">
-                  <dl>
-                    <dt>Raw File Details</dt>
-                    <dd>{comicBookDetailData.rawFileDetails.containedIn}</dd>
-                    <dd>
-                      {prettyBytes(comicBookDetailData.rawFileDetails.fileSize)}
-                    </dd>
-                    <dd>{comicBookDetailData.rawFileDetails.path}</dd>
-                    <dd>
-                      <span className="tag is-primary">
-                        {comicBookDetailData.rawFileDetails.extension}
-                      </span>
-                    </dd>
-                  </dl>
-                </div>
-                {!isNil(comicBookDetailData.sourcedMetadata.comicvine) && (
-                  <div className="content comic-detail">
+                {!isNil(comicBookDetailData.rawFileDetails) && (
+                  <>
+                    <RawFileDetails data={comicBookDetailData.rawFileDetails} />
                     <Divider />
-                    <dl>
-                      <dt>ComicVine Metadata</dt>
-                      <dd className="is-size-7">
-                        Last scraped on{" "}
-                        {dayjs(comicBookDetailData.updatedAt).format(
-                          "MMM D YYYY [at] h:mm a",
-                        )}
-                      </dd>
-                      <dd>
-                        <h6>
-                          {comicBookDetailData.sourcedMetadata.comicvine.name}
-                        </h6>
-                      </dd>
-                      <dd>
-                        {comicBookDetailData.sourcedMetadata.comicvine.number}
-                      </dd>
-                      <dd>
-                        <div className="field is-grouped is-grouped-multiline">
-                          <div className="control">
-                            <div className="tags has-addons">
-                              <span className="tag is-light">Type</span>
-                              <span className="tag is-warning">
-                                {
-                                  comicBookDetailData.sourcedMetadata.comicvine
-                                    .resource_type
-                                }
-                              </span>
-                            </div>
-                          </div>
-                          <div className="control">
-                            <div className="tags has-addons">
-                              <span className="tag is-light">
-                                ComicVine Issue ID
-                              </span>
-                              <span className="tag is-success">
-                                {
-                                  comicBookDetailData.sourcedMetadata.comicvine
-                                    .id
-                                }
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </dd>
-                    </dl>
-                  </div>
+                  </>
+                )}
+                {!isNil(comicBookDetailData.sourcedMetadata.comicvine) && (
+                  <ComicVineDetails
+                    data={comicBookDetailData.sourcedMetadata.comicvine}
+                    updatedAt={comicBookDetailData.updatedAt}
+                  />
                 )}
                 <button
                   className="button is-small"

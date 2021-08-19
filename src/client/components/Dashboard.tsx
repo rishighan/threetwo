@@ -56,6 +56,7 @@ const mapDispatchToProps = (dispatch) => ({
         paginationOptions: {
           page: 0,
           limit: 5,
+          sort: { updatedAt: "-1" },
         },
       }),
     );
