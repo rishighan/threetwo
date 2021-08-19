@@ -36,43 +36,79 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
   };
   // raw file details
   const RawFileDetails = ({ value }) => {
-    const encodedFilePath = encodeURI(
-      "http://localhost:3000" + removeLeadingPeriod(value.path),
-    );
-    const filePath = escapePoundSymbol(encodedFilePath);
-    return (
-      <div className="card-container">
-        <div className="card">
-          <div className="is-horizontal">
-            <div className="card-image">
-              <figure>
-                <img className="image" src={filePath} />
-              </figure>
-            </div>
-            <ul className="card-content">
-              <li className="name has-text-weight-medium">
-                {ellipsize(value.name, 18)}
-              </li>
-              <li>
-                <div className="control">
-                  <div className="tags has-addons">
-                    <span className="tag is-primary is-light">
-                      {value.extension}
-                    </span>
-                    <span className="tag is-info is-light">
-                      {prettyBytes(value.fileSize)}
-                    </span>
+    if (!isNil(value.path)) {
+      const encodedFilePath = encodeURI(
+        "http://localhost:3000" + removeLeadingPeriod(value.path),
+      );
+      const filePath = escapePoundSymbol(encodedFilePath);
+      return (
+        <div className="card-container">
+          <div className="card">
+            <div className="is-horizontal">
+              <div className="card-image">
+                <figure>
+                  <img className="image" src={filePath} />
+                </figure>
+              </div>
+              <ul className="card-content">
+                <li className="name has-text-weight-medium">
+                  {ellipsize(value.name, 18)}
+                </li>
+                <li>
+                  <div className="control">
+                    <div className="tags has-addons">
+                      <span className="tag is-primary is-light">
+                        {value.extension}
+                      </span>
+                      <span className="tag is-info is-light">
+                        {prettyBytes(value.fileSize)}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </li>
-            </ul>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
-    );
+      );
+    } else if (!isNil(value.comicvine)) {
+      return (
+        <div className="card-container">
+          <div className="card">
+            <div className="is-horizontal">
+              <div className="card-image">
+                <figure>
+                  <img
+                    className="image"
+                    src={value.comicvine.image.thumb_url}
+                  />
+                </figure>
+              </div>
+              <ul className="card-content">
+                <li className="name has-text-weight-medium">
+                  {ellipsize(value.name, 18)}
+                </li>
+                <li>
+                  <div className="control">
+                    <div className="tags has-addons">
+                      <span className="tag is-primary is-light">
+                        ComicVine ID
+                      </span>
+                      <span className="tag is-info is-light">
+                        {value.comicvine.id}
+                      </span>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      );
+    }
   };
   const ImportStatus = ({ value }) => {
-    return `${value.toString()}` ? (
+    return value ? (
       <span className="tag is-info is-light">Imported</span>
     ) : (
       "Not Imported"
@@ -86,7 +122,11 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
         columns: [
           {
             Header: "File Details",
-            accessor: "rawFileDetails",
+            id: "fileDetails",
+            accessor: (row) =>
+              !isNil(row.rawFileDetails)
+                ? row.rawFileDetails
+                : row.sourcedMetadata,
             Cell: RawFileDetails,
           },
           {
@@ -301,7 +341,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
                 <p className="control">
                   <button
                     className="button"
-                    onClick={() => gotoPage(0)}
+                    onClick={() => gotoPage(1)}
                     disabled={!canPreviousPage}
                   >
                     <i className="fas fa-angle-double-left"></i>
@@ -310,7 +350,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
                 <p className="control">
                   <button
                     className="button"
-                    onClick={() => gotoPage(pageCount - 1)}
+                    onClick={() => gotoPage(Math.ceil(pageTotal / pageSize))}
                     disabled={!canNextPage}
                   >
                     <i className="fas fa-angle-double-right"></i>

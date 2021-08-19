@@ -26,7 +26,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
             format: "json",
             limit: "10",
             offset: "0",
-            field_list: "id,name,deck,api_detail_url,image,description",
+            field_list: "id,name,deck,api_detail_url,image,description,volume",
             resources: "issue",
           },
         }),
@@ -97,6 +97,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
           !isEmpty(comicVineSearchResults.results) ? (
             <>
               {comicVineSearchResults.results.map((result) => {
+                console.log(result)
                 return (
                   <div key={result.id}>
                     {result.id} {result.name}

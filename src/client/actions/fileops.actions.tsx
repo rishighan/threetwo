@@ -112,18 +112,16 @@ export const getComicBooks = (options) => async (dispatch) => {
 
 export const importToDB = (payload) => (dispatch) => {
   try {
-    const comicBookMetadata = extend(
-      {
-        importStatus: {
-          isImported: true,
-          tagged: false,
-          matchedResult: {
-            score: "0",
-          },
+    const comicBookMetadata = {
+      importStatus: {
+        isImported: true,
+        tagged: false,
+        matchedResult: {
+          score: "0",
         },
       },
-      { sourcedMetadata: { comicvine: payload } },
-    );
+      sourcedMetadata: { comicvine: payload },
+    };
     dispatch({
       type: IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
     });

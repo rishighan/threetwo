@@ -38,7 +38,7 @@ class Card extends React.Component<IProps, IState> {
                 <img src={filePath} alt="Placeholder image" />
               </figure>
             </div>
-            {this.props.title && (
+            {this.props.hasTitle && (
               <div className="card-content">
                 <ul>
                   <Link to={"/comic/details/" + this.props.mongoObjId}>

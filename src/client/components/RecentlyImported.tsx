@@ -10,13 +10,14 @@ export const RecentlyImported = ({
   comicBookCovers,
 }: RecentlyImportedProps) => (
   <section className="card-container">
-    {map(comicBookCovers.docs, (doc, idx) => {
+    {map(comicBookCovers.docs, ({ _id, rawFileDetails }) => {
       return (
         <Card
-          key={idx}
-          comicBookCoversMetadata={doc.rawFileDetails}
-          mongoObjId={doc._id}
-          title
+          key={_id}
+          comicBookCoversMetadata={rawFileDetails}
+          mongoObjId={_id}
+          hasTitle
+          isHorizontal={false}
         />
       );
     })}
