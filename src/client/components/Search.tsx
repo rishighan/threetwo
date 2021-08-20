@@ -35,22 +35,6 @@ export const Search = ({}: ISearchProps): ReactElement => {
     [dispatch],
   );
 
-  const getDCPPSearchResults = useCallback((searchQuery) => {
-    search(searchQuery);
-  }, []);
-  const dcppQuery = {
-    query: {
-      pattern: "Iron Man - V1 194",
-      // file_type: "compressed",
-      extensions: ["cbz", "cbr"],
-    },
-    hub_urls: [
-      "adcs://novosibirsk.dc-dev.club:7111/?kp=SHA256/4XFHJFFBFEI2RS75FPRPPXPZMMKPXR764ABVVCC2QGJPQ34SDZGA",
-      "dc.fly-server.ru",
-    ],
-    priority: 1,
-  };
-
   const addToLibrary = useCallback(
     (comicData) => dispatch(importToDB(comicData)),
     [],

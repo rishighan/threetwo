@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import Card from "./Carda";
 import MatchResult from "./MatchResult";
 import ComicVineSearchForm from "./ComicVineSearchForm";
+import AcquisitionPanel from "./AcquisitionPanel";
 
 import { css } from "@emotion/react";
 import PuffLoader from "react-spinners/PuffLoader";
@@ -142,6 +143,12 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       icon: <i className="fas fa-puzzle-piece"></i>,
       name: "Other Metadata",
       content: <div>bastard</div>,
+    },
+    {
+      id: 3,
+      icon: <i className="fas fa-download"></i>,
+      name: "Acquisition",
+      content: <AcquisitionPanel comicBookMetadata={comicBookDetailData} />,
     },
   ];
   const MetadataTabGroup = () => {
