@@ -257,7 +257,6 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
       }),
     );
   }, [pageIndex, pageSize]);
-  const comicBookLibraryItems = React.useMemo(() => {});
 
   return (
     <section className="container">
@@ -307,15 +306,19 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
               </tbody>
             </table>
 
+            {/* pagination controls */}
             <nav
               className="pagination"
               role="navigation"
               aria-label="pagination"
             >
+              {/* x of total indicator */}
               <div>
                 Page {pageIndex} of {Math.ceil(pageTotal / pageSize)}
                 (Total resources: {pageTotal})
               </div>
+
+              {/* previous page and next page controls */}
               <div className="field has-addons">
                 <p className="control">
                   <button
@@ -337,6 +340,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
                 </p>
               </div>
 
+              {/* first and last page controls */}
               <div className="field has-addons">
                 <p className="control">
                   <button
@@ -357,6 +361,8 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
                   </button>
                 </p>
               </div>
+
+              {/* page selector */}
               <span>
                 Go to page:
                 <input
@@ -371,6 +377,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
                 />
               </span>
 
+              {/* page size selector */}
               <div
                 className={
                   "dropdown " + (isPageSizeDropdownCollapsed ? "is-active" : "")

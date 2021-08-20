@@ -35,6 +35,7 @@ type ComicDetailProps = {};
 export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const [page, setPage] = useState(1);
   const [visible, setVisible] = useState(false);
+  const [isActionDropdownCollapsed, collapseActionDropdown] = useState(false);
 
   const comicVineSearchResults = useSelector(
     (state: RootState) => state.comicInfo.searchResults,
@@ -50,6 +51,8 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   );
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
   const dispatch = useDispatch();
+  const toggleActionDropdown = () =>
+    collapseActionDropdown(!isActionDropdownCollapsed);
 
   useEffect(() => {
     dispatch(getComicBookDetailById(comicObjectId));
@@ -77,6 +80,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     {
       id: 1,
       name: "Volume Information",
+      icon: <i className="fas fa-layer-group"></i>,
       content: isComicBookMetadataAvailable ? (
         <>
           <div className="columns">
@@ -135,6 +139,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     },
     {
       id: 2,
+      icon: <i className="fas fa-puzzle-piece"></i>,
       name: "Other Metadata",
       content: <div>bastard</div>,
     },
@@ -144,13 +149,16 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       <>
         <div className="tabs">
           <ul>
-            {tabGroup.map(({ id, name }) => (
+            {tabGroup.map(({ id, name, icon }) => (
               <li
                 key={id}
                 className={id === active ? "is-active" : ""}
                 onClick={() => setActive(id)}
               >
-                <a>{name}</a>
+                <a>
+                  <span className="icon is-small">{icon}</span>
+                  {name}
+                </a>
               </li>
             ))}
           </ul>
@@ -212,13 +220,13 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
 
   let imagePath = "";
   let comicBookTitle = "";
-  if (!isNil(comicBookDetailData.rawFilDetails)) {
+  if (!isNil(comicBookDetailData.rawFileDetails)) {
     const encodedFilePath = encodeURI(
       "http://localhost:3000" +
-        removeLeadingPeriod(comicBookDetailData.rawFilDetails.path),
+        removeLeadingPeriod(comicBookDetailData.rawFileDetails.path),
     );
     imagePath = escapePoundSymbol(encodedFilePath);
-    comicBookTitle = comicBookDetailData.rawFilDetails.name;
+    comicBookTitle = comicBookDetailData.rawFileDetails.name;
   } else if (
     !isNil(comicBookDetailData.sourcedMetadata) &&
     !isNil(comicBookDetailData.sourcedMetadata.comicvine)
@@ -240,6 +248,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                   hasDetails={false}
                 />
               </div>
+              {/* raw file details */}
               <div className="column">
                 {!isNil(comicBookDetailData.rawFileDetails) && (
                   <>
@@ -247,21 +256,68 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                     <Divider />
                   </>
                 )}
+                {/* comic vine scraped metadata */}
                 {!isNil(comicBookDetailData.sourcedMetadata.comicvine) && (
                   <ComicVineDetails
                     data={comicBookDetailData.sourcedMetadata.comicvine}
                     updatedAt={comicBookDetailData.updatedAt}
                   />
                 )}
-                <button
-                  className="button is-small"
-                  onClick={openDrawerWithCVMatches}
+                {/* action dropdown */}
+                <div
+                  className={
+                    "dropdown " + (isActionDropdownCollapsed ? "is-active" : "")
+                  }
+                  onBlur={() => toggleActionDropdown()}
                 >
-                  <span className="icon">
-                    <i className="fas fa-magic"></i>
-                  </span>
-                  <span>Match on Comic Vine</span>
-                </button>
+                  <div className="dropdown-trigger">
+                    <button
+                      className="button is-small"
+                      aria-haspopup="true"
+                      aria-controls="dropdown-menu2"
+                      onClick={() => toggleActionDropdown()}
+                    >
+                      <span>
+                        <i className="fas fa-sliders-h"></i> Actions
+                      </span>
+
+                      <span className="icon is-small">
+                        <i className="fas fa-angle-down" aria-hidden="true"></i>
+                      </span>
+                    </button>
+                  </div>
+                  <div
+                    className="dropdown-menu"
+                    id="dropdown-menu2"
+                    role="menu"
+                  >
+                    <div className="dropdown-content">
+                      <div
+                        className="dropdown-item"
+                        onClick={openDrawerWithCVMatches}
+                      >
+                        <span className="icon">
+                          <i className="fas fa-magic"></i>
+                        </span>
+                        <span>Match on ComicVine</span>
+                      </div>
+                      <hr className="dropdown-divider" />
+                      <div className="dropdown-item">
+                        <span className="icon">
+                          <i className="fas fa-edit"></i>
+                        </span>
+                        <span>Edit Metdata</span>
+                      </div>
+                      <hr className="dropdown-divider" />
+                      <div className="dropdown-item">
+                        <span className="icon">
+                          <i className="fas fa-trash"></i>
+                        </span>
+                        <span>Delete Comic</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
