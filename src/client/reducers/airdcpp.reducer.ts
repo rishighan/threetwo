@@ -28,6 +28,8 @@ function airdcppReducer(state = initialState, action) {
         isAirDCPPSearchInProgress: false,
         results: action.results,
       };
+    default:
+      return state;
   }
 }
 

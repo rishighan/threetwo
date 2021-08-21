@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, ReactElement } from "react";
 import { search } from "../actions/airdcpp.actions";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "threetwo-ui-typings";
+import { each, isNil, map } from "lodash";
 
 interface IAcquisitionPanelProps {
   comicBookMetadata: any;
@@ -13,9 +14,9 @@ export const AcquisitionPanel = (
   const volumeName =
     props.comicBookMetadata.sourcedMetadata.comicvine.volumeInformation.name;
   const issueName = props.comicBookMetadata.sourcedMetadata.comicvine.name;
-  const airDCPPSearchResults = useSelector((state: RootState) => {
-      console.log(state);
-  });
+  const airDCPPSearchResults = useSelector(
+    (state: RootState) => state.airdcpp.results,
+  );
   const dispatch = useDispatch();
   const getDCPPSearchResults = useCallback(
     (searchQuery) => {
@@ -45,7 +46,22 @@ export const AcquisitionPanel = (
       </button>
 
       {/* results */}
-      <pre>{JSON.stringify(airDCPPSearchResults)}</pre>
+      <table className="table is-striped">
+          <thead>
+              <tr>
+                  <th>Name</th>
+                  <th>Path</th>
+              </tr>
+          </thead>
+        {map(airDCPPSearchResults, ({ name, path }) => {
+          return (
+            <tr>
+              <td>{name}</td>
+              <td>{path}</td>
+            </tr>
+          );
+        })}
+      </table>
     </>
   );
 };

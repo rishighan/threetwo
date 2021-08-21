@@ -1,5 +1,10 @@
 import SocketService from "../services/DcppSearchService";
-import { SearchQuery, SearchInstance, PriorityEnum } from "threetwo-ui-typings";
+import {
+  SearchQuery,
+  SearchInstance,
+  PriorityEnum,
+  SearchResponse,
+} from "threetwo-ui-typings";
 import {
   AIRDCPP_SEARCH_INSTANCE_CREATED,
   AIRDCPP_SEARCH_RESULTS_RECEIVED,
@@ -17,52 +22,19 @@ function sleep(ms: number): Promise<NodeJS.Timeout> {
 
 export const search = (data: SearchData) => async (dispatch) => {
   await SocketService.connect("admin", "password");
+  await sleep(10000);
   const instance: SearchInstance = await SocketService.post("search");
-
-  dispatch({
-    type: AIRDCPP_SEARCH_INSTANCE_CREATED,
-    searchInstance: instance,
-  });
-
-  const unsubscribe = await SocketService.addListener(
-    "search",
-    "search_hub_searches_sent",
-    (searchInfo) => {
-      onSearchSent(data, instance, unsubscribe, searchInfo);
-    },
-    instance.id,
-  );
-
-  const searchQueueInfo = await SocketService.post(
+  await SocketService.post<SearchResponse>(
     `search/${instance.id}/hub_search`,
     data,
   );
-  return searchQueueInfo;
+  await sleep(10000);
+  const results = await SocketService.get(`search/${instance.id}/results/0/25`);
+  console.log("results", results);
+  dispatch({
+    type: AIRDCPP_SEARCH_RESULTS_RECEIVED,
+    results,
+  });
+  SocketService.disconnect();
+  return results;
 };
-
-const onSearchSent =
-  (item, instance, unsubscribe, searchInfo) => async (dispatch) => {
-    // Collect the results for 5 seconds
-    await sleep(5000);
-
-    // Get only the first result (results are sorted by relevance)
-    const results = await SocketService.get(
-      `search/${instance.id}/results/0/100`,
-    );
-
-    if (results.length > 0) {
-      // We have results, download the best one
-      console.log("SASAAAA", results);
-      dispatch({
-        type: AIRDCPP_SEARCH_RESULTS_RECEIVED,
-        results,
-      });
-      // const result = results[0];
-      // SocketService.post(`search/${instance.id}/results/${result.id}/download`, {
-      //   priority: Utils.toApiPriority(item.priority),
-      //   target_directory: item.target_directory,
-      // });
-    }
-    // Remove listener for this search instance
-    unsubscribe();
-  };

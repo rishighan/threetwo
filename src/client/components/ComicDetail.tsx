@@ -60,6 +60,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   }, [page, dispatch]);
 
   const openDrawerWithCVMatches = useCallback(() => {
+    console.log("here")
     setVisible(true);
     dispatch(fetchComicVineMatches(comicBookDetailData));
   }, [dispatch, comicBookDetailData]);
@@ -299,7 +300,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                     role="menu"
                   >
                     <div className="dropdown-content">
-                      <div
+                      <a
                         className="dropdown-item"
                         onClick={openDrawerWithCVMatches}
                       >
@@ -307,7 +308,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                           <i className="fas fa-magic"></i>
                         </span>
                         <span>Match on ComicVine</span>
-                      </div>
+                      </a>
                       <hr className="dropdown-divider" />
                       <div className="dropdown-item">
                         <span className="icon">
