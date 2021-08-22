@@ -30,14 +30,11 @@ export const AcquisitionPanel = (
       // file_type: "compressed",
       extensions: ["cbz", "cbr"],
     },
-    hub_urls: [
-      "adcs://novosibirsk.dc-dev.club:7111/?kp=SHA256/4XFHJFFBFEI2RS75FPRPPXPZMMKPXR764ABVVCC2QGJPQ34SDZGA",
-      "dc.fly-server.ru",
-    ],
+    hub_urls: ["perfection.crabdance.com:777"],
     priority: 1,
   };
   return (
-    <>
+    <div className="comic-detail">
       <button
         className="button"
         onClick={() => getDCPPSearchResults(dcppQuery)}
@@ -46,23 +43,60 @@ export const AcquisitionPanel = (
       </button>
 
       {/* results */}
-      <table className="table is-striped">
+      {!isNil(airDCPPSearchResults) && (
+        <table className="table is-striped">
           <thead>
-              <tr>
-                  <th>Name</th>
-                  <th>Path</th>
-              </tr>
-          </thead>
-        {map(airDCPPSearchResults, ({ name, path }) => {
-          return (
             <tr>
-              <td>{name}</td>
-              <td>{path}</td>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Slots</th>
             </tr>
-          );
-        })}
-      </table>
-    </>
+          </thead>
+          <tbody>
+            {map(airDCPPSearchResults, ({ name, type, slots, users }) => {
+              return (
+                <tr>
+                  <td>
+                    <p className="mb-2">
+                      {type.id === "directory" ? (
+                        <i className="fas fa-folder"></i>
+                      ) : null}{" "}
+                      {name}
+                    </p>
+                    <dl>
+                      <dd>
+                        <div className="tags">
+                           
+                              <span className="tag is-light is-info">
+                                {users.user.nicks}
+                              </span>
+                            {users.user.flags.map((flag, idx) => (
+                              <span className="tag is-light" key={idx}>
+                                {flag}
+                              </span>
+                            ))}
+                        </div>
+                      </dd>
+                    </dl>
+                  </td>
+                  <td>
+                    <span className="tag is-light is-info">
+                      {type.id === "directory" ? "directory" : type.str}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="tags has-addons">
+                      <span className="tag is-success">{slots.free} free</span>
+                      <span className="tag is-light">{slots.total}</span>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
+    </div>
   );
 };
 

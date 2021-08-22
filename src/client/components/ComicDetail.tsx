@@ -277,6 +277,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                     "dropdown " + (isActionDropdownCollapsed ? "is-active" : "")
                   }
                   onBlur={() => toggleActionDropdown()}
+                  onFocus={() => toggleActionDropdown()}
                 >
                   <div className="dropdown-trigger">
                     <button
@@ -300,7 +301,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                     role="menu"
                   >
                     <div className="dropdown-content">
-                      <a
+                      <div
                         className="dropdown-item"
                         onClick={openDrawerWithCVMatches}
                       >
@@ -308,7 +309,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                           <i className="fas fa-magic"></i>
                         </span>
                         <span>Match on ComicVine</span>
-                      </a>
+                      </div>
                       <hr className="dropdown-divider" />
                       <div className="dropdown-item">
                         <span className="icon">
