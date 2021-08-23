@@ -6,10 +6,9 @@ import {
   SearchResponse,
 } from "threetwo-ui-typings";
 import {
-  AIRDCPP_SEARCH_INSTANCE_CREATED,
   AIRDCPP_SEARCH_RESULTS_RECEIVED,
   AIRDCPP_HUB_SEARCHES_SENT,
-  AIRDCPP_HUB_USER_CONNECTED,
+  AIRDCPP_RESULT_DOWNLOAD_INITIATED,
 } from "../constants/action-types";
 
 interface SearchData {
@@ -30,10 +29,10 @@ export const search = (data: SearchData) => async (dispatch) => {
     `search/${instance.id}`,
     "search_hub_searches_sent",
     async (searchInfo) => {
-        console.log("As", searchInfo)
-      // Collect the results for 5 seconds before fetching them
       dispatch({
         type: AIRDCPP_HUB_SEARCHES_SENT,
+        searchInfo,
+        instance,
       });
     },
   );
@@ -52,3 +51,17 @@ export const search = (data: SearchData) => async (dispatch) => {
   SocketService.disconnect();
   return results;
 };
+
+export const downloadAirDCPPItem =
+  (instanceId: string, resultId: string): void =>
+  async (dispatch) => {
+    await SocketService.connect("admin", "password", true);
+    const downloadResult = await SocketService.post(
+      `search/${instanceId}/results/${resultId}/download`,
+    );
+    dispatch({
+      type: AIRDCPP_RESULT_DOWNLOAD_INITIATED,
+      downloadResult: downloadResult,
+    });
+    SocketService.disconnect();
+  };

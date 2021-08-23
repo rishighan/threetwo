@@ -1,30 +1,19 @@
 import {
-  AIRDCPP_SEARCH_INSTANCE_CREATED,
   AIRDCPP_SEARCH_IN_PROGRESS,
   AIRDCPP_SEARCH_RESULTS_RECEIVED,
   AIRDCPP_HUB_SEARCHES_SENT,
-  AIRDCPP_HUB_USER_CONNECTED,
+  AIRDCPP_RESULT_DOWNLOAD_INITIATED,
 } from "../constants/action-types";
 
 const initialState = {
   isAirDCPPSearchInProgress: false,
   searchStatus: "",
+  searchInfo: null,
+  searchInstance: null,
 };
 
 function airdcppReducer(state = initialState, action) {
   switch (action.type) {
-    case AIRDCPP_HUB_USER_CONNECTED:
-        return {
-            ...state,
-            searchStatus: "Hub user connected",
-        }
-    case AIRDCPP_SEARCH_INSTANCE_CREATED:
-      return {
-        ...state,
-        searchInstance: action.searchInstance,
-        searchStatus: "Search Instance created",
-      };
-
     case AIRDCPP_SEARCH_IN_PROGRESS:
       return {
         ...state,
@@ -35,6 +24,7 @@ function airdcppReducer(state = initialState, action) {
       return {
         ...state,
         isAirDCPPSearchInProgress: false,
+        searchStatus: "Search complete",
         results: action.results,
       };
     case AIRDCPP_HUB_SEARCHES_SENT:
@@ -42,6 +32,13 @@ function airdcppReducer(state = initialState, action) {
         ...state,
         searchStatus: "Hub searches sent",
         isAirDCPPSearchInProgress: true,
+        searchInfo: action.searchInfo,
+        searchInstance: action.instance,
+      };
+    case AIRDCPP_RESULT_DOWNLOAD_INITIATED:
+      return {
+        ...state,
+        downloadResult: action.downloadResult,
       };
 
     default:

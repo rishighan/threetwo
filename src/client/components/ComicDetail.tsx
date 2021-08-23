@@ -151,6 +151,12 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       name: "Acquisition",
       content: <AcquisitionPanel comicBookMetadata={comicBookDetailData} />,
     },
+    {
+      id: 4,
+      icon: <i className="fas fa-cloud-download-alt"></i>,
+      name: "Downloads",
+      content: <div>Downloads</div>,
+    },
   ];
   const MetadataTabGroup = () => {
     return (
