@@ -17,6 +17,9 @@ export const AcquisitionPanel = (
   const airDCPPSearchResults = useSelector(
     (state: RootState) => state.airdcpp.results,
   );
+  const searchStatus = useSelector(
+    (state: RootState) => state.airdcpp.searchStatus,
+  );
   const dispatch = useDispatch();
   const getDCPPSearchResults = useCallback(
     (searchQuery) => {
@@ -41,7 +44,7 @@ export const AcquisitionPanel = (
       >
         Search on AirDC++
       </button>
-
+        <p>{searchStatus}</p>
       {/* results */}
       {!isNil(airDCPPSearchResults) && (
         <table className="table is-striped">
@@ -66,15 +69,14 @@ export const AcquisitionPanel = (
                     <dl>
                       <dd>
                         <div className="tags">
-                           
-                              <span className="tag is-light is-info">
-                                {users.user.nicks}
-                              </span>
-                            {users.user.flags.map((flag, idx) => (
-                              <span className="tag is-light" key={idx}>
-                                {flag}
-                              </span>
-                            ))}
+                          <span className="tag is-light is-info">
+                            {users.user.nicks}
+                          </span>
+                          {users.user.flags.map((flag, idx) => (
+                            <span className="tag is-light" key={idx}>
+                              {flag}
+                            </span>
+                          ))}
                         </div>
                       </dd>
                     </dl>
