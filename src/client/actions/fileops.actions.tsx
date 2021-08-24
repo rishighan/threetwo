@@ -1,9 +1,5 @@
 import axios from "axios";
-import {
-  IFolderData,
-  IExtractedComicBookCoverFile,
-  IComicVineSearchQuery,
-} from "threetwo-ui-typings";
+import { IFolderData, IExtractedComicBookCoverFile } from "threetwo-ui-typings";
 import { API_BASE_URI, SOCKET_BASE_URI } from "../constants/endpoints";
 import { io } from "socket.io-client";
 import {
@@ -18,7 +14,6 @@ import {
   IMS_CV_METADATA_IMPORT_FAILED,
 } from "../constants/action-types";
 import { refineQuery } from "../shared/utils/filenameparser.utils";
-import { extend } from "lodash";
 import sortBy from "array-sort-by";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {

@@ -9,7 +9,10 @@ import {
   AIRDCPP_SEARCH_RESULTS_RECEIVED,
   AIRDCPP_HUB_SEARCHES_SENT,
   AIRDCPP_RESULT_DOWNLOAD_INITIATED,
+  AIRDCPP_DOWNLOAD_PROGRESS_TICK,
 } from "../constants/action-types";
+import { isNil } from "lodash";
+import axios from "axios";
 
 interface SearchData {
   query: Pick<SearchQuery, "pattern"> & Partial<Omit<SearchQuery, "pattern">>;
@@ -53,15 +56,58 @@ export const search = (data: SearchData) => async (dispatch) => {
 };
 
 export const downloadAirDCPPItem =
-  (instanceId: string, resultId: string): void =>
+  (instanceId: string, resultId: string, comicObjectId: string): void =>
   async (dispatch) => {
-    await SocketService.connect("admin", "password", true);
-    const downloadResult = await SocketService.post(
-      `search/${instanceId}/results/${resultId}/download`,
-    );
-    dispatch({
-      type: AIRDCPP_RESULT_DOWNLOAD_INITIATED,
-      downloadResult: downloadResult,
-    });
-    SocketService.disconnect();
+    try {
+      let bundleDBImportResult = {};
+      await SocketService.connect("admin", "password", true);
+      const downloadResult = await SocketService.post(
+        `search/${instanceId}/results/${resultId}/download`,
+      );
+
+      if (!isNil(downloadResult)) {
+        bundleDBImportResult = await axios({
+          method: "POST",
+          url: "http://localhost:3000/api/import/applyAirDCPPDownloadMetadata",
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+          },
+          data: {
+            resultId,
+            comicObjectId,
+            downloadResult,
+            searchInstanceId: instanceId,
+          },
+        });
+        dispatch({
+          type: AIRDCPP_RESULT_DOWNLOAD_INITIATED,
+          downloadResult: downloadResult,
+          bundleDBImportResult,
+        });
+      }
+
+      SocketService.disconnect();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+export const getDownloadProgress =
+  (fileId: string, directoryId?: string): void =>
+  async (dispatch) => {
+    try {
+      await SocketService.connect("admin", "password", true);
+      SocketService.addListener(
+        `queue`,
+        "queue_bundle_tick",
+        async (downloadProgressData) => {
+          dispatch({
+            type: AIRDCPP_DOWNLOAD_PROGRESS_TICK,
+            downloadProgressData,
+          });
+        },
+      );
+    } catch (error) {
+      throw error;
+    }
   };

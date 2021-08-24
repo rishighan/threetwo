@@ -4,6 +4,7 @@ import Card from "./Carda";
 import MatchResult from "./MatchResult";
 import ComicVineSearchForm from "./ComicVineSearchForm";
 import AcquisitionPanel from "./AcquisitionPanel";
+import DownloadsPanel from "./DownloadsPanel";
 
 import { css } from "@emotion/react";
 import PuffLoader from "react-spinners/PuffLoader";
@@ -50,6 +51,10 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const comicBookDetailData = useSelector(
     (state: RootState) => state.comicInfo.comicBookDetail,
   );
+
+  const bundleMetadata = useSelector(
+    (state: RootState) => state.comicInfo.downloadResult,
+  );
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
   const dispatch = useDispatch();
   const toggleActionDropdown = () =>
@@ -60,7 +65,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   }, [page, dispatch]);
 
   const openDrawerWithCVMatches = useCallback(() => {
-    console.log("here")
     setVisible(true);
     dispatch(fetchComicVineMatches(comicBookDetailData));
   }, [dispatch, comicBookDetailData]);
@@ -155,7 +159,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       id: 4,
       icon: <i className="fas fa-cloud-download-alt"></i>,
       name: "Downloads",
-      content: <div>Downloads</div>,
+      content: <DownloadsPanel data={comicBookDetailData} />,
     },
   ];
   const MetadataTabGroup = () => {

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback, ReactElement } from "react";
+import React, { useCallback, ReactElement } from "react";
 import { search, downloadAirDCPPItem } from "../actions/airdcpp.actions";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, SearchInstance } from "threetwo-ui-typings";
-import { each, isNil, map } from "lodash";
+import { isNil, map } from "lodash";
 
 interface IAcquisitionPanelProps {
   comicBookMetadata: any;
@@ -13,6 +13,7 @@ export const AcquisitionPanel = (
 ): ReactElement => {
   const volumeName =
     props.comicBookMetadata.sourcedMetadata.comicvine.volumeInformation.name;
+  const sanitizedVolumeName = volumeName.replace(/[^a-zA-Z0-9 ]/g, "");
   const issueName = props.comicBookMetadata.sourcedMetadata.comicvine.name;
   const airDCPPSearchResults = useSelector(
     (state: RootState) => state.airdcpp.results,
@@ -26,6 +27,7 @@ export const AcquisitionPanel = (
   const searchInstance: SearchInstance = useSelector(
     (state: RootState) => state.airdcpp.searchInstance,
   );
+
   const dispatch = useDispatch();
   const getDCPPSearchResults = useCallback(
     (searchQuery) => {
@@ -35,16 +37,18 @@ export const AcquisitionPanel = (
   );
   const dcppQuery = {
     query: {
-      pattern: `${volumeName}`,
+      pattern: `${sanitizedVolumeName}`,
       extensions: ["cbz", "cbr"],
     },
-    hub_urls: ["perfection.crabdance.com:777"],
+    hub_urls: ["nmdcs://piter.feardc.net:411"],
     priority: 1,
   };
 
   const downloadDCPPResult = useCallback(
-    (searchInstanceId, resultId) =>
-      dispatch(downloadAirDCPPItem(searchInstanceId, resultId)),
+    (searchInstanceId, resultId, comicBookObjectId) =>
+      dispatch(
+        downloadAirDCPPItem(searchInstanceId, resultId, comicBookObjectId),
+      ),
     [dispatch],
   );
   return (
@@ -62,6 +66,7 @@ export const AcquisitionPanel = (
             Search on AirDC++
           </button>
         </div>
+        {/* AirDC++ search instance details */}
         {!isNil(searchInfo) && !isNil(searchInstance) && (
           <>
             <div className="column is-one-quarter is-size-7">
@@ -95,7 +100,7 @@ export const AcquisitionPanel = (
           </>
         )}
       </div>
-      {/* results */}
+      {/* AirDC++ results */}
       <div>
         {!isNil(airDCPPSearchResults) && (
           <table className="table is-striped">
@@ -110,7 +115,7 @@ export const AcquisitionPanel = (
             <tbody>
               {map(airDCPPSearchResults, ({ name, type, slots, users, id }) => {
                 return (
-                  <tr>
+                  <tr key={id}>
                     <td>
                       <p className="mb-2">
                         {type.id === "directory" ? (
@@ -149,7 +154,11 @@ export const AcquisitionPanel = (
                     <td>
                       <a
                         onClick={() =>
-                          downloadDCPPResult(searchInstance.id, id)
+                          downloadDCPPResult(
+                            searchInstance.id,
+                            id,
+                            props.comicBookMetadata._id,
+                          )
                         }
                       >
                         <i className="fas fa-file-download"></i>

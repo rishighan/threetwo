@@ -3,6 +3,7 @@ import {
   AIRDCPP_SEARCH_RESULTS_RECEIVED,
   AIRDCPP_HUB_SEARCHES_SENT,
   AIRDCPP_RESULT_DOWNLOAD_INITIATED,
+  AIRDCPP_DOWNLOAD_PROGRESS_TICK,
 } from "../constants/action-types";
 
 const initialState = {
@@ -10,6 +11,8 @@ const initialState = {
   searchStatus: "",
   searchInfo: null,
   searchInstance: null,
+  downloadResult: null,
+  bundleDBImportResult: null,
 };
 
 function airdcppReducer(state = initialState, action) {
@@ -39,6 +42,12 @@ function airdcppReducer(state = initialState, action) {
       return {
         ...state,
         downloadResult: action.downloadResult,
+        bundleDBImportResult: action.bundleDBImportResult,
+      };
+    case AIRDCPP_DOWNLOAD_PROGRESS_TICK:
+      return {
+        ...state,
+        downloadProgressData: action.downloadProgressData,
       };
 
     default:
