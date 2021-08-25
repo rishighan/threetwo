@@ -5,6 +5,7 @@ import {
   AIRDCPP_RESULT_DOWNLOAD_INITIATED,
   AIRDCPP_DOWNLOAD_PROGRESS_TICK,
 } from "../constants/action-types";
+import { LOCATION_CHANGE } from "connected-react-router";
 
 const initialState = {
   isAirDCPPSearchInProgress: false,
@@ -48,6 +49,10 @@ function airdcppReducer(state = initialState, action) {
       return {
         ...state,
         downloadProgressData: action.downloadProgressData,
+      };
+    case LOCATION_CHANGE:
+      return {
+        initialState,
       };
 
     default:

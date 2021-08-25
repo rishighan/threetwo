@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useState, ReactElement } from "react";
+import React, { useEffect, ReactElement } from "react";
 import { getDownloadProgress } from "../actions/airdcpp.actions";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState, SearchInstance } from "threetwo-ui-typings";
-import { isNil, map } from "lodash";
+import { RootState } from "threetwo-ui-typings";
+import { isNil } from "lodash";
 import prettyBytes from "pretty-bytes";
 
 interface IDownloadsPanelProps {

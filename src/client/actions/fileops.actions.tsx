@@ -105,7 +105,7 @@ export const getComicBooks = (options) => async (dispatch) => {
     });
 };
 
-export const importToDB = (payload) => (dispatch) => {
+export const importToDB = (payload?: any) => (dispatch) => {
   try {
     const comicBookMetadata = {
       importStatus: {
@@ -115,7 +115,7 @@ export const importToDB = (payload) => (dispatch) => {
           score: "0",
         },
       },
-      sourcedMetadata: { comicvine: payload },
+      sourcedMetadata: { comicvine: payload || null },
     };
     dispatch({
       type: IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
@@ -164,7 +164,10 @@ export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
         data: {
           format: "json",
           sort: "name%3Aasc",
-          query: issueSearchQuery.searchParams.searchTerms.name,
+          // hack
+          query: issueSearchQuery.searchParams.searchTerms.name
+            .replace(/[^a-zA-Z0-9 ]/g, "")
+            .trim(),
           fieldList: "id",
           limit: "20",
           offset: "0",
