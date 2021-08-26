@@ -10,8 +10,9 @@ import {
   AIRDCPP_HUB_SEARCHES_SENT,
   AIRDCPP_RESULT_DOWNLOAD_INITIATED,
   AIRDCPP_DOWNLOAD_PROGRESS_TICK,
+  AIRDCPP_BUNDLES_FETCHED,
 } from "../constants/action-types";
-import { isNil } from "lodash";
+import { each, isNil } from "lodash";
 import axios from "axios";
 
 interface SearchData {
@@ -51,7 +52,6 @@ export const search = (data: SearchData) => async (dispatch) => {
     type: AIRDCPP_SEARCH_RESULTS_RECEIVED,
     results,
   });
-  SocketService.disconnect();
   return results;
 };
 
@@ -59,11 +59,24 @@ export const downloadAirDCPPItem =
   (instanceId: string, resultId: string, comicObjectId: string): void =>
   async (dispatch) => {
     try {
+      if (!SocketService.isConnected()) {
+        await SocketService.connect("admin", "password", true);
+      }
       let bundleDBImportResult = {};
-      await SocketService.connect("admin", "password", true);
       const downloadResult = await SocketService.post(
         `search/${instanceId}/results/${resultId}/download`,
       );
+
+      let bundleId;
+      let directoryIds;
+      if (!isNil(downloadResult.bundle_info)) {
+        bundleId = downloadResult.bundle_info.id;
+      }
+      if (!isNil(downloadResult.directory_download_ids)) {
+        directoryIds = downloadResult.directory_download_ids.map(
+          (item) => item.id,
+        );
+      }
 
       if (!isNil(downloadResult)) {
         bundleDBImportResult = await axios({
@@ -75,8 +88,9 @@ export const downloadAirDCPPItem =
           data: {
             resultId,
             comicObjectId,
-            downloadResult,
             searchInstanceId: instanceId,
+            bundleId,
+            directoryIds,
           },
         });
         dispatch({
@@ -85,18 +99,18 @@ export const downloadAirDCPPItem =
           bundleDBImportResult,
         });
       }
-
-      SocketService.disconnect();
     } catch (error) {
       throw error;
     }
   };
 
 export const getDownloadProgress =
-  (fileId: string, directoryId?: string): void =>
+  (comicObjectId: string): void =>
   async (dispatch) => {
     try {
-      await SocketService.connect("admin", "password", true);
+      if (!SocketService.isConnected()) {
+        await SocketService.connect("admin", "password", true);
+      }
       SocketService.addListener(
         `queue`,
         "queue_bundle_tick",
@@ -107,6 +121,42 @@ export const getDownloadProgress =
           });
         },
       );
+    } catch (error) {
+      throw error;
+    }
+  };
+
+export const getBundlesForComic =
+  (comicObjectId: string) => async (dispatch) => {
+    try {
+      if (!SocketService.isConnected()) {
+        await SocketService.connect("admin", "password", true);
+      }
+      const bundles = await SocketService.get("queue/bundles/0/500");
+      const comicObject = await axios({
+        method: "POST",
+        url: "http://localhost:3000/api/import/getComicBookById",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        data: {
+          id: `${comicObjectId}`,
+        },
+      });
+      // get only the bundles applicable for the comic
+      const filteredBundles = [];
+      comicObject.data.acquisition.directconnect.map(({ bundleId }) => {
+        each(bundles, (bundle) => {
+          if (bundle.id === bundleId) {
+            filteredBundles.push(bundle);
+          }
+        });
+      });
+
+      dispatch({
+        type: AIRDCPP_BUNDLES_FETCHED,
+        bundles: filteredBundles,
+      });
     } catch (error) {
       throw error;
     }

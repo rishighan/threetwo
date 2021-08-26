@@ -1,8 +1,11 @@
 import React, { useEffect, ReactElement } from "react";
-import { getDownloadProgress } from "../actions/airdcpp.actions";
+import {
+  getDownloadProgress,
+  getBundlesForComic,
+} from "../actions/airdcpp.actions";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "threetwo-ui-typings";
-import { isNil } from "lodash";
+import { isNil, map } from "lodash";
 import prettyBytes from "pretty-bytes";
 
 interface IDownloadsPanelProps {
@@ -15,37 +18,60 @@ export const DownloadsPanel = (
   const downloadProgressTick = useSelector(
     (state: RootState) => state.airdcpp.downloadProgressData,
   );
+  const bundles = useSelector((state: RootState) => state.airdcpp.bundles);
   const dispatch = useDispatch();
+  //   useEffect(() => {
+  //     dispatch(getDownloadProgress(props.data._id));
+  //   }, [dispatch]);
+
   useEffect(() => {
-    dispatch(getDownloadProgress("12312"));
+    dispatch(getBundlesForComic(props.data._id));
   }, [dispatch]);
-  return !isNil(downloadProgressTick) ? (
+
+  const ProgressTick = (props) => (
     <div className="column is-one-quarter">
-      {JSON.stringify(downloadProgressTick)}
+      {JSON.stringify(props.downloadProgressTick)}
       <progress
         className="progress is-small is-success"
-        value={downloadProgressTick.downloaded_bytes}
-        max={downloadProgressTick.size}
+        value={props.downloaded_bytes}
+        max={props.size}
       >
-        {(parseInt(downloadProgressTick.downloaded_bytes) /
-          parseInt(downloadProgressTick.size)) *
-          100}
-        %
+        {(parseInt(props.downloaded_bytes) / parseInt(props.size)) * 100}%
       </progress>
       <dl>
-        <dt>{downloadProgressTick.name}</dt>
+        <dt>{props.name}</dt>
         <dd>
-          {prettyBytes(downloadProgressTick.downloaded_bytes)} of
-          {prettyBytes(downloadProgressTick.size)}
+          {prettyBytes(props.downloaded_bytes)} of
+          {prettyBytes(props.size)}
         </dd>
         <dd>
-          {prettyBytes(downloadProgressTick.speed)} per second. Time left:
-          {parseInt(downloadProgressTick.seconds_left) / 60}
+          {prettyBytes(props.speed)} per second. Time left:
+          {parseInt(props.seconds_left) / 60}
         </dd>
-        <dd>{downloadProgressTick.target}</dd>
+        <dd>{props.target}</dd>
       </dl>
     </div>
-  ) : null;
+  );
+
+  const Bundles = (props) => {
+    return (
+      <div>
+        <dl>
+          {!isNil(props.data) &&
+            props.data &&
+            map(props.data, (bundle) => (
+              <>
+                <dt>{bundle.name}</dt>
+                <dd>{bundle.target}</dd>
+                <dd>{bundle.size}</dd>
+              </>
+            ))}
+        </dl>
+      </div>
+    );
+  };
+
+  return !isNil(bundles) ? <Bundles data={bundles} /> : null;
 };
 
 export default DownloadsPanel;

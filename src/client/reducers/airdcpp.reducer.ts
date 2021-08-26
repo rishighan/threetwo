@@ -4,6 +4,7 @@ import {
   AIRDCPP_HUB_SEARCHES_SENT,
   AIRDCPP_RESULT_DOWNLOAD_INITIATED,
   AIRDCPP_DOWNLOAD_PROGRESS_TICK,
+  AIRDCPP_BUNDLES_FETCHED,
 } from "../constants/action-types";
 import { LOCATION_CHANGE } from "connected-react-router";
 
@@ -49,6 +50,12 @@ function airdcppReducer(state = initialState, action) {
       return {
         ...state,
         downloadProgressData: action.downloadProgressData,
+      };
+    case AIRDCPP_BUNDLES_FETCHED:
+        console.log(action)
+      return {
+        ...state,
+        bundles: action.bundles,
       };
     case LOCATION_CHANGE:
       return {

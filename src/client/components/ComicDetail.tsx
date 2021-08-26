@@ -52,9 +52,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     (state: RootState) => state.comicInfo.comicBookDetail,
   );
 
-  const bundleMetadata = useSelector(
-    (state: RootState) => state.comicInfo.downloadResult,
-  );
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
   const dispatch = useDispatch();
   const toggleActionDropdown = () =>
