@@ -9,22 +9,21 @@ import {
 import { LOCATION_CHANGE } from "connected-react-router";
 
 const initialState = {
+  searchResults: [],
   isAirDCPPSearchInProgress: false,
   searchInfo: null,
   searchInstance: null,
   downloadResult: null,
   bundleDBImportResult: null,
-  searchResults: [],
 };
 
 function airdcppReducer(state = initialState, action) {
   switch (action.type) {
     case AIRDCPP_SEARCH_RESULTS_RECEIVED:
-      console.log("mad", state.searchResults);
       return {
         ...state,
-        isAirDCPPSearchInProgress: true,
-        searchResults: [...state.searchResults, action.groupedResult],
+        searchResults: action.results,
+        isAirDCPPSearchInProgress: false,
       };
     case AIRDCPP_SEARCH_IN_PROGRESS:
       return {

@@ -15,9 +15,9 @@ export const AcquisitionPanel = (
     props.comicBookMetadata.sourcedMetadata.comicvine.volumeInformation.name;
   const sanitizedVolumeName = volumeName.replace(/[^a-zA-Z0-9 ]/g, "");
   const issueName = props.comicBookMetadata.sourcedMetadata.comicvine.name;
-  const airDCPPSearchResults = useSelector(
-    (state: RootState) => { console.log(state); return state.airdcpp.results;}
-  );
+  const airDCPPSearchResults = useSelector((state: RootState) => {
+    return state.airdcpp.searchResults;
+  });
   const isAirDCPPSearchInProgress = useSelector(
     (state: RootState) => state.airdcpp.isAirDCPPSearchInProgress,
   );
@@ -104,8 +104,7 @@ export const AcquisitionPanel = (
       </div>
       {/* AirDC++ results */}
       <div>
-          ASDASD {JSON.stringify(airDCPPSearchResults)}
-        {/* {!isNil(airDCPPSearchResults) && (
+        {!isNil(airDCPPSearchResults) && (
           <table className="table is-striped">
             <thead>
               <tr>
@@ -172,7 +171,7 @@ export const AcquisitionPanel = (
               })}
             </tbody>
           </table>
-        )} */}
+        )}
       </div>
     </>
   );

@@ -33,34 +33,6 @@ export const search = (data: SearchData) => async (dispatch) => {
     }
     const instance: SearchInstance = await SocketService.post("search");
 
-    // We want to get notified about every new result in order to make the user experience better
-    await SocketService.addListener(
-      `search/${instance.id}`,
-      "search_result_added",
-      (groupedResult) => {
-        dispatch({
-          type: AIRDCPP_SEARCH_RESULTS_RECEIVED,
-          groupedResult: groupedResult.result,
-        });
-        // ...add the received result in the UI
-        // (it's probably a good idea to have some kind of throttling for the UI updates as there can be thousands of results)
-      },
-    );
-
-    // We also want to update the existing items in our list when new hits arrive for the previously listed files/directories
-    await SocketService.addListener(
-      `search/${instance.id}`,
-      "search_result_updated",
-      async (groupedResult) => {
-        console.log(groupedResult);
-        dispatch({
-          type: AIRDCPP_SEARCH_RESULTS_RECEIVED,
-          results: groupedResult,
-        });
-        // ...update properties of the existing result in the UI
-      },
-    );
-
     await SocketService.addListener(
       `search/${instance.id}`,
       "search_hub_searches_sent",
@@ -90,15 +62,15 @@ export const search = (data: SearchData) => async (dispatch) => {
       data,
     );
 
-    // await sleep(10000);
-    // const results = await SocketService.get(
-    //   `search/${instance.id}/results/0/25`,
-    // );
+    await sleep(10000);
+    const results = await SocketService.get(
+      `search/${instance.id}/results/0/125`,
+    );
 
-    // dispatch({
-    //     type: AIRDCPP_SEARCH_RESULTS_RECEIVED,
-    //     results,
-    //   });
+    dispatch({
+      type: AIRDCPP_SEARCH_RESULTS_RECEIVED,
+      results,
+    });
   } catch (error) {
     console.log("ERO", error);
     throw error;
