@@ -60,11 +60,11 @@ export const DownloadsPanel = (
           {!isNil(props.data) &&
             props.data &&
             map(props.data, (bundle) => (
-              <>
+              <span key={bundle.id}>
                 <dt>{bundle.name}</dt>
                 <dd>{bundle.target}</dd>
                 <dd>{bundle.size}</dd>
-              </>
+              </span>
             ))}
         </dl>
       </div>

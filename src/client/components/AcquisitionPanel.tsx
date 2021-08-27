@@ -16,7 +16,7 @@ export const AcquisitionPanel = (
   const sanitizedVolumeName = volumeName.replace(/[^a-zA-Z0-9 ]/g, "");
   const issueName = props.comicBookMetadata.sourcedMetadata.comicvine.name;
   const airDCPPSearchResults = useSelector(
-    (state: RootState) => state.airdcpp.results,
+    (state: RootState) => { console.log(state); return state.airdcpp.results;}
   );
   const isAirDCPPSearchInProgress = useSelector(
     (state: RootState) => state.airdcpp.isAirDCPPSearchInProgress,
@@ -35,13 +35,15 @@ export const AcquisitionPanel = (
     },
     [dispatch],
   );
+
   const dcppQuery = {
     query: {
-      pattern: `${sanitizedVolumeName}`,
+      pattern: `${sanitizedVolumeName.replace(/#/g, "")}`,
+      // pattern: "Templier T2.cbr",
       extensions: ["cbz", "cbr"],
     },
     hub_urls: ["nmdcs://piter.feardc.net:411"],
-    priority: 1,
+    priority: 5,
   };
 
   const downloadDCPPResult = useCallback(
@@ -102,7 +104,8 @@ export const AcquisitionPanel = (
       </div>
       {/* AirDC++ results */}
       <div>
-        {!isNil(airDCPPSearchResults) && (
+          ASDASD {JSON.stringify(airDCPPSearchResults)}
+        {/* {!isNil(airDCPPSearchResults) && (
           <table className="table is-striped">
             <thead>
               <tr>
@@ -169,7 +172,7 @@ export const AcquisitionPanel = (
               })}
             </tbody>
           </table>
-        )}
+        )} */}
       </div>
     </>
   );

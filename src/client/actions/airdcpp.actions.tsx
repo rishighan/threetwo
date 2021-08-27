@@ -11,8 +11,9 @@ import {
   AIRDCPP_RESULT_DOWNLOAD_INITIATED,
   AIRDCPP_DOWNLOAD_PROGRESS_TICK,
   AIRDCPP_BUNDLES_FETCHED,
+  AIRDCPP_SEARCH_IN_PROGRESS,
 } from "../constants/action-types";
-import { each, isNil } from "lodash";
+import { each, isNil, isUndefined } from "lodash";
 import axios from "axios";
 
 interface SearchData {
@@ -26,33 +27,82 @@ function sleep(ms: number): Promise<NodeJS.Timeout> {
 }
 
 export const search = (data: SearchData) => async (dispatch) => {
-  await SocketService.connect("admin", "password", true);
-  const instance: SearchInstance = await SocketService.post("search");
+  try {
+    if (!SocketService.isConnected()) {
+      await SocketService.connect("admin", "password", true);
+    }
+    const instance: SearchInstance = await SocketService.post("search");
 
-  SocketService.addListener(
-    `search/${instance.id}`,
-    "search_hub_searches_sent",
-    async (searchInfo) => {
-      dispatch({
-        type: AIRDCPP_HUB_SEARCHES_SENT,
-        searchInfo,
-        instance,
-      });
-    },
-  );
+    // We want to get notified about every new result in order to make the user experience better
+    await SocketService.addListener(
+      `search/${instance.id}`,
+      "search_result_added",
+      (groupedResult) => {
+        dispatch({
+          type: AIRDCPP_SEARCH_RESULTS_RECEIVED,
+          groupedResult: groupedResult.result,
+        });
+        // ...add the received result in the UI
+        // (it's probably a good idea to have some kind of throttling for the UI updates as there can be thousands of results)
+      },
+    );
 
-  await SocketService.post<SearchResponse>(
-    `search/${instance.id}/hub_search`,
-    data,
-  );
+    // We also want to update the existing items in our list when new hits arrive for the previously listed files/directories
+    await SocketService.addListener(
+      `search/${instance.id}`,
+      "search_result_updated",
+      async (groupedResult) => {
+        console.log(groupedResult);
+        dispatch({
+          type: AIRDCPP_SEARCH_RESULTS_RECEIVED,
+          results: groupedResult,
+        });
+        // ...update properties of the existing result in the UI
+      },
+    );
 
-  await sleep(10000);
-  const results = await SocketService.get(`search/${instance.id}/results/0/25`);
-  dispatch({
-    type: AIRDCPP_SEARCH_RESULTS_RECEIVED,
-    results,
-  });
-  return results;
+    await SocketService.addListener(
+      `search/${instance.id}`,
+      "search_hub_searches_sent",
+      async (searchInfo) => {
+        await sleep(5000);
+        // The search can now be considered to be "complete"
+
+        // Check the number of received results (in real use cases we should know that even without calling the API)
+        const currentInstance = await SocketService.get(
+          `search/${instance.id}`,
+        );
+        if (currentInstance.result_count === 0) {
+          console.log("ASDASDASDASDD");
+          // ...nothing was received, show an informative message to the user
+        }
+
+        // If there's an "in progress" indicator in the UI, that could also be disabled here
+        dispatch({
+          type: AIRDCPP_HUB_SEARCHES_SENT,
+          searchInfo,
+          instance,
+        });
+      },
+    );
+    await SocketService.post<SearchResponse>(
+      `search/${instance.id}/hub_search`,
+      data,
+    );
+
+    // await sleep(10000);
+    // const results = await SocketService.get(
+    //   `search/${instance.id}/results/0/25`,
+    // );
+
+    // dispatch({
+    //     type: AIRDCPP_SEARCH_RESULTS_RECEIVED,
+    //     results,
+    //   });
+  } catch (error) {
+    console.log("ERO", error);
+    throw error;
+  }
 };
 
 export const downloadAirDCPPItem =
@@ -111,7 +161,7 @@ export const getDownloadProgress =
       if (!SocketService.isConnected()) {
         await SocketService.connect("admin", "password", true);
       }
-      SocketService.addListener(
+      await SocketService.addListener(
         `queue`,
         "queue_bundle_tick",
         async (downloadProgressData) => {

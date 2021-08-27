@@ -85,7 +85,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       name: "Volume Information",
       icon: <i className="fas fa-layer-group"></i>,
       content: isComicBookMetadataAvailable ? (
-        <>
+        <div key={1}>
           <div className="columns">
             <div className="column is-narrow">
               <figure className="card-image">
@@ -137,26 +137,28 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
               )}
             ></div>
           </div>
-        </>
+        </div>
       ) : null,
     },
     {
       id: 2,
       icon: <i className="fas fa-puzzle-piece"></i>,
       name: "Other Metadata",
-      content: <div>bastard</div>,
+      content: <div key={2}>bastard</div>,
     },
     {
       id: 3,
       icon: <i className="fas fa-download"></i>,
       name: "Acquisition",
-      content: <AcquisitionPanel comicBookMetadata={comicBookDetailData} />,
+      content: (
+        <AcquisitionPanel comicBookMetadata={comicBookDetailData} key={3} />
+      ),
     },
     {
       id: 4,
       icon: <i className="fas fa-cloud-download-alt"></i>,
       name: "Downloads",
-      content: <DownloadsPanel data={comicBookDetailData} />,
+      content: <DownloadsPanel data={comicBookDetailData} key={4} />,
     },
   ];
   const MetadataTabGroup = () => {

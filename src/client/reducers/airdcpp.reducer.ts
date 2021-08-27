@@ -10,32 +10,30 @@ import { LOCATION_CHANGE } from "connected-react-router";
 
 const initialState = {
   isAirDCPPSearchInProgress: false,
-  searchStatus: "",
   searchInfo: null,
   searchInstance: null,
   downloadResult: null,
   bundleDBImportResult: null,
+  searchResults: [],
 };
 
 function airdcppReducer(state = initialState, action) {
   switch (action.type) {
+    case AIRDCPP_SEARCH_RESULTS_RECEIVED:
+      console.log("mad", state.searchResults);
+      return {
+        ...state,
+        isAirDCPPSearchInProgress: true,
+        searchResults: [...state.searchResults, action.groupedResult],
+      };
     case AIRDCPP_SEARCH_IN_PROGRESS:
       return {
         ...state,
         isAirDCPPSearchInProgress: true,
       };
-
-    case AIRDCPP_SEARCH_RESULTS_RECEIVED:
-      return {
-        ...state,
-        isAirDCPPSearchInProgress: false,
-        searchStatus: "Search complete",
-        results: action.results,
-      };
     case AIRDCPP_HUB_SEARCHES_SENT:
       return {
         ...state,
-        searchStatus: "Hub searches sent",
         isAirDCPPSearchInProgress: true,
         searchInfo: action.searchInfo,
         searchInstance: action.instance,
@@ -52,7 +50,6 @@ function airdcppReducer(state = initialState, action) {
         downloadProgressData: action.downloadProgressData,
       };
     case AIRDCPP_BUNDLES_FETCHED:
-        console.log(action)
       return {
         ...state,
         bundles: action.bundles,
@@ -63,7 +60,7 @@ function airdcppReducer(state = initialState, action) {
       };
 
     default:
-      return state;
+      return { ...state };
   }
 }
 
