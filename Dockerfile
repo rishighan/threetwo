@@ -1,17 +1,17 @@
-FROM node:buster
+FROM node:12-alpine
 LABEL maintainer="Rishi Ghan <rishi.ghan@gmail.com>"
 
 RUN mkdir -p /usr/src/threetwo
 WORKDIR /usr/src/threetwo
 
-RUN apt-get -y install glibc xdg-utils python xvfb imagemagick
-RUN wget --no-check-certificate -nv -O- https://raw.githubusercontent.com/kovidgoyal/calibre/master/setup/linux-installer.py | sudo python -c "import sys; main=lambda:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main()"
-
-COPY package.json /usr/src/threetwo
+COPY package.json yarn.lock /usr/src/threetwo/
 COPY nodemon.json /usr/src/threetwo
+COPY jsdoc.json /usr/src/threetwo
 
-RUN npm i -g yarn && \
-    yarn
+RUN apk add --no-cache --virtual .build-deps make gcc g++ python \
+ && yarn \
+ && apk del .build-deps
+
 
 COPY . /usr/src/threetwo
 EXPOSE 3050
