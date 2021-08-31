@@ -83,6 +83,16 @@ services:
     networks:
       - proxy
 
+  mongodb:
+    image: 'bitnami/mongodb:latest'
+    container_name: mongodb
+    networks:
+      - proxy
+    ports:
+      - "27017:27017"
+    volumes:
+      - 'mongodb_data:/bitnami/mongodb'
+
   nats:
     image: nats:2
     container_name: transporter
@@ -92,4 +102,8 @@ services:
 networks:
   proxy:
     external: true
+
+volumes:
+  mongodb_data:
+    driver: local
 

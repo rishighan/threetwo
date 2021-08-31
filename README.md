@@ -9,6 +9,7 @@ ThreeTwo! currently is set up as:
 1. The UI, this repo.
 2. `threetwo-import-service` [https://github.com/rishighan/threetwo-import-service]
 3. `comicvine-service` [https://github.com/rishighan/comicvine-service]
+4. `threetwo-ui-typings` [https://github.com/rishighan/threetwo-frontend-types] which are the types used across the UI, installable as an `npm` dependency.
 ## Docker Instructions
 
 The recommended approach is to simply use `docker-compose` which spins up containers for the UI and all the associated microservices and data store.
@@ -21,7 +22,7 @@ Make sure that you have `docker` and `docker-compose` installed.
 4. Note that the first time, the process could take up to 10 minutes, since it is building containers for `threetwo`, `threetwo-import-service`, `comicvine-service`, `mongo`, `nats`, `nginx`
 
 ## Local Development
-   
+
 For debugging and troubleshooting, you can run this app locally using these steps:
 
 1. Clone this repo using `git clone https://github.com/rishighan/threetwo.git`
