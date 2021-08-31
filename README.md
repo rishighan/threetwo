@@ -11,7 +11,17 @@ ThreeTwo! currently is set up as:
 3. `comicvine-service` [https://github.com/rishighan/comicvine-service]
 ## Local Development
 
-1. Clone this repo
+The recommended approach is to simply use `docker-compose` which spins up containers for the UI and all the associated microservices and data store.
+To do that:
+
+1. Clone this repo using `git clone https://github.com/rishighan/threetwo.git`
+2. Run `docker-compose up --build -d`
+3. Note that the first time, the process could take up to 10 minutes
+    
+However, for debugging and troubleshooting, you can run this app locally using these steps:
+
+1. Clone this repo using `git clone https://github.com/rishighan/threetwo.git`
 2. `yarn run dev` (you can ignore the warnings)
-3.
+3. This will open `http://localhost:3050` in your default browser
+4. Note that this is simply the UI layer and won't offer anything beyond a scaffold. You have to spin up the microservices locally to get it to work.
 

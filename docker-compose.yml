@@ -3,6 +3,7 @@ version: "3.7"
 services:
   nginx:
     image: nginx
+    container_name: proxy
     ports:
       - "80:80"
     volumes:
@@ -21,12 +22,14 @@ services:
 
   comicvineapi:
     build:
-      context: .
+      context: https://github.com/rishighan/comicvine-service.git
     image: frishi/comicvine-service
     container_name: comicvine-api
+    ports:
+      - "3080:3080"
     environment:
       SERVICES: api
-      PORT: 3080
+    env_file: comicvine-service.env
     depends_on:
       - nats
     networks:
@@ -34,16 +37,55 @@ services:
 
   comicvine:
     build:
-      context: .
+      context: https://github.com/rishighan/comicvine-service.git
     image: frishi/comicvine-service
     container_name: comicvine-service
+    environment:
+      SERVICES: comicvine 
+    env_file: comicvine-service.env
+    networks:
+      - proxy
+  
+  importapi:
+    build:
+      context: https://github.com/rishighan/threetwo-import-service.git
+    image: frishi/threetwo-import-service
+    container_name: threetwo-import-api
     ports:
-      - "3080:3080"
+      - "3000:3000"
+    environment:
+      SERVICES: api
+    env_file: threetwo-import-service.env
+    depends_on:
+      - nats
+    networks:
+      - proxy
+  
+  import:
+    build:
+      context: https://github.com/rishighan/threetwo-import-service.git
+    image: frishi/threetwo-import-service
+    container_name: import 
+    environment:
+      SERVICES: import 
+    env_file: threetwo-import-service.env
+    networks:
+      - proxy
+  
+  imagetransformation:
+    build:
+      context: https://github.com/rishighan/threetwo-import-service.git
+    image: frishi/threetwo-import-service
+    container_name: image-transformation 
+    environment:
+      SERVICES: imagetransformation 
+    env_file: threetwo-import-service.env
     networks:
       - proxy
 
   nats:
     image: nats:2
+    container_name: transporter
     networks:
       - proxy
 
