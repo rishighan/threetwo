@@ -1,0 +1,53 @@
+version: "3.7"
+
+services:
+  nginx:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./proxy.conf:/etc/nginx/conf.d/default.conf 
+
+  threetwo:
+    build:
+      context: .
+    image: frishi/threetwo
+    container_name: threetwo-ui
+    ports:
+      - "8050:8050"
+      - "3050:3050"
+    networks:
+      - proxy
+
+  comicvineapi:
+    build:
+      context: .
+    image: frishi/comicvine-service
+    container_name: comicvine-api
+    environment:
+      SERVICES: api
+      PORT: 3080
+    depends_on:
+      - nats
+    networks:
+      - proxy
+
+  comicvine:
+    build:
+      context: .
+    image: frishi/comicvine-service
+    container_name: comicvine-service
+    ports:
+      - "3080:3080"
+    networks:
+      - proxy
+
+  nats:
+    image: nats:2
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
+

@@ -2,6 +2,8 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const outputDirectory = "dist";
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 module.exports = {
   entry: ["babel-polyfill", "./src/client/index.tsx"],
@@ -73,6 +75,7 @@ module.exports = {
     usedExports: false,
   },
   plugins: [
+    // new BundleAnalyzerPlugin(),
     // new CleanWebpackPlugin([outputDirectory]),
     new HtmlWebpackPlugin({
       template: "./public/index.html",

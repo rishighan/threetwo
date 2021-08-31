@@ -25,6 +25,7 @@ const port: number = Number(process.env.PORT) || 8050; // set our port
 
 // Send index.html on root request
 app.use(express.static("dist"));
+app.use(express.static("public"));
 
 export const opdsRouter = () => {
   const path_of_books = "/Users/rishi/work/threetwo/src/server/comics";

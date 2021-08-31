@@ -16,4 +16,4 @@ RUN apk add --no-cache --virtual .build-deps make gcc g++ python \
 COPY . /usr/src/threetwo
 EXPOSE 3050
 
-CMD yarn run dev
+CMD npm start 

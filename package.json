@@ -29,7 +29,6 @@
     "@types/socket.io-client": "^3.0.0",
     "@types/through2": "^2.0.36",
     "airdcpp-apisocket": "^2.4.2",
-    "antd": "^4.16.5",
     "array-sort-by": "^1.2.1",
     "babel-polyfill": "^6.26.0",
     "better-docs": "^2.3.2",
@@ -146,6 +145,7 @@
     "unzipper": "^0.10.11",
     "url-loader": "^1.0.1",
     "webpack": "^5.33.2",
+    "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.6.0",
     "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^5.7.3"

@@ -12,10 +12,8 @@ import { isEmpty, isUndefined, isNil } from "lodash";
 import { RootState } from "threetwo-ui-typings";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
 import { getComicBookDetailById } from "../actions/comicinfo.actions";
-import { Drawer, Divider } from "antd";
 import dayjs from "dayjs";
 const prettyBytes = require("pretty-bytes");
-import "antd/dist/antd.css";
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -270,7 +268,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                 {!isNil(comicBookDetailData.rawFileDetails) && (
                   <>
                     <RawFileDetails data={comicBookDetailData.rawFileDetails} />
-                    <Divider />
                   </>
                 )}
                 {/* comic vine scraped metadata */}
@@ -341,21 +338,12 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
 
             {isComicBookMetadataAvailable ? <MetadataTabGroup /> : null}
 
-            <Drawer
-              title="ComicVine Search Results"
-              placement="right"
-              width={640}
-              closable={false}
-              onClose={onClose}
-              visible={visible}
-              className="comic-vine-match-drawer"
-            >
+            <>
               {!isEmpty(comicVineSearchQueryObject) &&
               !isUndefined(comicVineSearchQueryObject) ? (
                 <div className="card search-criteria-card">
                   <div className="card-content">
                     <ComicVineSearchForm />
-                    <Divider />
                     <p className="is-size-6">Searching against:</p>
                     <div className="field is-grouped is-grouped-multiline">
                       <div className="control">
@@ -399,7 +387,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                   />
                 )}
               </div>
-            </Drawer>
+            </>
           </>
         )}
       </div>

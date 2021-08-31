@@ -11,7 +11,7 @@ const Navbar: React.FunctionComponent = (props) => {
       <div className="navbar-brand">
         <a className="navbar-item" href="http://bulma.io">
           <img
-            src="/public/threetwo.png"
+            src="/threetwo.png"
             alt="ThreeTwo! A comic book curator"
             width="112"
             height="28"
