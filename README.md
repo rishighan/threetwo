@@ -1,5 +1,7 @@
 # ThreeTwo!
 
+ThreeTwo! is a comic book curation app.
+
 ⚠️ This project is in early stages of development and as such, not ready for general use.
 
 ## Dependencies
@@ -20,6 +22,7 @@ Make sure that you have `docker` and `docker-compose` installed.
 2. Create an external docker network using `docker network create proxy`
 3. Run `docker-compose up --build -d`
 4. Note that the first time, the process could take up to 10 minutes, since it is building containers for `threetwo`, `threetwo-import-service`, `comicvine-service`, `mongo`, `nats`, `nginx`
+5. For posterity, check that all containers are up using `docker ps`
 
 ## Local Development
 

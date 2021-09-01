@@ -58,6 +58,7 @@ services:
     env_file: threetwo-import-service.env
     depends_on:
       - nats
+      - mongodb
     networks:
       - proxy
   
@@ -65,7 +66,10 @@ services:
     build:
       context: https://github.com/rishighan/threetwo-import-service.git
     image: frishi/threetwo-import-service
-    container_name: import 
+    container_name: import
+    depends_on: 
+      - mongodb
+      - nats
     environment:
       SERVICES: import 
     env_file: threetwo-import-service.env
@@ -76,7 +80,10 @@ services:
     build:
       context: https://github.com/rishighan/threetwo-import-service.git
     image: frishi/threetwo-import-service
-    container_name: image-transformation 
+    container_name: image-transformation
+    depends_on: 
+      - mongodb 
+      - nats
     environment:
       SERVICES: imagetransformation 
     env_file: threetwo-import-service.env
@@ -85,7 +92,7 @@ services:
 
   mongodb:
     image: 'bitnami/mongodb:latest'
-    container_name: mongodb
+    container_name: db
     networks:
       - proxy
     ports:
