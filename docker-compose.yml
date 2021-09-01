@@ -23,7 +23,7 @@ services:
       SERVICES: api
     env_file: ./docker-env/comicvine-service.env
     volumes:
-      - 'userdata:/comicvine-service/userdata'
+      - './userdata:/comicvine-service/userdata'
     depends_on:
       - nats
     networks:
@@ -36,6 +36,8 @@ services:
     container_name: comicvine-service
     environment:
       SERVICES: comicvine 
+    volumes:
+      - './userdata:/comicvine-service/userdata'
     env_file: ./docker-env/comicvine-service.env
     networks:
       - proxy
@@ -51,8 +53,8 @@ services:
       SERVICES: api
     env_file: ./docker-env/threetwo-import-service.env
     volumes:
-      - 'userdata:/threetwo-import-service/userdata'
-      - 'comics:/threetwo-import-service/comics'
+      - './userdata:/threetwo-import-service/userdata'
+      - './comics:/threetwo-import-service/comics'
     depends_on:
       - nats
       - mongodb
@@ -69,6 +71,9 @@ services:
       - nats
     environment:
       SERVICES: import 
+    volumes:
+      - './userdata:/threetwo-import-service/userdata'
+      - './comics:/threetwo-import-service/comics'
     env_file: ./docker-env/threetwo-import-service.env
     networks:
       - proxy
@@ -78,6 +83,9 @@ services:
       context: https://github.com/rishighan/threetwo-import-service.git
     image: frishi/threetwo-import-service
     container_name: image-transformation
+    volumes:
+      - './userdata:/threetwo-import-service/userdata'
+      - './comics:/threetwo-import-service/comics'
     depends_on: 
       - mongodb 
       - nats
@@ -116,8 +124,6 @@ networks:
     external: true
 
 volumes:
-  userdata:
-  comics:
   mongodb_data:
     driver: local
 

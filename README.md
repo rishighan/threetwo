@@ -9,9 +9,9 @@ ThreeTwo! is a comic book curation app.
 ThreeTwo! currently is set up as:
 
 1. The UI, this repo.
-2. `threetwo-import-service` [https://github.com/rishighan/threetwo-import-service]
-3. `comicvine-service` [https://github.com/rishighan/comicvine-service]
-4. `threetwo-ui-typings` [https://github.com/rishighan/threetwo-frontend-types] which are the types used across the UI, installable as an `npm` dependency.
+2. [threetwo-import-service](https://github.com/rishighan/threetwo-import-service)
+3. [comicvine-service](https://github.com/rishighan/comicvine-service)
+4. [threetwo-ui-typings](https://github.com/rishighan/threetwo-frontend-types) which are the types used across the UI, installable as an `npm` dependency.
 ## Docker Instructions
 
 The recommended approach is to simply use `docker-compose` which spins up containers for the UI and all the associated microservices and data store.
@@ -22,7 +22,7 @@ Then:
 1. Clone this repo using `git clone https://github.com/rishighan/threetwo.git`
 2. Create an external docker network using `docker network create proxy`
 3. Run `docker-compose up --build -d` to run the containers in detatched mode
-4. For debugging you can leave out the `-d` flag
+4. For debugging, run `docker-compose up --build`
 5. Note that the first time, the process could take up to 10 minutes, since it is building containers for `threetwo`, `threetwo-import-service`, `comicvine-service`, `mongo`, `nats`, `nginx`
 6. For posterity, check that all containers are up using `docker ps`
 
@@ -48,4 +48,6 @@ For debugging and troubleshooting, you can run this app locally using these step
    Currently, in the `docker-compose` setup, the `comics` folder at the root of this repo is used to store comics.
 
 ## Contribution Guidelines
+
+See [contribution guidelines](https://github.com/rishighan/threetwo/blob/master/contributing.md)
 
