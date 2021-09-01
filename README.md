@@ -40,7 +40,12 @@ For debugging and troubleshooting, you can run this app locally using these step
 ### Docker
 
 1. `docker-compose up` is taking a long time
+   
    This is primarily because `threetwo-import-service` pulls `calibre` from the CDN and it has been known to be extremely slow. I can't find a more reliable alternative, so give it some time to finish downloading.
 
 2. What folder do my comics go in?
+   
    Currently, in the `docker-compose` setup, the `comics` folder at the root of this repo is used to store comics.
+
+## Contribution Guidelines
+
