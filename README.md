@@ -20,11 +20,20 @@ Make sure that you have `docker` and `docker-compose` installed. Running `docker
 Then:
 
 1. Clone this repo using `git clone https://github.com/rishighan/threetwo.git`
-2. Create an external docker network using `docker network create proxy`
-3. Run `docker-compose up --build -d` to run the containers in detatched mode
-4. For debugging, run `docker-compose up --build`
-5. Note that the first time, the process could take up to 10 minutes, since it is building containers for `threetwo`, `threetwo-import-service`, `comicvine-service`, `mongo`, `nats`, `nginx`
-6. For posterity, check that all containers are up using `docker ps`
+2. Currently, in the `docker-compose` setup, you will need to create the following folder structure:
+   
+   ```
+   - comics
+   - userdata
+     |- covers
+     |- expanded
+     |- temporary
+   ```
+3. Create an external docker network using `docker network create proxy`
+4. Run `docker-compose up --build -d` to run the containers in detatched mode
+5. For debugging, run `docker-compose up --build`
+6. Note that the first time, the process could take up to 10 minutes, since it is building containers for `threetwo`, `threetwo-import-service`, `comicvine-service`, `mongo`, `nats`, `nginx`
+7. For posterity, check that all containers are up using `docker ps`
 
 ## Local Development
 
@@ -45,7 +54,8 @@ For debugging and troubleshooting, you can run this app locally using these step
 
 2. What folder do my comics go in?
    
-   Currently, in the `docker-compose` setup, the `comics` folder at the root of this repo is used to store comics.
+   Your comics go in the `comics` directory at the root of this project.
+   
 
 ## Contribution Guidelines
 
