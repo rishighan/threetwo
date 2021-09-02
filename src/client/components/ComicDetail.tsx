@@ -5,8 +5,10 @@ import MatchResult from "./MatchResult";
 import ComicVineSearchForm from "./ComicVineSearchForm";
 import AcquisitionPanel from "./AcquisitionPanel";
 import DownloadsPanel from "./DownloadsPanel";
+import SlidingPane from "react-sliding-pane";
 
 import { css } from "@emotion/react";
+import "react-sliding-pane/dist/react-sliding-pane.css";
 import PuffLoader from "react-spinners/PuffLoader";
 import { isEmpty, isUndefined, isNil } from "lodash";
 import { RootState } from "threetwo-ui-typings";
@@ -338,7 +340,11 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
 
             {isComicBookMetadataAvailable ? <MetadataTabGroup /> : null}
 
-            <>
+            <SlidingPane
+              isOpen={visible}
+              onRequestClose={() => setVisible(false)}
+              width={"600px"}
+            >
               {!isEmpty(comicVineSearchQueryObject) &&
               !isUndefined(comicVineSearchQueryObject) ? (
                 <div className="card search-criteria-card">
@@ -387,7 +393,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                   />
                 )}
               </div>
-            </>
+            </SlidingPane>
           </>
         )}
       </div>

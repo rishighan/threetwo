@@ -50,6 +50,7 @@
     "react-dom": "^17.0.1",
     "react-fast-compare": "^3.2.0",
     "react-final-form": "^6.5.3",
+    "react-sliding-pane": "^7.0.0",
     "react-spinners": "^0.11.0",
     "react-table": "^7.7.0",
     "react-window-dynamic-list": "^2.3.5",
@@ -59,7 +60,7 @@
     "voca": "^1.4.0",
     "websocket": "^1.0.34",
     "ws": "^7.5.3",
-    "ws-calibre": "bluelovers/ws-calibre",
+    "ws-calibre": "https://github.com/bluelovers/ws-calibre",
     "xregexp": "^5.0.2"
   },
   "devDependencies": {
