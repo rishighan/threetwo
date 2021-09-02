@@ -42,7 +42,9 @@ export const AcquisitionPanel = (
       // pattern: "Templier T2.cbr",
       extensions: ["cbz", "cbr"],
     },
-    hub_urls: ["nmdcs://piter.feardc.net:411"],
+    hub_urls: [
+      "adcs://novosibirsk.dc-dev.club:7111/?kp=SHA256/4XFHJFFBFEI2RS75FPRPPXPZMMKPXR764ABVVCC2QGJPQ34SDZGA",
+    ],
     priority: 5,
   };
 
@@ -115,7 +117,9 @@ export const AcquisitionPanel = (
               </tr>
             </thead>
             <tbody>
-              {map(airDCPPSearchResults, ({ name, type, slots, users, id }) => {
+              <tr><td>
+                {JSON.stringify(airDCPPSearchResults)}</td></tr>
+              {/* {map(airDCPPSearchResults, ({ name, type, slots, users, id }) => {
                 return (
                   <tr key={id}>
                     <td>
@@ -168,7 +172,7 @@ export const AcquisitionPanel = (
                     </td>
                   </tr>
                 );
-              })}
+              })} */}
             </tbody>
           </table>
         )}

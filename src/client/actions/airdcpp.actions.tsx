@@ -33,44 +33,62 @@ export const search = (data: SearchData) => async (dispatch) => {
     }
     const instance: SearchInstance = await SocketService.post("search");
 
+    // We want to get notified about every new result in order to make the user experience better
     await SocketService.addListener(
-      `search/${instance.id}`,
+      `search`,
+      "search_result_added",
+      async (groupedResult) => {
+        // ...add the received result in the UI
+        // (it's probably a good idea to have some kind of throttling for the UI updates as there can be thousands of results)
+
+        dispatch({
+          type: AIRDCPP_SEARCH_RESULTS_RECEIVED,
+          groupedResult,
+        });
+      },
+      instance.id,
+    );
+
+    // We also want to update the existing items in our list when new hits arrive for the previously listed files/directories
+    await SocketService.addListener(
+      `search`,
+      "search_result_updated",
+      async (groupedResult) => {
+        // ...update properties of the existing result in the UI
+      },
+      instance.id,
+    );
+
+    // We need to show something to the user in case the search won't yield any results so that he won't be waiting forever)
+    // Wait for 5 seconds for any results to arrive after the searches were sent to the hubs
+    await SocketService.addListener(
+      `search`,
       "search_hub_searches_sent",
       async (searchInfo) => {
         await sleep(5000);
+
         // The search can now be considered to be "complete"
+        dispatch({
+          type: AIRDCPP_HUB_SEARCHES_SENT,
+          searchInfo,
+          instance,
+        });
 
         // Check the number of received results (in real use cases we should know that even without calling the API)
         const currentInstance = await SocketService.get(
           `search/${instance.id}`,
         );
         if (currentInstance.result_count === 0) {
-          console.log("ASDASDASDASDD");
           // ...nothing was received, show an informative message to the user
         }
 
         // If there's an "in progress" indicator in the UI, that could also be disabled here
-        dispatch({
-          type: AIRDCPP_HUB_SEARCHES_SENT,
-          searchInfo,
-          instance,
-        });
       },
-    );
-    await SocketService.post<SearchResponse>(
-      `search/${instance.id}/hub_search`,
-      data,
+      instance.id,
     );
 
-    await sleep(10000);
-    const results = await SocketService.get(
-      `search/${instance.id}/results/0/125`,
-    );
-
-    dispatch({
-      type: AIRDCPP_SEARCH_RESULTS_RECEIVED,
-      results,
-    });
+    // Finally, perform the actual search
+    await SocketService.post(`search/${instance.id}/hub_search`, data);
   } catch (error) {
     console.log("ERO", error);
     throw error;

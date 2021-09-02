@@ -20,9 +20,10 @@ const initialState = {
 function airdcppReducer(state = initialState, action) {
   switch (action.type) {
     case AIRDCPP_SEARCH_RESULTS_RECEIVED:
+    console.log("Badan", action)
       return {
         ...state,
-        searchResults: action.results,
+        searchResults: action.groupedResult.result,
         isAirDCPPSearchInProgress: false,
       };
     case AIRDCPP_SEARCH_IN_PROGRESS:
