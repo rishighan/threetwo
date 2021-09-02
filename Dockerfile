@@ -8,7 +8,7 @@ COPY package.json yarn.lock /usr/src/threetwo/
 COPY nodemon.json /usr/src/threetwo
 COPY jsdoc.json /usr/src/threetwo
 
-RUN apk add --no-cache --virtual .build-deps make gcc g++ python \
+RUN apk add --no-cache --virtual .build-deps git automake autoconf \
  && yarn \
  && apk del .build-deps
 

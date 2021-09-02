@@ -20,10 +20,9 @@ const initialState = {
 function airdcppReducer(state = initialState, action) {
   switch (action.type) {
     case AIRDCPP_SEARCH_RESULTS_RECEIVED:
-    console.log("Badan", action)
       return {
         ...state,
-        searchResults: action.groupedResult.result,
+        searchResults: [...state.searchResults, action.groupedResult],
         isAirDCPPSearchInProgress: false,
       };
     case AIRDCPP_SEARCH_IN_PROGRESS:
@@ -56,11 +55,16 @@ function airdcppReducer(state = initialState, action) {
       };
     case LOCATION_CHANGE:
       return {
-        initialState,
+        searchResults: [],
+        isAirDCPPSearchInProgress: false,
+  searchInfo: null,
+  searchInstance: null,
+  downloadResult: null,
+  bundleDBImportResult: null,
       };
 
     default:
-      return { ...state };
+      return state;
   }
 }
 

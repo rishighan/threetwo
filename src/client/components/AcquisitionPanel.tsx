@@ -117,25 +117,23 @@ export const AcquisitionPanel = (
               </tr>
             </thead>
             <tbody>
-              <tr><td>
-                {JSON.stringify(airDCPPSearchResults)}</td></tr>
-              {/* {map(airDCPPSearchResults, ({ name, type, slots, users, id }) => {
+              {map(airDCPPSearchResults, ({ result }) => {
                 return (
-                  <tr key={id}>
+                  <tr key={result.id}>
                     <td>
                       <p className="mb-2">
-                        {type.id === "directory" ? (
+                        {result.type.id === "directory" ? (
                           <i className="fas fa-folder"></i>
                         ) : null}{" "}
-                        {name}
+                        {result.name}
                       </p>
                       <dl>
                         <dd>
                           <div className="tags">
                             <span className="tag is-light is-info">
-                              {users.user.nicks}
+                              {result.users.user.nicks}
                             </span>
-                            {users.user.flags.map((flag, idx) => (
+                            {result.users.user.flags.map((flag, idx) => (
                               <span className="tag is-light" key={idx}>
                                 {flag}
                               </span>
@@ -146,15 +144,19 @@ export const AcquisitionPanel = (
                     </td>
                     <td>
                       <span className="tag is-light is-info">
-                        {type.id === "directory" ? "directory" : type.str}
+                        {result.type.id === "directory"
+                          ? "directory"
+                          : result.type.str}
                       </span>
                     </td>
                     <td>
                       <div className="tags has-addons">
                         <span className="tag is-success">
-                          {slots.free} free
+                          {result.slots.free} free
                         </span>
-                        <span className="tag is-light">{slots.total}</span>
+                        <span className="tag is-light">
+                          {result.slots.total}
+                        </span>
                       </div>
                     </td>
                     <td>
@@ -162,7 +164,7 @@ export const AcquisitionPanel = (
                         onClick={() =>
                           downloadDCPPResult(
                             searchInstance.id,
-                            id,
+                            result.id,
                             props.comicBookMetadata._id,
                           )
                         }
@@ -172,7 +174,7 @@ export const AcquisitionPanel = (
                     </td>
                   </tr>
                 );
-              })} */}
+              })}
             </tbody>
           </table>
         )}

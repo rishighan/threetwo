@@ -89,6 +89,10 @@ export const search = (data: SearchData) => async (dispatch) => {
 
     // Finally, perform the actual search
     await SocketService.post(`search/${instance.id}/hub_search`, data);
+
+    // removeSearchesSentListener();
+    // removeSeachResultAddedListener();
+    // removeSearchResultUpdatedListener();
   } catch (error) {
     console.log("ERO", error);
     throw error;
