@@ -35,6 +35,12 @@ Then:
 6. Note that the first time, the process could take up to 10 minutes, since it is building containers for `threetwo`, `threetwo-import-service`, `comicvine-service`, `mongo`, `nats`, `nginx`
 7. For posterity, check that all containers are up using `docker ps`
 
+### What runs where
+
+`threetwo` is the UI that is served on port `3050`
+`import` service is served on `3000`
+`comicvine` service on `3080`
+
 ## Local Development
 
 For debugging and troubleshooting, you can run this app locally using these steps:
