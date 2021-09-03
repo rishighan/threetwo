@@ -55,6 +55,10 @@ export const search = (data: SearchData) => async (dispatch) => {
       "search_result_updated",
       async (groupedResult) => {
         // ...update properties of the existing result in the UI
+        dispatch({
+          type: AIRDCPP_SEARCH_RESULTS_RECEIVED,
+          groupedResult,
+        });
       },
       instance.id,
     );
@@ -67,12 +71,7 @@ export const search = (data: SearchData) => async (dispatch) => {
       async (searchInfo) => {
         await sleep(5000);
 
-        // The search can now be considered to be "complete"
-        dispatch({
-          type: AIRDCPP_HUB_SEARCHES_SENT,
-          searchInfo,
-          instance,
-        });
+        
 
         // Check the number of received results (in real use cases we should know that even without calling the API)
         const currentInstance = await SocketService.get(
@@ -82,7 +81,13 @@ export const search = (data: SearchData) => async (dispatch) => {
           // ...nothing was received, show an informative message to the user
         }
 
+        // The search can now be considered to be "complete"
         // If there's an "in progress" indicator in the UI, that could also be disabled here
+        dispatch({
+          type: AIRDCPP_HUB_SEARCHES_SENT,
+          searchInfo,
+          instance,
+        });
       },
       instance.id,
     );

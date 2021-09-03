@@ -33,7 +33,7 @@ function airdcppReducer(state = initialState, action) {
     case AIRDCPP_HUB_SEARCHES_SENT:
       return {
         ...state,
-        isAirDCPPSearchInProgress: true,
+        isAirDCPPSearchInProgress: false,
         searchInfo: action.searchInfo,
         searchInstance: action.instance,
       };
@@ -57,10 +57,10 @@ function airdcppReducer(state = initialState, action) {
       return {
         searchResults: [],
         isAirDCPPSearchInProgress: false,
-  searchInfo: null,
-  searchInstance: null,
-  downloadResult: null,
-  bundleDBImportResult: null,
+        searchInfo: null,
+        searchInstance: null,
+        downloadResult: null,
+        bundleDBImportResult: null,
       };
 
     default:

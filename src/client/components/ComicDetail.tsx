@@ -6,6 +6,7 @@ import ComicVineSearchForm from "./ComicVineSearchForm";
 import AcquisitionPanel from "./AcquisitionPanel";
 import DownloadsPanel from "./DownloadsPanel";
 import SlidingPane from "react-sliding-pane";
+import Select from "react-select";
 
 import { css } from "@emotion/react";
 import "react-sliding-pane/dist/react-sliding-pane.css";
@@ -37,7 +38,6 @@ type ComicDetailProps = {};
 export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const [page, setPage] = useState(1);
   const [visible, setVisible] = useState(false);
-  const [isActionDropdownCollapsed, collapseActionDropdown] = useState(false);
 
   const comicVineSearchResults = useSelector(
     (state: RootState) => state.comicInfo.searchResults,
@@ -54,8 +54,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
 
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
   const dispatch = useDispatch();
-  const toggleActionDropdown = () =>
-    collapseActionDropdown(!isActionDropdownCollapsed);
 
   useEffect(() => {
     dispatch(getComicBookDetailById(comicObjectId));
@@ -251,13 +249,30 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     imagePath = comicBookDetailData.sourcedMetadata.comicvine.image.small_url;
     comicBookTitle = comicBookDetailData.sourcedMetadata.comicvine.name;
   }
+
+  //  actions menu options and handler
+  const actionOptions = [
+    { value: "match-on-comic-vine", label: "Match on Comic Vine" },
+    { value: "edit-metdata", label: "Edit Metadata" },
+    { value: "delete-comic", label: "Delete Comic" },
+  ];
+  const handleActionSelection = (action) => {
+    switch (action.value) {
+      case "match-on-comic-vine":
+        openDrawerWithCVMatches();
+        break;
+      default:
+        console.log("No valid action selected.");
+        break;
+    }
+  };
   return (
     <section className="container">
       <div className="section">
         {!isNil(comicBookDetailData) && !isEmpty(comicBookDetailData) && (
           <>
             <h1 className="title">{comicBookTitle}</h1>
-            <div className="columns">
+            <div className="columns is-multiline">
               <div className="column is-narrow">
                 <Card
                   imageUrl={imagePath}
@@ -266,7 +281,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                 />
               </div>
               {/* raw file details */}
-              <div className="column">
+              <div className="column is-three-fifths">
                 {!isNil(comicBookDetailData.rawFileDetails) && (
                   <>
                     <RawFileDetails data={comicBookDetailData.rawFileDetails} />
@@ -279,63 +294,21 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                     updatedAt={comicBookDetailData.updatedAt}
                   />
                 )}
-                {/* action dropdown */}
-                <div
-                  className={
-                    "dropdown " + (isActionDropdownCollapsed ? "is-active" : "")
-                  }
-                  onBlur={() => toggleActionDropdown()}
-                  onFocus={() => toggleActionDropdown()}
-                >
-                  <div className="dropdown-trigger">
-                    <button
-                      className="button is-small"
-                      aria-haspopup="true"
-                      aria-controls="dropdown-menu2"
-                      onClick={() => toggleActionDropdown()}
-                    >
-                      <span>
-                        <i className="fas fa-sliders-h"></i> Actions
-                      </span>
 
-                      <span className="icon is-small">
-                        <i className="fas fa-angle-down" aria-hidden="true"></i>
-                      </span>
-                    </button>
-                  </div>
-                  <div
-                    className="dropdown-menu"
-                    id="dropdown-menu2"
-                    role="menu"
-                  >
-                    <div className="dropdown-content">
-                      <div
-                        className="dropdown-item"
-                        onClick={openDrawerWithCVMatches}
-                      >
-                        <span className="icon">
-                          <i className="fas fa-magic"></i>
-                        </span>
-                        <span>Match on ComicVine</span>
-                      </div>
-                      <hr className="dropdown-divider" />
-                      <div className="dropdown-item">
-                        <span className="icon">
-                          <i className="fas fa-edit"></i>
-                        </span>
-                        <span>Edit Metdata</span>
-                      </div>
-                      <hr className="dropdown-divider" />
-                      <div className="dropdown-item">
-                        <span className="icon">
-                          <i className="fas fa-trash"></i>
-                        </span>
-                        <span>Delete Comic</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                
               </div>
+              {/* action dropdown */}
+              <div className="column is-one-quarter is-narrow">
+                  <Select
+                    className="basic-single"
+                    classNamePrefix="select"
+                    defaultValue={actionOptions[0]}
+                    name="color"
+                    isSearchable={false}
+                    options={actionOptions}
+                    onChange={handleActionSelection}
+                  />
+                  </div>
             </div>
 
             {isComicBookMetadataAvailable ? <MetadataTabGroup /> : null}
