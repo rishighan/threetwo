@@ -251,10 +251,53 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   }
 
   //  actions menu options and handler
+  const CVMatchLabel = (
+    <span>
+      <i className="fas fa-magic"></i> Match on ComicVine{" "}
+    </span>
+  );
+
+  const editLabel = (
+    <span>
+      <i className="fas fa-pencil-alt"></i> Edit Metadata{" "}
+    </span>
+  );
+  const deleteLabel = (
+    <span>
+      <i className="fas fa-trash-alt"></i> Delete Comic{" "}
+    </span>
+  );
+  const customStyles = {
+    control: base => ({
+        ...base,
+        minHeight: 35
+    }),
+    dropdownIndicator: base => ({
+        ...base,
+        padding: 4
+    }),
+    clearIndicator: base => ({
+        ...base,
+        padding: 4
+    }),
+    multiValue: base => ({
+        ...base,
+        backgroundColor: variables.colorPrimaryLighter
+    }),
+    valueContainer: base => ({
+        ...base,
+        padding: '0px 6px'
+    }),
+    input: base => ({
+        ...base,
+        margin: 0,
+        padding: 0
+    })
+};
   const actionOptions = [
-    { value: "match-on-comic-vine", label: "Match on Comic Vine" },
-    { value: "edit-metdata", label: "Edit Metadata" },
-    { value: "delete-comic", label: "Delete Comic" },
+    { value: "match-on-comic-vine", label: CVMatchLabel },
+    { value: "edit-metdata", label: editLabel },
+    { value: "delete-comic", label: deleteLabel },
   ];
   const handleActionSelection = (action) => {
     switch (action.value) {
@@ -294,21 +337,19 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                     updatedAt={comicBookDetailData.updatedAt}
                   />
                 )}
-
-                
               </div>
               {/* action dropdown */}
-              <div className="column is-one-quarter is-narrow">
-                  <Select
-                    className="basic-single"
-                    classNamePrefix="select"
-                    defaultValue={actionOptions[0]}
-                    name="color"
-                    isSearchable={false}
-                    options={actionOptions}
-                    onChange={handleActionSelection}
-                  />
-                  </div>
+              <div className="column is-one-fifth is-narrow is-size-7">
+                <Select
+                  className="basic-single"
+                  classNamePrefix="select"
+                  defaultValue={actionOptions[0]}
+                  name="color"
+                  isSearchable={false}
+                  options={actionOptions}
+                  onChange={handleActionSelection}
+                />
+              </div>
             </div>
 
             {isComicBookMetadataAvailable ? <MetadataTabGroup /> : null}
