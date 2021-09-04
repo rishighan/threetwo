@@ -6,7 +6,7 @@ import ComicVineSearchForm from "./ComicVineSearchForm";
 import AcquisitionPanel from "./AcquisitionPanel";
 import DownloadsPanel from "./DownloadsPanel";
 import SlidingPane from "react-sliding-pane";
-import Select from "react-select";
+import Select, { components } from "react-select";
 
 import { css } from "@emotion/react";
 import "react-sliding-pane/dist/react-sliding-pane.css";
@@ -253,52 +253,29 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   //  actions menu options and handler
   const CVMatchLabel = (
     <span>
-      <i className="fas fa-magic"></i> Match on ComicVine{" "}
+      <i className="fas fa-magic"></i> Match on ComicVine
     </span>
   );
 
   const editLabel = (
     <span>
-      <i className="fas fa-pencil-alt"></i> Edit Metadata{" "}
+      <i className="fas fa-pencil-alt"></i> Edit Metadata
     </span>
   );
   const deleteLabel = (
     <span>
-      <i className="fas fa-trash-alt"></i> Delete Comic{" "}
+      <i className="fas fa-trash-alt"></i> Delete Comic
     </span>
   );
-  const customStyles = {
-    control: base => ({
-        ...base,
-        minHeight: 35
-    }),
-    dropdownIndicator: base => ({
-        ...base,
-        padding: 4
-    }),
-    clearIndicator: base => ({
-        ...base,
-        padding: 4
-    }),
-    multiValue: base => ({
-        ...base,
-        backgroundColor: variables.colorPrimaryLighter
-    }),
-    valueContainer: base => ({
-        ...base,
-        padding: '0px 6px'
-    }),
-    input: base => ({
-        ...base,
-        margin: 0,
-        padding: 0
-    })
-};
+  const Placeholder = (props) => {
+    return <components.Placeholder {...props} />;
+  };
   const actionOptions = [
     { value: "match-on-comic-vine", label: CVMatchLabel },
     { value: "edit-metdata", label: editLabel },
     { value: "delete-comic", label: deleteLabel },
   ];
+
   const handleActionSelection = (action) => {
     switch (action.value) {
       case "match-on-comic-vine":
@@ -343,8 +320,13 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                 <Select
                   className="basic-single"
                   classNamePrefix="select"
-                  defaultValue={actionOptions[0]}
-                  name="color"
+                  components={{ Placeholder }}
+                  placeholder={
+                    <span>
+                      <i className="fas fa-list"></i> Actions
+                    </span>
+                  }
+                  name="actions"
                   isSearchable={false}
                   options={actionOptions}
                   onChange={handleActionSelection}
