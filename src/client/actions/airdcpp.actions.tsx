@@ -71,8 +71,6 @@ export const search = (data: SearchData) => async (dispatch) => {
       async (searchInfo) => {
         await sleep(5000);
 
-        
-
         // Check the number of received results (in real use cases we should know that even without calling the API)
         const currentInstance = await SocketService.get(
           `search/${instance.id}`,
@@ -94,10 +92,6 @@ export const search = (data: SearchData) => async (dispatch) => {
 
     // Finally, perform the actual search
     await SocketService.post(`search/${instance.id}/hub_search`, data);
-
-    // removeSearchesSentListener();
-    // removeSeachResultAddedListener();
-    // removeSearchResultUpdatedListener();
   } catch (error) {
     console.log("ERO", error);
     throw error;

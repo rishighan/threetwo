@@ -17,7 +17,7 @@ const renderCard = (props): ReactElement => {
     case "vertical":
       return (
         <div>
-          <div className="card generic-card">
+          <div className="generic-card">
             <div>
               <div
                 className={

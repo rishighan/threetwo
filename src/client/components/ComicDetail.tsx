@@ -339,6 +339,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
             <SlidingPane
               isOpen={visible}
               onRequestClose={() => setVisible(false)}
+              title={"Comic Vine Search Matches"}
               width={"600px"}
             >
               {!isEmpty(comicVineSearchQueryObject) &&

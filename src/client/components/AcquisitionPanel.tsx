@@ -42,9 +42,7 @@ export const AcquisitionPanel = (
       // pattern: "Templier T2.cbr",
       extensions: ["cbz", "cbr"],
     },
-    hub_urls: [
-      "adcs://novosibirsk.dc-dev.club:7111/?kp=SHA256/4XFHJFFBFEI2RS75FPRPPXPZMMKPXR764ABVVCC2QGJPQ34SDZGA",
-    ],
+    hub_urls: ["comic-scans.no-ip.biz:24674"],
     priority: 5,
   };
 
@@ -117,9 +115,9 @@ export const AcquisitionPanel = (
               </tr>
             </thead>
             <tbody>
-              {map(airDCPPSearchResults, ({ result }) => {
+              {map(airDCPPSearchResults, ({ result }, idx) => {
                 return (
-                  <tr key={result.id}>
+                  <tr key={idx}>
                     <td>
                       <p className="mb-2">
                         {result.type.id === "directory" ? (

@@ -42,6 +42,10 @@ $border-color: red;
 
 .generic-card {
   max-width: 200px;
+  background-color: #fff;
+  border-bottom-left-radius: 0.3rem;
+  border-bottom-right-radius: 0.3rem;
+  box-shadow: 1px 8px 23px 7px rgba(0, 0, 0, 0.12);
 
   .truncate {
     width: 100px;
@@ -50,17 +54,26 @@ $border-color: red;
     text-overflow: ellipsis;
   }
   .partial-rounded-card-image {
-    img {
-      border-top-left-radius: 0.3rem;
-      border-top-right-radius: 0.3rem;
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
+    figure {
+      display: flex;
+      img {
+        border-top-left-radius: 0.3rem;
+        border-top-right-radius: 0.3rem;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
     }
   }
   .rounded-card-image {
-    img {
-      border-radius: 0.3rem;
+    figure {
+      display: flex;
+      img {
+        border-radius: 0.3rem;
+      }
     }
+  }
+  .card-content {
+    padding: 1rem;
   }
 }
 .card-container {
@@ -188,6 +201,12 @@ $border-color: red;
 }
 
 // comicvine search results
+.slide-pane__content {
+  padding: 24px 12px;
+}
+.slide-pane__header {
+  margin-top: 52px;
+}
 .search-results-container {
   margin: 15px 0 0 0;
   overflow: hidden;
