@@ -76,7 +76,6 @@ module.exports = {
   },
   plugins: [
     // new BundleAnalyzerPlugin(),
-    // new CleanWebpackPlugin([outputDirectory]),
     new HtmlWebpackPlugin({
       template: "./public/index.html",
       favicon: "./public/favicon.ico",

@@ -8,9 +8,9 @@ import DownloadsPanel from "./DownloadsPanel";
 import SlidingPane from "react-sliding-pane";
 import Select, { components } from "react-select";
 
-import { css } from "@emotion/react";
 import "react-sliding-pane/dist/react-sliding-pane.css";
-import PuffLoader from "react-spinners/PuffLoader";
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+import Loader from "react-loader-spinner";
 import { isEmpty, isUndefined, isNil } from "lodash";
 import { RootState } from "threetwo-ui-typings";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
@@ -377,7 +377,14 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
               ) : (
                 <div className="progress-indicator-container">
                   <div className="indicator">
-                    <PuffLoader loading={comicVineAPICallProgress} />
+                    <Loader
+                      type="MutatingDots"
+                      color="#CCC"
+                      secondaryColor="#999"
+                      height={100}
+                      width={100}
+                      visible={comicVineAPICallProgress}
+                    />
                   </div>
                 </div>
               )}

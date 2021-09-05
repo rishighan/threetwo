@@ -32,6 +32,10 @@ export const search = (data: SearchData) => async (dispatch) => {
       await SocketService.connect("admin", "password", true);
     }
     const instance: SearchInstance = await SocketService.post("search");
+    console.log(instance)
+    dispatch({
+      type: AIRDCPP_SEARCH_IN_PROGRESS,
+    });
 
     // We want to get notified about every new result in order to make the user experience better
     await SocketService.addListener(
