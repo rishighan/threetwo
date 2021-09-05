@@ -23,7 +23,7 @@ function airdcppReducer(state = initialState, action) {
       return {
         ...state,
         searchResults: [...state.searchResults, action.groupedResult],
-        isAirDCPPSearchInProgress: false,
+        isAirDCPPSearchInProgress: true,
       };
     case AIRDCPP_SEARCH_IN_PROGRESS:
       return {

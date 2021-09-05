@@ -17,7 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.13.17",
-    "@bluelovers/fast-glob": "^3.0.4",
+    "@bluelovers/fast-glob": "https://github.com/rishighan/fast-glob-v2-api.git",
     "@types/event-stream": "^3.3.34",
     "@types/mime-types": "^2.1.0",
     "@types/react": "^17.0.3",
