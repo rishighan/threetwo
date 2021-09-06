@@ -7,7 +7,7 @@ const Navbar: React.FunctionComponent = (props) => {
   const socketConnection = useSelector((state: RootState) => state.fileOps);
 
   return (
-    <nav className="navbar ">
+    <nav className="navbar is-fixed-top">
       <div className="navbar-brand">
         <a className="navbar-item" href="http://bulma.io">
           <img

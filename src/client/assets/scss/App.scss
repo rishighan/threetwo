@@ -183,6 +183,18 @@ $border-color: red;
   }
 }
 
+// Comic Detail
+.tabs {
+  .download-icon-labels {
+    .downloads-count {
+      margin: 0 1em 0 0.4em;
+      border: 1px solid #CCC;
+    }
+  }
+  .download-tab-name {
+  }
+}
+
 .comic-vine-match-drawer {
   // comic detail drawer
   .search-criteria-card {
@@ -206,6 +218,9 @@ $border-color: red;
 }
 .slide-pane__header {
   margin-top: 52px;
+}
+.slide-pane__close {
+  display: none;
 }
 .search-results-container {
   margin: 15px 0 0 0;

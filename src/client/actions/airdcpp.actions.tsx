@@ -12,8 +12,9 @@ import {
   AIRDCPP_DOWNLOAD_PROGRESS_TICK,
   AIRDCPP_BUNDLES_FETCHED,
   AIRDCPP_SEARCH_IN_PROGRESS,
+  IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
 } from "../constants/action-types";
-import { each, isNil, isUndefined } from "lodash";
+import { each, isNil, isUndefined, result } from "lodash";
 import axios from "axios";
 
 interface SearchData {
@@ -32,7 +33,7 @@ export const search = (data: SearchData) => async (dispatch) => {
       await SocketService.connect("admin", "password", true);
     }
     const instance: SearchInstance = await SocketService.post("search");
-    console.log(instance)
+    console.log(instance);
     dispatch({
       type: AIRDCPP_SEARCH_IN_PROGRESS,
     });
@@ -145,6 +146,11 @@ export const downloadAirDCPPItem =
           downloadResult: downloadResult,
           bundleDBImportResult,
         });
+        dispatch({
+          type: IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
+          comicBookDetail: bundleDBImportResult.data,
+          IMS_inProgress: false,
+        });
       }
     } catch (error) {
       throw error;
@@ -179,7 +185,7 @@ export const getBundlesForComic =
       if (!SocketService.isConnected()) {
         await SocketService.connect("admin", "password", true);
       }
-      const bundles = await SocketService.get("queue/bundles/0/500");
+      // const bundles = await SocketService.get("queue/bundles/0/50");
       const comicObject = await axios({
         method: "POST",
         url: "http://localhost:3000/api/import/getComicBookById",
@@ -191,18 +197,14 @@ export const getBundlesForComic =
         },
       });
       // get only the bundles applicable for the comic
-      const filteredBundles = [];
-      comicObject.data.acquisition.directconnect.map(({ bundleId }) => {
-        each(bundles, (bundle) => {
-          if (bundle.id === bundleId) {
-            filteredBundles.push(bundle);
-          }
-        });
-      });
-
+      const filteredBundles = comicObject.data.acquisition.directconnect.map(
+        async ({ bundleId }) => {
+          return await SocketService.get(`queue/bundles/${bundleId}`);
+        },
+      );
       dispatch({
         type: AIRDCPP_BUNDLES_FETCHED,
-        bundles: filteredBundles,
+        bundles: await Promise.all(filteredBundles),
       });
     } catch (error) {
       throw error;

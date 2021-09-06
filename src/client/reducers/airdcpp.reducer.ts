@@ -15,6 +15,7 @@ const initialState = {
   searchInstance: null,
   downloadResult: null,
   bundleDBImportResult: null,
+  bundles: [],
 };
 
 function airdcppReducer(state = initialState, action) {
@@ -38,6 +39,7 @@ function airdcppReducer(state = initialState, action) {
         searchInstance: action.instance,
       };
     case AIRDCPP_RESULT_DOWNLOAD_INITIATED:
+      console.log(action)
       return {
         ...state,
         downloadResult: action.downloadResult,
@@ -61,6 +63,7 @@ function airdcppReducer(state = initialState, action) {
         searchInstance: null,
         downloadResult: null,
         bundleDBImportResult: null,
+        // bundles: [],
       };
 
     default:

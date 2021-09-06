@@ -1,8 +1,13 @@
 import React, { useCallback, ReactElement } from "react";
-import { search, downloadAirDCPPItem } from "../actions/airdcpp.actions";
+import {
+  search,
+  downloadAirDCPPItem,
+  getBundlesForComic,
+} from "../actions/airdcpp.actions";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, SearchInstance } from "threetwo-ui-typings";
-import { isNil, map } from "lodash";
+import ellipsize from "ellipsize";
+import { isEmpty, isNil, map } from "lodash";
 
 interface IAcquisitionPanelProps {
   comicBookMetadata: any;
@@ -47,10 +52,12 @@ export const AcquisitionPanel = (
   };
 
   const downloadDCPPResult = useCallback(
-    (searchInstanceId, resultId, comicBookObjectId) =>
+    (searchInstanceId, resultId, comicBookObjectId) => {
       dispatch(
         downloadAirDCPPItem(searchInstanceId, resultId, comicBookObjectId),
-      ),
+      );
+      dispatch(getBundlesForComic(comicBookObjectId));
+    },
     [dispatch],
   );
   return (
@@ -104,7 +111,7 @@ export const AcquisitionPanel = (
       </div>
       {/* AirDC++ results */}
       <div>
-        {!isNil(airDCPPSearchResults) && (
+        {!isNil(airDCPPSearchResults) && !isEmpty(airDCPPSearchResults) && (
           <table className="table is-striped">
             <thead>
               <tr>
@@ -123,7 +130,7 @@ export const AcquisitionPanel = (
                         {result.type.id === "directory" ? (
                           <i className="fas fa-folder"></i>
                         ) : null}{" "}
-                        {result.name}
+                        {ellipsize(result.name, 70)}
                       </p>
                       <dl>
                         <dd>

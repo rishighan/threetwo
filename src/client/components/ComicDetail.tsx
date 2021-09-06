@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, ReactElement } from "react";
+import React, {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+  ReactElement,
+} from "react";
 import { useParams } from "react-router-dom";
 import Card from "./Carda";
 import MatchResult from "./MatchResult";
@@ -15,6 +21,7 @@ import { isEmpty, isUndefined, isNil } from "lodash";
 import { RootState } from "threetwo-ui-typings";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
 import { getComicBookDetailById } from "../actions/comicinfo.actions";
+import { getBundlesForComic } from "../actions/airdcpp.actions";
 import dayjs from "dayjs";
 const prettyBytes = require("pretty-bytes");
 
@@ -154,9 +161,20 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     },
     {
       id: 4,
-      icon: <i className="fas fa-cloud-download-alt"></i>,
-      name: "Downloads",
-      content: <DownloadsPanel data={comicBookDetailData} key={4} />,
+      icon: null,
+      name:
+        !isNil(comicBookDetailData) && !isEmpty(comicBookDetailData) ? (
+          <span className="download-tab-name">Downloads</span>
+        ) : (
+          "Downloads"
+        ),
+      content: !isNil(comicBookDetailData) && !isEmpty(comicBookDetailData) && (
+        <DownloadsPanel
+          data={comicBookDetailData.acquisition.directconnect}
+          comicObjectId={comicObjectId}
+          key={4}
+        />
+      ),
     },
   ];
   const MetadataTabGroup = () => {
@@ -171,7 +189,18 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                 onClick={() => setActive(id)}
               >
                 <a>
-                  <span className="icon is-small">{icon}</span>
+                  {id === 4 &&
+                  !isNil(comicBookDetailData) &&
+                  !isEmpty(comicBookDetailData) ? (
+                    <span className="download-icon-labels">
+                      <i className="fas fa-cloud-download-alt"></i>
+                      <span className="tag downloads-count">
+                        {comicBookDetailData.acquisition.directconnect.length}
+                      </span>
+                    </span>
+                  ) : (
+                    <span className="icon is-small">{icon}</span>
+                  )}
                   {name}
                 </a>
               </li>

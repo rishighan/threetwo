@@ -1,8 +1,5 @@
 import React, { useEffect, ReactElement } from "react";
-import {
-  getDownloadProgress,
-  getBundlesForComic,
-} from "../actions/airdcpp.actions";
+import { getDownloadProgress } from "../actions/airdcpp.actions";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "threetwo-ui-typings";
 import { isNil, map } from "lodash";
@@ -10,6 +7,7 @@ import prettyBytes from "pretty-bytes";
 
 interface IDownloadsPanelProps {
   data: any;
+  comicObjectId: string;
 }
 
 export const DownloadsPanel = (
@@ -18,15 +16,10 @@ export const DownloadsPanel = (
   const downloadProgressTick = useSelector(
     (state: RootState) => state.airdcpp.downloadProgressData,
   );
-  const bundles = useSelector((state: RootState) => state.airdcpp.bundles);
   const dispatch = useDispatch();
   //   useEffect(() => {
   //     dispatch(getDownloadProgress(props.data._id));
   //   }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(getBundlesForComic(props.data._id));
-  }, [dispatch]);
 
   const ProgressTick = (props) => (
     <div className="column is-one-quarter">
@@ -71,7 +64,7 @@ export const DownloadsPanel = (
     );
   };
 
-  return !isNil(bundles) ? <Bundles data={bundles} /> : null;
+  return !isNil(props.data) ? <Bundles data={props.data} /> : null;
 };
 
 export default DownloadsPanel;
