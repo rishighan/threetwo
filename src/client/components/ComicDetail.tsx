@@ -1,10 +1,5 @@
-import React, {
-  useState,
-  useEffect,
-  useLayoutEffect,
-  useCallback,
-  ReactElement,
-} from "react";
+import React, { useState, useEffect, useCallback, ReactElement } from "react";
+import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
 import Card from "./Carda";
 import MatchResult from "./MatchResult";
@@ -21,7 +16,6 @@ import { isEmpty, isUndefined, isNil } from "lodash";
 import { RootState } from "threetwo-ui-typings";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
 import { getComicBookDetailById } from "../actions/comicinfo.actions";
-import { getBundlesForComic } from "../actions/airdcpp.actions";
 import dayjs from "dayjs";
 const prettyBytes = require("pretty-bytes");
 
@@ -71,10 +65,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     dispatch(fetchComicVineMatches(comicBookDetailData));
   }, [dispatch, comicBookDetailData]);
 
-  const onClose = () => {
-    setVisible(false);
-  };
-
   const [active, setActive] = useState(1);
   const createDescriptionMarkup = (html) => {
     return { __html: html };
@@ -83,7 +73,8 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     comicBookDetailData.sourcedMetadata &&
     !isUndefined(comicBookDetailData.sourcedMetadata.comicvine) &&
     !isEmpty(comicBookDetailData.sourcedMetadata);
-  // Tab groups for ComicVine metadata
+
+  // Tab content and header details
   const tabGroup = [
     {
       id: 1,
@@ -177,6 +168,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       ),
     },
   ];
+  // Tabs
   const MetadataTabGroup = () => {
     return (
       <>
@@ -188,6 +180,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                 className={id === active ? "is-active" : ""}
                 onClick={() => setActive(id)}
               >
+                {/* Downloads tab and count badge */}
                 <a>
                   {id === 4 &&
                   !isNil(comicBookDetailData) &&
@@ -262,6 +255,25 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     </div>
   );
 
+  ComicVineDetails.propTypes = {
+    updatedAt: PropTypes.string,
+    data: PropTypes.shape({
+      name: PropTypes.string,
+      number: PropTypes.string,
+      resource_type: PropTypes.string,
+      id: PropTypes.string,
+    }),
+  };
+
+  RawFileDetails.propTypes = {
+    data: PropTypes.shape({
+      containedIn: PropTypes.string,
+      fileSize: PropTypes.string,
+      path: PropTypes.string,
+      extension: PropTypes.string,
+    }),
+  };
+
   let imagePath = "";
   let comicBookTitle = "";
   if (!isNil(comicBookDetailData.rawFileDetails)) {
@@ -279,7 +291,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     comicBookTitle = comicBookDetailData.sourcedMetadata.comicvine.name;
   }
 
-  //  actions menu options and handler
+  //  Actions menu options and handler
   const CVMatchLabel = (
     <span>
       <i className="fas fa-magic"></i> Match on ComicVine

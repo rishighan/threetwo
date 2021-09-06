@@ -14,7 +14,7 @@ import {
   AIRDCPP_SEARCH_IN_PROGRESS,
   IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
 } from "../constants/action-types";
-import { each, isNil, isUndefined, result } from "lodash";
+import { isNil } from "lodash";
 import axios from "axios";
 
 interface SearchData {
