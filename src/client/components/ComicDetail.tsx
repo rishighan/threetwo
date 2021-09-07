@@ -261,14 +261,14 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       name: PropTypes.string,
       number: PropTypes.string,
       resource_type: PropTypes.string,
-      id: PropTypes.string,
+      id: PropTypes.number,
     }),
   };
 
   RawFileDetails.propTypes = {
     data: PropTypes.shape({
       containedIn: PropTypes.string,
-      fileSize: PropTypes.string,
+      fileSize: PropTypes.number,
       path: PropTypes.string,
       extension: PropTypes.string,
     }),
