@@ -6,6 +6,7 @@ import Import from "./Import";
 import { ComicDetail } from "./ComicDetail";
 import Library from "./Library";
 import Search from "./Search";
+import Settings from "./Settings";
 
 import { Switch, Route } from "react-router";
 import Navbar from "./Navbar";
@@ -33,6 +34,9 @@ class App extends React.Component {
             path={"/comic/details/:comicObjectId"}
             component={ComicDetail}
           />
+          <Route path="/settings">
+            <Settings />
+          </Route>
         </Switch>
       </div>
     );

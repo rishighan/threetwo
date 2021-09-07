@@ -5,6 +5,9 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 $bg-color: yellow;
 $border-color: red;
 
+.container {
+  margin-top: 2em;
+}
 .app {
   font-family: helvetica, arial, sans-serif;
   padding: 2em;
@@ -188,7 +191,7 @@ $border-color: red;
   .download-icon-labels {
     .downloads-count {
       margin: 0 1em 0 0.4em;
-      border: 1px solid #CCC;
+      border: 1px solid #ccc;
     }
   }
   .download-tab-name {

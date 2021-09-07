@@ -202,7 +202,11 @@ const Navbar: React.FunctionComponent = (props) => {
                   </span>
                 ) : null}
               </p>
-              <p className="control">Settings</p>
+              <p className="control">
+                <Link to="/settings" className="navbar-item">
+                  Settings
+                </Link>
+              </p>
             </div>
           </div>
         </div>
