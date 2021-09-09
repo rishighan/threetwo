@@ -72,7 +72,10 @@ export const AcquisitionPanel = (
             }
             onClick={() => getDCPPSearchResults(dcppQuery)}
           >
-            Search on AirDC++
+            <span className="icon is-small">
+              <img src="/dist/img/airdcpp_logo.svg" />
+            </span>
+            <span className="airdcpp-text">Search on AirDC++</span>
           </button>
         </div>
         {/* AirDC++ search instance details */}
@@ -188,8 +191,8 @@ export const AcquisitionPanel = (
               <div className="message-body is-size-6 is-family-secondary">
                 Searching via <strong>AirDC++</strong> is still in{" "}
                 <strong>alpha</strong>. Some searches may take arbitrarily long,
-                or may not work at all. Searches from <code>ADCS</code> hubs are more
-                reliable than <code>NMDCS</code> ones.
+                or may not work at all. Searches from <code>ADCS</code> hubs are
+                more reliable than <code>NMDCS</code> ones.
               </div>
             </article>
           </div>

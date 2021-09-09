@@ -6,7 +6,8 @@ import {
   removeLeadingPeriod,
   escapePoundSymbol,
 } from "../shared/utils/formatting.utils";
-import { isNil, map } from "lodash";
+import { isEmpty, isNil, map } from "lodash";
+import { detectTradePaperbacks } from "../shared/utils/tradepaperback.utils";
 
 type RecentlyImportedProps = {
   comicBookCovers: any;
@@ -51,7 +52,14 @@ export const RecentlyImported = ({
                 <i className="fas fa-adjust" />
               </span>
             )}
-            <span className="tag has-text-info">TPB</span>
+            {!isNil(sourcedMetadata.comicvine) &&
+            !isEmpty(
+              detectTradePaperbacks(
+                sourcedMetadata.comicvine.volumeInformation.description,
+              ),
+            ) ? (
+              <span className="tag is-warning">TPB</span>
+            ) : null}
           </div>
         </Card>
       );

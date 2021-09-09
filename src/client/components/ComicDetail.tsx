@@ -236,14 +236,28 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
         <dd>{props.data.number}</dd>
         <dd>
           <div className="field is-grouped is-grouped-multiline">
-            <div className="control">
-              <div className="tags has-addons">
-                <span className="tag is-light">Type</span>
-                <span className="tag is-warning">
-                  {props.data.resource_type}
-                </span>
+            {!isEmpty(
+              detectTradePaperbacks(
+                comicBookDetailData.sourcedMetadata.comicvine.volumeInformation
+                  .description,
+              ),
+            ) ? (
+              <div className="control">
+                <div className="tags has-addons">
+                  <span className="tag is-light">Detected Type</span>
+                  <span className="tag is-warning">Trade Paperback</span>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="control">
+                <div className="tags has-addons">
+                  <span className="tag is-light">Type</span>
+                  <span className="tag is-warning">
+                    {props.data.resource_type}
+                  </span>
+                </div>
+              </div>
+            )}
             <div className="control">
               <div className="tags has-addons">
                 <span className="tag is-light">ComicVine Issue ID</span>
