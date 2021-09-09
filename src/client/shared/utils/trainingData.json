@@ -1,0 +1,14 @@
+[
+    {"phrase": "Twelve issue mini-series.", "result": {"not_a_paperback": 1}},
+    {"phrase": "Trade paperback collecting Jean Grey #7-11.", "result": {"paperback": 1}},
+    {"phrase": "Trade paperback collecting Iron Fist #6-7 & 73-77", "result": {"paperback   ": 1}},
+    {"phrase": "Collected Editions", "result": {"paperback": 1}},
+    {"phrase": "Six issue mini-series.", "result": {"not_a_paperback": 1}},
+    {"phrase": "Four issue mini-series.", "result": {"not_a_paperback": 1}},
+    {"phrase": "Seventy-two issue digital prequel to the Injustice 2 video game.", "result": {"not_a_paperback": 1}},
+    {"phrase": "Total issues in this volume:50", "result": {"paperback": 1}},
+    {"phrase": "Five issue mini-series.", "result": {"not_a_paperback": 1}},
+    {"phrase": "Digital mini-series.", "result": {"not_a_paperback": 1}},
+    {"phrase": "Six issue mini-series.", "result": {"not_a_paperback": 1}},
+    {"phrase": "Six issue mini-series.", "result": {"not_a_paperback": 1}}
+  ]

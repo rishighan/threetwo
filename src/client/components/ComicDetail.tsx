@@ -16,6 +16,7 @@ import { isEmpty, isUndefined, isNil } from "lodash";
 import { RootState } from "threetwo-ui-typings";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
 import { getComicBookDetailById } from "../actions/comicinfo.actions";
+import { detectTradePaperbacks } from "../shared/utils/tradepaperback.utils";
 import dayjs from "dayjs";
 const prettyBytes = require("pretty-bytes");
 
@@ -115,11 +116,17 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                   </span>
                 </dd>
                 <dd>
-                  Total issues in this volume:{" "}
+                  Total issues in this volume:
                   {
                     comicBookDetailData.sourcedMetadata.comicvine
                       .volumeInformation.count_of_issues
                   }
+                  {JSON.stringify(
+                    detectTradePaperbacks(
+                      comicBookDetailData.sourcedMetadata.comicvine
+                        .volumeInformation.description,
+                    ),
+                  )}
                 </dd>
               </dl>
             </div>
@@ -274,6 +281,9 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     }),
   };
 
+  // Determine which cover image to use:
+  // 1. from the locally imported, non-CV-scraped version, or
+  // 2. from the CV-scraped version
   let imagePath = "";
   let comicBookTitle = "";
   if (!isNil(comicBookDetailData.rawFileDetails)) {

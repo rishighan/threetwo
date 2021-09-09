@@ -32,7 +32,9 @@ const renderCard = (props): ReactElement => {
               </div>
               {props.hasDetails && (
                 <div className="card-content">
-                  {isNil(props.title) ? "No Name" : props.title}
+                  <div className="card-title is-size-6 is-family-secondary">
+                    {isNil(props.title) ? "No Name" : props.title}
+                  </div>
                   {props.children}
                 </div>
               )}

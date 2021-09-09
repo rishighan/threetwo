@@ -110,8 +110,8 @@ export const AcquisitionPanel = (
         )}
       </div>
       {/* AirDC++ results */}
-      <div>
-        {!isNil(airDCPPSearchResults) && !isEmpty(airDCPPSearchResults) && (
+      <div className="columns">
+        {!isNil(airDCPPSearchResults) && !isEmpty(airDCPPSearchResults) ? (
           <table className="table is-striped">
             <thead>
               <tr>
@@ -182,6 +182,17 @@ export const AcquisitionPanel = (
               })}
             </tbody>
           </table>
+        ) : (
+          <div className="column is-three-fifths">
+            <article className="message is-info">
+              <div className="message-body is-size-6 is-family-secondary">
+                Searching via <strong>AirDC++</strong> is still in{" "}
+                <strong>alpha</strong>. Some searches may take arbitrarily long,
+                or may not work at all. Searches from <code>ADCS</code> hubs are more
+                reliable than <code>NMDCS</code> ones.
+              </div>
+            </article>
+          </div>
         )}
       </div>
     </>

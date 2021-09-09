@@ -76,7 +76,13 @@ $border-color: red;
     }
   }
   .card-content {
-    padding: 1rem;
+    .card-title {
+      margin-bottom: 0.2rem;
+    }
+    .cv-icon, i {
+      margin: 4px 4px 4px 0;
+    }
+    padding: 0.5rem 1rem;
   }
 }
 .card-container {

@@ -39,7 +39,16 @@ export const RecentlyImported = ({
           imageUrl={imagePath}
           hasDetails
           title={comicName ? titleElement : null}
-        ></Card>
+        >
+          {!isNil(sourcedMetadata.comicvine) && (
+            <div className="content is-flex is-flex-direction-row">
+              <span className="icon cv-icon is-small">
+                <img src="/dist/img/cvlogo.svg" />
+              </span>
+              <i className="fas fa-paper-plane is-small has-text-warning has-text-light"></i>
+            </div>
+          )}
+        </Card>
       );
     })}
   </section>
