@@ -121,12 +121,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                     comicBookDetailData.sourcedMetadata.comicvine
                       .volumeInformation.count_of_issues
                   }
-                  {JSON.stringify(
-                    detectTradePaperbacks(
-                      comicBookDetailData.sourcedMetadata.comicvine
-                        .volumeInformation.description,
-                    ),
-                  )}
                 </dd>
               </dl>
             </div>

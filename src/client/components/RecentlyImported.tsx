@@ -40,14 +40,19 @@ export const RecentlyImported = ({
           hasDetails
           title={comicName ? titleElement : null}
         >
-          {!isNil(sourcedMetadata.comicvine) && (
-            <div className="content is-flex is-flex-direction-row">
+          <div className="content is-flex is-flex-direction-row">
+            {!isNil(sourcedMetadata.comicvine) && (
               <span className="icon cv-icon is-small">
                 <img src="/dist/img/cvlogo.svg" />
               </span>
-              <i className="fas fa-paper-plane is-small has-text-warning has-text-light"></i>
-            </div>
-          )}
+            )}
+            {isNil(rawFileDetails) && (
+              <span className="icon has-text-info">
+                <i className="fas fa-adjust" />
+              </span>
+            )}
+            <span className="tag has-text-info">TPB</span>
+          </div>
         </Card>
       );
     })}

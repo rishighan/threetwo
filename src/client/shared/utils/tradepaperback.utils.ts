@@ -1,34 +1,36 @@
-import Classifier from "ml-classify-text";
+const TrainingSet = require("./trainingData.json");
+const natural = require("natural");
+const BrainJs = require("brain.js");
 
-export const detectTradePaperbacks = (deck: string): any => {
-  const classifier = new Classifier({ nGramMin: 2, nGramMax: 2 });
-  const positiveTPBIdentifiers = [
-    "trade paperbacks",
-    "TPB",
-    "paperback",
-    "hardcover",
-    "collects the following issues",
-    "collected issues",
-    "collecting the issues",
-    "collecting the following issues",
-    "collected editions",
-  ];
-  const negativeTPBIdentifiers = ["mini-series"];
+function buildWordDictionary(trainingData) {
+  const tokenisedArray = trainingData.map((item) => {
+    const tokens = item.phrase.split(" ");
+    return tokens.map((token) => natural.PorterStemmer.stem(token));
+  });
 
-  classifier.train(positiveTPBIdentifiers, "Possibly a trade paperback");
-  classifier.train(negativeTPBIdentifiers, "Not a trade paperback");
-  if (deck) {
+  const flattenedArray = [].concat.apply([], tokenisedArray);
+  return flattenedArray.filter((item, pos, self) => self.indexOf(item) == pos);
+}
 
-  console.log("DEC", deck);
-    const predictions = classifier.predict(deck);
+const dictionary = buildWordDictionary(TrainingSet);
 
-    if (predictions.length) {
-      predictions.forEach((prediction) => {
-        console.log(`${prediction.label} (${prediction.confidence})`);
-        return prediction;
-      });
-    } else {
-      console.log("No predictions returned.");
-    }
-  }
-};
+function encode(phrase) {
+  const phraseTokens = phrase.split(" ");
+  const encodedPhrase = dictionary.map((word) =>
+    phraseTokens.includes(word) ? 1 : 0,
+  );
+
+  return encodedPhrase;
+}
+
+const encodedTrainingSet = TrainingSet.map((dataSet) => {
+  const encodedValue = encode(dataSet.phrase);
+  return { input: encodedValue, output: dataSet.result };
+});
+
+const network = new BrainJs.NeuralNetwork();
+network.train(encodedTrainingSet);
+
+const encoded = encode("Im so happy to have cake");
+console.log(network.run(encoded));
+export const detectTradePaperbacks = (deck: string): any => {};
