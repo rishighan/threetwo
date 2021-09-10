@@ -39,7 +39,6 @@ function airdcppReducer(state = initialState, action) {
         searchInstance: action.instance,
       };
     case AIRDCPP_RESULT_DOWNLOAD_INITIATED:
-      console.log(action)
       return {
         ...state,
         downloadResult: action.downloadResult,

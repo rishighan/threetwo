@@ -15,7 +15,7 @@ export const Settings = (props: ISettingsProps): ReactElement => {
                 <a>Dashboard</a>
               </li>
               <li>
-                <a>Customers</a>
+                <a>Global Search</a>
               </li>
             </ul>
             <p className="menu-label">Acquisition</p>
@@ -38,13 +38,10 @@ export const Settings = (props: ISettingsProps): ReactElement => {
             <p className="menu-label">ComicVine</p>
             <ul className="menu-list">
               <li>
-                <a>Payments</a>
+                <a>API</a>
               </li>
               <li>
-                <a>Transfers</a>
-              </li>
-              <li>
-                <a>Balance</a>
+                <a>Configuration</a>
               </li>
             </ul>
           </aside>
