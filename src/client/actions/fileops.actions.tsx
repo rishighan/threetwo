@@ -85,6 +85,9 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
       dataTransferred: true,
     });
   });
+  socket.on("comicBookExists", (data) => {
+    console.log(data);
+  });
 };
 
 export const getComicBooks = (options) => async (dispatch) => {

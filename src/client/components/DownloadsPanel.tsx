@@ -47,6 +47,7 @@ export const DownloadsPanel = (
   );
 
   const Bundles = (props) => {
+    console.log(props)
     return (
       <div>
         <dl>
