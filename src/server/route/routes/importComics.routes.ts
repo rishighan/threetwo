@@ -29,7 +29,7 @@ router.route("/getComicCovers").post(async (req: Request, res: Response) => {
           durable: false,
         });
 
-        console.log(`Connected to ${queue}`);
+        console.log(`Connected to ${queue} queue.`);
         console.log(`Waiting for comic book cover data in ${queue}`);
 
         channel.consume(
