@@ -3,9 +3,8 @@ import { isUndefined } from "lodash";
 import { connect } from "react-redux";
 import { fetchComicBookMetadata } from "../actions/fileops.actions";
 import { IFolderData } from "threetwo-ui-typings";
-import { io, Socket } from "socket.io-client";
-import { SOCKET_BASE_URI } from "../constants/endpoints";
 import DynamicList, { createCache } from "react-window-dynamic-list";
+import toast, { Toaster } from "react-hot-toast";
 
 interface IProps {
   matches: unknown;
@@ -18,7 +17,6 @@ interface IState {
   searchPaneIndex: number;
   fileOps: any;
 }
-let socket: Socket;
 class Import extends React.Component<IProps, IState> {
   /**
    * Returns the average of two numbers.
@@ -47,16 +45,17 @@ class Import extends React.Component<IProps, IState> {
     });
   }
 
-  public initiateSocketConnection = () => {
+  public initiateImport = () => {
     if (typeof this.props.path !== "undefined") {
-      socket = io(SOCKET_BASE_URI, {
-        reconnectionDelayMax: 10000,
-      });
-
-      socket.on("connect", () => {
-        console.log(`connect ${socket.id}`);
-      });
       this.props.fetchComicMetadata();
+      toast.custom(
+        <div className="card">
+          <div className="card-content">Saokaaate</div>
+        </div>,
+        {
+          position: "top-right",
+        },
+      );
     }
   };
 
@@ -113,11 +112,9 @@ class Import extends React.Component<IProps, IState> {
               </p>
             </div>
           </article>
+          <Toaster />
           <p className="buttons">
-            <button
-              className="button is-medium"
-              onClick={this.initiateSocketConnection}
-            >
+            <button className="button is-medium" onClick={this.initiateImport}>
               <span className="icon">
                 <i className="fas fa-file-import"></i>
               </span>
@@ -132,18 +129,7 @@ class Import extends React.Component<IProps, IState> {
             </button>
           </p>
 
-          {!isUndefined(this.state.folderWalkResults) ? (
-            <div>
-              <DynamicList
-                data={this.props.covers}
-                cache={this.cache}
-                height={1000}
-                width={"100%"}
-              >
-                {this.renderRow}
-              </DynamicList>
-            </div>
-          ) : null}
+          {!isUndefined(this.state.folderWalkResults) ? <div></div> : null}
         </section>
       </div>
     );
@@ -154,7 +140,7 @@ function mapStateToProps(state: IState) {
   console.log("state", state);
   return {
     // matches: state.comicInfo.searchResults,
-    covers: state.fileOps.comicBookMetadata,
+    // covers: state.fileOps.comicBookMetadata,
   };
 }
 
@@ -165,4 +151,3 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Import);
-export { socket };

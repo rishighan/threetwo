@@ -1,10 +1,7 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { RootState } from "threetwo-ui-typings";
 
 const Navbar: React.FunctionComponent = (props) => {
-  const socketConnection = useSelector((state: RootState) => state.fileOps);
 
   return (
     <nav className="navbar is-fixed-top">
@@ -195,13 +192,6 @@ const Navbar: React.FunctionComponent = (props) => {
           <a className="navbar-item is-hidden-desktop-only"></a>
           <div className="navbar-item">
             <div className="field is-grouped">
-              <p className="control">
-                {socketConnection.socketConnected ? (
-                  <span className="icon is-small has-text-success">
-                    <i className="fas fa-plug"></i>
-                  </span>
-                ) : null}
-              </p>
               <p className="control">
                 <Link to="/settings" className="navbar-item">
                   Settings

@@ -1,20 +1,14 @@
 import express, { Request, Response, Router, Express } from "express";
 import bodyParser from "body-parser";
-import { basename, extname, join } from "path";
-import { lookup } from "mime-types";
-import { promises as fs } from "fs";
-import { responseStream } from "http-response-stream";
-import { isUndefined } from "lodash";
-import { buildAsync } from "calibre-opds";
-import initMain from "calibre-opds/lib/index";
-import { EnumLinkRel } from "opds-extra/lib/const";
-import { async as FastGlob } from "@bluelovers/fast-glob/bluebird";
-import { Entry, Feed } from "opds-extra/lib/v1";
-import { Link } from "opds-extra/lib/v1/core";
+import { createServer } from "http";
+import { Server, Socket } from "socket.io";
+import router from "./route";
 
 // call express
 const app: Express = express(); // define our app using express
-const router = Router();
+
+const httpServer = createServer();
+export const io = new Server(httpServer, {});
 
 // configure app to use bodyParser for
 // Getting data from body of requests
@@ -27,78 +21,28 @@ const port: number = Number(process.env.PORT) || 8050; // set our port
 app.use(express.static("dist"));
 app.use(express.static("public"));
 
-export const opdsRouter = () => {
-  const path_of_books = "/Users/rishi/work/threetwo/src/server/comics";
-  router.use("/opds", async (req, res, next) => {
-    return buildAsync(
-      initMain({
-        title: `title`,
-        subtitle: `subtitle`,
-        icon: "/favicon.ico",
-      }),
-      [
-        async (feed: Feed) => {
-          feed.books = feed.books || [];
-          await FastGlob(["*.cbr", "*.cbz", "*.cb7", "*.cba", "*.cbt"], {
-            cwd: path_of_books,
-          }).each((file) => {
-            const ext = extname(file);
-            const title = basename(file, ext);
-            const href = encodeURI(`/file/${file}`);
-            const type = lookup(ext) || "application/octet-stream";
-
-            const entry = Entry.deserialize<Entry>({
-              title,
-              links: [
-                {
-                  rel: EnumLinkRel.ACQUISITION,
-                  href,
-                  type,
-                } as Link,
-              ],
-            });
-
-            if (!isUndefined(feed) && !isUndefined(feed.books)) {
-              console.log("haramzada", feed.books);
-              feed.books.push(entry);
-            }
-          });
-
-          return feed;
-        },
-      ],
-    ).then((feed) => {
-      res.setHeader("Content-Type", "application/xml");
-      return res.end(feed.toXML());
-    });
-  });
-
-  router.use("/file/*", async (req, res) => {
-    const file: string = req.params[0];
-    const ext = extname(file);
-
-    if ([".cbr", ".cbz", ".cb7", ".cba", ".cbt"].includes(ext)) {
-      const content = await fs.readFile(join(path_of_books, file));
-      const mime = lookup(ext) || "application/octet-stream";
-      res.set("Content-Type", mime);
-      return responseStream(res, content);
-    }
-
-    res.status(404).end(`'${file}' not exists`);
-  });
-
-  return router;
-};
-
 app.get("/", (req: Request, res: Response) => {
   console.log("sending index.html");
   res.sendFile("/dist/index.html");
 });
 
-app.use(opdsRouter());
-
 // REGISTER ROUTES
 // all of the routes will be prefixed with /api
+const routes: Router[] = Object.values(router);
+app.use("/api", routes);
 
 app.listen(port);
-console.log(`App listening on ${port}`);
+
+io.on("connection", (socket) => {
+  console.log("Socket connected");
+
+  //Whenever someone disconnects this piece of code executed
+  socket.on("disconnect", () => {
+    console.log("Socket disconnected");
+  });
+});
+
+// socket server
+httpServer.listen(8051);
+console.log(`Socket server is listening on 8051`);
+console.log(`Server is listening on ${port}`);

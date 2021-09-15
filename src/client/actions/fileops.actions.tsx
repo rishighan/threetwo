@@ -1,7 +1,6 @@
 import axios from "axios";
 import { IFolderData, IExtractedComicBookCoverFile } from "threetwo-ui-typings";
 import { API_BASE_URI, SOCKET_BASE_URI } from "../constants/endpoints";
-import { io } from "socket.io-client";
 import {
   IMS_COMICBOOK_METADATA_FETCHED,
   IMS_SOCKET_CONNECTION_CONNECTED,
@@ -12,9 +11,11 @@ import {
   IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
   IMS_CV_METADATA_IMPORT_SUCCESSFUL,
   IMS_CV_METADATA_IMPORT_FAILED,
+  RMQ_SOCKET_CONNECTED,
 } from "../constants/action-types";
 import { refineQuery } from "../shared/utils/filenameparser.utils";
 import sortBy from "array-sort-by";
+import { io } from "socket.io-client";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
@@ -43,6 +44,22 @@ export async function walkFolder(path: string): Promise<Array<IFolderData>> {
  * @return {Promise<string>}                HTML of the page
  */
 export const fetchComicBookMetadata = (options) => async (dispatch) => {
+  const socket = io(SOCKET_BASE_URI, {
+    reconnectionDelayMax: 10000,
+    secure: false,
+    rejectUnauthorized: false,
+  });
+  socket.on("connect", () => {
+    console.log(`connect ${socket.id}`);
+    dispatch({
+      type: RMQ_SOCKET_CONNECTED,
+      isSocketConnected: true,
+      socketId: socket.id,
+    });
+  });
+  socket.on("disconnect", () => {
+    console.log(`disconnect`);
+  });
   const extractionOptions = {
     sourceFolder: options,
     extractTarget: "cover",
@@ -55,37 +72,20 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
   };
   const walkedFolders = await walkFolder("./comics");
 
-  const socket = io(SOCKET_BASE_URI, {
-    reconnectionDelayMax: 10000,
-  });
-
-  socket.on("connect", () => {
-    console.log(`connect ${socket.id}`);
-    dispatch({
-      type: IMS_SOCKET_CONNECTION_CONNECTED,
-      socketConnected: true,
+  await axios
+    .request({
+      url: "http://localhost:8050/api/getComicCovers",
+      method: "POST",
+      data: {
+        extractionOptions,
+        walkedFolders,
+      },
+    })
+    .then((response) => {
+      console.log("Response from import call", response);
     });
-  });
 
-  socket.on("disconnect", () => {
-    console.log(`disconnect`);
-  });
-  socket.emit("importComicsToDB", {
-    action: "getComicCovers",
-    params: {
-      extractionOptions,
-      walkedFolders,
-    },
-  });
-
-  socket.on("comicBookCoverMetadata", (data: IExtractedComicBookCoverFile) => {
-    dispatch({
-      type: IMS_COMICBOOK_METADATA_FETCHED,
-      data,
-      dataTransferred: true,
-    });
-  });
-  socket.on("comicBookExists", (data) => {
+  socket.on("coverExtracted", (data) => {
     console.log(data);
   });
 };

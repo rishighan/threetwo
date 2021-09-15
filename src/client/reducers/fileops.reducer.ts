@@ -1,8 +1,8 @@
 import {
-  IMS_SOCKET_CONNECTION_CONNECTED,
-  IMS_SOCKET_CONNECTION_DISCONNECTED,
+  RMQ_SOCKET_CONNECTED,
+  RMQ_SOCKET_DISCONNECTED,
   IMS_COMICBOOK_METADATA_FETCHED,
-  IMS_SOCKET_ERROR,
+  RMQ_SOCKET_ERROR,
   IMS_RAW_IMPORT_SUCCESSFUL,
   IMS_RAW_IMPORT_FAILED,
   IMS_RECENT_COMICS_FETCHED,
@@ -14,7 +14,7 @@ import {
 const initialState = {
   dataTransferred: false,
   comicBookMetadata: [],
-  socketConnected: false,
+  isSocketConnected: false,
   isComicVineMetadataImportInProgress: false,
   comicVineMetadataImportError: {},
   rawImportError: {},
@@ -29,10 +29,10 @@ function fileOpsReducer(state = initialState, action) {
         dataTransferred: true,
       };
 
-    case IMS_SOCKET_CONNECTION_CONNECTED:
+    case RMQ_SOCKET_CONNECTED:
       return {
         ...state,
-        socketConnected: action.socketConnected,
+        isSocketConnected: action.isSocketConnected,
       };
     case IMS_RAW_IMPORT_SUCCESSFUL:
       return {
