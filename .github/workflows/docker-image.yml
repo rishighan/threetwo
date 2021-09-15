@@ -17,5 +17,10 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
     - name: Docker Push  
-      uses: opspresso/action-docker@v0.3.9  
+      uses: opspresso/action-docker@v0.3.9
+      env:
+          USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          TAG_NAME: "v0.0.1"
+          BUILDX: "true"
     
