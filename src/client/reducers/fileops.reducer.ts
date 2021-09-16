@@ -33,6 +33,7 @@ function fileOpsReducer(state = initialState, action) {
       return {
         ...state,
         isSocketConnected: action.isSocketConnected,
+        socketId: action.socketId,
       };
     case IMS_RAW_IMPORT_SUCCESSFUL:
       return {

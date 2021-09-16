@@ -16,6 +16,13 @@ import {
 import { refineQuery } from "../shared/utils/filenameparser.utils";
 import sortBy from "array-sort-by";
 import { io } from "socket.io-client";
+import {
+  success,
+  error,
+  warning,
+  info,
+  removeAll,
+} from "react-notification-system-redux";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
@@ -71,7 +78,16 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
     },
   };
   const walkedFolders = await walkFolder("./comics");
-
+  dispatch(
+    success({
+      // uid: 'once-please', // you can specify your own uid if required
+      title: "Import Started",
+      message: `${socket.id} connected. ${walkedFolders.length} comics scanned.`,
+      dismissible: "click",
+      position: "tr",
+      autoDismiss: 0,
+    }),
+  );
   await axios
     .request({
       url: "http://localhost:8050/api/getComicCovers",
@@ -87,6 +103,10 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
 
   socket.on("coverExtracted", (data) => {
     console.log(data);
+    dispatch({
+      type: IMS_COMICBOOK_METADATA_FETCHED,
+      data,
+    });
   });
 };
 
