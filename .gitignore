@@ -11,3 +11,4 @@ src/**/*.jsx
 tests/__coverage__/
 tests/**/*.jsx
 src/client/assets/scss/App.css.map
+yarn-error.log
