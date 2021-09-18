@@ -28,6 +28,15 @@ $border-color: red;
 
 .min {
   overflow: visible;
+  margin: auto;
+  .tag__custom {
+    height: auto !important;
+    padding: 0.3rem;
+    white-space: unset !important;
+    width: 100%;
+    background-color: #effaf5;
+    color: #257953;
+  }
   .tags {
     display: inline;
     margin-right: 5px;

@@ -1,8 +1,9 @@
 import express, { Request, Response, Router, Express } from "express";
 import bodyParser from "body-parser";
 import { createServer } from "http";
-import { Server, Socket } from "socket.io";
+import { Server } from "socket.io";
 import router from "./route";
+const amqp = require("amqplib/callback_api");
 
 // call express
 const app: Express = express(); // define our app using express
@@ -39,6 +40,35 @@ io.on("connection", (socket) => {
   //Whenever someone disconnects this piece of code executed
   socket.on("disconnect", () => {
     console.log("Socket disconnected");
+  });
+});
+
+amqp.connect("amqp://localhost", (error0, connection) => {
+  if (error0) {
+    throw error0;
+  }
+  connection.createChannel((error1, channel) => {
+    if (error1) {
+      throw error1;
+    }
+    const queue = "comicBookCovers";
+    channel.assertQueue(queue, {
+      durable: false,
+    });
+
+    console.log(`Connected to ${queue} queue.`);
+    console.log(`Waiting for comic book cover data in ${queue}`);
+
+    channel.consume(
+      queue,
+      (data) => {
+        //Socket Trigger All Clients
+        io.sockets.emit("coverExtracted", JSON.parse(data.content.toString()));
+      },
+      {
+        noAck: true,
+      },
+    );
   });
 });
 

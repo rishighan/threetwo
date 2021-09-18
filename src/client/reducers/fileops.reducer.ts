@@ -12,7 +12,7 @@ import {
   IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
 } from "../constants/action-types";
 const initialState = {
-  dataTransferred: false,
+  IMSCallInProgress: false,
   comicBookMetadata: [],
   isSocketConnected: false,
   isComicVineMetadataImportInProgress: false,
@@ -26,7 +26,7 @@ function fileOpsReducer(state = initialState, action) {
       return {
         ...state,
         comicBookMetadata: [...state.comicBookMetadata, action.data],
-        dataTransferred: true,
+        IMSCallInProgress: false,
       };
 
     case RMQ_SOCKET_CONNECTED:
@@ -34,6 +34,7 @@ function fileOpsReducer(state = initialState, action) {
         ...state,
         isSocketConnected: action.isSocketConnected,
         socketId: action.socketId,
+        IMSCallInProgress: true,
       };
     case IMS_RAW_IMPORT_SUCCESSFUL:
       return {

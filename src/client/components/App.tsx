@@ -29,6 +29,19 @@ const style = {
     },
     tr: {
       top: "40px",
+      right: "10px",
+    },
+  },
+  Title: {
+    DefaultStyle: {
+      fontSize: "14px",
+      margin: "0 0 5px 0",
+      padding: 0,
+      fontWeight: "bold",
+    },
+
+    success: {
+      color: "hsl(141, 71%, 48%)",
     },
   },
   NotificationItem: {
@@ -36,7 +49,7 @@ const style = {
     success: {
       // Applied to every notification, regardless of the notification level
       borderTop: "none",
-      backgroundColor: "none",
+      backgroundColor: "#FFF",
       borderRadius: "0.4rem",
       WebkitBoxShadow: "-7px 11px 25px -9px rgba(0, 0, 0, 0.3)",
       MozBoxShadow: "-7px 11px 25px -9px rgba(0, 0, 0, 0.3)",
@@ -53,6 +66,7 @@ export const App = (): ReactElement => {
         notifications={notifications}
         style={style}
         newOnTop={true}
+        allowHTML={true}
       />
       <Switch>
         <Route exact path="/">

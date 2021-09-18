@@ -1,10 +1,12 @@
 import React, { ReactElement, useCallback } from "react";
-import { isNil, isUndefined } from "lodash";
+import { isEmpty, isNil, isUndefined } from "lodash";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchComicBookMetadata } from "../actions/fileops.actions";
 import { IFolderData } from "threetwo-ui-typings";
+import { LazyLog, ScrollFollow } from "react-lazylog";
 import DynamicList, { createCache } from "react-window-dynamic-list";
-;
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+import Loader from "react-loader-spinner";
 
 interface IProps {
   matches?: unknown;
@@ -32,13 +34,27 @@ export const Import = (props: IProps): ReactElement => {
     console.log(state);
     return state.fileOps.isSocketConnected;
   });
-
+  const importResults = useSelector(
+    (state: RootState) => state.fileOps.comicBookMetadata,
+  );
+  const IMSCallInProgress = useSelector(
+    (state: RootState) => state.fileOps.IMSCallInProgress,
+  );
   const initiateImport = useCallback(() => {
     if (typeof props.path !== "undefined") {
       console.log("asdasd");
       dispatch(fetchComicBookMetadata(props.path));
     }
   }, [dispatch]);
+  const cache = createCache();
+  const renderRow = ({ index, style }) => (
+    <li className="is-size-7" style={style}>
+      <strong>{importResults[index].comicBookCoverMetadata.name} </strong>
+      <br />
+      {importResults[index].comicBookCoverMetadata.path}
+      <hr />
+    </li>
+  );
 
   return (
     <div className="container">
@@ -78,6 +94,37 @@ export const Import = (props: IProps): ReactElement => {
             <span>Import and Tag</span>
           </button>
         </p>
+
+        {!isEmpty(importResults) ? (
+          <>
+            <h3>Import Results</h3>
+            <hr />
+            <ul>
+              <DynamicList
+                data={importResults}
+                cache={cache}
+                height={800}
+                width={"100%"}
+                lazyMeasurement={false}
+              >
+                {renderRow}
+              </DynamicList>
+            </ul>
+          </>
+        ) : (
+          <div className="progress-indicator-container">
+            <div className="indicator">
+              <Loader
+                type="MutatingDots"
+                color="#CCC"
+                secondaryColor="#999"
+                height={100}
+                width={100}
+                visible={IMSCallInProgress}
+              />
+            </div>
+          </div>
+        )}
       </section>
     </div>
   );

@@ -213,10 +213,26 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       <dl>
         <dt>Raw File Details</dt>
         <dd>{props.data.containedIn}</dd>
-        <dd>{prettyBytes(props.data.fileSize)}</dd>
         <dd>{props.data.path}</dd>
         <dd>
-          <span className="tag is-primary">{props.data.extension}</span>
+          <div className="field is-grouped">
+            <div className="control">
+              <div className="tags has-addons">
+                <span className="tag">Size</span>
+                <span className="tag is-info is-light">
+                  {prettyBytes(props.data.fileSize)}
+                </span>
+              </div>
+            </div>
+            <div className="control">
+              <div className="tags has-addons">
+                <span className="tag">Extension</span>
+                <span className="tag is-primary is-light">
+                  {props.data.extension}
+                </span>
+              </div>
+            </div>
+          </div>
         </dd>
       </dl>
     </div>

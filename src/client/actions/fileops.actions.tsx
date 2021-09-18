@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useContext } from "react";
 import { IFolderData, IExtractedComicBookCoverFile } from "threetwo-ui-typings";
 import { API_BASE_URI, SOCKET_BASE_URI } from "../constants/endpoints";
 import {
@@ -15,14 +16,8 @@ import {
 } from "../constants/action-types";
 import { refineQuery } from "../shared/utils/filenameparser.utils";
 import sortBy from "array-sort-by";
-import { io } from "socket.io-client";
-import {
-  success,
-  error,
-  warning,
-  info,
-  removeAll,
-} from "react-notification-system-redux";
+import { success } from "react-notification-system-redux";
+import { WebSocketContext } from "../context/socket/socket.context";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
@@ -51,24 +46,8 @@ export async function walkFolder(path: string): Promise<Array<IFolderData>> {
  * @return {Promise<string>}                HTML of the page
  */
 export const fetchComicBookMetadata = (options) => async (dispatch) => {
-  const socket = io(SOCKET_BASE_URI, {
-    reconnectionDelayMax: 10000,
-    secure: false,
-    rejectUnauthorized: false,
-  });
-  socket.on("connect", () => {
-    console.log(`connect ${socket.id}`);
-    dispatch({
-      type: RMQ_SOCKET_CONNECTED,
-      isSocketConnected: true,
-      socketId: socket.id,
-    });
-  });
-  socket.on("disconnect", () => {
-    console.log(`disconnect`);
-  });
+  const socket = useContext(WebSocketContext);
   const extractionOptions = {
-    sourceFolder: options,
     extractTarget: "cover",
     targetExtractionFolder: "./userdata/covers",
     extractionMode: "bulk",
@@ -82,7 +61,7 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
     success({
       // uid: 'once-please', // you can specify your own uid if required
       title: "Import Started",
-      message: `${socket.id} connected. ${walkedFolders.length} comics scanned.`,
+      message: `<span class="icon-text has-text-success"><i class="fas fa-plug"></i></span> Socket <span class="has-text-info">${socket.id}</span> connected. <strong>${walkedFolders.length}</strong> comics scanned.`,
       dismissible: "click",
       position: "tr",
       autoDismiss: 0,
