@@ -47,6 +47,9 @@ const Navbar: React.FunctionComponent = (props) => {
           <Link to="/library" className="navbar-item">
             Library
           </Link>
+          <Link to="/library-grid" className="navbar-item">
+            Library Grid
+          </Link>
           <Link to="/search" className="navbar-item">
             Search
           </Link>

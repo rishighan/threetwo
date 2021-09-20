@@ -17,12 +17,12 @@ interface M {
   value: string;
 }
 
-function replaceRecursive(
+const replaceRecursive = (
   text: string,
   left: string,
   right: string,
   replacer: (match: string) => string,
-): string {
+): string => {
   const r: M[] = xregexp.matchRecursive(text, left, right, "g", {
     valueNames: [null, null, "match", null],
   });
@@ -33,7 +33,7 @@ function replaceRecursive(
     offset += replacement.length - m.value.length;
   }
   return text;
-}
+};
 
 function replaceAt(
   string: string,
@@ -48,7 +48,7 @@ export const preprocess = (inputString: string) => {
   // see if the comic matches the following format, and if so, remove everything
   // after the first number:
   // "nnn series name #xx (etc) (etc)" -> "series name #xx (etc) (etc)"
-  const format1 = inputString.match(/^\s*(\d+)[\s._-]+?([^#]+)(\W+.*)/);
+  const format1 = inputString.match(/^\s*(\d+)[\s._-]+?([^#]+)(\W+.*)/gim);
 
   //   see if the comic matches the following format, and if so, remove everything
   // after the first number that isn't in brackets:
@@ -56,6 +56,12 @@ export const preprocess = (inputString: string) => {
   const format2 = inputString.match(
     /^((?:[a-zA-Z,.-]+\s)+)(\#?(?:\d+[.0-9*])\s*(?:-))(.*((\(.*)?))$/gis,
   );
+  return {
+    matches: {
+      format1,
+      format2,
+    },
+  };
 };
 
 /**
@@ -66,6 +72,9 @@ export const preprocess = (inputString: string) => {
 export const tokenize = (inputString: string) => {
   const doc = nlp(inputString);
   const sentence = doc.sentences().json();
+
+  // filter out anything at the end of the title in parantheses
+  inputString = inputString.replace(/\((.*?)\)$/gi, "");
 
   // regexes to match constituent parts of the search string
   // and isolate the search terms
@@ -154,7 +163,9 @@ export const extractNumerals = (inputString: string): MatchArray[string] => {
 };
 
 export const refineQuery = (inputString: string) => {
+  
   const queryObj = tokenize(inputString);
+  console.log(queryObj)
   const removedYears = xor(
     queryObj.sentence_tokens.normalized,
     queryObj.years.yearMatches,

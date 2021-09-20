@@ -5,9 +5,8 @@ export const detectTradePaperbacks = (deck): any => {
     /((trade)?\s?(paperback)|(tpb))/gim, // https://regex101.com/r/FhuowT/1
     /(hard\s?cover)\s?(collect((ion)|(ed)|(ing)))/gim, //https://regex101.com/r/eFJVRM/1
   ];
-  const miniSeries = [
+  const miniSeries = [/mini\Wseries/gim];
 
-  ]
   const matches = paperback
     .map((regex) => {
       return deck.match(regex);

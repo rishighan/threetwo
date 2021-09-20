@@ -6,6 +6,7 @@ import Dashboard from "./Dashboard";
 import Import from "./Import";
 import { ComicDetail } from "./ComicDetail";
 import Library from "./Library";
+import LibraryGrid from "./LibraryGrid";
 import Search from "./Search";
 import Settings from "./Settings";
 
@@ -77,6 +78,9 @@ export const App = (): ReactElement => {
         </Route>
         <Route path="/library">
           <Library />
+        </Route>
+        <Route path="/library-grid">
+          <LibraryGrid />
         </Route>
         <Route path="/search">
           <Search />

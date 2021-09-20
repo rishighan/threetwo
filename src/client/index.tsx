@@ -7,7 +7,6 @@ import WebSocketProvider, {
 } from "./context/socket/socket.context";
 import configureStore, { history } from "./store/index";
 import App from "./components/App";
-
 const store = configureStore({});
 const rootEl = document.getElementById("root");
 
