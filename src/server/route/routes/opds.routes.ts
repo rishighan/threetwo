@@ -18,13 +18,19 @@ router.use("/opds", async (req, res, next) => {
       title: `title`,
       subtitle: `subtitle`,
       icon: "/favicon.ico",
+      link: {
+        rel: EnumLinkRel.SELF,
+        href: "/opds-catalogs/root.xml",
+        type: "application/atom+xml;profile=opds-catalog;kind=navigation",
+      } as Link,
     }),
     [
       async (feed: Feed) => {
+        feed.id = "bastard12312899lfh-1238989123-1231289812";
         feed.books = feed.books || [];
         await FastGlob(["*.cbr", "*.cbz", "*.cb7", "*.cba", "*.cbt"], {
           cwd: path_of_books,
-        }).each((file) => {
+        }).each((file, idx) => {
           const ext = extname(file);
           const title = basename(file, ext);
           const href = encodeURI(`/file/${file}`);
@@ -32,6 +38,7 @@ router.use("/opds", async (req, res, next) => {
 
           const entry = Entry.deserialize<Entry>({
             title,
+            id: idx,
             links: [
               {
                 rel: EnumLinkRel.ACQUISITION,
@@ -42,7 +49,7 @@ router.use("/opds", async (req, res, next) => {
           });
 
           if (!isUndefined(feed) && !isUndefined(feed.books)) {
-            console.log("haramzada", feed.books);
+            console.log("ENTRY", entry)
             feed.books.push(entry);
           }
         });
@@ -52,6 +59,7 @@ router.use("/opds", async (req, res, next) => {
     ],
   ).then((feed) => {
     res.setHeader("Content-Type", "application/xml");
+    console.log("FFFEEDD", feed);
     return res.end(feed.toXML());
   });
 });

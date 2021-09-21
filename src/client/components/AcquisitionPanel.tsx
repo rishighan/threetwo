@@ -47,7 +47,8 @@ export const AcquisitionPanel = (
       // pattern: "Templier T2.cbr",
       extensions: ["cbz", "cbr"],
     },
-    hub_urls: ["comic-scans.no-ip.biz:24674"],
+    // "comic-scans.no-ip.biz:24674",
+    hub_urls: ["perfection.comichub.org:777"],
     priority: 5,
   };
 
