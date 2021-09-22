@@ -60,7 +60,6 @@ export const LibraryGrid = (libraryGridProps: ILibraryGridProps) => {
                 {ellipsize(comicName, 18)}
               </Link>
             );
-            console.log(name);
             return (
               <Card
                 key={_id}

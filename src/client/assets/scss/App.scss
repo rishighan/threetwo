@@ -26,6 +26,27 @@ $border-color: red;
   }
 }
 
+// Dashboard 
+.paper {
+  background: #fff;
+  width: 200px;
+  border-radius: 0.3rem;
+  box-shadow:
+    /* The top layer shadow */
+    0 -1px 1px rgba(0,0,0,0.15),
+    /* The second layer */
+    0 -10px 0 -5px #eee,
+    /* The second layer shadow */
+    0 -10px 1px -4px rgba(0,0,0,0.15),
+     /* The third layer */
+    0 -20px 0 -10px #eee,
+    /* The third layer shadow */
+    0 -20px 1px -9px rgba(0,0,0,0.15);
+    /* Padding for demo purposes */
+    padding: 30px;
+}
+
+
 .min {
   overflow: visible;
   margin: auto;
@@ -291,7 +312,6 @@ $border-color: red;
   background-clip: padding-box;
 }
 
-/* Style your items */
 .my-masonry-grid_column > div { /* change div to reference your elements you put in <Masonry> */
   margin-bottom: 20px;
 }
