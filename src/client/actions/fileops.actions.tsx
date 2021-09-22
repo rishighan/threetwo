@@ -5,6 +5,9 @@ import { API_BASE_URI, SOCKET_BASE_URI } from "../constants/endpoints";
 import {
   IMS_COMICBOOK_METADATA_FETCHED,
   IMS_SOCKET_CONNECTION_CONNECTED,
+  IMS_COMIC_BOOK_GROUPS_FETCHED,
+  IMS_COMIC_BOOK_GROUPS_CALL_IN_PROGRESS,
+  IMS_COMIC_BOOK_GROUPS_CALL_FAILED,
   IMS_RECENT_COMICS_FETCHED,
   CV_API_CALL_IN_PROGRESS,
   CV_SEARCH_SUCCESS,
@@ -141,6 +144,30 @@ export const importToDB = (payload?: any) => (dispatch) => {
     dispatch({
       type: IMS_CV_METADATA_IMPORT_FAILED,
       importError: error,
+    });
+  }
+};
+export const fetchVolumeGroups = () => (dispatch) => {
+  try {
+    dispatch({
+      type: IMS_COMIC_BOOK_GROUPS_CALL_IN_PROGRESS,
+    });
+    axios
+      .request({
+        url: "http://localhost:3000/api/import/getComicBookGroups",
+        method: "GET",
+      })
+      .then((data) => {
+        console.log(data);
+        dispatch({
+          type: IMS_COMIC_BOOK_GROUPS_FETCHED,
+          data,
+        });
+      });
+  } catch (error) {
+    dispatch({
+      type: IMS_COMIC_BOOK_GROUPS_CALL_FAILED,
+      error,
     });
   }
 };

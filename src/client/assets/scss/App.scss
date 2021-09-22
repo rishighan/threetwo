@@ -26,26 +26,37 @@ $border-color: red;
   }
 }
 
-// Dashboard 
-.paper {
-  background: #fff;
-  width: 200px;
-  border-radius: 0.3rem;
-  box-shadow:
-    /* The top layer shadow */
-    0 -1px 1px rgba(0,0,0,0.15),
-    /* The second layer */
-    0 -10px 0 -5px #eee,
-    /* The second layer shadow */
-    0 -10px 1px -4px rgba(0,0,0,0.15),
-     /* The third layer */
-    0 -20px 0 -10px #eee,
-    /* The third layer shadow */
-    0 -20px 1px -9px rgba(0,0,0,0.15);
-    /* Padding for demo purposes */
-    padding: 30px;
+// Dashboard
+.stack-card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  column-gap: 0.5em;
+  row-gap: 1.2em;
+  .stack {
+    width: 200px;
+    border-radius: 0.3rem;
+    box-shadow:
+    /* The top layer shadow */ 0 -1px 1px rgba(0, 0, 0, 0.15),
+      /* The second layer */ 0 -10px 0 -5px #eee,
+      /* The second layer shadow */ 0 -10px 1px -4px rgba(0, 0, 0, 0.15),
+      /* The third layer */ 0 -20px 0 -10px #eee,
+      /* The third layer shadow */ 0 -20px 1px -9px rgba(0, 0, 0, 0.15);
+    img {
+      height: auto;
+      border-top-left-radius: 0.3rem;
+      border-top-right-radius: 0.3rem;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    .content {
+      margin: -5px 0 0 0;
+      padding: 0.5rem 1rem;
+      border-bottom-left-radius: 0.25rem;
+      box-shadow: 1px 8px 23px 7px rgba(0, 0, 0, 0.12);
+      border-bottom-right-radius: 0.25rem;
+    }
+  }
 }
-
 
 .min {
   overflow: visible;
@@ -299,7 +310,7 @@ $border-color: red;
   }
 }
 
-// Library grid 
+// Library grid
 .my-masonry-grid {
   display: -webkit-box; /* Not needed if autoprefixing */
   display: -ms-flexbox; /* Not needed if autoprefixing */
@@ -312,7 +323,8 @@ $border-color: red;
   background-clip: padding-box;
 }
 
-.my-masonry-grid_column > div { /* change div to reference your elements you put in <Masonry> */
+.my-masonry-grid_column > div {
+  /* change div to reference your elements you put in <Masonry> */
   margin-bottom: 20px;
 }
 

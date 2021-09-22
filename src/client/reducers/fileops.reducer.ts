@@ -10,10 +10,14 @@ import {
   IMS_CV_METADATA_IMPORT_SUCCESSFUL,
   IMS_CV_METADATA_IMPORT_FAILED,
   IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
+  IMS_COMIC_BOOK_GROUPS_CALL_IN_PROGRESS,
+  IMS_COMIC_BOOK_GROUPS_FETCHED,
+  IMS_COMIC_BOOK_GROUPS_CALL_FAILED,
 } from "../constants/action-types";
 const initialState = {
   IMSCallInProgress: false,
   comicBookMetadata: [],
+  comicVolumeGroups: [],
   isSocketConnected: false,
   isComicVineMetadataImportInProgress: false,
   comicVineMetadataImportError: {},
@@ -68,6 +72,26 @@ function fileOpsReducer(state = initialState, action) {
         isComicVineMetadataImportInProgress: false,
         comicVineMetadataImportError: action.importError,
       };
+    case IMS_COMIC_BOOK_GROUPS_CALL_IN_PROGRESS: {
+      return {
+        ...state,
+        IMSCallInProgress: true,
+      };
+    }
+    case IMS_COMIC_BOOK_GROUPS_FETCHED: {
+      return {
+        ...state,
+        comicVolumeGroups: action.data,
+        IMSCallInProgress: false,
+      };
+    }
+    case IMS_COMIC_BOOK_GROUPS_CALL_FAILED: {
+      return {
+        ...state,
+        IMSCallInProgress: false,
+        error: action.error,
+      };
+    }
     default:
       return state;
   }

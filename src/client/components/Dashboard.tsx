@@ -2,6 +2,7 @@ import React, { ReactElement, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ZeroState from "./ZeroState";
 import { RecentlyImported } from "./RecentlyImported";
+import { VolumeGroups } from "./VolumeGroups";
 import { getComicBooks } from "../actions/fileops.actions";
 import { isEmpty } from "lodash";
 
@@ -28,11 +29,8 @@ export const Dashboard = (): ReactElement => {
 
         {!isEmpty(recentComics) && !isEmpty(recentComics.docs) ? (
           <>
-            <h2 className="subtitle">Recently Imported</h2>
             <RecentlyImported comicBookCovers={recentComics} />
-            <section>
-              <div className="paper">asdas</div>
-            </section>
+            <VolumeGroups />
           </>
         ) : (
           <ZeroState
