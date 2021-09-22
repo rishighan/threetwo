@@ -27,13 +27,27 @@ $border-color: red;
 }
 
 // Dashboard
-.stack-card-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  column-gap: 0.5em;
-  row-gap: 1.2em;
+.recent-comics-container {
+    display: -webkit-box; /* Not needed if autoprefixing */
+    display: -ms-flexbox; /* Not needed if autoprefixing */
+    display: flex;
+    margin-left: -30px; /* gutter size offset */
+    width: auto;
+
+  .recent-comics-column {
+    padding-left: 25px; /* gutter size */
+    background-clip: padding-box;
+    & > div {
+      /* change div to reference your elements you put in <Masonry> */
+      margin-bottom: 20px;
+    }
+  }
+}
+.volumes-container {
+  margin-top: 3rem;
+
   .stack {
-    width: 200px;
+    max-width: 200px;
     border-radius: 0.3rem;
     box-shadow:
     /* The top layer shadow */ 0 -1px 1px rgba(0, 0, 0, 0.15),
@@ -48,6 +62,9 @@ $border-color: red;
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
     }
+    .stack-title {
+      margin-bottom: 0.4rem;
+    }
     .content {
       margin: -5px 0 0 0;
       padding: 0.5rem 1rem;
@@ -56,7 +73,24 @@ $border-color: red;
       border-bottom-right-radius: 0.25rem;
     }
   }
+
+  .volumes-grid {
+    display: -webkit-box; /* Not needed if autoprefixing */
+    display: -ms-flexbox; /* Not needed if autoprefixing */
+    display: flex;
+    margin-left: -30px; /* gutter size offset */
+    width: auto;
+  }
+  .volumes-grid-column {
+    padding-left: 25px; /* gutter size */
+    background-clip: padding-box;
+    & > div {
+      /* change div to reference your elements you put in <Masonry> */
+      margin-bottom: 20px;
+    }
+  }  
 }
+
 
 .min {
   overflow: visible;
@@ -209,6 +243,7 @@ $border-color: red;
     }
   }
 }
+
 // Search
 .search {
   .main-search-bar {
