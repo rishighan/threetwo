@@ -7,21 +7,14 @@ on:
     branches: [ master ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag frishi/threetwo:$(date +%s)
-    - name: Action Docker Push
-      # You may pin to the exact commit or the version.
-      # uses: timzu/act-docker@8f210802215e27956d668a1a963f02ae760983fb
-      uses: timzu/act-docker@v0.3.4
-      env:
-          USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          TAG_NAME: "v0.0.1"
+    - uses: actions/checkout@master
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: frishi/threetwo
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
     
