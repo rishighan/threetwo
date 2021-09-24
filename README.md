@@ -48,7 +48,8 @@ For debugging and troubleshooting, you can run this app locally using these step
 1. Clone this repo using `git clone https://github.com/rishighan/threetwo.git`
 2. `yarn run dev` (you can ignore the warnings)
 3. This will open `http://localhost:3050` in your default browser
-4. Note that this is simply the UI layer and won't offer anything beyond a scaffold. You have to spin up the microservices locally to get it to work.
+4. For testing `OPDS` functionality, create a folder called `comics` under `/src/server` and put some comics in there.
+5. Note that this is simply the UI layer and won't offer anything beyond a scaffold. You have to spin up the microservices locally to get it to work.
 
 
 ## Troubleshooting
