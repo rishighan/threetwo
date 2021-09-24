@@ -177,17 +177,17 @@ export const AcquisitionPanel = (
                       </div>
                     </td>
                     <td>
-                        <a
-                          onClick={() =>
-                            downloadDCPPResult(
-                              searchInstance.id,
-                              result.id,
-                              props.comicBookMetadata._id,
-                            )
-                          }
-                        >
-                          <i className="fas fa-file-download"></i>
-                        </a>
+                      <a
+                        onClick={() =>
+                          downloadDCPPResult(
+                            searchInstance.id,
+                            result.id,
+                            props.comicBookMetadata._id,
+                          )
+                        }
+                      >
+                        <i className="fas fa-file-download"></i>
+                      </a>
                     </td>
                   </tr>
                 );

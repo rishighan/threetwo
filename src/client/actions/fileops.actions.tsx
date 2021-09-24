@@ -20,7 +20,7 @@ import {
 import { refineQuery } from "../shared/utils/filenameparser.utils";
 import sortBy from "array-sort-by";
 import { success } from "react-notification-system-redux";
-import { WebSocketContext } from "../context/socket/socket.context";
+import { Socket } from "socket.io-client";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
@@ -48,49 +48,50 @@ export async function walkFolder(path: string): Promise<Array<IFolderData>> {
  * @param  {Object} options
  * @return {Promise<string>}                HTML of the page
  */
-export const fetchComicBookMetadata = (options) => async (dispatch) => {
-  const socket = useContext(WebSocketContext);
-  const extractionOptions = {
-    extractTarget: "cover",
-    targetExtractionFolder: "./userdata/covers",
-    extractionMode: "bulk",
-    paginationOptions: {
-      pageLimit: 25,
-      page: 1,
-    },
-  };
-  const walkedFolders = await walkFolder("./comics");
-  dispatch(
-    success({
-      // uid: 'once-please', // you can specify your own uid if required
-      title: "Import Started",
-      message: `<span class="icon-text has-text-success"><i class="fas fa-plug"></i></span> Socket <span class="has-text-info">${socket.id}</span> connected. <strong>${walkedFolders.length}</strong> comics scanned.`,
-      dismissible: "click",
-      position: "tr",
-      autoDismiss: 0,
-    }),
-  );
-  await axios
-    .request({
-      url: "http://localhost:8050/api/getComicCovers",
-      method: "POST",
-      data: {
-        extractionOptions,
-        walkedFolders,
+export const fetchComicBookMetadata =
+  (options, socketInstance: Socket) => async (dispatch) => {
+    const socket = socketInstance.socket;
+    const extractionOptions = {
+      extractTarget: "cover",
+      targetExtractionFolder: "./userdata/covers",
+      extractionMode: "bulk",
+      paginationOptions: {
+        pageLimit: 25,
+        page: 1,
       },
-    })
-    .then((response) => {
-      console.log("Response from import call", response);
-    });
+    };
+    const walkedFolders = await walkFolder("./comics");
+    dispatch(
+      success({
+        // uid: 'once-please', // you can specify your own uid if required
+        title: "Import Started",
+        message: `<span class="icon-text has-text-success"><i class="fas fa-plug"></i></span> Socket <span class="has-text-info">${socket.id}</span> connected. <strong>${walkedFolders.length}</strong> comics scanned.`,
+        dismissible: "click",
+        position: "tr",
+        autoDismiss: 0,
+      }),
+    );
+    await axios
+      .request({
+        url: "http://localhost:8050/api/getComicCovers",
+        method: "POST",
+        data: {
+          extractionOptions,
+          walkedFolders,
+        },
+      })
+      .then((response) => {
+        console.log("Response from import call", response);
+      });
 
-  socket.on("coverExtracted", (data) => {
-    console.log(data);
-    dispatch({
-      type: IMS_COMICBOOK_METADATA_FETCHED,
-      data,
+    socket.on("coverExtracted", (data) => {
+      console.log(data);
+      dispatch({
+        type: IMS_COMICBOOK_METADATA_FETCHED,
+        data,
+      });
     });
-  });
-};
+  };
 
 export const getComicBooks = (options) => async (dispatch) => {
   const { paginationOptions } = options;

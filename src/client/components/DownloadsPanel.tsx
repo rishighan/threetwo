@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "threetwo-ui-typings";
 import { isNil, map } from "lodash";
 import prettyBytes from "pretty-bytes";
+import dayjs from "dayjs";
 import ellipsize from "ellipsize";
 
 interface IDownloadsPanelProps {
@@ -73,7 +74,7 @@ export const DownloadsPanel = (
           <tr>
             <th>Filename</th>
             <th>Size</th>
-            <th>Time</th>
+            <th>Download Time</th>
           </tr>
         </thead>
         <tbody>
@@ -86,6 +87,11 @@ export const DownloadsPanel = (
                   <span className="is-size-7">{bundle.target}</span>
                 </td>
                 <td>{prettyBytes(bundle.size)}</td>
+                <td>
+                  {dayjs
+                    .unix(bundle.time_finished)
+                    .format("h:mm on ddd, D MMM, YYYY")}
+                </td>
               </tr>
             ))}
         </tbody>

@@ -213,7 +213,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       <dl>
         <dt>Raw File Details</dt>
         <dd>{props.data.containedIn}</dd>
-        <dd>{props.data.path}</dd>
+        <dd className="is-size-7">{props.data.path}</dd>
         <dd>
           <div className="field is-grouped">
             <div className="control">
