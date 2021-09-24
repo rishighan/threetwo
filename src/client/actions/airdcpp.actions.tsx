@@ -33,7 +33,6 @@ export const search = (data: SearchData) => async (dispatch) => {
       await SocketService.connect("admin", "password", true);
     }
     const instance: SearchInstance = await SocketService.post("search");
-    console.log(instance);
     dispatch({
       type: AIRDCPP_SEARCH_IN_PROGRESS,
     });
@@ -98,7 +97,7 @@ export const search = (data: SearchData) => async (dispatch) => {
     // Finally, perform the actual search
     await SocketService.post(`search/${instance.id}/hub_search`, data);
   } catch (error) {
-    console.log("ERO", error);
+    console.log(error);
     throw error;
   }
 };
@@ -185,7 +184,6 @@ export const getBundlesForComic =
       if (!SocketService.isConnected()) {
         await SocketService.connect("admin", "password", true);
       }
-      // const bundles = await SocketService.get("queue/bundles/0/50");
       const comicObject = await axios({
         method: "POST",
         url: "http://localhost:3000/api/import/getComicBookById",

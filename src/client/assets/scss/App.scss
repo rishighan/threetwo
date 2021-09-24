@@ -35,7 +35,7 @@ $border-color: red;
     width: auto;
 
   .recent-comics-column {
-    padding-left: 25px; /* gutter size */
+    padding-left: 22px; /* gutter size */
     background-clip: padding-box;
     & > div {
       /* change div to reference your elements you put in <Masonry> */
@@ -82,7 +82,7 @@ $border-color: red;
     width: auto;
   }
   .volumes-grid-column {
-    padding-left: 25px; /* gutter size */
+    padding-left: 22px; /* gutter size */
     background-clip: padding-box;
     & > div {
       /* change div to reference your elements you put in <Masonry> */
@@ -244,6 +244,11 @@ $border-color: red;
   }
 }
 
+// AirDC++ search results
+.dupe-search-result {
+  background: lavender;
+}
+
 // Search
 .search {
   .main-search-bar {
@@ -363,6 +368,7 @@ $border-color: red;
   margin-bottom: 20px;
 }
 
+// 
 // progress
 .progress-indicator-container {
   height: 100%;

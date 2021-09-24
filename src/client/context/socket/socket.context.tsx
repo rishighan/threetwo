@@ -3,6 +3,7 @@ import io, { Socket } from "socket.io-client";
 import { SOCKET_BASE_URI } from "../../constants/endpoints";
 import { useDispatch } from "react-redux";
 import { RMQ_SOCKET_CONNECTED } from "../../constants/action-types";
+import { isNil } from "lodash";
 
 const WebSocketContext = createContext(null);
 export const WebSocketProvider = ({ children }) => {
@@ -10,7 +11,7 @@ export const WebSocketProvider = ({ children }) => {
   let ws;
   const dispatch = useDispatch();
 
-  if (!socket) {
+  if (!isNil(socket)) {
     socket = io(SOCKET_BASE_URI);
 
     socket.on("connect", () => {

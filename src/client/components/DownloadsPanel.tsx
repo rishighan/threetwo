@@ -1,9 +1,13 @@
 import React, { useEffect, ReactElement } from "react";
-import { getDownloadProgress } from "../actions/airdcpp.actions";
+import {
+  getDownloadProgress,
+  getBundlesForComic,
+} from "../actions/airdcpp.actions";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "threetwo-ui-typings";
 import { isNil, map } from "lodash";
 import prettyBytes from "pretty-bytes";
+import ellipsize from "ellipsize";
 
 interface IDownloadsPanelProps {
   data: any;
@@ -16,56 +20,87 @@ export const DownloadsPanel = (
   const downloadProgressTick = useSelector(
     (state: RootState) => state.airdcpp.downloadProgressData,
   );
+  const bundles = useSelector((state: RootState) => {
+    return state.airdcpp.bundles;
+  });
+  console.log("BANDYA", bundles);
   const dispatch = useDispatch();
-  //   useEffect(() => {
-  //     dispatch(getDownloadProgress(props.data._id));
-  //   }, [dispatch]);
+  useEffect(() => {
+    dispatch(getBundlesForComic(props.comicObjectId));
+    dispatch(getDownloadProgress(props.comicObjectId));
+  }, [dispatch]);
 
-  const ProgressTick = (props) => (
-    <div className="column is-one-quarter">
-      {JSON.stringify(props.downloadProgressTick)}
-      <progress
-        className="progress is-small is-success"
-        value={props.downloaded_bytes}
-        max={props.size}
-      >
-        {(parseInt(props.downloaded_bytes) / parseInt(props.size)) * 100}%
-      </progress>
-      <dl>
-        <dt>{props.name}</dt>
-        <dd>
-          {prettyBytes(props.downloaded_bytes)} of
-          {prettyBytes(props.size)}
-        </dd>
-        <dd>
-          {prettyBytes(props.speed)} per second. Time left:
-          {parseInt(props.seconds_left) / 60}
-        </dd>
-        <dd>{props.target}</dd>
-      </dl>
-    </div>
-  );
-
-  const Bundles = (props) => {
-    console.log(props)
+  const ProgressTick = (props) => {
+    console.log("tick", props);
     return (
-      <div>
-        <dl>
-          {!isNil(props.data) &&
-            props.data &&
-            map(props.data, (bundle) => (
-              <span key={bundle.id}>
-                <dt>{bundle.name}</dt>
-                <dd>{bundle.target}</dd>
-                <dd>{bundle.size}</dd>
-              </span>
-            ))}
-        </dl>
+      <div className="column is-half">
+        {JSON.stringify(props.data.downloadProgressTick)}
+        <progress
+          className="progress is-small is-success"
+          value={props.data.downloaded_bytes}
+          max={props.data.size}
+        >
+          {(parseInt(props.data.downloaded_bytes) / parseInt(props.data.size)) *
+            100}
+          %
+        </progress>
+        <div className="card">
+          <div className="card-content is-size-7">
+            <dl>
+              <dt>{props.data.name}</dt>
+              <dd>
+                {prettyBytes(props.data.downloaded_bytes)} of{" "}
+                {prettyBytes(props.data.size)}
+              </dd>
+              <dd>{prettyBytes(props.data.speed)} per second.</dd>
+              <dd>
+                Time left:
+                {parseInt(props.data.seconds_left) / 60}
+              </dd>
+              <dd>{props.data.target}</dd>
+            </dl>
+          </div>
+        </div>
       </div>
     );
   };
 
-  return !isNil(props.data) ? <Bundles data={props.data} /> : null;
+  const Bundles = (props) => {
+    console.log(props);
+    return (
+      <table className="table is-striped">
+        <thead>
+          <tr>
+            <th>Filename</th>
+            <th>Size</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {!isNil(props.data) &&
+            props.data &&
+            map(props.data, (bundle) => (
+              <tr key={bundle.id}>
+                <td>
+                  <h5>{ellipsize(bundle.name, 58)}</h5>
+                  <span className="is-size-7">{bundle.target}</span>
+                </td>
+                <td>{prettyBytes(bundle.size)}</td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+    );
+  };
+
+  return !isNil(props.data) ? (
+    <>
+      {!isNil(downloadProgressTick) ? (
+        <ProgressTick data={downloadProgressTick} />
+      ) : null}
+      <Bundles data={bundles} />
+    </>
+  ) : null;
 };
 
 export default DownloadsPanel;

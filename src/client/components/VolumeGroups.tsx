@@ -32,7 +32,7 @@ export const VolumeGroups = (): ReactElement => {
           map(volumeGroups.data, (group) => {
             if (!isNil(group)) {
               return (
-                <div className="stack">
+                <div className="stack" key={group.results.id}>
                   <img src={group.results.image.small_url} />
                   <div className="content">
                     <div className="stack-title">

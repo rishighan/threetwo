@@ -57,6 +57,7 @@ export const AcquisitionPanel = (
       dispatch(
         downloadAirDCPPItem(searchInstanceId, resultId, comicBookObjectId),
       );
+      // this is to update the download count badge on the downloads tab
       dispatch(getBundlesForComic(comicBookObjectId));
     },
     [dispatch],
@@ -128,7 +129,10 @@ export const AcquisitionPanel = (
             <tbody>
               {map(airDCPPSearchResults, ({ result }, idx) => {
                 return (
-                  <tr key={idx}>
+                  <tr
+                    key={idx}
+                    className={!isNil(result.dupe) ? "dupe-search-result" : ""}
+                  >
                     <td>
                       <p className="mb-2">
                         {result.type.id === "directory" ? (
@@ -136,9 +140,13 @@ export const AcquisitionPanel = (
                         ) : null}{" "}
                         {ellipsize(result.name, 70)}
                       </p>
+
                       <dl>
                         <dd>
                           <div className="tags">
+                            {!isNil(result.dupe) ? (
+                              <span className="tag is-warning">Dupe</span>
+                            ) : null}
                             <span className="tag is-light is-info">
                               {result.users.user.nicks}
                             </span>
@@ -169,17 +177,17 @@ export const AcquisitionPanel = (
                       </div>
                     </td>
                     <td>
-                      <a
-                        onClick={() =>
-                          downloadDCPPResult(
-                            searchInstance.id,
-                            result.id,
-                            props.comicBookMetadata._id,
-                          )
-                        }
-                      >
-                        <i className="fas fa-file-download"></i>
-                      </a>
+                        <a
+                          onClick={() =>
+                            downloadDCPPResult(
+                              searchInstance.id,
+                              result.id,
+                              props.comicBookMetadata._id,
+                            )
+                          }
+                        >
+                          <i className="fas fa-file-download"></i>
+                        </a>
                     </td>
                   </tr>
                 );

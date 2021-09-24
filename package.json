@@ -71,6 +71,7 @@
     "websocket": "^1.0.34",
     "ws": "^7.5.3",
     "ws-calibre": "https://github.com/bluelovers/ws-calibre",
+    "xml2js": "^0.4.23",
     "xregexp": "^5.0.2"
   },
   "devDependencies": {

@@ -10,6 +10,7 @@ import { async as FastGlob } from "@bluelovers/fast-glob/bluebird";
 import { Entry, Feed } from "opds-extra/lib/v1";
 import { Link } from "opds-extra/lib/v1/core";
 import router from "../router";
+import xml2js from "xml2js";
 
 const path_of_books = "/Users/rishi/work/threetwo/src/server/comics";
 router.use("/opds", async (req, res, next) => {
@@ -18,22 +19,17 @@ router.use("/opds", async (req, res, next) => {
       title: `title`,
       subtitle: `subtitle`,
       icon: "/favicon.ico",
-      link: {
-        rel: EnumLinkRel.SELF,
-        href: "/opds-catalogs/root.xml",
-        type: "application/atom+xml;profile=opds-catalog;kind=navigation",
-      } as Link,
     }),
     [
       async (feed: Feed) => {
-        feed.id = "bastard12312899lfh-1238989123-1231289812";
+        feed.id = "urn:uuid:2853dacf-ed79-42f5-8e8a-a7bb3d1ae6a2";
         feed.books = feed.books || [];
         await FastGlob(["*.cbr", "*.cbz", "*.cb7", "*.cba", "*.cbt"], {
           cwd: path_of_books,
         }).each((file, idx) => {
           const ext = extname(file);
           const title = basename(file, ext);
-          const href = encodeURI(`/file/${file}`);
+          const href = encodeURI(`/api/file/${file}`);
           const type = lookup(ext) || "application/octet-stream";
 
           const entry = Entry.deserialize<Entry>({
@@ -49,7 +45,6 @@ router.use("/opds", async (req, res, next) => {
           });
 
           if (!isUndefined(feed) && !isUndefined(feed.books)) {
-            console.log("ENTRY", entry)
             feed.books.push(entry);
           }
         });
@@ -59,8 +54,35 @@ router.use("/opds", async (req, res, next) => {
     ],
   ).then((feed) => {
     res.setHeader("Content-Type", "application/xml");
-    console.log("FFFEEDD", feed);
-    return res.end(feed.toXML());
+    let data;
+    xml2js.parseString(feed.toXML(), (err, result) => {
+      result.feed.link = {
+        $: {
+          rel: "self",
+          href: "/opds-catalogs/root.xml",
+          type: "application/atom+xml;profile=opds-catalog;kind=navigation",
+        },
+        _: "",
+      };
+      const builder = new xml2js.Builder({
+        xmldec: {
+          version: "1.0",
+          encoding: "UTF-8",
+          standalone: false,
+        },
+      });
+      data = builder.buildObject(result, {
+        renderOpts: {
+          pretty: true,
+          indent: " ",
+          newline: "\n",
+          allowEmpty: true,
+        },
+      });
+      // write data to file
+      console.log(data);
+    });
+    return res.end(data);
   });
 });
 
