@@ -16,6 +16,6 @@ export const detectTradePaperbacks = (deck): any => {
         return item;
       }
     });
-  console.log(compact(matches));
+  // console.log(compact(matches));
   return compact(matches);
 };

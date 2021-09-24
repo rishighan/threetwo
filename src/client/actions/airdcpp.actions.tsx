@@ -6,7 +6,8 @@ import {
   SearchResponse,
 } from "threetwo-ui-typings";
 import {
-  AIRDCPP_SEARCH_RESULTS_RECEIVED,
+  AIRDCPP_SEARCH_RESULTS_ADDED,
+  AIRDCPP_SEARCH_RESULTS_UPDATED,
   AIRDCPP_HUB_SEARCHES_SENT,
   AIRDCPP_RESULT_DOWNLOAD_INITIATED,
   AIRDCPP_DOWNLOAD_PROGRESS_TICK,
@@ -46,7 +47,7 @@ export const search = (data: SearchData) => async (dispatch) => {
         // (it's probably a good idea to have some kind of throttling for the UI updates as there can be thousands of results)
 
         dispatch({
-          type: AIRDCPP_SEARCH_RESULTS_RECEIVED,
+          type: AIRDCPP_SEARCH_RESULTS_ADDED,
           groupedResult,
         });
       },
@@ -60,7 +61,7 @@ export const search = (data: SearchData) => async (dispatch) => {
       async (groupedResult) => {
         // ...update properties of the existing result in the UI
         dispatch({
-          type: AIRDCPP_SEARCH_RESULTS_RECEIVED,
+          type: AIRDCPP_SEARCH_RESULTS_UPDATED,
           groupedResult,
         });
       },

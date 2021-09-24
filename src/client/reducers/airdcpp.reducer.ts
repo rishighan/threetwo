@@ -1,6 +1,7 @@
 import {
   AIRDCPP_SEARCH_IN_PROGRESS,
-  AIRDCPP_SEARCH_RESULTS_RECEIVED,
+  AIRDCPP_SEARCH_RESULTS_ADDED,
+  AIRDCPP_SEARCH_RESULTS_UPDATED,
   AIRDCPP_HUB_SEARCHES_SENT,
   AIRDCPP_RESULT_DOWNLOAD_INITIATED,
   AIRDCPP_DOWNLOAD_PROGRESS_TICK,
@@ -20,11 +21,22 @@ const initialState = {
 
 function airdcppReducer(state = initialState, action) {
   switch (action.type) {
-    case AIRDCPP_SEARCH_RESULTS_RECEIVED:
+    case AIRDCPP_SEARCH_RESULTS_ADDED:
       return {
         ...state,
         searchResults: [...state.searchResults, action.groupedResult],
         isAirDCPPSearchInProgress: true,
+      };
+    case AIRDCPP_SEARCH_RESULTS_UPDATED:
+      const bundleToUpdateIndex = state.searchResults.findIndex(
+        (bundle) => bundle.id === action.groupedResult.result.id,
+      );
+      const updatedState = [...state.searchResults];
+      updatedState[bundleToUpdateIndex] = action.groupedResult;
+
+      return {
+        ...state,
+        searchResults: updatedState,
       };
     case AIRDCPP_SEARCH_IN_PROGRESS:
       return {
