@@ -117,7 +117,7 @@ export const AcquisitionPanel = (
       {/* AirDC++ results */}
       <div className="columns">
         {!isNil(airDCPPSearchResults) && !isEmpty(airDCPPSearchResults) ? (
-          <table className="table is-striped">
+          <table className="table">
             <thead>
               <tr>
                 <th>Name</th>

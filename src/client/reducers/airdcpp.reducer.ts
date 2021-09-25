@@ -8,6 +8,7 @@ import {
   AIRDCPP_BUNDLES_FETCHED,
 } from "../constants/action-types";
 import { LOCATION_CHANGE } from "connected-react-router";
+import { difference } from "../shared/utils/object.utils";
 
 const initialState = {
   searchResults: [],
@@ -29,10 +30,16 @@ function airdcppReducer(state = initialState, action) {
       };
     case AIRDCPP_SEARCH_RESULTS_UPDATED:
       const bundleToUpdateIndex = state.searchResults.findIndex(
-        (bundle) => bundle.id === action.groupedResult.result.id,
+        (bundle) => bundle.result.id === action.groupedResult.result.id,
       );
       const updatedState = [...state.searchResults];
-      updatedState[bundleToUpdateIndex] = action.groupedResult;
+
+      if (
+        difference(updatedState[bundleToUpdateIndex], action.groupedResult) !==
+        {}
+      ) {
+        updatedState[bundleToUpdateIndex] = action.groupedResult;
+      }
 
       return {
         ...state,
