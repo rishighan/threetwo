@@ -79,8 +79,6 @@ router.use("/opds", async (req, res, next) => {
           allowEmpty: true,
         },
       });
-      // write data to file
-      console.log(data);
     });
     return res.end(data);
   });

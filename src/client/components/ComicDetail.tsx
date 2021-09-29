@@ -40,6 +40,7 @@ type ComicDetailProps = {};
 export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const [page, setPage] = useState(1);
   const [visible, setVisible] = useState(false);
+  const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
 
   const comicVineSearchResults = useSelector(
     (state: RootState) => state.comicInfo.searchResults,
@@ -61,10 +62,83 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     dispatch(getComicBookDetailById(comicObjectId));
   }, [page, dispatch]);
 
+  // sliding panel init
+  const contentForSlidingPanel = {
+    CVMatches: {
+      content: () => {
+        return (
+          <>
+            {!isEmpty(comicVineSearchQueryObject) &&
+            !isUndefined(comicVineSearchQueryObject) ? (
+              <div className="card search-criteria-card">
+                <div className="card-content">
+                  <ComicVineSearchForm />
+                  <p className="is-size-6">Searching against:</p>
+                  <div className="field is-grouped is-grouped-multiline">
+                    <div className="control">
+                      <div className="tags has-addons">
+                        <span className="tag">Title</span>
+                        <span className="tag is-info">
+                          {
+                            comicVineSearchQueryObject.issue.searchParams
+                              .searchTerms.name
+                          }
+                        </span>
+                      </div>
+                    </div>
+                    <div className="control">
+                      <div className="tags has-addons">
+                        <span className="tag">Number</span>
+                        <span className="tag is-info">
+                          {
+                            comicVineSearchQueryObject.issue.searchParams
+                              .searchTerms.number
+                          }
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="progress-indicator-container">
+                <div className="indicator">
+                  <Loader
+                    type="MutatingDots"
+                    color="#CCC"
+                    secondaryColor="#999"
+                    height={100}
+                    width={100}
+                    visible={comicVineAPICallProgress}
+                  />
+                </div>
+              </div>
+            )}
+            <div className="search-results-container">
+              {!isEmpty(comicVineSearchResults) && (
+                <MatchResult
+                  matchData={comicVineSearchResults}
+                  comicObjectId={comicObjectId}
+                />
+              )}
+            </div>
+          </>
+        );
+      },
+    },
+    editComicArchive: { content: () => <>bastard fucks</> },
+  };
+
   const openDrawerWithCVMatches = useCallback(() => {
-    setVisible(true);
     dispatch(fetchComicVineMatches(comicBookDetailData));
+    setSlidingPanelContentId("CVMatches");
+    setVisible(true);
   }, [dispatch, comicBookDetailData]);
+
+  const openDrawerForEditingComicArchive = useCallback(() => {
+    setSlidingPanelContentId("editComicArchive");
+    setVisible(true);
+  }, [dispatch]);
 
   const [active, setActive] = useState(1);
   const createDescriptionMarkup = (html) => {
@@ -212,8 +286,12 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     <div className="content comic-detail">
       <dl>
         <dt>Raw File Details</dt>
-        <dd>{props.data.containedIn}</dd>
-        <dd className="is-size-7">{props.data.path}</dd>
+        <dd className="is-size-7">
+          {props.data.containedIn +
+            "/" +
+            props.data.name +
+            props.data.extension}
+        </dd>
         <dd>
           <div className="field is-grouped">
             <div className="control">
@@ -299,9 +377,13 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   RawFileDetails.propTypes = {
     data: PropTypes.shape({
       containedIn: PropTypes.string,
+      name: PropTypes.string,
       fileSize: PropTypes.number,
       path: PropTypes.string,
       extension: PropTypes.string,
+      cover: PropTypes.shape({
+        filePath: PropTypes.string,
+      }),
     }),
   };
 
@@ -313,7 +395,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   if (!isNil(comicBookDetailData.rawFileDetails)) {
     const encodedFilePath = encodeURI(
       "http://localhost:3000" +
-        removeLeadingPeriod(comicBookDetailData.rawFileDetails.path),
+        removeLeadingPeriod(comicBookDetailData.rawFileDetails.cover.filePath),
     );
     imagePath = escapePoundSymbol(encodedFilePath);
     comicBookTitle = comicBookDetailData.rawFileDetails.name;
@@ -332,6 +414,12 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     </span>
   );
 
+  const editArchive = (
+    <span>
+      <i className="fas fa-file-archive"></i> Edit Comic Archive
+    </span>
+  );
+
   const editLabel = (
     <span>
       <i className="fas fa-pencil-alt"></i> Edit Metadata
@@ -347,6 +435,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   };
   const actionOptions = [
     { value: "match-on-comic-vine", label: CVMatchLabel },
+    { value: "edit-comic-archive", label: editArchive },
     { value: "edit-metdata", label: editLabel },
     { value: "delete-comic", label: deleteLabel },
   ];
@@ -356,11 +445,15 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       case "match-on-comic-vine":
         openDrawerWithCVMatches();
         break;
+      case "edit-comic-archive":
+        openDrawerForEditingComicArchive();
+        break;
       default:
         console.log("No valid action selected.");
         break;
     }
   };
+
   return (
     <section className="container">
       <div className="section">
@@ -417,61 +510,8 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
               title={"Comic Vine Search Matches"}
               width={"600px"}
             >
-              {!isEmpty(comicVineSearchQueryObject) &&
-              !isUndefined(comicVineSearchQueryObject) ? (
-                <div className="card search-criteria-card">
-                  <div className="card-content">
-                    <ComicVineSearchForm />
-                    <p className="is-size-6">Searching against:</p>
-                    <div className="field is-grouped is-grouped-multiline">
-                      <div className="control">
-                        <div className="tags has-addons">
-                          <span className="tag">Title</span>
-                          <span className="tag is-info">
-                            {
-                              comicVineSearchQueryObject.issue.searchParams
-                                .searchTerms.name
-                            }
-                          </span>
-                        </div>
-                      </div>
-                      <div className="control">
-                        <div className="tags has-addons">
-                          <span className="tag">Number</span>
-                          <span className="tag is-info">
-                            {
-                              comicVineSearchQueryObject.issue.searchParams
-                                .searchTerms.number
-                            }
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="progress-indicator-container">
-                  <div className="indicator">
-                    <Loader
-                      type="MutatingDots"
-                      color="#CCC"
-                      secondaryColor="#999"
-                      height={100}
-                      width={100}
-                      visible={comicVineAPICallProgress}
-                    />
-                  </div>
-                </div>
-              )}
-
-              <div className="search-results-container">
-                {!isEmpty(comicVineSearchResults) && (
-                  <MatchResult
-                    matchData={comicVineSearchResults}
-                    comicObjectId={comicObjectId}
-                  />
-                )}
-              </div>
+              {slidingPanelContentId !== "" &&
+                contentForSlidingPanel[slidingPanelContentId].content()}
             </SlidingPane>
           </>
         )}
