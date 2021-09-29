@@ -1,6 +1,7 @@
 import axios from "axios";
 import rateLimiter from "axios-rate-limit";
 import qs from "qs";
+import { IExtractionOptions } from "threetwo-ui-typings";
 import {
   CV_SEARCH_SUCCESS,
   CV_API_CALL_IN_PROGRESS,
@@ -8,6 +9,7 @@ import {
   IMS_COMIC_BOOK_DB_OBJECT_CALL_IN_PROGRESS,
   IMS_COMIC_BOOK_DB_OBJECT_CALL_FAILED,
   IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
+  IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
 } from "../constants/action-types";
 import { COMICBOOKINFO_SERVICE_URI } from "../constants/endpoints";
 
@@ -107,5 +109,24 @@ export const applyComicVineMatch =
       type: IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
       comicBookDetail: result.data,
       IMS_inProgress: false,
+    });
+  };
+
+export const extractComicArchive =
+  (path: string, options: IExtractionOptions) => async (dispatch) => {
+    const extractedComicBookArchive = await axios({
+      method: "POST",
+      url: "http://localhost:3000/api/import/unrarArchive",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      data: {
+        options,
+        filePath: path,
+      },
+    });
+    dispatch({
+      type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
+      extractedComicBookArchive: extractedComicBookArchive.data,
     });
   };

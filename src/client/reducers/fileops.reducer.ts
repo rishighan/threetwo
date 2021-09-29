@@ -13,6 +13,8 @@ import {
   IMS_COMIC_BOOK_GROUPS_CALL_IN_PROGRESS,
   IMS_COMIC_BOOK_GROUPS_FETCHED,
   IMS_COMIC_BOOK_GROUPS_CALL_FAILED,
+  IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
+  IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
 } from "../constants/action-types";
 const initialState = {
   IMSCallInProgress: false,
@@ -22,6 +24,7 @@ const initialState = {
   isComicVineMetadataImportInProgress: false,
   comicVineMetadataImportError: {},
   rawImportError: {},
+  extractedComicBookArchive: [],
 };
 
 function fileOpsReducer(state = initialState, action) {
@@ -90,6 +93,19 @@ function fileOpsReducer(state = initialState, action) {
         ...state,
         IMSCallInProgress: false,
         error: action.error,
+      };
+    }
+    case IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS: {
+      return {
+        ...state,
+        IMSCallInProgress: true,
+      };
+    }
+    case IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS: {
+      return {
+        ...state,
+        extractedComicBookArchive: action.extractedComicBookArchive,
+        IMSCallInProgress: false,
       };
     }
     default:

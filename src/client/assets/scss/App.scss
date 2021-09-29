@@ -28,11 +28,11 @@ $border-color: red;
 
 // Dashboard
 .recent-comics-container {
-    display: -webkit-box; /* Not needed if autoprefixing */
-    display: -ms-flexbox; /* Not needed if autoprefixing */
-    display: flex;
-    margin-left: -30px; /* gutter size offset */
-    width: auto;
+  display: -webkit-box; /* Not needed if autoprefixing */
+  display: -ms-flexbox; /* Not needed if autoprefixing */
+  display: flex;
+  margin-left: -30px; /* gutter size offset */
+  width: auto;
 
   .recent-comics-column {
     padding-left: 22px; /* gutter size */
@@ -88,9 +88,8 @@ $border-color: red;
       /* change div to reference your elements you put in <Masonry> */
       margin-bottom: 20px;
     }
-  }  
+  }
 }
-
 
 .min {
   overflow: visible;
@@ -281,6 +280,40 @@ $border-color: red;
 }
 
 // Comic Detail
+
+// extracted comic book archive carousel
+.carousel-root {
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 1px 8px 23px 7px rgba(0, 0, 0, 0.12);
+  max-width: 300px;
+  ul.slider {
+    li.slide {
+      img {
+        border-radius: 10px;
+      }
+    }
+  }
+  .control-next {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+  &:hover {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+}
+  .control-prev {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px; 
+  &:hover {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+  }
+}
+  
+}
+
+// airdcpp downloads tab
 .tabs {
   .download-icon-labels {
     .downloads-count {
@@ -368,7 +401,7 @@ $border-color: red;
   margin-bottom: 20px;
 }
 
-// 
+//
 // progress
 .progress-indicator-container {
   height: 100%;

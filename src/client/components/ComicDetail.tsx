@@ -7,15 +7,21 @@ import ComicVineSearchForm from "./ComicVineSearchForm";
 import AcquisitionPanel from "./AcquisitionPanel";
 import DownloadsPanel from "./DownloadsPanel";
 import SlidingPane from "react-sliding-pane";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from "react-responsive-carousel";
+
 import Select, { components } from "react-select";
 
 import "react-sliding-pane/dist/react-sliding-pane.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Loader from "react-loader-spinner";
-import { isEmpty, isUndefined, isNil } from "lodash";
+import { isEmpty, isUndefined, isNil, map } from "lodash";
 import { RootState } from "threetwo-ui-typings";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
-import { getComicBookDetailById } from "../actions/comicinfo.actions";
+import {
+  extractComicArchive,
+  getComicBookDetailById,
+} from "../actions/comicinfo.actions";
 import { detectTradePaperbacks } from "../shared/utils/tradepaperback.utils";
 import dayjs from "dayjs";
 const prettyBytes = require("pretty-bytes");
@@ -53,6 +59,9 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   );
   const comicBookDetailData = useSelector(
     (state: RootState) => state.comicInfo.comicBookDetail,
+  );
+  const extractedComicBookArchive = useSelector(
+    (state: RootState) => state.fileOps.extractedComicBookArchive,
   );
 
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
@@ -126,7 +135,45 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
         );
       },
     },
-    editComicArchive: { content: () => <>bastard fucks</> },
+    editComicArchive: {
+      content: () => (
+        <>
+          <div className="content">
+            <span className="tags has-addons">
+              <span className="tag">Pages</span>
+              <span className="tag is-warning">
+                {extractedComicBookArchive.length}
+              </span>
+            </span>
+          </div>
+          <Carousel
+            width={300}
+            dynamicHeight
+            showStatus={false}
+            showIndicators={false}
+            showThumbs={false}
+            useKeyboardArrows
+          >
+            {map(extractedComicBookArchive, (page, idx) => {
+              return (
+                <div key={idx}>
+                  <img
+                    src={
+                      "http://localhost:3000/" +
+                      page.containedIn +
+                      "/" +
+                      page.name +
+                      page.extension
+                    }
+                    alt=""
+                  />
+                </div>
+              );
+            })}
+          </Carousel>
+        </>
+      ),
+    },
   };
 
   const openDrawerWithCVMatches = useCallback(() => {
@@ -136,9 +183,23 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   }, [dispatch, comicBookDetailData]);
 
   const openDrawerForEditingComicArchive = useCallback(() => {
+    dispatch(
+      extractComicArchive(
+        comicBookDetailData.rawFileDetails.containedIn +
+          "/" +
+          comicBookDetailData.rawFileDetails.name +
+          comicBookDetailData.rawFileDetails.extension,
+        {
+          extractTarget: "book",
+          targetExtractionFolder:
+            "./userdata/expanded/" + comicBookDetailData.rawFileDetails.name,
+          extractionMode: "all",
+        },
+      ),
+    );
     setSlidingPanelContentId("editComicArchive");
     setVisible(true);
-  }, [dispatch]);
+  }, [dispatch, comicBookDetailData, extractedComicBookArchive]);
 
   const [active, setActive] = useState(1);
   const createDescriptionMarkup = (html) => {
