@@ -7,21 +7,16 @@ import ComicVineSearchForm from "./ComicVineSearchForm";
 import AcquisitionPanel from "./AcquisitionPanel";
 import DownloadsPanel from "./DownloadsPanel";
 import SlidingPane from "react-sliding-pane";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { Carousel } from "react-responsive-carousel";
-
 import Select, { components } from "react-select";
+import { RemovableItems } from "./SortableGrid/SortableGrid";
 
 import "react-sliding-pane/dist/react-sliding-pane.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Loader from "react-loader-spinner";
-import { isEmpty, isUndefined, isNil, map } from "lodash";
+import { isEmpty, isUndefined, isNil } from "lodash";
 import { RootState } from "threetwo-ui-typings";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
-import {
-  extractComicArchive,
-  getComicBookDetailById,
-} from "../actions/comicinfo.actions";
+import { getComicBookDetailById } from "../actions/comicinfo.actions";
 import { detectTradePaperbacks } from "../shared/utils/tradepaperback.utils";
 import dayjs from "dayjs";
 const prettyBytes = require("pretty-bytes");
@@ -136,43 +131,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       },
     },
     editComicArchive: {
-      content: () => (
-        <>
-          <div className="content">
-            <span className="tags has-addons">
-              <span className="tag">Pages</span>
-              <span className="tag is-warning">
-                {extractedComicBookArchive.length}
-              </span>
-            </span>
-          </div>
-          <Carousel
-            width={300}
-            dynamicHeight
-            showStatus={false}
-            showIndicators={false}
-            showThumbs={false}
-            useKeyboardArrows
-          >
-            {map(extractedComicBookArchive, (page, idx) => {
-              return (
-                <div key={idx}>
-                  <img
-                    src={
-                      "http://localhost:3000/" +
-                      page.containedIn +
-                      "/" +
-                      page.name +
-                      page.extension
-                    }
-                    alt=""
-                  />
-                </div>
-              );
-            })}
-          </Carousel>
-        </>
-      ),
+      content: () => <></>,
     },
   };
 
@@ -181,25 +140,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     setSlidingPanelContentId("CVMatches");
     setVisible(true);
   }, [dispatch, comicBookDetailData]);
-
-  const openDrawerForEditingComicArchive = useCallback(() => {
-    dispatch(
-      extractComicArchive(
-        comicBookDetailData.rawFileDetails.containedIn +
-          "/" +
-          comicBookDetailData.rawFileDetails.name +
-          comicBookDetailData.rawFileDetails.extension,
-        {
-          extractTarget: "book",
-          targetExtractionFolder:
-            "./userdata/expanded/" + comicBookDetailData.rawFileDetails.name,
-          extractionMode: "all",
-        },
-      ),
-    );
-    setSlidingPanelContentId("editComicArchive");
-    setVisible(true);
-  }, [dispatch, comicBookDetailData, extractedComicBookArchive]);
 
   const [active, setActive] = useState(1);
   const createDescriptionMarkup = (html) => {
@@ -274,9 +214,13 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     },
     {
       id: 2,
-      icon: <i className="fas fa-puzzle-piece"></i>,
-      name: "Other Metadata",
-      content: <div key={2}>bastard</div>,
+      icon: <i className="fas fa-file-archive"></i>,
+      name: "Archive Operations",
+      content: (
+        <div key={2}>
+          <RemovableItems />
+        </div>
+      ),
     },
     {
       id: 3,
@@ -449,7 +393,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   };
 
   // Determine which cover image to use:
-  // 1. from the locally imported, non-CV-scraped version, or
+  // 1. from the locally imported or
   // 2. from the CV-scraped version
   let imagePath = "";
   let comicBookTitle = "";
@@ -505,9 +449,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     switch (action.value) {
       case "match-on-comic-vine":
         openDrawerWithCVMatches();
-        break;
-      case "edit-comic-archive":
-        openDrawerForEditingComicArchive();
         break;
       default:
         console.log("No valid action selected.");

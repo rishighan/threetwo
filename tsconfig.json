@@ -10,13 +10,31 @@
     "sourceMap": true,
     "outDir": "./dist/",
     "skipLibCheck": true,
-    "lib": ["dom", "dom.iterable", "esnext", "webworker"]
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext",
+      "webworker"
+    ],
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules"
+      }
+    ]
   },
   "settings": {
     "eslint.workingDirectories": [
-      { "directory": "./node_modules", "changeProcessCWD": true }
+      {
+        "directory": "./node_modules",
+        "changeProcessCWD": true
+      }
     ]
   },
-  "exclude": ["./src/server "],
-  "include": ["./src/client/*", "./src/client/types/**/*.d.ts"]
+  "exclude": [
+    "./src/server "
+  ],
+  "include": [
+    "./src/client/*",
+    "./src/client/types/**/*.d.ts"
+  ]
 }
