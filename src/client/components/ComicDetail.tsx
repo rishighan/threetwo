@@ -8,7 +8,6 @@ import AcquisitionPanel from "./AcquisitionPanel";
 import DownloadsPanel from "./DownloadsPanel";
 import SlidingPane from "react-sliding-pane";
 import Select, { components } from "react-select";
-import { RemovableItems } from "./SortableGrid/SortableGrid";
 
 import "react-sliding-pane/dist/react-sliding-pane.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
@@ -20,6 +19,26 @@ import { getComicBookDetailById } from "../actions/comicinfo.actions";
 import { detectTradePaperbacks } from "../shared/utils/tradepaperback.utils";
 import dayjs from "dayjs";
 const prettyBytes = require("pretty-bytes");
+// https://codesandbox.io/s/dndkit-sortable-image-grid-py6ve?file=/src/Grid.jsx
+import {
+  closestCenter,
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+
+import { SortableItem } from "./SortableItem";
+import { Item } from "./Item";
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -42,6 +61,16 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const [page, setPage] = useState(1);
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
+
+  const [activeId, setActiveId] = useState(null);
+  const [items, setItems] = useState(["1", "2", "3"]);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+    useSensor(TouchSensor),
+  );
 
   const comicVineSearchResults = useSelector(
     (state: RootState) => state.comicInfo.searchResults,
@@ -135,6 +164,27 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     },
   };
 
+  function handleDragStart(event) {
+    const { active } = event;
+
+    setActiveId(active.id);
+  }
+
+  function handleDragEnd(event) {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      setItems((items) => {
+        const oldIndex = items.indexOf(active.id);
+        const newIndex = items.indexOf(over.id);
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+
+    setActiveId(null);
+  }
+
   const openDrawerWithCVMatches = useCallback(() => {
     dispatch(fetchComicVineMatches(comicBookDetailData));
     setSlidingPanelContentId("CVMatches");
@@ -216,11 +266,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       id: 2,
       icon: <i className="fas fa-file-archive"></i>,
       name: "Archive Operations",
-      content: (
-        <div key={2}>
-          <RemovableItems />
-        </div>
-      ),
+      content: <div key={2}></div>,
     },
     {
       id: 3,
@@ -459,6 +505,19 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   return (
     <section className="container">
       <div className="section">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={items} strategy={verticalListSortingStrategy}>
+            {items.map((id) => (
+              <SortableItem key={id} id={id} />
+            ))}
+          </SortableContext>
+          <DragOverlay>{activeId ? <Item id={activeId} /> : null}</DragOverlay>
+        </DndContext>
         {!isNil(comicBookDetailData) && !isEmpty(comicBookDetailData) && (
           <>
             <h1 className="title">{comicBookTitle}</h1>
