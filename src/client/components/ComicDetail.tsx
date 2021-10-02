@@ -21,24 +21,24 @@ import dayjs from "dayjs";
 const prettyBytes = require("pretty-bytes");
 // https://codesandbox.io/s/dndkit-sortable-image-grid-py6ve?file=/src/Grid.jsx
 import {
-  closestCenter,
   DndContext,
-  DragOverlay,
-  KeyboardSensor,
-  PointerSensor,
+  closestCenter,
+  MouseSensor,
   TouchSensor,
+  DragOverlay,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
+  rectSortingStrategy,
 } from "@dnd-kit/sortable";
 
-import { SortableItem } from "./SortableItem";
-import { Item } from "./Item";
+import { Grid } from "./Grid";
+import { SortableCover } from "./SortableCover";
+import { Cover } from "./Cover";
+import photos from "./photos.json";
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -62,15 +62,9 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
 
+  const [items, setItems] = useState(photos);
   const [activeId, setActiveId] = useState(null);
-  const [items, setItems] = useState(["1", "2", "3"]);
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-    useSensor(TouchSensor),
-  );
+  const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
   const comicVineSearchResults = useSelector(
     (state: RootState) => state.comicInfo.searchResults,
@@ -165,9 +159,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   };
 
   function handleDragStart(event) {
-    const { active } = event;
-
-    setActiveId(active.id);
+    setActiveId(event.active.id);
   }
 
   function handleDragEnd(event) {
@@ -181,7 +173,11 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
         return arrayMove(items, oldIndex, newIndex);
       });
     }
+    console.log(items);
+    setActiveId(null);
+  }
 
+  function handleDragCancel() {
     setActiveId(null);
   }
 
@@ -266,7 +262,31 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       id: 2,
       icon: <i className="fas fa-file-archive"></i>,
       name: "Archive Operations",
-      content: <div key={2}></div>,
+      content: (
+        <div key={2}>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onDragCancel={handleDragCancel}
+          >
+            <SortableContext items={items} strategy={rectSortingStrategy}>
+              <Grid columns={4}>
+                {items.map((url, index) => (
+                  <SortableCover key={url} url={url} index={index} />
+                ))}
+              </Grid>
+            </SortableContext>
+
+            <DragOverlay adjustScale={true}>
+              {activeId ? (
+                <Cover url={activeId} index={items.indexOf(activeId)} />
+              ) : null}
+            </DragOverlay>
+          </DndContext>
+        </div>
+      ),
     },
     {
       id: 3,
@@ -505,19 +525,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   return (
     <section className="container">
       <div className="section">
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext items={items} strategy={verticalListSortingStrategy}>
-            {items.map((id) => (
-              <SortableItem key={id} id={id} />
-            ))}
-          </SortableContext>
-          <DragOverlay>{activeId ? <Item id={activeId} /> : null}</DragOverlay>
-        </DndContext>
         {!isNil(comicBookDetailData) && !isEmpty(comicBookDetailData) && (
           <>
             <h1 className="title">{comicBookTitle}</h1>
