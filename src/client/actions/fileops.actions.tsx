@@ -1,10 +1,8 @@
 import axios from "axios";
-import { useContext } from "react";
 import { IFolderData, IExtractedComicBookCoverFile } from "threetwo-ui-typings";
 import { API_BASE_URI, SOCKET_BASE_URI } from "../constants/endpoints";
 import {
   IMS_COMICBOOK_METADATA_FETCHED,
-  IMS_SOCKET_CONNECTION_CONNECTED,
   IMS_COMIC_BOOK_GROUPS_FETCHED,
   IMS_COMIC_BOOK_GROUPS_CALL_IN_PROGRESS,
   IMS_COMIC_BOOK_GROUPS_CALL_FAILED,
@@ -15,7 +13,6 @@ import {
   IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
   IMS_CV_METADATA_IMPORT_SUCCESSFUL,
   IMS_CV_METADATA_IMPORT_FAILED,
-  RMQ_SOCKET_CONNECTED,
 } from "../constants/action-types";
 import { refineQuery } from "../shared/utils/filenameparser.utils";
 import sortBy from "array-sort-by";

@@ -215,9 +215,11 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       id: 2,
       icon: <i className="fas fa-file-archive"></i>,
       name: "Archive Operations",
-      content: <div key={2}>
-        <DnD />
-      </div>,
+      content: (
+        <div key={2}>
+          <DnD />
+        </div>
+      ),
     },
     {
       id: 3,
