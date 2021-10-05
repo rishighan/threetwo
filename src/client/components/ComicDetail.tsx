@@ -246,11 +246,24 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
           <button className="button is-warning" onClick={unpackComicArchive}>
             Unpack comic archive
           </button>
-          {!isEmpty(extractedComicBookArchive) ? (
-            <DnD data={extractedComicBookArchive} />
-          ) : (
-            "..."
-          )}
+          <div className="columns">
+            <div className="mt-4">
+              {!isEmpty(extractedComicBookArchive) ? (
+                <DnD data={extractedComicBookArchive} />
+              ) : (
+                "..."
+              )}
+            </div>
+            {!isEmpty(extractedComicBookArchive) ? (
+              <div className="column">
+                <div className="card">
+                  <div className="card-content">
+                    {extractedComicBookArchive.length} pages
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </div>
         </div>
       ),
     },
