@@ -5,13 +5,15 @@ export const Cover = forwardRef(
     const inlineStyles = {
       opacity: faded ? "0.2" : "1",
       transformOrigin: "0 0",
-      height: index === 0 ? 410 : 200,
-      gridRowStart: index === 0 ? "span 2" : null,
-      gridColumnStart: index === 0 ? "span 2" : null,
+      minHeight: index === 0 ? 300 : 300,
+      maxWidth: 200,
+      gridRowStart: index === 0 ? "span" : null,
+      gridColumnStart: index === 0 ? "span" : null,
       backgroundImage: `url("${url}")`,
       backgroundSize: "cover",
       backgroundPosition: "center",
       backgroundColor: "grey",
+      border: "1px solid #CCC",
       borderRadius: "10px",
       ...style,
     };

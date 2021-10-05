@@ -1,3 +1,4 @@
+import { LOCATION_CHANGE } from "connected-react-router";
 import {
   RMQ_SOCKET_CONNECTED,
   RMQ_SOCKET_DISCONNECTED,
@@ -18,6 +19,7 @@ import {
 } from "../constants/action-types";
 const initialState = {
   IMSCallInProgress: false,
+  comicBookExtractionInProgress: false,
   comicBookMetadata: [],
   comicVolumeGroups: [],
   isSocketConnected: false,
@@ -98,15 +100,21 @@ function fileOpsReducer(state = initialState, action) {
     case IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS: {
       return {
         ...state,
-        IMSCallInProgress: true,
+        comicBookExtractionInProgress: true,
       };
     }
     case IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS: {
       return {
         ...state,
         extractedComicBookArchive: action.extractedComicBookArchive,
-        IMSCallInProgress: false,
+        comicBookExtractionInProgress: false,
       };
+    }
+    case LOCATION_CHANGE: {
+      return {
+        ...state,
+        extractedComicBookArchive: [],
+      }
     }
     default:
       return state;

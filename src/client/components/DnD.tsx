@@ -18,10 +18,10 @@ import {
 import { Grid } from "./Grid";
 import { SortableCover } from "./SortableCover";
 import { Cover } from "./Cover";
-import photos from "./photos.json";
+import {  map } from "lodash";
 
-export const DnD = () => {
-  const [items, setItems] = useState(photos);
+export const DnD = (data) => {
+  const [items, setItems] = useState(data.data);
   const [activeId, setActiveId] = useState(null);
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
@@ -40,7 +40,6 @@ export const DnD = () => {
         return arrayMove(items, oldIndex, newIndex);
       });
     }
-    console.log(items);
     setActiveId(null);
   }
 
@@ -57,9 +56,9 @@ export const DnD = () => {
     >
       <SortableContext items={items} strategy={rectSortingStrategy}>
         <Grid columns={4}>
-          {items.map((url, index) => (
-            <SortableCover key={url} url={url} index={index} />
-          ))}
+          {map(items, (url, index) => {
+            return <SortableCover key={url} url={url} index={index} />;
+          })}
         </Grid>
       </SortableContext>
 

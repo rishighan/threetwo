@@ -15,7 +15,10 @@ import Loader from "react-loader-spinner";
 import { isEmpty, isUndefined, isNil } from "lodash";
 import { RootState } from "threetwo-ui-typings";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
-import { getComicBookDetailById } from "../actions/comicinfo.actions";
+import {
+  getComicBookDetailById,
+  extractComicArchive,
+} from "../actions/comicinfo.actions";
 import { detectTradePaperbacks } from "../shared/utils/tradepaperback.utils";
 import dayjs from "dayjs";
 const prettyBytes = require("pretty-bytes");
@@ -40,6 +43,8 @@ type ComicDetailProps = {};
 export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const [page, setPage] = useState(1);
   const [visible, setVisible] = useState(false);
+  const [comicBookPagesGridVisible, setComicBookPagesGridVisible] =
+    useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
 
   const comicVineSearchResults = useSelector(
@@ -54,6 +59,9 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const comicBookDetailData = useSelector(
     (state: RootState) => state.comicInfo.comicBookDetail,
   );
+  const comicBookExtractionInProgress = useSelector(
+    (state: RootState) => state.fileOps.comicBookExtractionInProgress,
+  );
   const extractedComicBookArchive = useSelector(
     (state: RootState) => state.fileOps.extractedComicBookArchive,
   );
@@ -64,6 +72,24 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   useEffect(() => {
     dispatch(getComicBookDetailById(comicObjectId));
   }, [page, dispatch]);
+
+  const unpackComicArchive = useCallback(() => {
+    console.log("Asdas");
+    dispatch(
+      extractComicArchive(
+        comicBookDetailData.rawFileDetails.containedIn +
+          "/" +
+          comicBookDetailData.rawFileDetails.name +
+          comicBookDetailData.rawFileDetails.extension,
+        {
+          extractTarget: "book",
+          targetExtractionFolder:
+            "./userdata/expanded/" + comicBookDetailData.rawFileDetails.name,
+          extractionMode: "all",
+        },
+      ),
+    );
+  }, [dispatch, comicBookDetailData]);
 
   // sliding panel init
   const contentForSlidingPanel = {
@@ -217,7 +243,14 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       name: "Archive Operations",
       content: (
         <div key={2}>
-          <DnD />
+          <button className="button is-warning" onClick={unpackComicArchive}>
+            Unpack comic archive
+          </button>
+          {!isEmpty(extractedComicBookArchive) ? (
+            <DnD data={extractedComicBookArchive} />
+          ) : (
+            "..."
+          )}
         </div>
       ),
     },
