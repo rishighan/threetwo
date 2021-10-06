@@ -78,18 +78,6 @@ export const getComicBookDetailById =
       comicBookDetail: result.data,
       IMS_inProgress: false,
     });
-    const pageCount = await axios.request({
-      url: "http://localhost:3000/api/import/getPageCountsForComicBook",
-      method: "POST",
-      data: {
-        filePath:
-          result.data.rawFileDetails.containedIn +
-          "/" +
-          result.data.rawFileDetails.name +
-          result.data.rawFileDetails.extension,
-      },
-    });
-    console.log(pageCount);
   };
 
 export const applyComicVineMatch =

@@ -49,7 +49,7 @@ export const RecentlyImported = ({
             }
             const titleElement = (
               <Link to={"/comic/details/" + _id}>
-                {ellipsize(comicName, 18)}
+                {ellipsize(comicName, 20)}
               </Link>
             );
             return (
