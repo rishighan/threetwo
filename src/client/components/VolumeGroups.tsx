@@ -35,7 +35,7 @@ export const VolumeGroups = (): ReactElement => {
                 <div className="stack" key={group.results.id}>
                   <img src={group.results.image.small_url} />
                   <div className="content">
-                    <div className="stack-title">
+                    <div className="stack-title is-size-8">
                       {ellipsize(group.results.name, 18)}
                     </div>
                     <div className="control">

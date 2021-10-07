@@ -28,6 +28,7 @@ import {
   removeLeadingPeriod,
   escapePoundSymbol,
 } from "../shared/utils/formatting.utils";
+import Sticky from "react-stickynode";
 
 type ComicDetailProps = {};
 /**
@@ -59,7 +60,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const comicBookDetailData = useSelector(
     (state: RootState) => state.comicInfo.comicBookDetail,
   );
-  const comicBookExtractionInProgress = useSelector(
+  const isComicBookExtractionInProgress = useSelector(
     (state: RootState) => state.fileOps.comicBookExtractionInProgress,
   );
   const extractedComicBookArchive = useSelector(
@@ -74,7 +75,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   }, [page, dispatch]);
 
   const unpackComicArchive = useCallback(() => {
-    console.log("Asdas");
     dispatch(
       extractComicArchive(
         comicBookDetailData.rawFileDetails.containedIn +
@@ -180,7 +180,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     {
       id: 1,
       name: "Volume Information",
-      icon: <i className="fas fa-layer-group"></i>,
+      icon: <i className="fa-regular fa-layer-group"></i>,
       content: isComicBookMetadataAvailable ? (
         <div key={1}>
           <div className="columns">
@@ -239,15 +239,25 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     },
     {
       id: 2,
-      icon: <i className="fas fa-file-archive"></i>,
+      icon: <i className="fa-regular fa-file-archive"></i>,
       name: "Archive Operations",
       content: (
         <div key={2}>
-          <button className="button is-warning" onClick={unpackComicArchive}>
-            Unpack comic archive
+          <button
+            className={
+              isComicBookExtractionInProgress
+                ? "button is-loading is-warning"
+                : "button is-warning"
+            }
+            onClick={unpackComicArchive}
+          >
+            <span className="icon is-small">
+              <i className="fa-regular fa-box-open"></i>
+            </span>
+            <span>Unpack comic archive</span>
           </button>
           <div className="columns">
-            <div className="mt-4">
+            <div className="mt-5">
               {!isEmpty(extractedComicBookArchive) ? (
                 <DnD data={extractedComicBookArchive} />
               ) : (
@@ -255,12 +265,20 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
               )}
             </div>
             {!isEmpty(extractedComicBookArchive) ? (
-              <div className="column">
-                <div className="card">
-                  <div className="card-content">
-                    {extractedComicBookArchive.length} pages
+              <div className="column mt-5">
+                <Sticky enabled={true} top={70} bottomBoundary={3000}>
+                  <div className="card">
+                    <div className="card-content">
+                      {extractedComicBookArchive.length} pages
+                      <button className="button is-small is-light is-primary is-outlined">
+                        <span className="icon is-small">
+                          <i className="fa-regular fa-compress"></i>
+                        </span>
+                        <span>Convert to CBZ</span>
+                      </button>
+                    </div>
                   </div>
-                </div>
+                </Sticky>
               </div>
             ) : null}
           </div>
@@ -269,7 +287,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     },
     {
       id: 3,
-      icon: <i className="fas fa-download"></i>,
+      icon: <i className="fa-regular fa-download"></i>,
       name: "Acquisition",
       content: (
         <AcquisitionPanel comicBookMetadata={comicBookDetailData} key={3} />
@@ -311,7 +329,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                   !isNil(comicBookDetailData) &&
                   !isEmpty(comicBookDetailData) ? (
                     <span className="download-icon-labels">
-                      <i className="fas fa-cloud-download-alt"></i>
+                      <i className="fa-regular fa-cloud-arrow-down"></i>
                       <span className="tag downloads-count">
                         {comicBookDetailData.acquisition.directconnect.length}
                       </span>
@@ -460,24 +478,18 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   //  Actions menu options and handler
   const CVMatchLabel = (
     <span>
-      <i className="fas fa-magic"></i> Match on ComicVine
-    </span>
-  );
-
-  const editArchive = (
-    <span>
-      <i className="fas fa-file-archive"></i> Edit Comic Archive
+      <i className="fa-regular fa-magic"></i> Match on ComicVine
     </span>
   );
 
   const editLabel = (
     <span>
-      <i className="fas fa-pencil-alt"></i> Edit Metadata
+      <i className="fa-regular fa-pen-to-square"></i> Edit Metadata
     </span>
   );
   const deleteLabel = (
     <span>
-      <i className="fas fa-trash-alt"></i> Delete Comic
+      <i className="fa-regular fa-trash-alt"></i> Delete Comic
     </span>
   );
   const Placeholder = (props) => {
@@ -485,7 +497,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   };
   const actionOptions = [
     { value: "match-on-comic-vine", label: CVMatchLabel },
-    { value: "edit-comic-archive", label: editArchive },
     { value: "edit-metdata", label: editLabel },
     { value: "delete-comic", label: deleteLabel },
   ];
@@ -538,7 +549,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                   components={{ Placeholder }}
                   placeholder={
                     <span>
-                      <i className="fas fa-list"></i> Actions
+                      <i className="fa-solid fa-list"></i> Actions
                     </span>
                   }
                   name="actions"
