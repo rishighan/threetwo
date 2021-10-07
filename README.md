@@ -2,7 +2,12 @@
 
 ThreeTwo! _aims to be_ a comic book curation app.
 
-⚠️ This project is in early stages of development and as such, not ready for general use.
+
+### 🦄 Early Development Support Channel
+
+Please help me test the early builds of `ThreeTwo!` on its official [Discord](https://discord.gg/DbpcSNuM)
+
+Discuss ideas and implementations with me, and get status, progress updates!
 
 ## Dependencies
 
