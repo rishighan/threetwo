@@ -19,7 +19,7 @@ import {
   getComicBookDetailById,
   extractComicArchive,
 } from "../actions/comicinfo.actions";
-import { detectTradePaperbacks } from "../shared/utils/tradepaperback.utils";
+import { detectIssueTypes } from "../shared/utils/tradepaperback.utils";
 import dayjs from "dayjs";
 const prettyBytes = require("pretty-bytes");
 import { DnD } from "./DnD";
@@ -398,8 +398,8 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
         <dd>{props.data.number}</dd>
         <dd>
           <div className="field is-grouped is-grouped-multiline">
-            {!isEmpty(
-              detectTradePaperbacks(
+            {!isUndefined(
+              detectIssueTypes(
                 comicBookDetailData.sourcedMetadata.comicvine.volumeInformation
                   .description,
               ),
@@ -407,7 +407,14 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
               <div className="control">
                 <div className="tags has-addons">
                   <span className="tag is-light">Detected Type</span>
-                  <span className="tag is-warning">Trade Paperback</span>
+                  <span className="tag is-warning">
+                    {
+                      detectIssueTypes(
+                        comicBookDetailData.sourcedMetadata.comicvine
+                          .volumeInformation.description,
+                      ).displayName
+                    }
+                  </span>
                 </div>
               </div>
             ) : (

@@ -6,8 +6,8 @@ import {
   removeLeadingPeriod,
   escapePoundSymbol,
 } from "../shared/utils/formatting.utils";
-import { isEmpty, isNil, map } from "lodash";
-import { detectTradePaperbacks } from "../shared/utils/tradepaperback.utils";
+import { isNil, isUndefined, map } from "lodash";
+import { detectIssueTypes } from "../shared/utils/tradepaperback.utils";
 import Masonry from "react-masonry-css";
 
 type RecentlyImportedProps = {
@@ -71,13 +71,20 @@ export const RecentlyImported = ({
                       <i className="fas fa-adjust" />
                     </span>
                   )}
-                  {!isNil(sourcedMetadata.comicvine) &&
-                  !isEmpty(
-                    detectTradePaperbacks(
+                  {!isUndefined(sourcedMetadata.comicvine) &&
+                  !isNil(
+                    detectIssueTypes(
                       sourcedMetadata.comicvine.volumeInformation.description,
                     ),
                   ) ? (
-                    <span className="tag is-warning">TPB</span>
+                    <span className="tag is-warning">
+                      {
+                        detectIssueTypes(
+                          sourcedMetadata.comicvine.volumeInformation
+                            .description,
+                        ).displayName
+                      }
+                    </span>
                   ) : null}
                 </div>
               </Card>

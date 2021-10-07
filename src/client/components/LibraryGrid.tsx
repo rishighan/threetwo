@@ -13,7 +13,7 @@ import { getComicBooks } from "../actions/fileops.actions";
 import { isNil, isEmpty } from "lodash";
 import Masonry from "react-masonry-css";
 import Card from "./Carda";
-import { detectTradePaperbacks } from "../shared/utils/tradepaperback.utils";
+import { detectIssueTypes } from "../shared/utils/tradepaperback.utils";
 import { Link } from "react-router-dom";
 
 interface ILibraryGridProps {}
@@ -81,7 +81,7 @@ export const LibraryGrid = (libraryGridProps: ILibraryGridProps) => {
                   )}
                   {!isNil(sourcedMetadata.comicvine) &&
                   !isEmpty(
-                    detectTradePaperbacks(
+                    detectIssueTypes(
                       sourcedMetadata.comicvine.volumeInformation.description,
                     ),
                   ) ? (
