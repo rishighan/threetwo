@@ -85,7 +85,14 @@ export const LibraryGrid = (libraryGridProps: ILibraryGridProps) => {
                       sourcedMetadata.comicvine.volumeInformation.description,
                     ),
                   ) ? (
-                    <span className="tag is-warning">TPB</span>
+                    <span className="tag is-warning">
+                      {
+                        detectIssueTypes(
+                          sourcedMetadata.comicvine.volumeInformation
+                            .description,
+                        ).displayName
+                      }
+                    </span>
                   ) : null}
                 </div>
               </Card>

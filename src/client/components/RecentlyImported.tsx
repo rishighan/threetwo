@@ -66,11 +66,13 @@ export const RecentlyImported = ({
                       <img src="/dist/img/cvlogo.svg" />
                     </span>
                   )}
+                  {/* Raw file presence  */}
                   {isNil(rawFileDetails) && (
                     <span className="icon has-text-info">
                       <i className="fas fa-adjust" />
                     </span>
                   )}
+                  {/* Issue type */}
                   {!isUndefined(sourcedMetadata.comicvine) &&
                   !isNil(
                     detectIssueTypes(
