@@ -56,8 +56,8 @@ amqp.connect("amqp://localhost", (error0, connection) => {
       durable: false,
     });
 
-    console.log(`Connected to ${queue} queue.`);
-    console.log(`Waiting for comic book cover data in ${queue}`);
+    console.log(`RabbitMQ: Connected to ${queue} queue.`);
+    console.log(`RabbitMQ: Waiting for comic book cover data in ${queue}`);
 
     channel.consume(
       queue,

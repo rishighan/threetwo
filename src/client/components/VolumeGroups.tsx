@@ -21,7 +21,9 @@ export const VolumeGroups = (): ReactElement => {
   );
   return (
     <section className="volumes-container">
-      <h2 className="subtitle">Volumes</h2>
+      <div className="content">
+        <div className="subtitle">Volumes</div>
+      </div>
       <Masonry
         breakpointCols={breakpointColumnsObj}
         className="volumes-grid"
