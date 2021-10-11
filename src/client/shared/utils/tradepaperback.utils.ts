@@ -1,4 +1,5 @@
 import { flatten, compact, map, isEmpty } from "lodash";
+import axios from "axios";
 
 export const detectIssueTypes = (deck: string): any => {
   const issueTypeMatchers = [
@@ -12,6 +13,15 @@ export const detectIssueTypes = (deck: string): any => {
     { regex: [/mini\Wseries/gim], displayName: "Mini-Series" },
   ];
 
+  // const issueNames = await axios.request({
+  //   url: "http://localhost:3000/api/import/scrapeIssueNamesFromDOM",
+  //   method: "POST",
+  //   data: {
+  //     html: deck,
+  //   },
+  // });
+  // console.log(deck);
+  // console.log("DOM", issueNames);
   const matches = map(issueTypeMatchers, (matcher) => {
     return getIssueTypeDisplayName(deck, matcher.regex, matcher.displayName);
   });

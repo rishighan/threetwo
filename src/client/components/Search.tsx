@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { comicinfoAPICall } from "../actions/comicinfo.actions";
 import { search } from "../services/api/SearchApi";
 import { Form, Field } from "react-final-form";
+import Card from "./Carda";
 
 interface ISearchProps {}
 
@@ -43,6 +44,9 @@ export const Search = ({}: ISearchProps): ReactElement => {
   const comicVineSearchResults = useSelector(
     (state: RootState) => state.comicInfo.searchResults,
   );
+  const createDescriptionMarkup = (html) => {
+    return { __html: html };
+  };
 
   return (
     <>
@@ -79,27 +83,39 @@ export const Search = ({}: ISearchProps): ReactElement => {
           />
           {!isNil(comicVineSearchResults.results) &&
           !isEmpty(comicVineSearchResults.results) ? (
-            <>
+            <div>
               {comicVineSearchResults.results.map((result) => {
-                console.log(result)
                 return (
-                  <div key={result.id}>
-                    {result.id} {result.name}
-                    <p>{result.api_detail_url}</p>
-                    <p>{result.description}</p>
-                    <figure>
-                      <img src={result.image.thumb_url} alt="name" />
-                    </figure>
-                    <button
-                      className="button"
-                      onClick={() => addToLibrary(result)}
-                    >
-                      Add to Library
-                    </button>
+                  <div key={result.id} className="columns is-full">
+                    <div className="column is-one-quarter">
+                      <Card
+                        key={result.id}
+                        orientation={"vertical"}
+                        imageUrl={result.image.small_url}
+                        title={result.name}
+                        hasDetails={false}
+                      ></Card>
+                    </div>
+                    <div className="column is-half">
+                      <div className="is-size-4">{result.name}</div>
+                      <span className="tag is-warning">{result.id}</span>
+                      <p>{result.api_detail_url}</p>
+                      <p
+                        dangerouslySetInnerHTML={createDescriptionMarkup(
+                          result.description,
+                        )}
+                      ></p>
+                      <button
+                        className="button is-success is-light is-outlined"
+                        onClick={() => addToLibrary(result)}
+                      >
+                        Add to Library
+                      </button>
+                    </div>
                   </div>
                 );
               })}
-            </>
+            </div>
           ) : (
             <article className="message is-dark is-half">
               <div className="message-body">
