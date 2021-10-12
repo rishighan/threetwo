@@ -25,7 +25,9 @@ export const RecentlyImported = ({
   };
   return (
     <>
-      <h2 className="subtitle">Recently Imported</h2>
+      <div className="content">
+        <h4 className="subtitle">Recently Imported</h4>
+      </div>
       <Masonry
         breakpointCols={breakpointColumnsObj}
         className="recent-comics-container"

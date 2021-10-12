@@ -20,9 +20,10 @@ export const VolumeGroups = (): ReactElement => {
     (state: RootState) => state.fileOps.comicVolumeGroups,
   );
   return (
-    <section className="volumes-container">
+    <section className="volumes-container mt-4">
       <div className="content">
-        <div className="subtitle">Volumes</div>
+        <p className="title is-4">Volumes</p>
+        <p className="subtitle is-7">Based on ComicVine Volume information</p>
       </div>
       <Masonry
         breakpointCols={breakpointColumnsObj}
