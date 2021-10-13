@@ -2,6 +2,8 @@
 
 ThreeTwo! _aims to be_ a comic book curation app.
 
+[![Docker Image CI](https://github.com/rishighan/threetwo/actions/workflows/docker-image.yml/badge.svg)](https://github.com/rishighan/threetwo/actions/workflows/docker-image.yml)
+
 
 ### 🦄 Early Development Support Channel
 
