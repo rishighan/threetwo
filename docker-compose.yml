@@ -122,6 +122,8 @@ services:
   rabbitmq:
     image: 'bitnami/rabbitmq:latest'
     container_name: queue
+    networks:
+      - proxy
 
 networks:
   proxy:
