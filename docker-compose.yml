@@ -117,7 +117,9 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ${PWD}/proxy.conf:/etc/nginx/conf.d/default.conf 
+      - type: bind
+          source: ./proxy.conf
+          target: /etc/nginx/conf.d/default.conf
   
   rabbitmq:
     image: 'bitnami/rabbitmq:latest'
