@@ -9,6 +9,12 @@ services:
     ports:
       - "8050:8050"
       - "3050:3050"
+    depends_on:
+      - queue
+      - reverse-proxy
+      - threetwo-import-api
+      - import
+      - image-transformation
     networks:
       - proxy
 
@@ -113,7 +119,7 @@ services:
   
   nginx:
     image: nginx
-    container_name: proxy
+    container_name: reverse-proxy
     ports:
       - "80:80"
     volumes:
