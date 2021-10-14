@@ -6,6 +6,7 @@ services:
       context: .
     image: frishi/threetwo
     container_name: threetwo-ui
+    env_file: ./docker-compose.env
     ports:
       - "8050:8050"
       - "3050:3050"
