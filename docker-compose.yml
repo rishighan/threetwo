@@ -10,11 +10,11 @@ services:
       - "8050:8050"
       - "3050:3050"
     depends_on:
-      - queue
-      - reverse-proxy
-      - threetwo-import-api
+      - rabbitmq 
+      - nginx
+      - importapi
       - import
-      - image-transformation
+      - imagetransformation
     networks:
       - proxy
 
