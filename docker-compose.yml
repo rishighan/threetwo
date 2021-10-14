@@ -130,6 +130,8 @@ services:
   rabbitmq:
     image: 'bitnami/rabbitmq:latest'
     container_name: queue
+    ports:
+      - "5672:5672"
     networks:
       - proxy
 
