@@ -131,6 +131,9 @@ services:
   rabbitmq:
     image: 'bitnami/rabbitmq:latest'
     container_name: queue
+    environment:
+      RABBITMQ_USERNAME: 'user'
+      RABBITMQ_PASSWORD: 'bitnami'
     ports:
       - "5672:5672"
     networks:
