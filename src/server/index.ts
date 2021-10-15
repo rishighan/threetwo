@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const port: number = Number(process.env.PORT) || 8050; // set our port
 // set rabbitMQ host
 
-const rabbitMQConnectionString = rabbitMQDockerConnectionString || "localhost";
+const rabbitMQConnectionString = process.env.RABBITMQ_URI || "amqp://localhost";
 
 // Send index.html on root request
 app.use(express.static("dist"));
@@ -46,7 +46,7 @@ io.on("connection", (socket) => {
   });
 });
 
-amqp.connect(`amqp://${rabbitMQConnectionString}`, (error0, connection) => {
+amqp.connect(`${rabbitMQConnectionString}`, (error0, connection) => {
   if (error0) {
     throw error0;
   }
