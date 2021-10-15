@@ -18,10 +18,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const port: number = Number(process.env.PORT) || 8050; // set our port
 // set rabbitMQ host
-const rabbitMQHost = process.env.RABBITMQHOST || "localhost";
-const rabbitMQCredentials =
-  `${process.env.RABBITMQ_USERNAME}:${process.env.RABBITMQ_PASSWORD}` ||
-  `guest:guest`;
+
+const rabbitMQConnectionString = rabbitMQDockerConnectionString || "localhost";
 
 // Send index.html on root request
 app.use(express.static("dist"));
@@ -48,40 +46,34 @@ io.on("connection", (socket) => {
   });
 });
 
-amqp.connect(
-  `amqp://${rabbitMQCredentials}@${rabbitMQHost}`,
-  (error0, connection) => {
-    if (error0) {
-      throw error0;
+amqp.connect(`amqp://${rabbitMQConnectionString}`, (error0, connection) => {
+  if (error0) {
+    throw error0;
+  }
+  connection.createChannel((error1, channel) => {
+    if (error1) {
+      throw error1;
     }
-    connection.createChannel((error1, channel) => {
-      if (error1) {
-        throw error1;
-      }
-      const queue = "comicBookCovers";
-      channel.assertQueue(queue, {
-        durable: false,
-      });
-
-      console.log(`RabbitMQ: Connected to ${queue} queue.`);
-      console.log(`RabbitMQ: Waiting for comic book cover data in ${queue}`);
-
-      channel.consume(
-        queue,
-        (data) => {
-          //Socket Trigger All Clients
-          io.sockets.emit(
-            "coverExtracted",
-            JSON.parse(data.content.toString()),
-          );
-        },
-        {
-          noAck: true,
-        },
-      );
+    const queue = "comicBookCovers";
+    channel.assertQueue(queue, {
+      durable: false,
     });
-  },
-);
+
+    console.log(`RabbitMQ: Connected to ${queue} queue.`);
+    console.log(`RabbitMQ: Waiting for comic book cover data in ${queue}`);
+
+    channel.consume(
+      queue,
+      (data) => {
+        //Socket Trigger All Clients
+        io.sockets.emit("coverExtracted", JSON.parse(data.content.toString()));
+      },
+      {
+        noAck: true,
+      },
+    );
+  });
+});
 
 // socket server
 httpServer.listen(8051);
