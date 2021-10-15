@@ -260,9 +260,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
             <div className="mt-5">
               {!isEmpty(extractedComicBookArchive) ? (
                 <DnD data={extractedComicBookArchive} />
-              ) : (
-                "..."
-              )}
+              ) : null}
             </div>
             {!isEmpty(extractedComicBookArchive) ? (
               <div className="column mt-5">

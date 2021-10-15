@@ -20,3 +20,35 @@ const changes = (object, base) => {
     }
   });
 };
+
+
+export type TraverseFunction<T> = (
+  obj: T,
+  prop: string,
+  value: unknown,
+  scope: string[],
+) => void;
+
+/**
+ * Deep diff between two object, using lodash
+ * @param  {Object} object Object to traverse
+ * @param  {Object} fn     Callback function
+ * @return {Object}        Return a new object who represent the diff
+ */
+export const traverseObject = <T = Record<string, unknown>>(
+  object: T,
+  fn: TraverseFunction<T>,
+): void => traverseInternal(object, fn, []);
+
+const traverseInternal = <T = Record<string, unknown>>(
+  object: T,
+  fn: TraverseFunction<T>,
+  scope: string[] = [],
+): void => {
+  Object.entries(object).forEach(([key, value]) => {
+    fn.apply(this, [object, key, value, scope]);
+    if (value !== null && typeof value === "object") {
+      traverseInternal(value, fn, scope.concat(key));
+    }
+  });
+};

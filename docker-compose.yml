@@ -10,6 +10,7 @@ services:
     ports:
       - "8050:8050"
       - "3050:3050"
+      - "8051:8051"
     depends_on:
       - rabbitmq 
       - nginx

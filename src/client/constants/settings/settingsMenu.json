@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "category": "general",
+    "displayName": "General",
+    "children": [
+      {
+        "id": "gen-db",
+        "displayName": "Dashboard"
+      },
+      {
+        "id": "gen-gls",
+        "displayName": "Global Search"
+      }
+    ]
+  },
+
+  {
+    "id": 2,
+    "category": "acquisition",
+    "displayName": "Acquisition",
+    "children": [
+      {
+        "id": "adc",
+        "displayName": "AirDC++",
+        "children": [
+          {
+            "id": "adc-connection",
+            "displayName": "Connection"
+          },
+          {
+            "id": "adc-hubs",
+            "displayName": "Hubs"
+          },
+          {
+            "id": "adc-add-config",
+            "displayName": "Additional Configuration"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "category": "comicvine",
+    "displayName": "Comic Vine",
+    "children": [
+      {
+        "id": "api",
+        "displayName": "API"
+      },
+      {
+        "id": "options",
+        "displayName": "Options"
+      }
+    ]
+  }
+]
