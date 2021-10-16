@@ -44,8 +44,6 @@ type ComicDetailProps = {};
 export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const [page, setPage] = useState(1);
   const [visible, setVisible] = useState(false);
-  const [comicBookPagesGridVisible, setComicBookPagesGridVisible] =
-    useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
 
   const comicVineSearchResults = useSelector(
