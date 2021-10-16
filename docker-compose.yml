@@ -13,6 +13,7 @@ services:
       - "8051:8051"
     depends_on:
       - rabbitmq 
+      - db
       - nginx
       - importapi
       - import
@@ -103,7 +104,7 @@ services:
     networks:
       - proxy
 
-  mongodb:
+  db:
     image: 'bitnami/mongodb:latest'
     container_name: database
     networks:
