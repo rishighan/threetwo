@@ -30,7 +30,7 @@ export const WebSocketProvider = ({ children }): ReactElement => {
         autoDismiss: 0,
       }),
     );
-  })
+  });
   socket.on("disconnect", () => {
     console.log(`disconnect`);
   });
