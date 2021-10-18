@@ -12,6 +12,8 @@ services:
       - "8050:8050"
       - "3050:3050"
       - "8051:8051"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - rabbitmq 
       - db
@@ -30,6 +32,8 @@ services:
     container_name: comicvine-api
     ports:
       - "3080:3080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       SERVICES: api
     env_file: ./docker-env/comicvine-service.env
@@ -46,6 +50,8 @@ services:
       network: host
     image: frishi/comicvine-service
     container_name: comicvine-service
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       SERVICES: comicvine 
     volumes:
@@ -60,6 +66,8 @@ services:
       network: host
     image: frishi/threetwo-import-service
     container_name: threetwo-import-api
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "3000:3000"
     environment:
@@ -80,6 +88,8 @@ services:
       network: host
     image: frishi/threetwo-import-service
     container_name: import
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on: 
       - db
       - nats
@@ -98,6 +108,8 @@ services:
       network: host
     image: frishi/threetwo-import-service
     container_name: image-transformation
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./userdata:/threetwo-import-service/userdata
       - ./comics:/threetwo-import-service/comics
@@ -129,6 +141,8 @@ services:
   nginx:
     image: nginx
     container_name: reverse-proxy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "80:80"
     volumes:
