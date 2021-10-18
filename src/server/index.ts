@@ -3,13 +3,20 @@ import bodyParser from "body-parser";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import router from "./route";
+import cors from "cors";
 const amqp = require("amqplib/callback_api");
 
 // call express
 const app: Express = express(); // define our app using express
+app.use(cors({ origin: "*" }));
 
 const httpServer = createServer();
-export const io = new Server(httpServer, {});
+export const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  }
+});
 
 // configure app to use bodyParser for
 // Getting data from body of requests
