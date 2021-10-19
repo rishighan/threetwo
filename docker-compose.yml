@@ -10,6 +10,10 @@ services:
     env_file: ./docker-compose.env
     environment:
       DOCKER_SOCKET_HOST: ws://${DOCKER_GATEWAY_HOST:-host.docker.internal}:8051
+    entrypoint: 
+      - /bin/sh
+      - -c 
+      - ip -4 route list match 0/0 | awk '{print $$3" host.docker.internal"}' >> /etc/hosts && httpd-foreground
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
