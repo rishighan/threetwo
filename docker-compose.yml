@@ -12,6 +12,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.threetwo-ui.rule=Host(`threetwo.localhost`)"
+      - "traefik.http.services.threetwo.loadbalancer.server.port=8050"
+      - "traefik.docker.network=proxy"
     ports:
       - "8050:8050"
       - "3050:3050"
