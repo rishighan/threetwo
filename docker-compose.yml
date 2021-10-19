@@ -8,6 +8,8 @@ services:
     image: frishi/threetwo
     container_name: threetwo-ui
     env_file: ./docker-compose.env
+    environment:
+      DOCKERHOST: "{{.Node.Hostname}}"
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
