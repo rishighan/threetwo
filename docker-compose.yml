@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.threetwo-ui.rule=Host(`threetwo.localhost`)"
+      - "traefik.http.routers.threetwo-ui.rule=Host(`localhost`)"
       - "traefik.http.services.threetwo.loadbalancer.server.port=8050"
       - "traefik.docker.network=proxy"
     ports:
