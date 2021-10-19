@@ -19,7 +19,7 @@ services:
       - "3050:3050"
       - "8051:8051"
     depends_on:
-      # - rabbitmq 
+      - rabbitmq 
       # - db
       - traefik
       # - importapi
@@ -158,16 +158,16 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   
-  # rabbitmq:
-  #   image: 'bitnami/rabbitmq:latest'
-  #   container_name: queue
-  #   environment:
-  #     RABBITMQ_USERNAME: 'user'
-  #     RABBITMQ_PASSWORD: 'bitnami'
-  #   ports:
-  #     - "5672:5672"
-  #   networks:
-  #     - proxy
+  rabbitmq:
+    image: 'bitnami/rabbitmq:latest'
+    container_name: queue
+    environment:
+      RABBITMQ_USERNAME: 'user'
+      RABBITMQ_PASSWORD: 'bitnami'
+    ports:
+      - "5672:5672"
+    networks:
+      - proxy
 
 networks:
   proxy:
