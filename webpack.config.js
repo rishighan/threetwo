@@ -88,6 +88,9 @@ module.exports = {
       favicon: "./public/favicon.ico",
       title: "express-typescript-react",
     }),
+    new webpack.DefinePlugin({
+      "process.env.DOCKERHOST": JSON.stringify(process.env.DOCKERHOST),
+    }),
     new MiniCssExtractPlugin({
       filename: "./css/[name].css",
       chunkFilename: "./css/[id].css",
