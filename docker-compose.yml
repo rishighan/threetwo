@@ -9,7 +9,7 @@ services:
     container_name: threetwo-ui
     env_file: ./docker-compose.env
     environment:
-      DOCKER_SOCKET_HOST: host.docker.internal:8051
+      DOCKER_SOCKET_HOST: ws://${DOCKER_GATEWAY_HOST:-host.docker.internal}:8051
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
