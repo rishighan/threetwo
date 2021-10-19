@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.threetwo-ui.rule=Host(`threetwo.local`)"
+      - "traefik.http.routers.threetwo-ui.rule=Host(`threetwo.localhost`)"
     ports:
       - "8050:8050"
       - "3050:3050"
