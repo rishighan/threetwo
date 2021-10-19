@@ -15,7 +15,7 @@ export const io = new Server(httpServer, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
-  }
+  },
 });
 
 // configure app to use bodyParser for
@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const port: number = Number(process.env.PORT) || 8050; // set our port
 // set rabbitMQ host
 
-const rabbitMQConnectionString = process.env.RABBITMQ_URI || "amqp://localhost";
+const rabbitMQConnectionString = process.env.RABBITMQ_URI || "amqp://localhost:5672";
 
 // Send index.html on root request
 app.use(express.static("dist"));

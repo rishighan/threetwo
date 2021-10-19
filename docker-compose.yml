@@ -8,6 +8,10 @@ services:
     image: frishi/threetwo
     container_name: threetwo-ui
     env_file: ./docker-compose.env
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.threetwo-ui.rule=Host(`threetwo.local`)"
     ports:
       - "8050:8050"
       - "3050:3050"
@@ -15,7 +19,7 @@ services:
     depends_on:
       - rabbitmq 
       - db
-      - nginx
+      - traefik
       - importapi
       - import
       - imagetransformation
@@ -126,15 +130,31 @@ services:
     networks:
       - proxy
   
-  nginx:
-    image: nginx
-    container_name: reverse-proxy
+
+  traefik:
+    image: traefik:2.3.4
+    restart: unless-stopped
+    container_name: traefik
+    hostname: traefik
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.watch=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.localhost`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+    networks:
+      - proxy
     ports:
-      - "80:80"
+      - 80:80
+      - 8080:8080
+      - 443:443
     volumes:
-      - type: bind
-        source: ./proxy.conf
-        target: /etc/nginx/conf.d/default.conf
+      - /var/run/docker.sock:/var/run/docker.sock
   
   rabbitmq:
     image: 'bitnami/rabbitmq:latest'
