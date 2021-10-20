@@ -41,6 +41,11 @@ services:
       - "3080:3080"
     environment:
       SERVICES: api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.comicvine-service.rule=Host(`localhost`)"
+      - "traefik.http.services.comicvine-service.loadbalancer.server.port=3080"
+      - "traefik.docker.network=proxy"
     env_file: ./docker-env/comicvine-service.env
     volumes:
       - ./userdata:/comicvine-service/userdata
