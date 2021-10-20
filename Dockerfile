@@ -10,6 +10,7 @@ COPY nodemon.json /usr/src/threetwo
 COPY jsdoc.json /usr/src/threetwo
 
 RUN yarn
+ENV DOCKER_SOCKET_HOST cat /etc/hostname
 
 COPY . /usr/src/threetwo
 EXPOSE 3050
