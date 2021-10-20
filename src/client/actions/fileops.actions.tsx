@@ -2,6 +2,7 @@ import axios from "axios";
 import { IFolderData, IExtractedComicBookCoverFile } from "threetwo-ui-typings";
 import {
   API_BASE_URI,
+  COMICBOOKINFO_SERVICE_URI,
   IMPORT_SERVICE_BASE_URI,
   SOCKET_BASE_URI,
 } from "../constants/endpoints";
@@ -74,7 +75,7 @@ export const fetchComicBookMetadata =
     );
     await axios
       .request({
-        url: "http://localhost:8050/api/getComicCovers",
+        url: `${API_BASE_URI}/getComicCovers`,
         method: "POST",
         data: {
           extractionOptions,
@@ -190,7 +191,7 @@ export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
 
     axios
       .request({
-        url: "http://localhost:3080/api/comicvine/fetchresource",
+        url: `${COMICBOOKINFO_SERVICE_URI}/fetchresource`,
         method: "POST",
         data: {
           format: "json",

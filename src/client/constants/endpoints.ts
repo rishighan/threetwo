@@ -1,8 +1,38 @@
-export const COMICBOOKINFO_SERVICE_URI =
-  `http://${process.env.DOCKER_HOST}/api/comicvine` ||
-  "http://localhost:3080/api/comicvine";
-export const API_BASE_URI = "http://localhost:8050/api/";
-export const IMPORT_SERVICE_BASE_URI =
-  `http://${process.env.DOCKER_HOST}/api/import` ||
-  "http://localhost:3000/api/import";
-export const SOCKET_BASE_URI = "ws://localhost:8051";
+export const hostURIBuilder = (options: Record<string, string>): string => {
+  return (
+    options.protocol +
+    "://" +
+    options.host +
+    ":" +
+    options.port +
+    options.apiPath
+  );
+};
+
+export const COMICBOOKINFO_SERVICE_URI = hostURIBuilder({
+  protocol: "http",
+  host: process.env.DOCKER_HOST || "localhost",
+  port: "3080",
+  apiPath: "/api/comicvine",
+});
+
+export const API_BASE_URI = hostURIBuilder({
+  protocol: "http",
+  host: process.env.DOCKER_HOST || "localhost",
+  port: "8050",
+  apiPath: "/api",
+});
+
+export const IMPORT_SERVICE_BASE_URI = hostURIBuilder({
+  protocol: "http",
+  host: process.env.DOCKER_HOST || "localhost",
+  port: "3000",
+  apiPath: "/api/import",
+});
+
+export const SOCKET_BASE_URI = hostURIBuilder({
+  protocol: "ws",
+  host: process.env.DOCKER_HOST || "localhost",
+  port: "8051",
+  apiPath: ``,
+});

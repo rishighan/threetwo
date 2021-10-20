@@ -8,9 +8,7 @@ import { success } from "react-notification-system-redux";
 const WebSocketContext = createContext(null);
 export const WebSocketProvider = ({ children }): ReactElement => {
   const dispatch = useDispatch();
-  const socketHost =
-    `http://${process.env.DOCKER_HOST}:8051` || SOCKET_BASE_URI;
-  const socket: Socket = io(socketHost);
+  const socket: Socket = io(SOCKET_BASE_URI);
 
   socket.on("connect", () => {
     dispatch({
