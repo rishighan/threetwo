@@ -22,117 +22,123 @@ services:
       - "8051:8051"
     depends_on:
       - rabbitmq 
-      # - db
+      - db
+      - nats
       - traefik
-      # - importapi
-      # - import
-      # - imagetransformation
+      - importapi
+      - import
+      - imagetransformation
     networks:
       - proxy
 
-  # comicvineapi:
-  #   build:
-  #     context: https://github.com/rishighan/comicvine-service.git
-  #     network: host
-  #   image: frishi/comicvine-service
-  #   container_name: comicvine-api
-  #   ports:
-  #     - "3080:3080"
-  #   environment:
-  #     SERVICES: api
-  #   env_file: ./docker-env/comicvine-service.env
-  #   volumes:
-  #     - ./userdata:/comicvine-service/userdata
-  #   depends_on:
-  #     - nats
-  #   networks:
-  #     - proxy
+  comicvineapi:
+    build:
+      context: https://github.com/rishighan/comicvine-service.git
+      network: host
+    image: frishi/comicvine-service
+    container_name: comicvine-api
+    ports:
+      - "3080:3080"
+    environment:
+      SERVICES: api
+    env_file: ./docker-env/comicvine-service.env
+    volumes:
+      - ./userdata:/comicvine-service/userdata
+    depends_on:
+      - nats
+    networks:
+      - proxy
 
-  # comicvine:
-  #   build:
-  #     context: https://github.com/rishighan/comicvine-service.git
-  #     network: host
-  #   image: frishi/comicvine-service
-  #   container_name: comicvine-service
-  #   environment:
-  #     SERVICES: comicvine 
-  #   volumes:
-  #     - ./userdata:/comicvine-service/userdata
-  #   env_file: ./docker-env/comicvine-service.env
-  #   networks:
-  #     - proxy
+  comicvine:
+    build:
+      context: https://github.com/rishighan/comicvine-service.git
+      network: host
+    image: frishi/comicvine-service
+    container_name: comicvine-service
+    environment:
+      SERVICES: comicvine 
+    volumes:
+      - ./userdata:/comicvine-service/userdata
+    env_file: ./docker-env/comicvine-service.env
+    networks:
+      - proxy
   
-  # importapi:
-  #   build:
-  #     context: https://github.com/rishighan/threetwo-import-service.git
-  #     network: host
-  #   image: frishi/threetwo-import-service
-  #   container_name: threetwo-import-api
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     SERVICES: api
-  #   env_file: ./docker-env/threetwo-import-service.env
-  #   volumes:
-  #     - ./userdata:/threetwo-import-service/userdata
-  #     - ./comics:/threetwo-import-service/comics.
-  #   depends_on:
-  #     - nats
-  #     - db
-  #   networks:
-  #     - proxy
+  importapi:
+    build:
+      context: https://github.com/rishighan/threetwo-import-service.git
+      network: host
+    image: frishi/threetwo-import-service
+    container_name: threetwo-import-api
+    ports:
+      - "3000:3000"
+    environment:
+      SERVICES: api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.threetwo-import-api.rule=Host(`localhost`)"
+      - "traefik.http.services.threetwo-import-api.loadbalancer.server.port=3000"
+      - "traefik.docker.network=proxy"
+    env_file: ./docker-env/threetwo-import-service.env
+    volumes:
+      - ./userdata:/threetwo-import-service/userdata
+      - ./comics:/threetwo-import-service/comics.
+    depends_on:
+      - nats
+      - db
+    networks:
+      - proxy
   
-  # import:
-  #   build:
-  #     context: https://github.com/rishighan/threetwo-import-service.git
-  #     network: host
-  #   image: frishi/threetwo-import-service
-  #   container_name: import
-  #   depends_on: 
-  #     - db
-  #     - nats
-  #   environment:
-  #     SERVICES: import 
-  #   volumes:
-  #     - ./userdata:/threetwo-import-service/userdata
-  #     - ./comics:/threetwo-import-service/comics
-  #   env_file: ./docker-env/threetwo-import-service.env
-  #   networks:
-  #     - proxy
+  import:
+    build:
+      context: https://github.com/rishighan/threetwo-import-service.git
+      network: host
+    image: frishi/threetwo-import-service
+    container_name: import
+    depends_on: 
+      - db
+      - nats
+    environment:
+      SERVICES: import 
+    volumes:
+      - ./userdata:/threetwo-import-service/userdata
+      - ./comics:/threetwo-import-service/comics
+    env_file: ./docker-env/threetwo-import-service.env
+    networks:
+      - proxy
   
-  # imagetransformation:
-  #   build:
-  #     context: https://github.com/rishighan/threetwo-import-service.git
-  #     network: host
-  #   image: frishi/threetwo-import-service
-  #   container_name: image-transformation
-  #   volumes:
-  #     - ./userdata:/threetwo-import-service/userdata
-  #     - ./comics:/threetwo-import-service/comics
-  #   depends_on: 
-  #     - db 
-  #     - nats
-  #   environment:
-  #     SERVICES: imagetransformation 
-  #   env_file: ./docker-env/threetwo-import-service.env
-  #   networks:
-  #     - proxy
+  imagetransformation:
+    build:
+      context: https://github.com/rishighan/threetwo-import-service.git
+      network: host
+    image: frishi/threetwo-import-service
+    container_name: image-transformation
+    volumes:
+      - ./userdata:/threetwo-import-service/userdata
+      - ./comics:/threetwo-import-service/comics
+    depends_on: 
+      - db 
+      - nats
+    environment:
+      SERVICES: imagetransformation 
+    env_file: ./docker-env/threetwo-import-service.env
+    networks:
+      - proxy
 
-  # db:
-  #   image: 'bitnami/mongodb:latest'
-  #   container_name: database
-  #   networks:
-  #     - proxy
-  #   ports:
-  #     - "27017:27017"
-  #   volumes:
-  #     - 'mongodb_data:/bitnami/mongodb'
+  db:
+    image: 'bitnami/mongodb:latest'
+    container_name: database
+    networks:
+      - proxy
+    ports:
+      - "27017:27017"
+    volumes:
+      - 'mongodb_data:/bitnami/mongodb'
 
-  # nats:
-  #   image: nats:2
-  #   container_name: transporter
-  #   networks:
-  #     - proxy
+  nats:
+    image: nats:2
+    container_name: transporter
+    networks:
+      - proxy
   
 
   traefik:
