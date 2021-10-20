@@ -23,12 +23,10 @@ import sortBy from "array-sort-by";
 import { success } from "react-notification-system-redux";
 import { Socket } from "socket.io-client";
 
-const importServiceBaseURI =
-  `${process.env.DOCKER_HOST}:3000/api/import` || IMPORT_SERVICE_BASE_URI;
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
     .request<Array<IFolderData>>({
-      url: `${importServiceBaseURI}/walkFolders`,
+      url: `${IMPORT_SERVICE_BASE_URI}/walkFolders`,
       method: "POST",
       data: {
         basePathToWalk: path,
@@ -100,7 +98,7 @@ export const getComicBooks = (options) => async (dispatch) => {
   const { paginationOptions } = options;
   return axios
     .request({
-      url: `${importServiceBaseURI}/getComicBooks`,
+      url: `${IMPORT_SERVICE_BASE_URI}/getComicBooks`,
       method: "POST",
       data: {
         paginationOptions,
@@ -132,7 +130,7 @@ export const importToDB = (payload?: any) => (dispatch) => {
 
     return axios
       .request({
-        url: `${importServiceBaseURI}/rawImportToDb`,
+        url: `${IMPORT_SERVICE_BASE_URI}/rawImportToDb`,
         method: "POST",
         data: comicBookMetadata,
         transformResponse: (r: string) => JSON.parse(r),
@@ -158,7 +156,7 @@ export const fetchVolumeGroups = () => (dispatch) => {
     });
     axios
       .request({
-        url: `${importServiceBaseURI}/getComicBookGroups`,
+        url: `${IMPORT_SERVICE_BASE_URI}/getComicBookGroups`,
         method: "GET",
       })
       .then((data) => {
