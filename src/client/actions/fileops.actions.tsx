@@ -1,6 +1,10 @@
 import axios from "axios";
 import { IFolderData, IExtractedComicBookCoverFile } from "threetwo-ui-typings";
-import { API_BASE_URI, SOCKET_BASE_URI } from "../constants/endpoints";
+import {
+  API_BASE_URI,
+  IMPORT_SERVICE_BASE_URI,
+  SOCKET_BASE_URI,
+} from "../constants/endpoints";
 import {
   IMS_COMICBOOK_METADATA_FETCHED,
   IMS_COMIC_BOOK_GROUPS_FETCHED,
@@ -19,10 +23,12 @@ import sortBy from "array-sort-by";
 import { success } from "react-notification-system-redux";
 import { Socket } from "socket.io-client";
 
+const importServiceBaseURI =
+  `${process.env.DOCKER_HOST}:3000/api/import` || IMPORT_SERVICE_BASE_URI;
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
     .request<Array<IFolderData>>({
-      url: "http://localhost:3000/api/import/walkFolders",
+      url: `${importServiceBaseURI}/walkFolders`,
       method: "POST",
       data: {
         basePathToWalk: path,
@@ -94,7 +100,7 @@ export const getComicBooks = (options) => async (dispatch) => {
   const { paginationOptions } = options;
   return axios
     .request({
-      url: "http://localhost:3000/api/import/getComicBooks",
+      url: `${importServiceBaseURI}/getComicBooks`,
       method: "POST",
       data: {
         paginationOptions,
@@ -126,7 +132,7 @@ export const importToDB = (payload?: any) => (dispatch) => {
 
     return axios
       .request({
-        url: "http://localhost:3000/api/import/rawImportToDb",
+        url: `${importServiceBaseURI}/rawImportToDb`,
         method: "POST",
         data: comicBookMetadata,
         transformResponse: (r: string) => JSON.parse(r),
@@ -152,7 +158,7 @@ export const fetchVolumeGroups = () => (dispatch) => {
     });
     axios
       .request({
-        url: "http://localhost:3000/api/import/getComicBookGroups",
+        url: `${importServiceBaseURI}/getComicBookGroups`,
         method: "GET",
       })
       .then((data) => {
