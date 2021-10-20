@@ -91,9 +91,7 @@ module.exports = (env) => {
         title: "express-typescript-react",
       }),
       new webpack.DefinePlugin({
-        "process.env.DOCKER_SOCKET_HOST": JSON.stringify(
-          process.env.DOCKER_SOCKET_HOST,
-        ),
+        "process.env.DOCKER_HOST": JSON.stringify(process.env.DOCKER_HOST),
       }),
       new MiniCssExtractPlugin({
         filename: "./css/[name].css",
