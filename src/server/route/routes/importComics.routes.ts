@@ -1,11 +1,12 @@
 import router from "../router";
 import { Request, Response } from "express";
 import axios from "axios";
+import { IMPORT_SERVICE_BASE_URI } from "../../../client/constants/endpoints";
 
 router.route("/getComicCovers").post(async (req: Request, res: Response) => {
   typeof req.body === "object" ? req.body : {};
   await axios.request({
-    url: "http://localhost:3000/api/import/processAndImportToDB",
+    url: `${IMPORT_SERVICE_BASE_URI}/processAndImportToDB`,
     method: "POST",
     data: {
       extractionOptions: req.body.extractionOptions,
