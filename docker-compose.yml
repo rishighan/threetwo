@@ -78,6 +78,7 @@ services:
       - "3000:3000"
     environment:
       SERVICES: api
+      DOCKER_HOST: $HOSTNAME
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.threetwo-import-api.rule=Host(`localhost`)"
@@ -179,6 +180,7 @@ services:
       RABBITMQ_PASSWORD: 'bitnami'
     ports:
       - "5672:5672"
+      - "15672:15672"
     networks:
       - proxy
 
