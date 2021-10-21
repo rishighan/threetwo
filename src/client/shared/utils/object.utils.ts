@@ -21,7 +21,6 @@ const changes = (object, base) => {
   });
 };
 
-
 export type TraverseFunction<T> = (
   obj: T,
   prop: string,
