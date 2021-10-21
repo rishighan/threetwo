@@ -11,6 +11,7 @@ import ellipsize from "ellipsize";
 import { useDispatch, useSelector } from "react-redux";
 import { getComicBooks } from "../actions/fileops.actions";
 import { isNil } from "lodash";
+import { IMPORT_SERVICE_HOST } from "../constants/endpoints";
 
 interface IComicBookLibraryProps {
   matches?: unknown;
@@ -38,7 +39,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
   const RawFileDetails = ({ value }) => {
     if (!isNil(value.path)) {
       const encodedFilePath = encodeURI(
-        "http://localhost:3000" + removeLeadingPeriod(value.cover.filePath),
+        `${IMPORT_SERVICE_HOST}` + removeLeadingPeriod(value.cover.filePath),
       );
       const filePath = escapePoundSymbol(encodedFilePath);
       return (

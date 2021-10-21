@@ -5,6 +5,7 @@ import {
   PriorityEnum,
   SearchResponse,
 } from "threetwo-ui-typings";
+import { IMPORT_SERVICE_BASE_URI } from "../constants/endpoints";
 import {
   AIRDCPP_SEARCH_RESULTS_ADDED,
   AIRDCPP_SEARCH_RESULTS_UPDATED,
@@ -129,7 +130,7 @@ export const downloadAirDCPPItem =
       if (!isNil(downloadResult)) {
         bundleDBImportResult = await axios({
           method: "POST",
-          url: "http://localhost:3000/api/import/applyAirDCPPDownloadMetadata",
+          url: `${IMPORT_SERVICE_BASE_URI}/applyAirDCPPDownloadMetadata`,
           headers: {
             "Content-Type": "application/json; charset=utf-8",
           },
@@ -187,7 +188,7 @@ export const getBundlesForComic =
       }
       const comicObject = await axios({
         method: "POST",
-        url: "http://localhost:3000/api/import/getComicBookById",
+        url: `${IMPORT_SERVICE_BASE_URI}/getComicBookById`,
         headers: {
           "Content-Type": "application/json; charset=utf-8",
         },

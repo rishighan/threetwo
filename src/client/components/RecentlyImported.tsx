@@ -9,6 +9,7 @@ import {
 import { isNil, isUndefined, map } from "lodash";
 import { detectIssueTypes } from "../shared/utils/tradepaperback.utils";
 import Masonry from "react-masonry-css";
+import { IMPORT_SERVICE_HOST } from "../constants/endpoints";
 
 type RecentlyImportedProps = {
   comicBookCovers: any;
@@ -40,7 +41,7 @@ export const RecentlyImported = ({
             let comicName = "";
             if (!isNil(rawFileDetails)) {
               const encodedFilePath = encodeURI(
-                "http://localhost:3000" +
+                `${IMPORT_SERVICE_HOST}` +
                   removeLeadingPeriod(rawFileDetails.cover.filePath),
               );
               imagePath = escapePoundSymbol(encodedFilePath);

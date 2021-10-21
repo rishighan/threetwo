@@ -29,6 +29,7 @@ import {
   escapePoundSymbol,
 } from "../shared/utils/formatting.utils";
 import Sticky from "react-stickynode";
+import { IMPORT_SERVICE_HOST } from "../constants/endpoints";
 
 type ComicDetailProps = {};
 /**
@@ -465,7 +466,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   let comicBookTitle = "";
   if (!isNil(comicBookDetailData.rawFileDetails)) {
     const encodedFilePath = encodeURI(
-      "http://localhost:3000" +
+      `${IMPORT_SERVICE_HOST}` +
         removeLeadingPeriod(comicBookDetailData.rawFileDetails.cover.filePath),
     );
     imagePath = escapePoundSymbol(encodedFilePath);

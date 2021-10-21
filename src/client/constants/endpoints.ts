@@ -23,6 +23,12 @@ export const API_BASE_URI = hostURIBuilder({
   apiPath: "/api",
 });
 
+export const IMPORT_SERVICE_HOST = hostURIBuilder({
+  protocol: "http",
+  host: process.env.DOCKER_HOST || "localhost",
+  port: "3000",
+  apiPath: ``,
+});
 export const IMPORT_SERVICE_BASE_URI = hostURIBuilder({
   protocol: "http",
   host: process.env.DOCKER_HOST || "localhost",

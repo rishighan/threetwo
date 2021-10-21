@@ -12,7 +12,10 @@ import {
   IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
   IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
 } from "../constants/action-types";
-import { COMICBOOKINFO_SERVICE_URI } from "../constants/endpoints";
+import {
+  COMICBOOKINFO_SERVICE_URI,
+  IMPORT_SERVICE_BASE_URI,
+} from "../constants/endpoints";
 
 const http = rateLimiter(axios.create(), {
   maxRequests: 1,
@@ -67,7 +70,7 @@ export const getComicBookDetailById =
       IMS_inProgress: true,
     });
     const result = await axios.request({
-      url: `http://localhost:3000/api/import/getComicBookById`,
+      url: `${IMPORT_SERVICE_BASE_URI}/getComicBookById`,
       method: "POST",
       data: {
         id: comicBookObjectId,
@@ -87,7 +90,7 @@ export const applyComicVineMatch =
       IMS_inProgress: true,
     });
     const result = await axios.request({
-      url: "http://localhost:3000/api/import/applyComicVineMetadata",
+      url: `${IMPORT_SERVICE_BASE_URI}/applyComicVineMetadata`,
       method: "POST",
       data: {
         match,
@@ -109,7 +112,7 @@ export const extractComicArchive =
     });
     const extractedComicBookArchive = await axios({
       method: "POST",
-      url: "http://localhost:3000/api/import/unrarArchive",
+      url: `${IMPORT_SERVICE_BASE_URI}/unrarArchive`,
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
@@ -122,9 +125,9 @@ export const extractComicArchive =
       const foo = page.path.split("/");
       const folderName = foo[foo.length - 1];
       const imagePath = encodeURI(
-        "http://localhost:3000/userdata/expanded/" +
+        `${IMPORT_SERVICE_BASE_URI}/userdata/expanded/` +
           folderName +
-          "/" +
+          `/` +
           page.name +
           page.extension,
       );
