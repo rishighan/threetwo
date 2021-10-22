@@ -105,7 +105,7 @@ services:
       - nats
     environment:
       SERVICES: import 
-      DOCKER_RABBITMQ_CONNECTION_STRING: `amqp://user:bitnami@rabbitmq:5672`
+      DOCKER_RABBITMQ_CONNECTION_STRING: 'amqp://user:bitnami@rabbitmq:5672'
     volumes:
       - ./userdata:/threetwo-import-service/userdata
       - ./comics:/threetwo-import-service/comics
