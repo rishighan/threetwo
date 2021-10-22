@@ -78,7 +78,7 @@ services:
       - "3000:3000"
     environment:
       SERVICES: api
-      DOCKER_RABBITMQ_CONNECTION_STRING: `amqp://user:bitnami@rabbitmq:5672`
+      DOCKER_RABBITMQ_CONNECTION_STRING: 'amqp://user:bitnami@rabbitmq:5672'
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.threetwo-import-api.rule=Host(`localhost`)"
