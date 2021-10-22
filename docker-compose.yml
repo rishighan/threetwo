@@ -78,7 +78,7 @@ services:
       - "3000:3000"
     environment:
       SERVICES: api
-      DOCKER_HOST: $HOSTNAME
+      DOCKER_RABBITMQ_HOST: "rabbitmq"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.threetwo-import-api.rule=Host(`localhost`)"
