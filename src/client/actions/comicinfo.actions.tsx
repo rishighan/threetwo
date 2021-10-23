@@ -29,7 +29,7 @@ export const comicinfoAPICall = (options) => async (dispatch) => {
       type: CV_API_CALL_IN_PROGRESS,
       inProgress: true,
     });
-    const serviceURI = COMICBOOKINFO_SERVICE_URI + options.callURIAction;
+    const serviceURI = `${COMICBOOKINFO_SERVICE_URI}/${options.callURIAction}`;
     const response = await http(serviceURI, {
       method: options.callMethod,
       params: options.callParams,
