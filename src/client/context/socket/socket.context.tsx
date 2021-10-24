@@ -9,8 +9,8 @@ const WebSocketContext = createContext(null);
 export const WebSocketProvider = ({ children }): ReactElement => {
   const dispatch = useDispatch();
   const socket: Socket = io(SOCKET_BASE_URI);
-
   socket.on("connect", () => {
+    console.log("connected");
     dispatch({
       type: RMQ_SOCKET_CONNECTED,
       isSocketConnected: true,
@@ -35,6 +35,7 @@ export const WebSocketProvider = ({ children }): ReactElement => {
     console.log(`disconnect`);
   });
 
+  socket.emit("bastard", { name: "puk" });
   const ws: any = {
     socket,
   };

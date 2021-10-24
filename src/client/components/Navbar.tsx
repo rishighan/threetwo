@@ -2,13 +2,12 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const Navbar: React.FunctionComponent = (props) => {
-
   return (
     <nav className="navbar is-fixed-top">
       <div className="navbar-brand">
         <a className="navbar-item" href="http://bulma.io">
           <img
-            src="threetwo.png"
+            src="public/threetwo.png"
             alt="ThreeTwo! A comic book curator"
             width="112"
             height="28"

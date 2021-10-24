@@ -1,7 +1,7 @@
 import express, { Request, Response, Router, Express } from "express";
 import bodyParser from "body-parser";
 import { createServer } from "http";
-import { Server } from "socket.io";
+
 import router from "./route";
 import cors from "cors";
 const amqp = require("amqplib/callback_api");
@@ -9,14 +9,6 @@ const amqp = require("amqplib/callback_api");
 // call express
 const app: Express = express(); // define our app using express
 app.use(cors({ origin: "*" }));
-
-const httpServer = createServer();
-export const io = new Server(httpServer, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-});
 
 // configure app to use bodyParser for
 // Getting data from body of requests
@@ -29,10 +21,6 @@ const port: number = Number(process.env.PORT) || 8050; // set our port
 const rabbitMQConnectionString =
   process.env.RABBITMQ_URI || "amqp://localhost:5672";
 
-// Send index.html on root request
-app.use(express.static("dist"));
-app.use(express.static("public"));
-
 app.get("/", (req: Request, res: Response) => {
   console.log("sending index.html");
   res.sendFile("/dist/index.html");
@@ -43,16 +31,11 @@ app.get("/", (req: Request, res: Response) => {
 const routes: Router[] = Object.values(router);
 app.use("/api", routes);
 
+// Send index.html on root request
+app.use(express.static("dist"));
+app.use(express.static("public"));
+
 app.listen(port);
-
-io.on("connection", (socket) => {
-  console.log("Socket connected");
-
-  //Whenever someone disconnects this piece of code executed
-  socket.on("disconnect", () => {
-    console.log("Socket disconnected");
-  });
-});
 
 amqp.connect(`${rabbitMQConnectionString}`, (error0, connection) => {
   if (error0) {
@@ -74,7 +57,7 @@ amqp.connect(`${rabbitMQConnectionString}`, (error0, connection) => {
       queue,
       (data) => {
         //Socket Trigger All Clients
-        io.sockets.emit("coverExtracted", JSON.parse(data.content.toString()));
+        // io.sockets.emit("coverExtracted", JSON.parse(data.content.toString()));
       },
       {
         noAck: true,
@@ -83,7 +66,4 @@ amqp.connect(`${rabbitMQConnectionString}`, (error0, connection) => {
   });
 });
 
-// socket server
-httpServer.listen(8051);
-console.log(`Socket server is listening on 8051`);
 console.log(`Server is listening on ${port}`);
