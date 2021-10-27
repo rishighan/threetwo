@@ -16,6 +16,8 @@ import {
   IMS_COMIC_BOOK_GROUPS_CALL_FAILED,
   IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
   IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
+  LS_IMPORT,
+  LS_COVER_EXTRACTED,
 } from "../constants/action-types";
 const initialState = {
   IMSCallInProgress: false,
@@ -114,7 +116,19 @@ function fileOpsReducer(state = initialState, action) {
       return {
         ...state,
         extractedComicBookArchive: [],
-      }
+      };
+    }
+
+    case LS_IMPORT: {
+      return {
+        ...state,
+      };
+    }
+    case LS_COVER_EXTRACTED: {
+      console.log("BASH", action);
+      return {
+        ...state,
+      };
     }
     default:
       return state;

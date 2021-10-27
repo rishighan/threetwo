@@ -2,7 +2,6 @@ import React, { ReactElement, useCallback, useContext } from "react";
 import { isEmpty, isNil, isUndefined } from "lodash";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchComicBookMetadata } from "../actions/fileops.actions";
-import { WebSocketContext } from "../context/socket/socket.context";
 import { IFolderData } from "threetwo-ui-typings";
 import { LazyLog, ScrollFollow } from "react-lazylog";
 import DynamicList, { createCache } from "react-window-dynamic-list";
@@ -30,7 +29,6 @@ interface IProps {
  */
 
 export const Import = (props: IProps): ReactElement => {
-  const socket = useContext(WebSocketContext);
   const dispatch = useDispatch();
   const isSocketConnected = useSelector((state: RootState) => {
     console.log(state);
@@ -44,8 +42,7 @@ export const Import = (props: IProps): ReactElement => {
   );
   const initiateImport = useCallback(() => {
     if (typeof props.path !== "undefined") {
-      console.log("asdasd");
-      dispatch(fetchComicBookMetadata(props.path, socket));
+      dispatch(fetchComicBookMetadata(props.path));
     }
   }, [dispatch]);
   const cache = createCache();

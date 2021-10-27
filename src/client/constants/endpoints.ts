@@ -37,8 +37,8 @@ export const IMPORT_SERVICE_BASE_URI = hostURIBuilder({
 });
 
 export const SOCKET_BASE_URI = hostURIBuilder({
-  protocol: "ws",
+  protocol: "http",
   host: process.env.DOCKER_HOST || "localhost",
   port: "3001",
-  apiPath: ``,
+  apiPath: `/`,
 });

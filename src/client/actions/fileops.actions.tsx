@@ -4,7 +4,6 @@ import {
   API_BASE_URI,
   COMICBOOKINFO_SERVICE_URI,
   IMPORT_SERVICE_BASE_URI,
-  SOCKET_BASE_URI,
 } from "../constants/endpoints";
 import {
   IMS_COMICBOOK_METADATA_FETCHED,
@@ -18,11 +17,11 @@ import {
   IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
   IMS_CV_METADATA_IMPORT_SUCCESSFUL,
   IMS_CV_METADATA_IMPORT_FAILED,
+  LS_IMPORT,
 } from "../constants/action-types";
 import { refineQuery } from "../shared/utils/filenameparser.utils";
 import sortBy from "array-sort-by";
 import { success } from "react-notification-system-redux";
-import { Socket } from "socket.io-client";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
@@ -50,50 +49,35 @@ export async function walkFolder(path: string): Promise<Array<IFolderData>> {
  * @param  {Object} options
  * @return {Promise<string>}                HTML of the page
  */
-export const fetchComicBookMetadata =
-  (options, socketInstance: Socket) => async (dispatch) => {
-    const socket = socketInstance.socket;
-    const extractionOptions = {
-      extractTarget: "cover",
-      targetExtractionFolder: "./userdata/covers",
-      extractionMode: "bulk",
-      paginationOptions: {
-        pageLimit: 25,
-        page: 1,
-      },
-    };
-    const walkedFolders = await walkFolder("./comics");
-    dispatch(
-      success({
-        // uid: 'once-please', // you can specify your own uid if required
-        title: "Import Started",
-        message: `<span class="icon-text has-text-success"><i class="fas fa-plug"></i></span> Socket <span class="has-text-info">${socket.id}</span> connected. <strong>${walkedFolders.length}</strong> comics scanned.`,
-        dismissible: "click",
-        position: "tr",
-        autoDismiss: 0,
-      }),
-    );
-    await axios
-      .request({
-        url: `${API_BASE_URI}/getComicCovers`,
-        method: "POST",
-        data: {
-          extractionOptions,
-          walkedFolders,
-        },
-      })
-      .then((response) => {
-        console.log("Response from import call", response);
-      });
-
-    socket.on("coverExtracted", (data) => {
-      console.log(data);
-      dispatch({
-        type: IMS_COMICBOOK_METADATA_FETCHED,
-        data,
-      });
-    });
+export const fetchComicBookMetadata = (options) => async (dispatch) => {
+  const extractionOptions = {
+    extractTarget: "cover",
+    targetExtractionFolder: "./userdata/covers",
+    extractionMode: "bulk",
+    paginationOptions: {
+      pageLimit: 25,
+      page: 1,
+    },
   };
+  const walked = await walkFolder("./comics");
+  // dispatch(
+  //   success({
+  //     // uid: 'once-please', // you can specify your own uid if required
+  //     title: "Import Started",
+  //     message: `<span class="icon-text has-text-success"><i class="fas fa-plug"></i></span> Socket <span class="has-text-info">${socket.id}</span> connected. <strong>${walkedFolders.length}</strong> comics scanned.`,
+  //     dismissible: "click",
+  //     position: "tr",
+  //     autoDismiss: 0,
+  //   }),
+  // );
+  walked.forEach((walkedFolders) =>
+    dispatch({
+      type: LS_IMPORT,
+      meta: { remote: true },
+      data: { extractionOptions, walkedFolders },
+    }),
+  );
+};
 
 export const getComicBooks = (options) => async (dispatch) => {
   const { paginationOptions } = options;
@@ -128,7 +112,6 @@ export const importToDB = (payload?: any) => (dispatch) => {
     dispatch({
       type: IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
     });
-
     return axios
       .request({
         url: `${IMPORT_SERVICE_BASE_URI}/rawImportToDb`,

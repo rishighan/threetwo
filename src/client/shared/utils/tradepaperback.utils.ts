@@ -1,4 +1,4 @@
-import { flatten, compact, map, isEmpty } from "lodash";
+import { flatten, compact, map, isEmpty, isNil } from "lodash";
 import axios from "axios";
 
 export const detectIssueTypes = (deck: string): any => {
@@ -33,17 +33,23 @@ const getIssueTypeDisplayName = (
   regexPattern: RegExp[],
   displayName: string,
 ) => {
-  const matches = [...regexPattern]
-    .map((regex) => {
-      return deck.match(regex);
-    })
-    .map((item) => {
-      if (item !== undefined) {
-        return item;
-      }
-    });
-  const results = flatten(compact(matches));
-  if (!isEmpty(results)) {
-    return { displayName, results };
+  try {
+    const matches = [...regexPattern]
+      .map((regex) => {
+        if (!isNil(deck)) {
+          return deck.match(regex);
+        }
+      })
+      .map((item) => {
+        if (item !== undefined) {
+          return item;
+        }
+      });
+    const results = flatten(compact(matches));
+    if (!isEmpty(results)) {
+      return { displayName, results };
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
