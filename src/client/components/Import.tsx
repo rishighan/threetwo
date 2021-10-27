@@ -31,7 +31,6 @@ interface IProps {
 export const Import = (props: IProps): ReactElement => {
   const dispatch = useDispatch();
   const isSocketConnected = useSelector((state: RootState) => {
-    console.log(state);
     return state.fileOps.isSocketConnected;
   });
   const importResults = useSelector(
