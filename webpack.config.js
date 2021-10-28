@@ -72,7 +72,7 @@ module.exports = (env) => {
       port: 3050,
       open: true,
       hot: true,
-      contentBase: "./dist"
+      contentBase: "./dist",
       proxy: {
         "/api/**": {
           target: "http://localhost:8050",
