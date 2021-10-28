@@ -130,6 +130,24 @@ services:
     env_file: ./docker-env/threetwo-import-service.env
     networks:
       - proxy
+  
+  libraryqueue:
+    build:
+      context: https://github.com/rishighan/threetwo-import-service.git
+      network: host
+    image: frishi/threetwo-import-service
+    container_name: library-queue
+    volumes:
+      - ./userdata:/threetwo-import-service/userdata
+      - ./comics:/threetwo-import-service/comics
+    depends_on: 
+      - db 
+      - nats
+    environment:
+      SERVICES: libraryqueue 
+    env_file: ./docker-env/threetwo-import-service.env
+    networks:
+      - proxy
 
   db:
     image: 'bitnami/mongodb:latest'
