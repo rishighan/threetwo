@@ -19,9 +19,9 @@ services:
     ports:
       - "8050:8050"
       - "3050:3050"
-      - "8051:8051"
     depends_on:
       - db
+      - redis
       - nats
       - traefik
       - importapi
@@ -75,6 +75,7 @@ services:
     container_name: threetwo-import-api
     ports:
       - "3000:3000"
+      - "3001:3001"
     environment:
       SERVICES: api
       DOCKER_RABBITMQ_CONNECTION_STRING: 'amqp://user:bitnami@rabbitmq:5672'
