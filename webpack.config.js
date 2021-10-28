@@ -99,6 +99,9 @@ module.exports = (env) => {
       }),
       new webpack.DefinePlugin({
         "process.env.DOCKER_HOST": JSON.stringify(process.env.DOCKER_HOST),
+        "process.env.LIBRARY_SOCKET_HOST": JSON.stringify(
+          process.env.LIBRARY_SOCKET_HOST,
+        ),
       }),
       new MiniCssExtractPlugin({
         filename: "./css/[name].css",
