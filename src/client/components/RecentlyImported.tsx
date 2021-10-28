@@ -66,7 +66,7 @@ export const RecentlyImported = ({
                 <div className="content is-flex is-flex-direction-row">
                   {!isNil(sourcedMetadata.comicvine) && (
                     <span className="icon cv-icon is-small">
-                      <img src="/dist/img/cvlogo.svg" />
+                      <img src="/img/cvlogo.svg" />
                     </span>
                   )}
                   {/* Raw file presence  */}

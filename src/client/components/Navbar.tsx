@@ -5,14 +5,14 @@ const Navbar: React.FunctionComponent = (props) => {
   return (
     <nav className="navbar is-fixed-top">
       <div className="navbar-brand">
-        <a className="navbar-item" href="http://bulma.io">
+        <Link to="/" className="navbar-item">
           <img
-            src="public/threetwo.png"
+            src="/img/threetwo.svg"
             alt="ThreeTwo! A comic book curator"
             width="112"
             height="28"
           />
-        </a>
+        </Link>
 
         <a className="navbar-item is-hidden-desktop">
           <span className="icon">

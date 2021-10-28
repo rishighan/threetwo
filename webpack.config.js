@@ -5,6 +5,7 @@ const webpack = require("webpack");
 const outputDirectory = "dist";
 const BundleAnalyzerPlugin =
   require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = (env) => {
   return {
@@ -72,7 +73,6 @@ module.exports = (env) => {
       port: 3050,
       open: true,
       hot: true,
-      contentBase: "./dist",
       proxy: {
         "/api/**": {
           target: "http://localhost:8050",
@@ -86,6 +86,12 @@ module.exports = (env) => {
     },
     plugins: [
       // new BundleAnalyzerPlugin(),
+      new CopyPlugin({
+        patterns: [{ from: "./src/client/assets/img/", to: "img/" }],
+        options: {
+          concurrency: 100,
+        },
+      }),
       new HtmlWebpackPlugin({
         template: "./public/index.html",
         favicon: "./public/favicon.ico",

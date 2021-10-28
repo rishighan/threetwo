@@ -75,7 +75,7 @@ export const AcquisitionPanel = (
             onClick={() => getDCPPSearchResults(dcppQuery)}
           >
             <span className="icon is-small">
-              <img src="/dist/img/airdcpp_logo.svg" />
+              <img src="/img/airdcpp_logo.svg" />
             </span>
             <span className="airdcpp-text">Search on AirDC++</span>
           </button>
