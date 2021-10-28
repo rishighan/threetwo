@@ -10,7 +10,7 @@ module.exports = (env) => {
   return {
     entry: ["babel-polyfill", "./src/client/index.tsx"],
     output: {
-      path: path.join(__dirname, outputDirectory),
+      path: path.resolve(__dirname, outputDirectory),
       filename: "./js/[name].bundle.js",
     },
     devtool: "source-map",
@@ -72,6 +72,7 @@ module.exports = (env) => {
       port: 3050,
       open: true,
       hot: true,
+      contentBase: "./dist"
       proxy: {
         "/api/**": {
           target: "http://localhost:8050",
