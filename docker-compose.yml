@@ -4,7 +4,6 @@ services:
   threetwo:
     build:
       context: .
-      network: host
     image: frishi/threetwo
     container_name: threetwo-ui
     env_file: ./docker-compose.env
@@ -33,7 +32,6 @@ services:
   comicvineapi:
     build:
       context: https://github.com/rishighan/comicvine-service.git
-      network: host
     image: frishi/comicvine-service
     container_name: comicvine-api
     ports:
@@ -56,7 +54,6 @@ services:
   comicvine:
     build:
       context: https://github.com/rishighan/comicvine-service.git
-      network: host
     image: frishi/comicvine-service
     container_name: comicvine-service
     environment:
@@ -70,7 +67,6 @@ services:
   importapi:
     build:
       context: https://github.com/rishighan/threetwo-import-service.git
-      network: host
     image: frishi/threetwo-import-service
     container_name: threetwo-import-api
     ports:
@@ -96,7 +92,6 @@ services:
   import:
     build:
       context: https://github.com/rishighan/threetwo-import-service.git
-      network: host
     image: frishi/threetwo-import-service
     container_name: import
     depends_on: 
@@ -115,7 +110,6 @@ services:
   imagetransformation:
     build:
       context: https://github.com/rishighan/threetwo-import-service.git
-      network: host
     image: frishi/threetwo-import-service
     container_name: image-transformation
     volumes:
@@ -133,7 +127,6 @@ services:
   libraryqueue:
     build:
       context: https://github.com/rishighan/threetwo-import-service.git
-      network: host
     image: frishi/threetwo-import-service
     container_name: library-queue
     volumes:
