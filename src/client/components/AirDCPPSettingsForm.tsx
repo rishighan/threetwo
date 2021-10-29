@@ -11,40 +11,20 @@ export const AirDCPPSettingsForm = (): ReactElement => {
       validate={validate}
       render={({ handleSubmit }) => (
         <form onSubmit={handleSubmit}>
-          <h2>Simple Default Input</h2>
-          <div>
-            <label>First Name</label>
-            <Field
-              name="firstName"
-              component="input"
-              placeholder="First Name"
-            />
+          <h2>Hub Connection Information</h2>
+          <div className="field">
+            <label className="label">Hub URL</label>
+            <div className="control">
+              <Field
+                name="airdcpp_hostname"
+                component="input"
+                className="input"
+                placeholder="adc://hub.url"
+              />
+            </div>
           </div>
 
-          <h2>Render Function</h2>
-          <Field
-            name="bio"
-            render={({ input, meta }) => (
-              <div>
-                <label>Bio</label>
-                <textarea {...input} />
-                {meta.touched && meta.error && <span>{meta.error}</span>}
-              </div>
-            )}
-          />
-
-          <h2>Render Function as Children</h2>
-          <Field name="phone">
-            {({ input, meta }) => (
-              <div>
-                <label>Phone</label>
-                <input type="text" {...input} placeholder="Phone" />
-                {meta.touched && meta.error && <span>{meta.error}</span>}
-              </div>
-            )}
-          </Field>
-
-          <button type="submit">Submit</button>
+          <button type="submit" className="button is-primary">Submit</button>
         </form>
       )}
     />

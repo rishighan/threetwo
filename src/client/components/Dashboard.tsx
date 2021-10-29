@@ -4,7 +4,7 @@ import ZeroState from "./ZeroState";
 import { RecentlyImported } from "./RecentlyImported";
 import { VolumeGroups } from "./VolumeGroups";
 import { getComicBooks } from "../actions/fileops.actions";
-import { isEmpty } from "lodash";
+import { isEmpty, isNil, isUndefined } from "lodash";
 
 export const Dashboard = (): ReactElement => {
   const dispatch = useDispatch();
@@ -22,6 +22,9 @@ export const Dashboard = (): ReactElement => {
   const recentComics = useSelector(
     (state: RootState) => state.fileOps.recentComics,
   );
+  const volumeGroups = useSelector(
+    (state: RootState) => state.fileOps.comicVolumeGroups,
+  );
   return (
     <div className="container">
       <section className="section">
@@ -30,7 +33,7 @@ export const Dashboard = (): ReactElement => {
         {!isEmpty(recentComics) && !isEmpty(recentComics.docs) ? (
           <>
             <RecentlyImported comicBookCovers={recentComics} />
-            <VolumeGroups />
+            {!isEmpty(volumeGroups) ? <VolumeGroups /> : null}
           </>
         ) : (
           <ZeroState
