@@ -5,8 +5,8 @@ import thunk from "redux-thunk";
 import createRootReducer from "../reducers";
 import socketIO from "socket.io-client";
 import socketIoMiddleware from "redux-socket.io-middleware";
-import { SOCKET_BASE_URI } from "../constants/endpoints";
-const io = socketIO(SOCKET_BASE_URI);
+// import { SOCKET_BASE_URI } from "../constants/endpoints";
+const io = socketIO(`ws://importapi:3001`);
 export const history = createBrowserHistory();
 const configureStore = (initialState) => {
   const store = createStore(
