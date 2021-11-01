@@ -10,11 +10,11 @@ services:
     environment:
       DOCKER_HOST: $HOSTNAME
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.threetwo-ui.rule=Host(`localhost`)"
-      - "traefik.http.services.threetwo-ui.loadbalancer.server.port=8050"
-      - "traefik.docker.network=proxy"
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.threetwo-ui.rule=Host(`localhost`)"
+    #   - "traefik.http.services.threetwo-ui.loadbalancer.server.port=8050"
+    #   - "traefik.docker.network=proxy"
     ports:
       - "8050:8050"
       - "3050:3050"
@@ -40,11 +40,11 @@ services:
       - "3080:3080"
     environment:
       SERVICES: api
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.comicvine-service.rule=Host(`localhost`)"
-      - "traefik.http.services.comicvine-service.loadbalancer.server.port=3080"
-      - "traefik.docker.network=proxy"
+    # labels:
+      # - "traefik.enable=true"
+      # - "traefik.http.routers.comicvine-service.rule=Host(`localhost`)"
+      # - "traefik.http.services.comicvine-service.loadbalancer.server.port=3080"
+      # - "traefik.docker.network=proxy"
     env_file: ./docker-env/comicvine-service.env
     volumes:
       - ./userdata:/comicvine-service/userdata
@@ -76,12 +76,12 @@ services:
       - "3001:3001"
     environment:
       SERVICES: api
-    labels:
-      - "traefik.enable=true"
-      - "traefik.wss.protocol=http"
-      - "traefik.http.routers.importapi.rule=Host(`localhost`)"
-      - "traefik.http.services.importapi.loadbalancer.server.port=3000"
-      - "traefik.docker.network=proxy"
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.wss.protocol=http"
+    #   - "traefik.http.routers.importapi.rule=Host(`localhost`)"
+    #   - "traefik.http.services.importapi.loadbalancer.server.port=3000"
+    #   - "traefik.docker.network=proxy"
     env_file: ./docker-env/threetwo-import-service.env
     volumes:
       - ./userdata:/threetwo-import-service/userdata
