@@ -162,6 +162,8 @@ services:
   redis:
     image: 'bitnami/redis:latest'
     container_name: queue
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
     networks:
       - proxy
     ports:

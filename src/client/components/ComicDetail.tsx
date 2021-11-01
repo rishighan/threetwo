@@ -467,7 +467,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   if (!isNil(comicBookDetailData.rawFileDetails)) {
     const encodedFilePath = encodeURI(
       `${IMPORT_SERVICE_HOST}` +
-        removeLeadingPeriod(comicBookDetailData.rawFileDetails.cover.filePath),
+        removeLeadingPeriod(comicBookDetailData.rawFileDetails.path),
     );
     imagePath = escapePoundSymbol(encodedFilePath);
     comicBookTitle = comicBookDetailData.rawFileDetails.name;

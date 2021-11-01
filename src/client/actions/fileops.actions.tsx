@@ -90,6 +90,7 @@ export const getComicBooks = (options) => async (dispatch) => {
       },
     })
     .then((response) => {
+      console.log(response);
       dispatch({
         type: IMS_RECENT_COMICS_FETCHED,
         data: response.data,
