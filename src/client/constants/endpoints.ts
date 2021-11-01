@@ -40,10 +40,10 @@ export const IMPORT_SERVICE_BASE_URI = hostURIBuilder({
   apiPath: "/api/import",
 });
 
-export const SOCKET_BASE_URI = hostURIBuilder({
-  protocol: "http",
-  // host: process.env.LIBRARY_SOCKET_HOST || "localhost",
-  host: "localhost",
-  port: "3001",
-  apiPath: `/`,
-});
+// export const SOCKET_BASE_URI = hostURIBuilder({
+//   protocol: "http",
+//   // host: process.env.LIBRARY_SOCKET_HOST || "localhost",
+//   host: "localhost",
+//   port: "3001",
+//   apiPath: `/`,
+// });
