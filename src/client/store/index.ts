@@ -5,8 +5,9 @@ import thunk from "redux-thunk";
 import createRootReducer from "../reducers";
 import { io } from "socket.io-client";
 import socketIoMiddleware from "redux-socket.io-middleware";
-// import { SOCKET_BASE_URI } from "../constants/endpoints";
-const socketConnection = io(`http://rook:3001`);
+import { SOCKET_BASE_URI } from "../constants/endpoints";
+
+const socketConnection = io(SOCKET_BASE_URI);
 
 export const history = createBrowserHistory();
 const configureStore = (initialState) => {
