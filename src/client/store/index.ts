@@ -6,7 +6,7 @@ import createRootReducer from "../reducers";
 import { io } from "socket.io-client";
 import socketIoMiddleware from "redux-socket.io-middleware";
 // import { SOCKET_BASE_URI } from "../constants/endpoints";
-// const socketConnection = io(`http://rook:3001`);
+const socketConnection = io(`http://rook:3001`);
 
 export const history = createBrowserHistory();
 const configureStore = (initialState) => {
@@ -15,7 +15,7 @@ const configureStore = (initialState) => {
     initialState,
     compose(
       applyMiddleware(
-        // socketIoMiddleware(socketConnection),
+        socketIoMiddleware(socketConnection),
         thunk,
         routerMiddleware(history),
       ),
