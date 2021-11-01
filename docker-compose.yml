@@ -7,6 +7,7 @@ services:
     image: frishi/threetwo
     container_name: threetwo-ui
     env_file: ./docker-compose.env
+    environment:
       UNDERLYING_HOSTNAME: rook
     restart: unless-stopped
     ports:
