@@ -192,8 +192,10 @@ networks:
 volumes:
   comics:
     name: ${COMICS_DIRECTORY}
+    external: false
   userdata:
     name: ${USERDATA_DIRECTORY}
+    external: false
   mongodb_data:
     driver: local
 
