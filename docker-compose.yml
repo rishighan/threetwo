@@ -35,13 +35,11 @@ services:
     ports:
       - "3080:3080"
     volumes:
-      - "comics:/comics"
-      - "userdata:/userdata"
+      - "comics:/comicvine-service/comics"
+      - "userdata:/comicvine-service/userdata"
     environment:
       SERVICES: api
     env_file: ./docker-env/comicvine-service.env
-    volumes:
-      - ./userdata:/comicvine-service/userdata
     depends_on:
       - nats
     networks:
@@ -55,7 +53,8 @@ services:
     environment:
       SERVICES: comicvine 
     volumes:
-      - ./userdata:/comicvine-service/userdata
+      - "comics:/comicvine-service/comics"
+      - "userdata:/comicvine-service/userdata"
     env_file: ./docker-env/comicvine-service.env
     networks:
       - proxy
@@ -75,8 +74,8 @@ services:
       SERVICES: api
     env_file: ./docker-env/threetwo-import-service.env
     volumes:
-      - ./userdata:/threetwo-import-service/userdata
-      - ./comics:/threetwo-import-service/comics.
+      - "userdata:/threetwo-import-service/userdata"
+      - "comics:/threetwo-import-service/comics"
     depends_on:
       - nats
       - db
@@ -94,8 +93,8 @@ services:
     environment:
       SERVICES: import 
     volumes:
-      - ./userdata:/threetwo-import-service/userdata
-      - ./comics:/threetwo-import-service/comics
+      - "userdata:/threetwo-import-service/userdata"
+      - "comics:/threetwo-import-service/comics"
     env_file: ./docker-env/threetwo-import-service.env
     networks:
       - proxy
@@ -106,8 +105,8 @@ services:
     image: frishi/threetwo-import-service
     container_name: image-transformation
     volumes:
-      - ./userdata:/threetwo-import-service/userdata
-      - ./comics:/threetwo-import-service/comics
+      - "userdata:/threetwo-import-service/userdata"
+      - "comics:/threetwo-import-service/comics"
     depends_on: 
       - db 
       - nats
@@ -123,8 +122,8 @@ services:
     image: frishi/threetwo-import-service
     container_name: library-queue
     volumes:
-      - ./userdata:/threetwo-import-service/userdata
-      - ./comics:/threetwo-import-service/comics
+      - "userdata:/threetwo-import-service/userdata"
+      - "comics:/threetwo-import-service/comics"
     depends_on: 
       - db 
       - nats
