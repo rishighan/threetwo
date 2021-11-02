@@ -6,10 +6,11 @@ services:
       context: .
     image: frishi/threetwo
     container_name: threetwo-ui
-    env_file: ./docker-compose.env
-    environment:
-      UNDERLYING_HOSTNAME: rook
+    env_file: ./docker-env/docker-compose.env
     restart: unless-stopped
+    volumes:
+      - "comics:/comics"
+      - "userdata:/userdata"
     ports:
       - "8050:8050"
       - "3050:3050"
@@ -33,6 +34,9 @@ services:
     container_name: comicvine-api
     ports:
       - "3080:3080"
+    volumes:
+      - "comics:/comics"
+      - "userdata:/userdata"
     environment:
       SERVICES: api
     env_file: ./docker-env/comicvine-service.env
@@ -64,6 +68,9 @@ services:
     ports:
       - "3000:3000"
       - "3001:3001"
+    volumes:
+      - "comics:/comics"
+      - "userdata:/userdata"
     environment:
       SERVICES: api
     env_file: ./docker-env/threetwo-import-service.env
@@ -184,6 +191,10 @@ networks:
     external: true
 
 volumes:
+  comics:
+    name: ${COMICS_DIRECTORY}
+  userdata:
+    name: ${USERDATA_DIRECTORY}
   mongodb_data:
     driver: local
 
