@@ -67,9 +67,6 @@ services:
     ports:
       - "3000:3000"
       - "3001:3001"
-    volumes:
-      - comics:/comics
-      - userdata:/userdata
     environment:
       SERVICES: api
     env_file: ./docker-env/threetwo-import-service.env
