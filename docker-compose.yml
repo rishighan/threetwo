@@ -7,7 +7,7 @@ services:
     image: frishi/threetwo
     container_name: threetwo-ui
     env_file:
-      - /docker-env/docker-compose.env
+      - ./docker-env/docker-compose.env
     restart: unless-stopped
     volumes:
       - $COMICS_DIRECTORY:/comics
