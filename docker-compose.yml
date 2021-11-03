@@ -9,8 +9,8 @@ services:
     env_file: ./docker-env/docker-compose.env
     restart: unless-stopped
     volumes:
-      - comics:/comics
-      - userdata:/userdata
+      - ${COMICS_DIRECTORY}:/comics
+      - ${USERDATA_DIRECTORY}:/userdata
     ports:
       - "8050:8050"
       - "3050:3050"
@@ -35,8 +35,8 @@ services:
     ports:
       - "3080:3080"
     volumes:
-      - comics:/comicvine-service/comics
-      - userdata:/comicvine-service/userdata
+      - ${COMICS_DIRECTORY}:/comicvine-service/comics
+      - ${USERDATA_DIRECTORY}:/comicvine-service/userdata
     environment:
       SERVICES: api
     env_file: ./docker-env/comicvine-service.env
@@ -53,8 +53,8 @@ services:
     environment:
       SERVICES: comicvine 
     volumes:
-      - comics:/comicvine-service/comics
-      - userdata:/comicvine-service/userdata
+      - ${COMICS_DIRECTORY}:/comicvine-service/comics
+      - ${USERDATA_DIRECTORY}:/comicvine-service/userdata
     env_file: ./docker-env/comicvine-service.env
     networks:
       - proxy
@@ -71,8 +71,8 @@ services:
       SERVICES: api
     env_file: ./docker-env/threetwo-import-service.env
     volumes:
-      - "userdata:/threetwo-import-service/userdata"
-      - "comics:/threetwo-import-service/comics"
+      - ${USERDATA_DIRECTORY}:/threetwo-import-service/userdata
+      - ${COMICS_DIRECTORY}:/threetwo-import-service/comics
     depends_on:
       - nats
       - db
@@ -90,8 +90,8 @@ services:
     environment:
       SERVICES: import 
     volumes:
-      - userdata:/threetwo-import-service/userdata
-      - comics:/threetwo-import-service/comics
+      - ${USERDATA_DIRECTORY}:/threetwo-import-service/userdata
+      - ${COMICS_DIRECTORY}:/threetwo-import-service/comics
     env_file: ./docker-env/threetwo-import-service.env
     networks:
       - proxy
@@ -102,8 +102,8 @@ services:
     image: frishi/threetwo-import-service
     container_name: image-transformation
     volumes:
-      - userdata:/threetwo-import-service/userdata
-      - comics:/threetwo-import-service/comics
+      - ${USERDATA_DIRECTORY}:/threetwo-import-service/userdata
+      - ${COMICS_DIRECTORY}:/threetwo-import-service/comics
     depends_on: 
       - db 
       - nats
@@ -119,8 +119,8 @@ services:
     image: frishi/threetwo-import-service
     container_name: library-queue
     volumes:
-      - userdata:/threetwo-import-service/userdata
-      - comics:/threetwo-import-service/comics
+      - ${USERDATA_DIRECTORY}:/threetwo-import-service/userdata
+      - ${COMICS_DIRECTORY}:/threetwo-import-service/comics
     depends_on: 
       - db 
       - nats
@@ -187,12 +187,6 @@ networks:
     external: true
 
 volumes:
-  comics:
-    name: ${COMICS_DIRECTORY}
-    external: false
-  userdata:
-    name: ${USERDATA_DIRECTORY}
-    external: false
   mongodb_data:
     driver: local
 
