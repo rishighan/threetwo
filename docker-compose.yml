@@ -8,8 +8,12 @@ services:
     container_name: threetwo-ui
     restart: unless-stopped
     volumes:
-      - $COMICS_DIRECTORY:/comics
-      - $USERDATA_DIRECTORY:/userdata
+      - type: bind
+        source: $COMICS_DIRECTORY 
+        target: /comics
+      - type: volume
+        source: $USERDATA_DIRECTORY
+        target: /userdata
     ports:
       - "8050:8050"
       - "3050:3050"
