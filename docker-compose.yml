@@ -6,11 +6,12 @@ services:
       context: .
     image: frishi/threetwo
     container_name: threetwo-ui
-    env_file: ./docker-env/docker-compose.env
+    env_file:
+      - /docker-env/docker-compose.env
     restart: unless-stopped
     volumes:
-      - ${COMICS_DIRECTORY}:/comics
-      - ${USERDATA_DIRECTORY}:/userdata
+      - $COMICS_DIRECTORY:/comics
+      - $USERDATA_DIRECTORY:/userdata
     ports:
       - "8050:8050"
       - "3050:3050"
