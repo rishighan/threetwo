@@ -7,14 +7,9 @@ services:
     image: frishi/threetwo
     container_name: threetwo-ui
     restart: unless-stopped
-    env_file: docker-compose.env
     volumes:
-      - type: bind
-        source: $COMICS_DIRECTORY 
-        target: /comics
-      - type: volume
-        source: $USERDATA_DIRECTORY
-        target: /userdata
+      - $COMICS_DIRECTORY:/comics
+      - $USERDATA_DIRECTORY:/userdata
     ports:
       - "8050:8050"
       - "3050:3050"
