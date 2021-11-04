@@ -6,6 +6,7 @@ services:
       context: .
     image: frishi/threetwo
     container_name: threetwo-ui
+    env_file: ./environment.list
     restart: unless-stopped
     volumes:
       - $COMICS_DIRECTORY:/comics
