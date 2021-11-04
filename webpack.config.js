@@ -7,7 +7,7 @@ const BundleAnalyzerPlugin =
   require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const CopyPlugin = require("copy-webpack-plugin");
 
-module.exports = (env) => {
+module.exports = () => {
   return {
     entry: ["babel-polyfill", "./src/client/index.tsx"],
     output: {
