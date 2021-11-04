@@ -14,4 +14,4 @@ RUN yarn
 COPY . /usr/src/threetwo
 EXPOSE 3050
 
-CMD npm start 
+ENTRYPOINT [ "npm", "start" ]
