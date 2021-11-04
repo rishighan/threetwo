@@ -39,7 +39,6 @@ services:
       - ${USERDATA_DIRECTORY}:/comicvine-service/userdata
     environment:
       SERVICES: api
-      COMICVINE_API_KEY: ${COMICVINE_API_KEY}
     env_file: comicvine-service.env
     depends_on:
       - nats
@@ -53,6 +52,7 @@ services:
     container_name: comicvine-service
     environment:
       SERVICES: comicvine 
+      COMICVINE_API_KEY: ${COMICVINE_API_KEY}
     volumes:
       - ${COMICS_DIRECTORY}:/comicvine-service/comics
       - ${USERDATA_DIRECTORY}:/comicvine-service/userdata
