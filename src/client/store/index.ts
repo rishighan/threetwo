@@ -6,8 +6,8 @@ import createRootReducer from "../reducers";
 import { io } from "socket.io-client";
 import socketIoMiddleware from "redux-socket.io-middleware";
 import { SOCKET_BASE_URI } from "../constants/endpoints";
-
-const socketConnection = io(SOCKET_BASE_URI);
+console.log(SOCKET_BASE_URI);
+const socketConnection = io("http://ghost:3001");
 
 export const history = createBrowserHistory();
 const configureStore = (initialState) => {
