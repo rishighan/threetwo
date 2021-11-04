@@ -1,6 +1,8 @@
 FROM node:12.21.0
 LABEL maintainer="Rishi Ghan <rishi.ghan@gmail.com>"
 
+ENV UNDERLYING_HOST ghost
+
 RUN mkdir -p /usr/src/threetwo
 WORKDIR /usr/src/threetwo
 
