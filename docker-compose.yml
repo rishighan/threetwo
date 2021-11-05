@@ -39,7 +39,6 @@ services:
       - ${USERDATA_DIRECTORY}:/comicvine-service/userdata
     environment:
       SERVICES: api
-      UNDERLYING_HOSTNAME: ${UNDERLYING_HOSTNAME}
     env_file: comicvine-service.env
     depends_on:
       - nats
