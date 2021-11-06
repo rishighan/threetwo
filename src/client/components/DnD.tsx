@@ -61,7 +61,6 @@ export const DnD = (data) => {
           })}
         </Grid>
       </SortableContext>
-
       <DragOverlay adjustScale={true}>
         {activeId ? (
           <Cover url={activeId} index={items.indexOf(activeId)} />

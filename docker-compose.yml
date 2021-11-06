@@ -52,7 +52,6 @@ services:
     container_name: comicvine-service
     environment:
       SERVICES: comicvine 
-      COMICVINE_API_KEY: ${COMICVINE_API_KEY}
     volumes:
       - ${COMICS_DIRECTORY}:/comicvine-service/comics
       - ${USERDATA_DIRECTORY}:/comicvine-service/userdata
@@ -70,7 +69,6 @@ services:
       - "3001:3001"
     environment:
       SERVICES: api
-      COMICVINE_API_KEY: ${COMICVINE_API_KEY} 
     env_file: threetwo-import-service.env
     volumes:
       - ${USERDATA_DIRECTORY}:/threetwo-import-service/userdata
