@@ -91,6 +91,7 @@ services:
       - nats
     environment:
       SERVICES: import 
+      COMICVINE_API_KEY: ${COMICVINE_API_KEY}
     volumes:
       - ${USERDATA_DIRECTORY}:/threetwo-import-service/userdata
       - ${COMICS_DIRECTORY}:/threetwo-import-service/comics
