@@ -55,7 +55,7 @@ services:
     volumes:
       - ${COMICS_DIRECTORY}:/comicvine-service/comics
       - ${USERDATA_DIRECTORY}:/comicvine-service/userdata
-      - ${SERVICE_ENV_FILE}:/.env/service.env
+      - ${SERVICE_ENV_FILE}:/comicvine-service/.env/service.env
     env_file: comicvine-service.env
     networks:
       - proxy
@@ -93,7 +93,7 @@ services:
     volumes:
       - ${USERDATA_DIRECTORY}:/threetwo-import-service/userdata
       - ${COMICS_DIRECTORY}:/threetwo-import-service/comics
-      - ${SERVICE_ENV_FILE}:/.env/service.env
+      - ${SERVICE_ENV_FILE}:/threetwo-import-service/.env/service.env
     env_file: threetwo-import-service.env
     networks:
       - proxy
