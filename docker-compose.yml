@@ -39,7 +39,8 @@ services:
       - ${USERDATA_DIRECTORY}:/comicvine-service/userdata
     environment:
       SERVICES: api
-    env_file: services.env
+      COMICVINE_API_KEY: ${COMICVINE_API_KEY}
+    env_file: comicvine-service.env
     depends_on:
       - nats
     networks:
@@ -55,7 +56,7 @@ services:
     volumes:
       - ${COMICS_DIRECTORY}:/comicvine-service/comics
       - ${USERDATA_DIRECTORY}:/comicvine-service/userdata
-    env_file: services.env
+    env_file: comicvine-service.env
     networks:
       - proxy
   
@@ -69,10 +70,8 @@ services:
       - "3001:3001"
     environment:
       SERVICES: api
-      MONGO_URI: mongodb://db:27017/threetwo
-      REDIS_URI: redis://redis:6379
-      CALIBRE_EBOOK_META_PATH: /opt/calibre/ebook-meta
-    env_file: services.env
+      COMICVINE_API_KEY: ${COMICVINE_API_KEY}
+    env_file: threetwo-import-service.env
     volumes:
       - ${USERDATA_DIRECTORY}:/threetwo-import-service/userdata
       - ${COMICS_DIRECTORY}:/threetwo-import-service/comics
@@ -95,7 +94,7 @@ services:
     volumes:
       - ${USERDATA_DIRECTORY}:/threetwo-import-service/userdata
       - ${COMICS_DIRECTORY}:/threetwo-import-service/comics
-    env_file: services.env
+    env_file: threetwo-import-service.env
     networks:
       - proxy
   
@@ -112,7 +111,7 @@ services:
       - nats
     environment:
       SERVICES: imagetransformation 
-    env_file: services.env
+    env_file: threetwo-import-service.env
     networks:
       - proxy
   
@@ -129,7 +128,7 @@ services:
       - nats
     environment:
       SERVICES: libraryqueue 
-    env_file: services.env
+    env_file: threetwo-import-service.env
     networks:
       - proxy
 
