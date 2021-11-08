@@ -33,7 +33,7 @@ export const Dashboard = (): ReactElement => {
         {!isEmpty(recentComics) && !isEmpty(recentComics.docs) ? (
           <>
             <RecentlyImported comicBookCovers={recentComics} />
-            {!isEmpty(volumeGroups) ? <VolumeGroups /> : null}
+            {!isNil(volumeGroups) ? <VolumeGroups /> : null}
           </>
         ) : (
           <ZeroState
