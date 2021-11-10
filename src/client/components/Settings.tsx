@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, ReactElement } from "react";
 import { AirDCPPSettingsForm } from "./AirDCPPSettingsForm";
+import { AirDCPPConnectionForm } from "./AirDCPPConnectionForm";
 import settingsObject from "../constants/settings/settingsMenu.json";
 import { isUndefined, map } from "lodash";
 
@@ -12,15 +13,7 @@ export const Settings = (props: ISettingsProps): ReactElement => {
       id: "adc-connection",
       content: (
         <>
-          <div className="content">
-            <p>
-              <h3 className="title">AirDC++ Connection Settings</h3>
-              <h6 className="subtitle has-text-grey-light">
-                Configure AirDC++ connection settings such as hostname and
-                credentials
-              </h6>
-            </p>
-          </div>
+          <AirDCPPConnectionForm />
         </>
       ),
     },
