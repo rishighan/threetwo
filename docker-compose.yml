@@ -159,26 +159,32 @@ services:
       - "6379:6379"
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
     environment:
-    - "node.name=es-node"
-    - "discovery.type=single-node"
-    - "cluster.name=app-search-docker-cluster"
-    - "bootstrap.memory_lock=true"
-    - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - bootstrap.memory_lock=true
+      - discovery.type=single-node
     ulimits:
       memlock:
         soft: -1
         hard: -1
+    ports:
+      - "9200:9200"
+    networks:
+      - proxy
 
   appsearch:
-    image: docker.elastic.co/app-search/app-search:7.6.0
+    image: docker.elastic.co/app-search/app-search:7.15.1
     environment:
     - "elasticsearch.host=http://elasticsearch:9200"
     - "allow_es_settings_modification=true"
-    - "JAVA_OPTS=-Xms2g -Xmx2g"
-    ports:
-    - 3002:3002
+    ports: 
+      - "3002:3002"
+    networks:
+      - proxy
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
 
   traefik:
     image: traefik:2.3.4
