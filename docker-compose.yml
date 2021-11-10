@@ -20,7 +20,7 @@ services:
       - db
       - redis
       - nats
-      - traefik
+      # - traefik
       - importapi
       - import
       - imagetransformation
@@ -173,45 +173,30 @@ services:
     ports:
       - 9200:9200
 
-  entsearch:
-    image: docker.elastic.co/enterprise-search/enterprise-search:7.10.0
-    depends_on:
-      - "elasticsearch"
-    environment:
-      - "ENT_SEARCH_DEFAULT_PASSWORD=password"
-      - "elasticsearch.username=elastic"
-      - "elasticsearch.password=password"
-      - "elasticsearch.host=http://elasticsearch:9200"
-      - "allow_es_settings_modification=true"
-      - "secret_management.encryption_keys=[4a2cd3f81d39bf28738c10db0ca782095ffac07279561809eecc722e0c20eb09]"
-      - "elasticsearch.startup_retry.interval=15"
-    ports:
-      - 3002:3002
-
-  traefik:
-    image: traefik:2.3.4
-    restart: unless-stopped
-    container_name: traefik
-    hostname: traefik
-    command:
-      - "--log.level=DEBUG"
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.watch=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.localhost`)"
-      - "traefik.http.routers.traefik.service=api@internal"
-    networks:
-      - proxy
-    ports:
-      - 80:80
-      - 8080:8080
-      - 443:443
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+  # traefik:
+  #   image: traefik:2.3.4
+  #   restart: unless-stopped
+  #   container_name: traefik
+  #   hostname: traefik
+  #   command:
+  #     - "--log.level=DEBUG"
+  #     - "--api.insecure=true"
+  #     - "--providers.docker=true"
+  #     - "--providers.docker.watch=true"
+  #     - "--providers.docker.exposedbydefault=false"
+  #     - "--entrypoints.web.address=:80"
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.traefik.rule=Host(`traefik.localhost`)"
+  #     - "traefik.http.routers.traefik.service=api@internal"
+  #   networks:
+  #     - proxy
+  #   ports:
+  #     - 80:80
+  #     - 8080:8080
+  #     - 443:443
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
   
 
 networks:
