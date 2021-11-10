@@ -173,7 +173,7 @@ services:
       - proxy
 
   appsearch:
-    image: docker.elastic.co/app-search/app-search:7.15.1
+    image: docker.elastic.co/app-search/app-search:7.6.2
     environment:
     - "elasticsearch.host=http://elasticsearch:9200"
     - "allow_es_settings_modification=true"
