@@ -174,7 +174,7 @@ services:
     volumes:
       - elasticsearch:/usr/share/elasticsearch/data
     ports:
-      - 127.0.0.1:9200:9200
+      - "9200:9200"
     networks:
       - proxy
 
@@ -193,7 +193,7 @@ services:
       - "secret_management.encryption_keys=[4a2cd3f81d39bf28738c10db0ca782095ffac07279561809eecc722e0c20eb09]"
       - "elasticsearch.startup_retry.interval=15"
     ports:
-      - 127.0.0.1:3002:3002
+      - "3002:3002"
     networks:
       - proxy
 
@@ -204,7 +204,7 @@ services:
       - "elasticsearch"
       - "ent-search"
     ports:
-      - 127.0.0.1:5601:5601
+      - "5601:5601"
     environment:
       ELASTICSEARCH_HOSTS: http://elasticsearch:9200
       ENTERPRISESEARCH_HOST: http://ent-search:3002
