@@ -159,59 +159,26 @@ services:
       - "6379:6379"
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
-    restart: unless-stopped
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
     environment:
-      - "discovery.type=single-node"
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "xpack.security.enabled=true"
-      - "xpack.security.authc.api_key.enabled=true"
-      - "ELASTIC_PASSWORD=changeme"
+    - "node.name=es-node"
+    - "discovery.type=single-node"
+    - "cluster.name=app-search-docker-cluster"
+    - "bootstrap.memory_lock=true"
+    - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
       memlock:
         soft: -1
         hard: -1
-    volumes:
-      - elasticsearch:/usr/share/elasticsearch/data
-    ports:
-      - "9200:9200"
-    networks:
-      - proxy
 
-  ent-search:
-    image: docker.elastic.co/enterprise-search/enterprise-search:7.15.1
-    restart: unless-stopped
-    depends_on:
-      - "elasticsearch"
+  appsearch:
+    image: docker.elastic.co/app-search/app-search:7.6.0
     environment:
-      - "JAVA_OPTS=-Xms512m -Xmx512m"
-      - "ENT_SEARCH_DEFAULT_PASSWORD=changeme"
-      - "elasticsearch.username=elastic"
-      - "elasticsearch.password=changeme"
-      - "elasticsearch.host=http://elasticsearch:9200"
-      - "allow_es_settings_modification=true"
-      - "secret_management.encryption_keys=[4a2cd3f81d39bf28738c10db0ca782095ffac07279561809eecc722e0c20eb09]"
-      - "elasticsearch.startup_retry.interval=15"
+    - "elasticsearch.host=http://elasticsearch:9200"
+    - "allow_es_settings_modification=true"
+    - "JAVA_OPTS=-Xms2g -Xmx2g"
     ports:
-      - "3002:3002"
-    networks:
-      - proxy
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.15.1
-    restart: unless-stopped
-    depends_on:
-      - "elasticsearch"
-      - "ent-search"
-    ports:
-      - "5601:5601"
-    environment:
-      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
-      ENTERPRISESEARCH_HOST: http://ent-search:3002
-      ELASTICSEARCH_USERNAME: elastic
-      ELASTICSEARCH_PASSWORD: changeme
-    networks:
-      - proxy
+    - 3002:3002
 
   traefik:
     image: traefik:2.3.4
