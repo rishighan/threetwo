@@ -68,6 +68,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
                         <input
                           {...input}
                           className="input main-search-bar is-large"
+                          placeholder="Type an issue/volume name"
                         />
                       );
                     }}

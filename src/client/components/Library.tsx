@@ -7,8 +7,10 @@ import {
 } from "../shared/utils/formatting.utils";
 import { useTable, usePagination } from "react-table";
 import prettyBytes from "pretty-bytes";
+import styled from "styled-components";
 import ellipsize from "ellipsize";
 import { useDispatch, useSelector } from "react-redux";
+import { Form, Field } from "react-final-form";
 import { getComicBooks } from "../actions/fileops.actions";
 import { isNil } from "lodash";
 import { IMPORT_SERVICE_HOST } from "../constants/endpoints";
@@ -116,6 +118,33 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
     );
   };
 
+  const foo = () => {};
+  const SearchBar = () => {
+    return (
+      <div className="box columns sticky">
+        <Form
+          onSubmit={foo}
+          initialValues={{}}
+          render={({ handleSubmit, form, submitting, pristine, values }) => (
+            <div className="column is-three-quarters search">
+              <label>Search</label>
+              <Field name="search">
+                {({ input, meta }) => {
+                  return (
+                    <input
+                      {...input}
+                      className="input main-search-bar is-large"
+                      placeholder="Type an issue/volume name"
+                    />
+                  );
+                }}
+              </Field>
+            </div>
+          )}
+        />
+      </div>
+    );
+  };
   const columns = useMemo(
     () => [
       {
@@ -263,12 +292,10 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
     <section className="container">
       <div className="section">
         <h1 className="title">Library</h1>
-        <div className="columns">
-          <div className="column library">
-            <table
-              {...getTableProps()}
-              className="table is-narrow is-hoverable"
-            >
+        <SearchBar />
+        <div>
+          <div className="library">
+            <table {...getTableProps()} className="table is-hoverable">
               <thead>
                 {headerGroups.map((headerGroup, idx) => (
                   <tr key={idx} {...headerGroup.getHeaderGroupProps()}>

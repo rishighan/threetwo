@@ -263,14 +263,22 @@ $size-8: 0.9rem;
   }
 }
 // Library
+.sticky {
+  position: sticky;
+  top: 56px;
+  z-index: 2;
+  background: #fffffc;
+}
+
 .library {
   table {
+    border-collapse: separate;
+    width: 100%;
     thead {
       position: sticky;
-      top: 50px;
-      min-height: 72px;
-      z-index: 2;
-      background: #FFFFFC;
+      top: 204px;
+      z-index: 1;
+      background: #fffffc;
     }
     tr {
       td {
