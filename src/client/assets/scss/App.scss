@@ -50,7 +50,6 @@ $size-8: 0.9rem;
   }
 }
 .volumes-container {
-
   .stack {
     max-width: 200px;
     border-radius: 0.3rem;
@@ -266,6 +265,13 @@ $size-8: 0.9rem;
 // Library
 .library {
   table {
+    thead {
+      position: sticky;
+      top: 50px;
+      min-height: 72px;
+      z-index: 2;
+      background: #FFFFFC;
+    }
     tr {
       td {
         border: 0 none;
@@ -284,50 +290,6 @@ $size-8: 0.9rem;
 }
 
 // Comic Detail
-
-// extracted comic book archive carousel
-.carousel-root {
-  margin: 0 auto;
-  border-radius: 10px;
-  box-shadow: 1px 8px 23px 7px rgba(0, 0, 0, 0.12);
-  max-width: 300px;
-  ul.slider {
-    li.slide {
-      img {
-        border-radius: 10px;
-      }
-    }
-  }
-
-  .carousel-status {
-    position: absolute;
-    background-color: #999;
-    text-shadow: none;
-    border-radius: 5px;
-    top: 10px;
-    right: 30px;
-    padding: 5px;
-    font-size: 10px;
-    color: #fff;
-  }
-  // next and prev controls
-  .control-next {
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    &:hover {
-      border-top-right-radius: 10px;
-      border-bottom-right-radius: 10px;
-    }
-  }
-  .control-prev {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-    &:hover {
-      border-top-left-radius: 10px;
-      border-bottom-left-radius: 10px;
-    }
-  }
-}
 
 // airdcpp downloads tab
 .tabs {
