@@ -179,7 +179,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     {
       id: 1,
       name: "Volume Information",
-      icon: <i className="fa-regular fa-layer-group"></i>,
+      icon: <i className="fa-solid fa-layer-group"></i>,
       content: isComicBookMetadataAvailable ? (
         <div key={1}>
           <div className="columns">
@@ -251,7 +251,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
             onClick={unpackComicArchive}
           >
             <span className="icon is-small">
-              <i className="fa-regular fa-box-open"></i>
+              <i className="fa-solid fa-box-open"></i>
             </span>
             <span>Unpack comic archive</span>
           </button>
@@ -269,7 +269,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                       {extractedComicBookArchive.length} pages
                       <button className="button is-small is-light is-primary is-outlined">
                         <span className="icon is-small">
-                          <i className="fa-regular fa-compress"></i>
+                          <i className="fa-solid fa-compress"></i>
                         </span>
                         <span>Convert to CBZ</span>
                       </button>
@@ -284,7 +284,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     },
     {
       id: 3,
-      icon: <i className="fa-regular fa-download"></i>,
+      icon: <i className="fa-solid fa-floppy-disk"></i>,
       name: "Acquisition",
       content: (
         <AcquisitionPanel comicBookMetadata={comicBookDetailData} key={3} />
@@ -326,7 +326,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                   !isNil(comicBookDetailData) &&
                   !isEmpty(comicBookDetailData) ? (
                     <span className="download-icon-labels">
-                      <i className="fa-regular fa-cloud-arrow-down"></i>
+                      <i className="fa-solid fa-download"></i>
                       <span className="tag downloads-count">
                         {comicBookDetailData.acquisition.directconnect.length}
                       </span>
@@ -482,7 +482,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   //  Actions menu options and handler
   const CVMatchLabel = (
     <span>
-      <i className="fa-regular fa-magic"></i> Match on ComicVine
+      <i className="fa-solid fa-wand-magic"></i> Match on ComicVine
     </span>
   );
 

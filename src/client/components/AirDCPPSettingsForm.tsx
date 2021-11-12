@@ -24,7 +24,9 @@ export const AirDCPPSettingsForm = (): ReactElement => {
             </div>
           </div>
 
-          <button type="submit" className="button is-primary">Submit</button>
+          <button type="submit" className="button is-primary">
+            Submit
+          </button>
         </form>
       )}
     />
