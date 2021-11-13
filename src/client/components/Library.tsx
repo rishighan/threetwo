@@ -133,7 +133,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
                   return (
                     <input
                       {...input}
-                      className="input main-search-bar is-large"
+                      className="input main-search-bar is-medium"
                       placeholder="Type an issue/volume name"
                     />
                   );
