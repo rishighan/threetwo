@@ -10,7 +10,7 @@ export const Settings = (props: ISettingsProps): ReactElement => {
   const [active, setActive] = useState("gen-db");
   const settingsContent = [
     {
-      id: "adc-connection",
+      id: "adc-hubs",
       content: (
         <>
           <AirDCPPConnectionForm />
@@ -18,7 +18,7 @@ export const Settings = (props: ISettingsProps): ReactElement => {
       ),
     },
     {
-      id: "adc-hubs",
+      id: "adc-connection",
       content: (
         <>
           <AirDCPPSettingsForm />

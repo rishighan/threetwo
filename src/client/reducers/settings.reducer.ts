@@ -1,0 +1,30 @@
+import {
+  SETTINGS_CALL_FAILED,
+  SETTINGS_OBJECT_FETCHED,
+  SETTINGS_CALL_IN_PROGRESS,
+} from "../constants/action-types";
+const initialState = {
+  settings: {},
+  inProgress: false,
+};
+
+function settingsReducer(state = initialState, action) {
+  switch (action.type) {
+    case SETTINGS_CALL_IN_PROGRESS:
+      return {
+        ...state,
+        inProgress: true,
+      };
+
+    case SETTINGS_OBJECT_FETCHED:
+      return {
+        ...state,
+        data: action.data,
+      };
+
+    default:
+      return { ...state };
+  }
+}
+
+export default settingsReducer;

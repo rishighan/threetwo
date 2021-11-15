@@ -1,27 +1,44 @@
 import React, { ReactElement } from "react";
 import { Form, Field } from "react-final-form";
+import { useDispatch } from "react-redux";
+import { saveSettings } from "../actions/settings.actions";
+import axios from "axios";
 
 export const AirDCPPSettingsForm = (): ReactElement => {
+  const dispatch = useDispatch();
   const onSubmit = async (values) => {
-    console.log(values);
+    try {
+      const airdcppResponse = await axios({
+        url: `https://${values.airdcpp_hostname}/api/v1/sessions/authorize`,
+        method: "POST",
+        data: {
+          username: values.airdcpp_username,
+          password: values.airdcpp_password,
+        },
+      });
+      if (airdcppResponse.status === 200) {
+        dispatch(saveSettings(values));
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   const validate = async () => {};
-
   return (
     <Form
       onSubmit={onSubmit}
       validate={validate}
       render={({ handleSubmit }) => (
         <form onSubmit={handleSubmit}>
-          <h2>Hub Connection Information</h2>
+          <h2>AirDC++ Connection Information</h2>
           <div className="field">
-            <label className="label">Hub URL</label>
+            <label className="label">AirDC++ Hostname</label>
             <div className="control">
               <Field
                 name="airdcpp_hostname"
                 component="input"
                 className="input"
-                placeholder="adc://hub.url"
+                placeholder="111.222.333.4 / one.airdcpp.com"
               />
             </div>
           </div>

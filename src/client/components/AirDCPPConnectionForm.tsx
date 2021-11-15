@@ -11,13 +11,13 @@ export const AirDCPPConnectionForm = (): ReactElement => {
       validate={validate}
       render={({ handleSubmit }) => (
         <form onSubmit={handleSubmit}>
-          <p>
+          <div>
             <h3 className="title">AirDC++ Connection Settings</h3>
             <h6 className="subtitle has-text-grey-light">
               Configure AirDC++ connection settings such as hostname and
               credentials
             </h6>
-          </p>
+          </div>
           <div className="field">
             <label className="label">AirDC++ Host</label>
             <div className="control">

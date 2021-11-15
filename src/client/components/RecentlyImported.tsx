@@ -39,7 +39,6 @@ export const RecentlyImported = ({
           ({ _id, rawFileDetails, sourcedMetadata }) => {
             let imagePath = "";
             let comicName = "";
-            console.log(rawFileDetails);
             if (!isNil(rawFileDetails)) {
               const encodedFilePath = encodeURI(
                 `${IMPORT_SERVICE_HOST}` +

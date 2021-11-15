@@ -90,7 +90,6 @@ export const getComicBooks = (options) => async (dispatch) => {
       },
     })
     .then((response) => {
-      console.log(response);
       dispatch({
         type: IMS_RECENT_COMICS_FETCHED,
         data: response.data,
@@ -145,7 +144,6 @@ export const fetchVolumeGroups = () => (dispatch) => {
         method: "GET",
       })
       .then((data) => {
-        console.log(data);
         dispatch({
           type: IMS_COMIC_BOOK_GROUPS_FETCHED,
           data,
