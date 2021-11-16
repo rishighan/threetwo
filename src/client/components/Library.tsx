@@ -14,6 +14,7 @@ import { Form, Field } from "react-final-form";
 import { getComicBooks } from "../actions/fileops.actions";
 import { isNil } from "lodash";
 import { IMPORT_SERVICE_HOST } from "../constants/endpoints";
+import { Link } from "react-router-dom";
 
 interface IComicBookLibraryProps {
   matches?: unknown;
@@ -142,6 +143,26 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
             </div>
           )}
         />
+        <div className="column one-fifth">
+          <div className="field has-addons">
+            <p className="control">
+              <button className="button">
+                <span className="icon is-small">
+                  <i className="fa-solid fa-list"></i>
+                </span>
+              </button>
+            </p>
+            <p className="control">
+              <button className="button">
+                <Link to="/library-grid">
+                  <span className="icon is-small">
+                    <i className="fa-solid fa-image"></i>
+                  </span>
+                </Link>
+              </button>
+            </p>
+          </div>
+        </div>
       </div>
     );
   };
@@ -292,6 +313,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
     <section className="container">
       <div className="section">
         <h1 className="title">Library</h1>
+
         <SearchBar />
         <div>
           <div className="library">

@@ -4,7 +4,7 @@ import {
   SETTINGS_CALL_IN_PROGRESS,
 } from "../constants/action-types";
 const initialState = {
-  settings: {},
+  data: {},
   inProgress: false,
 };
 

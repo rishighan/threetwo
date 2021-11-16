@@ -34,10 +34,8 @@ export const Settings = (props: ISettingsProps): ReactElement => {
           <aside className="menu">
             {map(settingsObject, (settingObject, idx) => {
               return (
-                <>
-                  <p className="menu-label" key={idx}>
-                    {settingObject.category}
-                  </p>
+                <div key={idx}>
+                  <p className="menu-label">{settingObject.category}</p>
                   {/* First level children */}
                   {!isUndefined(settingObject.children) ? (
                     <ul className="menu-list" key={settingObject.id}>
@@ -78,7 +76,7 @@ export const Settings = (props: ISettingsProps): ReactElement => {
                       })}
                     </ul>
                   ) : null}
-                </>
+                </div>
               );
             })}
           </aside>
