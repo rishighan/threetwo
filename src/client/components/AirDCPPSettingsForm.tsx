@@ -51,7 +51,9 @@ export const AirDCPPSettingsForm = (): ReactElement => {
               <p className="control">
                 <span className="select">
                   <Field name="protocol" component="select">
-                    <option value="http://">http://</option>
+                    <option value="http://" defaultValue={"http://"}>
+                      http://
+                    </option>
                     <option value="https://">https://</option>
                   </Field>
                 </span>

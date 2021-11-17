@@ -54,5 +54,20 @@
         "displayName": "Options"
       }
     ]
+  },
+  {
+    "id": 4,
+    "category": "acknowledgments",
+    "displayName": "Acknowledgments",
+    "children": [
+      {
+        "id": "testers",
+        "displayName": "Testers"
+      },
+      {
+        "id": "software",
+        "displayName": "Software"
+      }
+    ]
   }
 ]

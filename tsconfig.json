@@ -11,12 +11,7 @@
     "outDir": "./dist/",
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext",
-      "webworker"
-    ]
+    "lib": ["dom", "dom.iterable", "esnext", "webworker"]
   },
   "settings": {
     "eslint.workingDirectories": [
@@ -26,11 +21,6 @@
       }
     ]
   },
-  "exclude": [
-    "./src/server "
-  ],
-  "include": [
-    "./src/client/*",
-    "./src/client/types/**/*.d.ts"
-  ]
+  "exclude": ["./src/server "],
+  "include": ["./src/client/*", "./src/client/types/**/*.d.ts"]
 }

@@ -18,6 +18,9 @@ module.exports = () => {
     stats: {
       children: true,
     },
+    experiments: {
+      topLevelAwait: true,
+    },
     module: {
       rules: [
         {

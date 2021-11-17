@@ -1,4 +1,4 @@
-import React, { useCallback, ReactElement } from "react";
+import React, { useCallback, useEffect, useState, ReactElement } from "react";
 import {
   search,
   downloadAirDCPPItem,
@@ -7,8 +7,9 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, SearchInstance } from "threetwo-ui-typings";
 import ellipsize from "ellipsize";
-import { isEmpty, isNil, map } from "lodash";
-
+import { isEmpty, isNil, isUndefined, map } from "lodash";
+import { getSettings } from "../actions/settings.actions";
+import AirDCPPSocket from "../services/DcppSearchService";
 interface IAcquisitionPanelProps {
   comicBookMetadata: any;
 }
@@ -20,6 +21,10 @@ export const AcquisitionPanel = (
     props.comicBookMetadata.sourcedMetadata.comicvine.volumeInformation.name;
   const sanitizedVolumeName = volumeName.replace(/[^a-zA-Z0-9 ]/g, "");
   const issueName = props.comicBookMetadata.sourcedMetadata.comicvine.name;
+
+  // local state
+  const [ADCPPSocket, setADCPPSocket] = useState({});
+  // Selectors for picking state
   const airDCPPSearchResults = useSelector((state: RootState) => {
     return state.airdcpp.searchResults;
   });
@@ -32,8 +37,22 @@ export const AcquisitionPanel = (
   const searchInstance: SearchInstance = useSelector(
     (state: RootState) => state.airdcpp.searchInstance,
   );
+  const airDCPPClientSettings = useSelector(
+    (state: RootState) => state.settings.data,
+  );
 
   const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getSettings());
+    if (!isUndefined(airDCPPClientSettings[0])) {
+      const dcppSocket = new AirDCPPSocket({
+        hostname: `${airDCPPClientSettings[0].directConnect.client.hostname}`,
+      });
+      setADCPPSocket(dcppSocket);
+    }
+  }, [dispatch, airDCPPClientSettings.length]);
+
+  console.log(ADCPPSocket);
   const getDCPPSearchResults = useCallback(
     (searchQuery) => {
       dispatch(search(searchQuery));
