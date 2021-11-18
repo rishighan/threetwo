@@ -1,15 +1,14 @@
-import React, { useCallback, useEffect, useState, ReactElement } from "react";
+import React, { useCallback, useContext, ReactElement } from "react";
 import {
   search,
   downloadAirDCPPItem,
   getBundlesForComic,
 } from "../actions/airdcpp.actions";
+import { SocketContext } from "../context/AirDCPPSocket";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, SearchInstance } from "threetwo-ui-typings";
 import ellipsize from "ellipsize";
 import { isEmpty, isNil, isUndefined, map } from "lodash";
-import { getSettings } from "../actions/settings.actions";
-import AirDCPPSocket from "../services/DcppSearchService";
 interface IAcquisitionPanelProps {
   comicBookMetadata: any;
 }
@@ -23,7 +22,6 @@ export const AcquisitionPanel = (
   const issueName = props.comicBookMetadata.sourcedMetadata.comicvine.name;
 
   // local state
-  const [ADCPPSocket, setADCPPSocket] = useState({});
   // Selectors for picking state
   const airDCPPSearchResults = useSelector((state: RootState) => {
     return state.airdcpp.searchResults;
@@ -42,23 +40,17 @@ export const AcquisitionPanel = (
   );
 
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(getSettings());
-    if (!isEmpty(airDCPPClientSettings)) {
-      const dcppSocket = new AirDCPPSocket({
-        hostname: `${airDCPPClientSettings.directConnect.client.hostname}`,
-      });
-      setADCPPSocket(dcppSocket);
-    }
-  }, [dispatch]);
+
+  const ADCPPSocket = useContext(SocketContext);
 
   const getDCPPSearchResults = useCallback(
     (searchQuery) => {
-      dispatch(search(searchQuery));
+      console.log(ADCPPSocket);
+      dispatch(search(searchQuery, ADCPPSocket));
     },
-    [dispatch],
+    [dispatch, ADCPPSocket],
   );
-  console.log(airDCPPClientSettings);
+
   const dcppQuery = {
     query: {
       pattern: `${sanitizedVolumeName.replace(/#/g, "")}`,
@@ -73,18 +65,23 @@ export const AcquisitionPanel = (
   const downloadDCPPResult = useCallback(
     (searchInstanceId, resultId, comicBookObjectId) => {
       dispatch(
-        downloadAirDCPPItem(searchInstanceId, resultId, comicBookObjectId),
+        downloadAirDCPPItem(
+          searchInstanceId,
+          resultId,
+          comicBookObjectId,
+          ADCPPSocket,
+        ),
       );
       // this is to update the download count badge on the downloads tab
-      dispatch(getBundlesForComic(comicBookObjectId));
+      dispatch(getBundlesForComic(comicBookObjectId, ADCPPSocket));
     },
     [dispatch],
   );
+
   return (
     <>
       <div className="comic-detail columns">
-        {!isEmpty(airDCPPClientSettings) &&
-        !isUndefined(airDCPPClientSettings) ? (
+        {!isEmpty(ADCPPSocket) && !isUndefined(ADCPPSocket) ? (
           <div className="column is-one-fifth">
             <button
               className={

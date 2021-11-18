@@ -29,90 +29,97 @@ function sleep(ms: number): Promise<NodeJS.Timeout> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export const search = (data: SearchData) => async (dispatch) => {
-  try {
-    if (!SocketService.isConnected()) {
-      await SocketService.connect("admin", "password", true);
+export const search =
+  (data: SearchData, ADCPPSocket: any) => async (dispatch) => {
+    try {
+      if (!ADCPPSocket.isConnected()) {
+        await ADCPPSocket.connect("admin", "password", true);
+      }
+      const instance: SearchInstance = await ADCPPSocket.post("search");
+      dispatch({
+        type: AIRDCPP_SEARCH_IN_PROGRESS,
+      });
+
+      // We want to get notified about every new result in order to make the user experience better
+      await ADCPPSocket.addListener(
+        `search`,
+        "search_result_added",
+        async (groupedResult) => {
+          // ...add the received result in the UI
+          // (it's probably a good idea to have some kind of throttling for the UI updates as there can be thousands of results)
+
+          dispatch({
+            type: AIRDCPP_SEARCH_RESULTS_ADDED,
+            groupedResult,
+          });
+        },
+        instance.id,
+      );
+
+      // We also want to update the existing items in our list when new hits arrive for the previously listed files/directories
+      await ADCPPSocket.addListener(
+        `search`,
+        "search_result_updated",
+        async (groupedResult) => {
+          // ...update properties of the existing result in the UI
+          dispatch({
+            type: AIRDCPP_SEARCH_RESULTS_UPDATED,
+            groupedResult,
+          });
+        },
+        instance.id,
+      );
+
+      // We need to show something to the user in case the search won't yield any results so that he won't be waiting forever)
+      // Wait for 5 seconds for any results to arrive after the searches were sent to the hubs
+      await ADCPPSocket.addListener(
+        `search`,
+        "search_hub_searches_sent",
+        async (searchInfo) => {
+          await sleep(5000);
+
+          // Check the number of received results (in real use cases we should know that even without calling the API)
+          const currentInstance = await ADCPPSocket.get(
+            `search/${instance.id}`,
+          );
+          if (currentInstance.result_count === 0) {
+            // ...nothing was received, show an informative message to the user
+            console.log("No more search results.");
+          }
+
+          // The search can now be considered to be "complete"
+          // If there's an "in progress" indicator in the UI, that could also be disabled here
+          dispatch({
+            type: AIRDCPP_HUB_SEARCHES_SENT,
+            searchInfo,
+            instance,
+          });
+        },
+        instance.id,
+      );
+
+      // Finally, perform the actual search
+      await ADCPPSocket.post(`search/${instance.id}/hub_search`, data);
+    } catch (error) {
+      console.log(error);
+      throw error;
     }
-    const instance: SearchInstance = await SocketService.post("search");
-    dispatch({
-      type: AIRDCPP_SEARCH_IN_PROGRESS,
-    });
-
-    // We want to get notified about every new result in order to make the user experience better
-    await SocketService.addListener(
-      `search`,
-      "search_result_added",
-      async (groupedResult) => {
-        // ...add the received result in the UI
-        // (it's probably a good idea to have some kind of throttling for the UI updates as there can be thousands of results)
-
-        dispatch({
-          type: AIRDCPP_SEARCH_RESULTS_ADDED,
-          groupedResult,
-        });
-      },
-      instance.id,
-    );
-
-    // We also want to update the existing items in our list when new hits arrive for the previously listed files/directories
-    await SocketService.addListener(
-      `search`,
-      "search_result_updated",
-      async (groupedResult) => {
-        // ...update properties of the existing result in the UI
-        dispatch({
-          type: AIRDCPP_SEARCH_RESULTS_UPDATED,
-          groupedResult,
-        });
-      },
-      instance.id,
-    );
-
-    // We need to show something to the user in case the search won't yield any results so that he won't be waiting forever)
-    // Wait for 5 seconds for any results to arrive after the searches were sent to the hubs
-    await SocketService.addListener(
-      `search`,
-      "search_hub_searches_sent",
-      async (searchInfo) => {
-        await sleep(5000);
-
-        // Check the number of received results (in real use cases we should know that even without calling the API)
-        const currentInstance = await SocketService.get(
-          `search/${instance.id}`,
-        );
-        if (currentInstance.result_count === 0) {
-          // ...nothing was received, show an informative message to the user
-        }
-
-        // The search can now be considered to be "complete"
-        // If there's an "in progress" indicator in the UI, that could also be disabled here
-        dispatch({
-          type: AIRDCPP_HUB_SEARCHES_SENT,
-          searchInfo,
-          instance,
-        });
-      },
-      instance.id,
-    );
-
-    // Finally, perform the actual search
-    await SocketService.post(`search/${instance.id}/hub_search`, data);
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-};
+  };
 
 export const downloadAirDCPPItem =
-  (instanceId: string, resultId: string, comicObjectId: string): void =>
+  (
+    instanceId: string,
+    resultId: string,
+    comicObjectId: string,
+    ADCPPSocket: any,
+  ): void =>
   async (dispatch) => {
     try {
-      if (!SocketService.isConnected()) {
-        await SocketService.connect("admin", "password", true);
+      if (!ADCPPSocket.isConnected()) {
+        await ADCPPSocket.connect("admin", "password", true);
       }
       let bundleDBImportResult = {};
-      const downloadResult = await SocketService.post(
+      const downloadResult = await ADCPPSocket.post(
         `search/${instanceId}/results/${resultId}/download`,
       );
 
@@ -159,13 +166,13 @@ export const downloadAirDCPPItem =
   };
 
 export const getDownloadProgress =
-  (comicObjectId: string): void =>
+  (comicObjectId: string, ADCPPSocket: any): void =>
   async (dispatch) => {
     try {
-      if (!SocketService.isConnected()) {
-        await SocketService.connect("admin", "password", true);
+      if (!ADCPPSocket.isConnected()) {
+        await ADCPPSocket.connect("admin", "password", true);
       }
-      await SocketService.addListener(
+      await ADCPPSocket.addListener(
         `queue`,
         "queue_bundle_tick",
         async (downloadProgressData) => {
@@ -181,10 +188,10 @@ export const getDownloadProgress =
   };
 
 export const getBundlesForComic =
-  (comicObjectId: string) => async (dispatch) => {
+  (comicObjectId: string, ADCPPSocket: any) => async (dispatch) => {
     try {
-      if (!SocketService.isConnected()) {
-        await SocketService.connect("admin", "password", true);
+      if (!ADCPPSocket.isConnected()) {
+        await ADCPPSocket.connect("admin", "password", true);
       }
       const comicObject = await axios({
         method: "POST",
@@ -199,7 +206,7 @@ export const getBundlesForComic =
       // get only the bundles applicable for the comic
       const filteredBundles = comicObject.data.acquisition.directconnect.map(
         async ({ bundleId }) => {
-          return await SocketService.get(`queue/bundles/${bundleId}`);
+          return await ADCPPSocket.get(`queue/bundles/${bundleId}`);
         },
       );
       dispatch({
