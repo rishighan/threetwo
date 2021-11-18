@@ -1,5 +1,4 @@
 import axios from "axios";
-import { IExtractionOptions } from "threetwo-ui-typings";
 import { SETTINGS_OBJECT_FETCHED } from "../constants/action-types";
 import { SETTINGS_SERVICE_BASE_URI } from "../constants/endpoints";
 
@@ -10,6 +9,7 @@ export const saveSettings =
       method: "POST",
       data: { settingsObject, airdcppUserSettings },
     });
+    console.log(result.data);
     dispatch({
       type: SETTINGS_OBJECT_FETCHED,
       data: result.data,

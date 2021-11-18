@@ -44,22 +44,21 @@ export const AcquisitionPanel = (
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getSettings());
-    if (!isUndefined(airDCPPClientSettings[0])) {
+    if (!isEmpty(airDCPPClientSettings)) {
       const dcppSocket = new AirDCPPSocket({
-        hostname: `${airDCPPClientSettings[0].directConnect.client.hostname}`,
+        hostname: `${airDCPPClientSettings.directConnect.client.hostname}`,
       });
       setADCPPSocket(dcppSocket);
     }
-  }, [dispatch, airDCPPClientSettings.length]);
+  }, [dispatch]);
 
-  console.log(ADCPPSocket);
   const getDCPPSearchResults = useCallback(
     (searchQuery) => {
       dispatch(search(searchQuery));
     },
     [dispatch],
   );
-
+  console.log(airDCPPClientSettings);
   const dcppQuery = {
     query: {
       pattern: `${sanitizedVolumeName.replace(/#/g, "")}`,
@@ -84,21 +83,33 @@ export const AcquisitionPanel = (
   return (
     <>
       <div className="comic-detail columns">
-        <div className="column is-one-fifth">
-          <button
-            className={
-              isAirDCPPSearchInProgress
-                ? "button is-loading is-warning"
-                : "button"
-            }
-            onClick={() => getDCPPSearchResults(dcppQuery)}
-          >
-            <span className="icon is-small">
-              <img src="/img/airdcpp_logo.svg" />
-            </span>
-            <span className="airdcpp-text">Search on AirDC++</span>
-          </button>
-        </div>
+        {!isEmpty(airDCPPClientSettings) &&
+        !isUndefined(airDCPPClientSettings) ? (
+          <div className="column is-one-fifth">
+            <button
+              className={
+                isAirDCPPSearchInProgress
+                  ? "button is-loading is-warning"
+                  : "button"
+              }
+              onClick={() => getDCPPSearchResults(dcppQuery)}
+            >
+              <span className="icon is-small">
+                <img src="/img/airdcpp_logo.svg" />
+              </span>
+              <span className="airdcpp-text">Search on AirDC++</span>
+            </button>
+          </div>
+        ) : (
+          <div className="column is-three-fifths">
+            <article className="message is-info">
+              <div className="message-body is-size-6 is-family-secondary">
+                AirDC++ is not configured. Please configure it in{" "}
+                <code>Settings</code>.
+              </div>
+            </article>
+          </div>
+        )}
         {/* AirDC++ search instance details */}
         {!isNil(searchInfo) && !isNil(searchInstance) && (
           <>

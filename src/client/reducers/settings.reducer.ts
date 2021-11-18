@@ -20,6 +20,7 @@ function settingsReducer(state = initialState, action) {
       return {
         ...state,
         data: action.data,
+        inProgress: false,
       };
 
     default:

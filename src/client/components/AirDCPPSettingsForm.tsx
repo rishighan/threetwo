@@ -2,12 +2,13 @@ import React, { ReactElement, useEffect } from "react";
 import { Form, Field } from "react-final-form";
 import { useDispatch, useSelector } from "react-redux";
 import { saveSettings, getSettings } from "../actions/settings.actions";
+import { AirDCPPSettingsConfirmation } from "./AirDCPPSettings/AirDCPPSettingsConfirmation";
 import axios from "axios";
 import { isUndefined, isEmpty } from "lodash";
 
 export const AirDCPPSettingsForm = (): ReactElement => {
   const airdcppClientSettings = useSelector(
-    (state: RootState) => state.settings.data[0],
+    (state: RootState) => state.settings.data,
   );
 
   const dispatch = useDispatch();
@@ -34,9 +35,11 @@ export const AirDCPPSettingsForm = (): ReactElement => {
     }
   };
   const validate = async () => {};
-  const initFormData = !isUndefined(airdcppClientSettings)
-    ? airdcppClientSettings.directConnect.client
-    : null;
+  const initFormData =
+    !isEmpty(airdcppClientSettings.directConnect) ||
+    !isUndefined(airdcppClientSettings.directConnect)
+      ? airdcppClientSettings.directConnect.client
+      : {};
   return (
     <>
       <Form
@@ -51,9 +54,8 @@ export const AirDCPPSettingsForm = (): ReactElement => {
               <p className="control">
                 <span className="select">
                   <Field name="protocol" component="select">
-                    <option value="http://" defaultValue={"http://"}>
-                      http://
-                    </option>
+                    <option>Protocol</option>
+                    <option value="http://">http://</option>
                     <option value="https://">https://</option>
                   </Field>
                 </span>
@@ -104,77 +106,23 @@ export const AirDCPPSettingsForm = (): ReactElement => {
                 </div>
               </div>
             </div>
-
-            <button type="submit" className="button is-primary">
-              {!isEmpty(initFormData) ? "Update" : "Save"}
-            </button>
+            <div className="field is-grouped">
+              <p className="control">
+                <button type="submit" className="button is-primary">
+                  {!isEmpty(initFormData) ? "Update" : "Save"}
+                </button>
+              </p>
+              {!isUndefined(airdcppClientSettings) ? (
+                <p className="control">
+                  <button className="button is-danger">Delete</button>
+                </p>
+              ) : null}
+            </div>
           </form>
         )}
       />
-      {!isUndefined(airdcppClientSettings) &&
-      !isEmpty(airdcppClientSettings) ? (
-        <div className="mt-4 is-clearfix">
-          <div className="card">
-            <div className="card-content">
-              <span className="icon is-medium is-pulled-right">
-                <i className="fa-solid fa-circle has-text-success"></i>
-              </span>
-              <div className="content is-size-7">
-                <dl>
-                  <dt>{airdcppClientSettings._id}</dt>
-                  <dt>
-                    Client version:{" "}
-                    {
-                      airdcppClientSettings.directConnect.client
-                        .airdcppUserSettings.system_info.client_version
-                    }
-                  </dt>
-                  <dt>
-                    Hostname:{" "}
-                    {
-                      airdcppClientSettings.directConnect.client
-                        .airdcppUserSettings.system_info.hostname
-                    }
-                  </dt>
-                  <dt>
-                    Platform:{" "}
-                    {
-                      airdcppClientSettings.directConnect.client
-                        .airdcppUserSettings.system_info.platform
-                    }
-                  </dt>
-
-                  <dt>
-                    Username:{" "}
-                    {
-                      airdcppClientSettings.directConnect.client
-                        .airdcppUserSettings.user.username
-                    }
-                  </dt>
-
-                  <dt>
-                    Active Sessions:{" "}
-                    {
-                      airdcppClientSettings.directConnect.client
-                        .airdcppUserSettings.user.active_sessions
-                    }
-                  </dt>
-                  <dt>
-                    Permissions:{" "}
-                    <pre>
-                      {JSON.stringify(
-                        airdcppClientSettings.directConnect.client
-                          .airdcppUserSettings.user.permissions,
-                        undefined,
-                        2,
-                      )}
-                    </pre>
-                  </dt>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
+      {!isEmpty(airdcppClientSettings) ? (
+        <AirDCPPSettingsConfirmation settings={airdcppClientSettings} />
       ) : null}
     </>
   );
