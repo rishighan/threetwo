@@ -1,5 +1,5 @@
-import React, { ReactElement } from "react";
-import { useSelector } from "react-redux";
+import React, { ReactElement, useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { hot } from "react-hot-loader";
 import Dashboard from "./Dashboard";
 
@@ -14,6 +14,10 @@ import { Switch, Route } from "react-router";
 import Navbar from "./Navbar";
 import "../assets/scss/App.scss";
 import Notifications from "react-notification-system-redux";
+import { getSettings } from "../actions/settings.actions";
+import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
+import { isEmpty, isUndefined } from "lodash";
+import AirDCPPSocket from "../services/DcppSearchService";
 
 //Optional styling
 const style = {
@@ -58,39 +62,48 @@ const style = {
     },
   },
 };
+
 export const App = (): ReactElement => {
   const notifications = useSelector((state: RootState) => state.notifications);
+
+  const [ADCPPSocket, setADCPPSocket] = useState({});
+
   return (
-    <div>
-      <Navbar />
-      <Notifications
-        notifications={notifications}
-        style={style}
-        newOnTop={true}
-        allowHTML={true}
-      />
-      <Switch>
-        <Route exact path="/">
-          <Dashboard />
-        </Route>
-        <Route path="/import">
-          <Import path={"./comics"} />
-        </Route>
-        <Route path="/library">
-          <Library />
-        </Route>
-        <Route path="/library-grid">
-          <LibraryGrid />
-        </Route>
-        <Route path="/search">
-          <Search />
-        </Route>
-        <Route path={"/comic/details/:comicObjectId"} component={ComicDetail} />
-        <Route path="/settings">
-          <Settings />
-        </Route>
-      </Switch>
-    </div>
+    <AirDCPPSocketContext.Provider value={{ ADCPPSocket, setADCPPSocket }}>
+      <div>
+        <Navbar />
+        <Notifications
+          notifications={notifications}
+          style={style}
+          newOnTop={true}
+          allowHTML={true}
+        />
+        <Switch>
+          <Route exact path="/">
+            <Dashboard />
+          </Route>
+          <Route path="/import">
+            <Import path={"./comics"} />
+          </Route>
+          <Route path="/library">
+            <Library />
+          </Route>
+          <Route path="/library-grid">
+            <LibraryGrid />
+          </Route>
+          <Route path="/search">
+            <Search />
+          </Route>
+          <Route
+            path={"/comic/details/:comicObjectId"}
+            component={ComicDetail}
+          />
+          <Route path="/settings">
+            <Settings />
+          </Route>
+        </Switch>
+      </div>
+    </AirDCPPSocketContext.Provider>
   );
 };
 

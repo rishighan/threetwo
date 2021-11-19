@@ -30,10 +30,16 @@ function sleep(ms: number): Promise<NodeJS.Timeout> {
 }
 
 export const search =
-  (data: SearchData, ADCPPSocket: any) => async (dispatch) => {
+  (data: SearchData, ADCPPSocket: any, credentials: any) =>
+  async (dispatch) => {
     try {
+      console.log(credentials);
       if (!ADCPPSocket.isConnected()) {
-        await ADCPPSocket.connect("admin", "password", true);
+        await ADCPPSocket.connect(
+          credentials.username,
+          credentials.password,
+          true,
+        );
       }
       const instance: SearchInstance = await ADCPPSocket.post("search");
       dispatch({

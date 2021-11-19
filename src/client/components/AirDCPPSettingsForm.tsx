@@ -1,25 +1,31 @@
-import React, { ReactElement, useEffect } from "react";
+import React, { ReactElement, useCallback, useContext, useEffect } from "react";
 import { Form, Field } from "react-final-form";
-import { useDispatch, useSelector } from "react-redux";
-import { saveSettings, getSettings } from "../actions/settings.actions";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  getSettings,
+  saveSettings,
+  deleteSettings,
+} from "../actions/settings.actions";
 import { AirDCPPSettingsConfirmation } from "./AirDCPPSettings/AirDCPPSettingsConfirmation";
 import axios from "axios";
+import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
+import AirDCPPSocket from "../services/DcppSearchService";
 import { isUndefined, isEmpty } from "lodash";
 
 export const AirDCPPSettingsForm = (): ReactElement => {
-  const airdcppClientSettings = useSelector(
+  const airDCPPClientSettings = useSelector(
     (state: RootState) => state.settings.data,
   );
 
+  const { ADCPPSocket, setADCPPSocket } = useContext(AirDCPPSocketContext);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getSettings());
-  }, [dispatch]);
-
+  }, []);
   const onSubmit = async (values) => {
     try {
       const fqdn = values.protocol + values.hostname;
-      const airdcppResponse = await axios({
+      const airDCPPResponse = await axios({
         url: `${fqdn}/api/v1/sessions/authorize`,
         method: "POST",
         data: {
@@ -27,18 +33,37 @@ export const AirDCPPSettingsForm = (): ReactElement => {
           password: values.password,
         },
       });
-      if (airdcppResponse.status === 200) {
-        dispatch(saveSettings(values, airdcppResponse.data));
+      if (airDCPPResponse.status === 200) {
+        dispatch(saveSettings(values, airDCPPResponse.data));
+        setADCPPSocket(
+          new AirDCPPSocket({
+            hostname: `${values.hostname}`,
+          }),
+        );
+        const hubList = await axios({
+          url: `${fqdn}/api/v1/hubs`,
+          method: "GET",
+          params: {
+            username: values.username,
+            password: values.password,
+          },
+        });
       }
     } catch (error) {
       console.log(error);
     }
   };
+
+  const removeSettings = useCallback(async () => {
+    dispatch(deleteSettings());
+    setADCPPSocket({});
+  }, []);
+
   const validate = async () => {};
   const initFormData =
-    !isEmpty(airdcppClientSettings.directConnect) ||
-    !isUndefined(airdcppClientSettings.directConnect)
-      ? airdcppClientSettings.directConnect.client
+    !isEmpty(airDCPPClientSettings.directConnect) ||
+    !isUndefined(airDCPPClientSettings.directConnect)
+      ? airDCPPClientSettings.directConnect.client
       : {};
   return (
     <>
@@ -112,17 +137,19 @@ export const AirDCPPSettingsForm = (): ReactElement => {
                   {!isEmpty(initFormData) ? "Update" : "Save"}
                 </button>
               </p>
-              {!isUndefined(airdcppClientSettings) ? (
-                <p className="control">
-                  <button className="button is-danger">Delete</button>
-                </p>
-              ) : null}
             </div>
           </form>
         )}
       />
-      {!isEmpty(airdcppClientSettings) ? (
-        <AirDCPPSettingsConfirmation settings={airdcppClientSettings} />
+      {!isEmpty(airDCPPClientSettings) ? (
+        <p className="control">
+          <button className="button is-danger" onClick={removeSettings}>
+            Delete
+          </button>
+        </p>
+      ) : null}
+      {!isEmpty(airDCPPClientSettings) ? (
+        <AirDCPPSettingsConfirmation settings={airDCPPClientSettings} />
       ) : null}
     </>
   );

@@ -1,14 +1,16 @@
-import React, { useCallback, useContext, ReactElement } from "react";
+import React, { useCallback, useContext, ReactElement, useEffect } from "react";
 import {
   search,
   downloadAirDCPPItem,
   getBundlesForComic,
 } from "../actions/airdcpp.actions";
-import { SocketContext } from "../context/AirDCPPSocket";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, SearchInstance } from "threetwo-ui-typings";
 import ellipsize from "ellipsize";
 import { isEmpty, isNil, isUndefined, map } from "lodash";
+import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
+import { getSettings } from "../actions/settings.actions";
+import AirDCPPSocket from "../services/DcppSearchService";
 interface IAcquisitionPanelProps {
   comicBookMetadata: any;
 }
@@ -21,7 +23,6 @@ export const AcquisitionPanel = (
   const sanitizedVolumeName = volumeName.replace(/[^a-zA-Z0-9 ]/g, "");
   const issueName = props.comicBookMetadata.sourcedMetadata.comicvine.name;
 
-  // local state
   // Selectors for picking state
   const airDCPPSearchResults = useSelector((state: RootState) => {
     return state.airdcpp.searchResults;
@@ -35,18 +36,31 @@ export const AcquisitionPanel = (
   const searchInstance: SearchInstance = useSelector(
     (state: RootState) => state.airdcpp.searchInstance,
   );
-  const airDCPPClientSettings = useSelector(
-    (state: RootState) => state.settings.data,
-  );
 
+  const userSettings = useSelector((state: RootState) => state.settings.data);
+  const { ADCPPSocket, setADCPPSocket } = useContext(AirDCPPSocketContext);
   const dispatch = useDispatch();
 
-  const ADCPPSocket = useContext(SocketContext);
+  useEffect(() => {
+    dispatch(getSettings());
+  }, []);
+
+  if (isEmpty(ADCPPSocket) && !isEmpty(userSettings)) {
+    setADCPPSocket(
+      new AirDCPPSocket({
+        hostname: `${userSettings.directConnect.client.hostname}`,
+      }),
+    );
+  }
 
   const getDCPPSearchResults = useCallback(
     (searchQuery) => {
-      console.log(ADCPPSocket);
-      dispatch(search(searchQuery, ADCPPSocket));
+      dispatch(
+        search(searchQuery, ADCPPSocket, {
+          username: `${userSettings.directConnect.client.username}`,
+          password: `${userSettings.directConnect.client.password}`,
+        }),
+      );
     },
     [dispatch, ADCPPSocket],
   );
@@ -80,8 +94,9 @@ export const AcquisitionPanel = (
 
   return (
     <>
+      {JSON.stringify(ADCPPSocket)}
       <div className="comic-detail columns">
-        {!isEmpty(ADCPPSocket) && !isUndefined(ADCPPSocket) ? (
+        {!isEmpty(ADCPPSocket) ? (
           <div className="column is-one-fifth">
             <button
               className={

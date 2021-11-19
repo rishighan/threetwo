@@ -5,7 +5,6 @@ import {
 } from "../actions/airdcpp.actions";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "threetwo-ui-typings";
-import { SocketContext } from "../context/AirDCPPSocket";
 import { isNil, map } from "lodash";
 import prettyBytes from "pretty-bytes";
 import dayjs from "dayjs";
@@ -27,6 +26,7 @@ export const DownloadsPanel = (
   });
   console.log("BANDYA", bundles);
   const ADCPPSocket = useContext(SocketContext);
+
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getBundlesForComic(props.comicObjectId, ADCPPSocket));
