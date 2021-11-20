@@ -33,7 +33,6 @@ export const search =
   (data: SearchData, ADCPPSocket: any, credentials: any) =>
   async (dispatch) => {
     try {
-      console.log(credentials);
       if (!ADCPPSocket.isConnected()) {
         await ADCPPSocket.connect(
           credentials.username,
@@ -118,11 +117,16 @@ export const downloadAirDCPPItem =
     resultId: string,
     comicObjectId: string,
     ADCPPSocket: any,
+    credentials: any,
   ): void =>
   async (dispatch) => {
     try {
       if (!ADCPPSocket.isConnected()) {
-        await ADCPPSocket.connect("admin", "password", true);
+        await ADCPPSocket.connect(
+          `${credentials.username}`,
+          `${credentials.password}`,
+          true,
+        );
       }
       let bundleDBImportResult = {};
       const downloadResult = await ADCPPSocket.post(
@@ -172,11 +176,15 @@ export const downloadAirDCPPItem =
   };
 
 export const getDownloadProgress =
-  (comicObjectId: string, ADCPPSocket: any): void =>
+  (comicObjectId: string, ADCPPSocket: any, credentials: any): void =>
   async (dispatch) => {
     try {
       if (!ADCPPSocket.isConnected()) {
-        await ADCPPSocket.connect("admin", "password", true);
+        await ADCPPSocket.connect(
+          `${credentials.username}`,
+          `${credentials.password}`,
+          true,
+        );
       }
       await ADCPPSocket.addListener(
         `queue`,
@@ -194,10 +202,15 @@ export const getDownloadProgress =
   };
 
 export const getBundlesForComic =
-  (comicObjectId: string, ADCPPSocket: any) => async (dispatch) => {
+  (comicObjectId: string, ADCPPSocket: any, credentials: any) =>
+  async (dispatch) => {
     try {
       if (!ADCPPSocket.isConnected()) {
-        await ADCPPSocket.connect("admin", "password", true);
+        await ADCPPSocket.connect(
+          `${credentials.username}`,
+          `${credentials.password}`,
+          true,
+        );
       }
       const comicObject = await axios({
         method: "POST",

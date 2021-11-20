@@ -9,8 +9,6 @@ import { RootState, SearchInstance } from "threetwo-ui-typings";
 import ellipsize from "ellipsize";
 import { isEmpty, isNil, isUndefined, map } from "lodash";
 import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
-import { getSettings } from "../actions/settings.actions";
-import AirDCPPSocket from "../services/DcppSearchService";
 interface IAcquisitionPanelProps {
   comicBookMetadata: any;
 }
@@ -38,23 +36,11 @@ export const AcquisitionPanel = (
   );
 
   const userSettings = useSelector((state: RootState) => state.settings.data);
-  const { ADCPPSocket, setADCPPSocket } = useContext(AirDCPPSocketContext);
+  const { ADCPPSocket } = useContext(AirDCPPSocketContext);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(getSettings());
-  }, []);
-
-  if (isEmpty(ADCPPSocket) && !isEmpty(userSettings)) {
-    setADCPPSocket(
-      new AirDCPPSocket({
-        hostname: `${userSettings.directConnect.client.hostname}`,
-      }),
-    );
-  }
-
   const getDCPPSearchResults = useCallback(
-    (searchQuery) => {
+    async (searchQuery) => {
       dispatch(
         search(searchQuery, ADCPPSocket, {
           username: `${userSettings.directConnect.client.username}`,
@@ -65,6 +51,7 @@ export const AcquisitionPanel = (
     [dispatch, ADCPPSocket],
   );
 
+  // AirDC++ search query
   const dcppQuery = {
     query: {
       pattern: `${sanitizedVolumeName.replace(/#/g, "")}`,
@@ -76,6 +63,7 @@ export const AcquisitionPanel = (
     priority: 5,
   };
 
+  // download via AirDC++
   const downloadDCPPResult = useCallback(
     (searchInstanceId, resultId, comicBookObjectId) => {
       dispatch(
@@ -84,17 +72,25 @@ export const AcquisitionPanel = (
           resultId,
           comicBookObjectId,
           ADCPPSocket,
+          {
+            username: `${userSettings.directConnect.client.username}`,
+            password: `${userSettings.directConnect.client.password}`,
+          },
         ),
       );
       // this is to update the download count badge on the downloads tab
-      dispatch(getBundlesForComic(comicBookObjectId, ADCPPSocket));
+      dispatch(
+        getBundlesForComic(comicBookObjectId, ADCPPSocket, {
+          username: `${userSettings.directConnect.client.username}`,
+          password: `${userSettings.directConnect.client.password}`,
+        }),
+      );
     },
     [dispatch],
   );
 
   return (
     <>
-      {JSON.stringify(ADCPPSocket)}
       <div className="comic-detail columns">
         {!isEmpty(ADCPPSocket) ? (
           <div className="column is-one-fifth">

@@ -17,16 +17,15 @@ export const AirDCPPSettingsForm = (): ReactElement => {
     (state: RootState) => state.settings.data,
   );
 
-  const { ADCPPSocket, setADCPPSocket } = useContext(AirDCPPSocketContext);
+  const { setADCPPSocket } = useContext(AirDCPPSocketContext);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getSettings());
   }, []);
   const onSubmit = async (values) => {
     try {
-      const fqdn = values.protocol + values.hostname;
       const airDCPPResponse = await axios({
-        url: `${fqdn}/api/v1/sessions/authorize`,
+        url: `${values.protocol}://${values.hostname}/api/v1/sessions/authorize`,
         method: "POST",
         data: {
           username: values.username,
@@ -41,7 +40,7 @@ export const AirDCPPSettingsForm = (): ReactElement => {
           }),
         );
         const hubList = await axios({
-          url: `${fqdn}/api/v1/hubs`,
+          url: `${values.protocol}://${values.hostname}/api/v1/hubs`,
           method: "GET",
           params: {
             username: values.username,
@@ -80,8 +79,8 @@ export const AirDCPPSettingsForm = (): ReactElement => {
                 <span className="select">
                   <Field name="protocol" component="select">
                     <option>Protocol</option>
-                    <option value="http://">http://</option>
-                    <option value="https://">https://</option>
+                    <option value="http">http://</option>
+                    <option value="https">https://</option>
                   </Field>
                 </span>
               </p>

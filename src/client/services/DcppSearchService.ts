@@ -2,8 +2,15 @@ import { Socket } from "airdcpp-apisocket";
 
 class AirDCPPSocket {
   constructor(configuration) {
+    console.assert(configuration);
+    let socketProtocol = "";
+    if (configuration.protocol === "https") {
+      socketProtocol = "wss";
+    } else {
+      socketProtocol = "ws";
+    }
     const options = {
-      url: `wss://${configuration.hostname}/api/v1/`,
+      url: `${socketProtocol}://${configuration.hostname}/api/v1/`,
       autoReconnect: false,
       reconnectInterval: 5,
       logLevel: "verbose",
@@ -17,4 +24,5 @@ class AirDCPPSocket {
     return AirDCPPSocketInstance;
   }
 }
+
 export default AirDCPPSocket;

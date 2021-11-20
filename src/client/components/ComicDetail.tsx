@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, ReactElement } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  ReactElement,
+  useContext,
+} from "react";
 import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
 import Card from "./Carda";
@@ -30,6 +36,9 @@ import {
 } from "../shared/utils/formatting.utils";
 import Sticky from "react-stickynode";
 import { IMPORT_SERVICE_HOST } from "../constants/endpoints";
+import { getSettings } from "../actions/settings.actions";
+import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
+import AirDCPPSocket from "../services/DcppSearchService";
 
 type ComicDetailProps = {};
 /**
@@ -67,11 +76,26 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   );
 
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
+  const userSettings = useSelector((state: RootState) => state.settings.data);
+  const { ADCPPSocket, setADCPPSocket } = useContext(AirDCPPSocketContext);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getComicBookDetailById(comicObjectId));
+    dispatch(getSettings());
   }, [page, dispatch]);
+
+  useEffect(() => {
+    if (isEmpty(ADCPPSocket) && !isEmpty(userSettings)) {
+      console.log(userSettings.directConnect.client.hostname);
+      setADCPPSocket(
+        new AirDCPPSocket({
+          protocol: `${userSettings.directConnect.client.protocol}`,
+          hostname: `${userSettings.directConnect.client.hostname}`,
+        }),
+      );
+    }
+  });
 
   const unpackComicArchive = useCallback(() => {
     dispatch(

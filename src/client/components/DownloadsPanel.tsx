@@ -5,10 +5,11 @@ import {
 } from "../actions/airdcpp.actions";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "threetwo-ui-typings";
-import { isNil, map } from "lodash";
+import { isEmpty, isNil, map } from "lodash";
 import prettyBytes from "pretty-bytes";
 import dayjs from "dayjs";
 import ellipsize from "ellipsize";
+import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
 
 interface IDownloadsPanelProps {
   data: any;
@@ -24,13 +25,32 @@ export const DownloadsPanel = (
   const bundles = useSelector((state: RootState) => {
     return state.airdcpp.bundles;
   });
-  console.log("BANDYA", bundles);
-  const ADCPPSocket = useContext(SocketContext);
+
+  // AirDCPP Socket initialization
+  const userSettings = useSelector((state: RootState) => state.settings.data);
+  const { ADCPPSocket } = useContext(AirDCPPSocketContext);
 
   const dispatch = useDispatch();
+  // Fetch the downloaded files and currently-downloading file(s) from AirDC++
   useEffect(() => {
-    dispatch(getBundlesForComic(props.comicObjectId, ADCPPSocket));
-    dispatch(getDownloadProgress(props.comicObjectId, ADCPPSocket));
+    try {
+      if (!isEmpty(userSettings)) {
+        dispatch(
+          getBundlesForComic(props.comicObjectId, ADCPPSocket, {
+            username: `${userSettings.directConnect.client.username}`,
+            password: `${userSettings.directConnect.client.password}`,
+          }),
+        );
+        dispatch(
+          getDownloadProgress(props.comicObjectId, ADCPPSocket, {
+            username: `${userSettings.directConnect.client.username}`,
+            password: `${userSettings.directConnect.client.password}`,
+          }),
+        );
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
   }, [dispatch]);
 
   const ProgressTick = (props) => {
@@ -69,7 +89,6 @@ export const DownloadsPanel = (
   };
 
   const Bundles = (props) => {
-    console.log(props);
     return (
       <table className="table is-striped">
         <thead>
@@ -102,12 +121,23 @@ export const DownloadsPanel = (
   };
 
   return !isNil(props.data) ? (
-    <>
+    <div className="columns">
       {!isNil(downloadProgressTick) ? (
         <ProgressTick data={downloadProgressTick} />
       ) : null}
-      <Bundles data={bundles} />
-    </>
+      {!isEmpty(ADCPPSocket) ? (
+        <Bundles data={bundles} />
+      ) : (
+        <div className="column is-three-fifths">
+          <article className="message is-info">
+            <div className="message-body is-size-6 is-family-secondary">
+              AirDC++ is not configured. Please configure it in{" "}
+              <code>Settings</code>.
+            </div>
+          </article>
+        </div>
+      )}
+    </div>
   ) : null;
 };
 
