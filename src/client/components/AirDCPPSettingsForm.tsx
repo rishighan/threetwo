@@ -140,15 +140,16 @@ export const AirDCPPSettingsForm = (): ReactElement => {
           </form>
         )}
       />
+
       {!isEmpty(airDCPPClientSettings) ? (
-        <p className="control">
+        <AirDCPPSettingsConfirmation settings={airDCPPClientSettings} />
+      ) : null}
+      {!isEmpty(airDCPPClientSettings) ? (
+        <p className="control mt-4">
           <button className="button is-danger" onClick={removeSettings}>
             Delete
           </button>
         </p>
-      ) : null}
-      {!isEmpty(airDCPPClientSettings) ? (
-        <AirDCPPSettingsConfirmation settings={airDCPPClientSettings} />
       ) : null}
     </>
   );
