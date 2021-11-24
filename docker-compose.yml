@@ -158,12 +158,6 @@ services:
     volumes:
       - "mongodb_data:/bitnami/mongodb"
 
-  nats:
-    image: nats:2
-    container_name: transporter
-    networks:
-      - proxy
-
   redis:
     image: "bitnami/redis:latest"
     container_name: queue
