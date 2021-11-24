@@ -127,10 +127,10 @@ export const AcquisitionPanel = (
                   <div className="content">
                     <dl>
                       <dt>
-                        <div className="tags">
+                        <div className="tags mb-1">
                           {userSettings.directConnect.client.hubs.map(
                             ({ value }) => (
-                              <span className="tag" key={value}>
+                              <span className="tag is-warning" key={value}>
                                 {value}
                               </span>
                             ),
