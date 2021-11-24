@@ -14,7 +14,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const port: number = Number(process.env.PORT) || 8050; // set our port
-const proxyPort = 8050; // set our port
 
 app.get("/", (req: Request, res: Response) => {
   console.log("sending index.html");
@@ -44,6 +43,6 @@ cors_proxy
       "ThreeTwo! Express server with CORS Anywhere running on " +
         host +
         ":" +
-        proxyPort,
+        port,
     );
   });

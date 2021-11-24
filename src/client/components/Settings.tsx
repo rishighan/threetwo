@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, ReactElement } from "react";
 import { AirDCPPSettingsForm } from "./AirDCPPSettings/AirDCPPSettingsForm";
 import { AirDCPPHubsForm } from "./AirDCPPSettings/AirDCPPHubsForm";
+import { SystemSettingsForm } from "./SystemSettings/SystemSettingsForm";
 import settingsObject from "../constants/settings/settingsMenu.json";
 import { isEmpty, isUndefined, map } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
@@ -34,6 +35,14 @@ export const Settings = (props: ISettingsProps): ReactElement => {
       content: (
         <>
           <AirDCPPSettingsForm settings={airDCPPClientSettings} />
+        </>
+      ),
+    },
+    {
+      id: "flushdb",
+      content: (
+        <>
+          <SystemSettingsForm settings={airDCPPClientSettings} />
         </>
       ),
     },

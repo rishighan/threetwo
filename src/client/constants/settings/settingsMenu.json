@@ -57,6 +57,17 @@
   },
   {
     "id": 4,
+    "category": "system",
+    "displayName": "System",
+    "children": [
+      {
+        "id": "flushdb",
+        "displayName": "Flush DB & Temporary folders"
+      }
+    ]
+  },
+  {
+    "id": 5,
     "category": "acknowledgments",
     "displayName": "Acknowledgments",
     "children": [
