@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, ReactElement, useEffect } from "react";
+import React, {
+  useCallback,
+  useContext,
+  ReactElement,
+  useEffect,
+  useState,
+} from "react";
 import {
   search,
   downloadAirDCPPItem,
@@ -7,7 +13,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, SearchInstance } from "threetwo-ui-typings";
 import ellipsize from "ellipsize";
-import { isEmpty, isNil, isUndefined, map, pick } from "lodash";
+import { isEmpty, isNil, map } from "lodash";
 import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
 interface IAcquisitionPanelProps {
   comicBookMetadata: any;
@@ -38,6 +44,25 @@ export const AcquisitionPanel = (
   const userSettings = useSelector((state: RootState) => state.settings.data);
   const { ADCPPSocket } = useContext(AirDCPPSocketContext);
   const dispatch = useDispatch();
+  const [dcppQuery, setDcppQuery] = useState({});
+
+  useEffect(() => {
+    if (!isNil(userSettings.directConnect)) {
+      // AirDC++ search query
+      const dcppSearchQuery = {
+        query: {
+          pattern: `${sanitizedVolumeName.replace(/#/g, "")}`,
+          extensions: ["cbz", "cbr"],
+        },
+        hub_urls: map(
+          userSettings.directConnect.client.hubs,
+          (item) => item.value,
+        ),
+        priority: 5,
+      };
+      setDcppQuery(dcppSearchQuery);
+    }
+  }, []);
 
   const getDCPPSearchResults = useCallback(
     async (searchQuery) => {
@@ -50,18 +75,6 @@ export const AcquisitionPanel = (
     },
     [dispatch, ADCPPSocket],
   );
-
-  // AirDC++ search query
-  const dcppQuery = {
-    query: {
-      pattern: `${sanitizedVolumeName.replace(/#/g, "")}`,
-      // pattern: "Templier T2.cbr",
-      extensions: ["cbz", "cbr"],
-    },
-    // "comic-scans.no-ip.biz:24674",
-    hub_urls: map(userSettings.directConnect.client.hubs, (item) => item.value),
-    priority: 5,
-  };
 
   // download via AirDC++
   const downloadDCPPResult = useCallback(

@@ -18,9 +18,10 @@ services:
       - importapi
     depends_on:
       - db
+      - elasticsearch
+      - libraryqueue
       - redis
-      - nats
-      # - traefik
+      - settings
       - importapi
       - import
       - imagetransformation
@@ -41,7 +42,7 @@ services:
       SERVICES: api
     env_file: comicvine-service.env
     depends_on:
-      - nats
+      - redis
     networks:
       - proxy
 
@@ -75,7 +76,7 @@ services:
       - ${USERDATA_DIRECTORY}:/threetwo-import-service/userdata
       - ${COMICS_DIRECTORY}:/threetwo-import-service/comics
     depends_on:
-      - nats
+      - redis
       - db
     networks:
       - proxy
@@ -87,7 +88,7 @@ services:
     container_name: import
     depends_on:
       - db
-      - nats
+      - redis
     environment:
       SERVICES: import
     volumes:
@@ -108,7 +109,7 @@ services:
       - ${COMICS_DIRECTORY}:/threetwo-import-service/comics
     depends_on:
       - db
-      - nats
+      - redis
     environment:
       SERVICES: imagetransformation
     env_file: threetwo-import-service.env
@@ -125,7 +126,7 @@ services:
       - ${COMICS_DIRECTORY}:/threetwo-import-service/comics
     depends_on:
       - db
-      - nats
+      - redis
     environment:
       SERVICES: libraryqueue
     env_file: threetwo-import-service.env
@@ -142,7 +143,7 @@ services:
       - ${COMICS_DIRECTORY}:/threetwo-import-service/comics
     depends_on:
       - db
-      - nats
+      - redis
     environment:
       SERVICES: settings
     env_file: threetwo-import-service.env
