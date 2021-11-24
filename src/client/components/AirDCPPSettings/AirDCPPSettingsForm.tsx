@@ -1,27 +1,18 @@
 import React, { ReactElement, useCallback, useContext, useEffect } from "react";
 import { Form, Field } from "react-final-form";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  getSettings,
-  saveSettings,
-  deleteSettings,
-} from "../actions/settings.actions";
-import { AirDCPPSettingsConfirmation } from "./AirDCPPSettings/AirDCPPSettingsConfirmation";
+import { useDispatch } from "react-redux";
+import { saveSettings, deleteSettings } from "../../actions/settings.actions";
+import { AirDCPPSettingsConfirmation } from "./AirDCPPSettingsConfirmation";
 import axios from "axios";
-import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
-import AirDCPPSocket from "../services/DcppSearchService";
+import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
+import AirDCPPSocket from "../../services/DcppSearchService";
 import { isUndefined, isEmpty } from "lodash";
 
-export const AirDCPPSettingsForm = (): ReactElement => {
-  const airDCPPClientSettings = useSelector(
-    (state: RootState) => state.settings.data,
-  );
-
-  const { setADCPPSocket } = useContext(AirDCPPSocketContext);
+export const AirDCPPSettingsForm = (airDCPPClientSettings): ReactElement => {
+  const { settings } = airDCPPClientSettings;
   const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(getSettings());
-  }, []);
+  const { setADCPPSocket } = useContext(AirDCPPSocketContext);
+
   const onSubmit = async (values) => {
     try {
       const airDCPPResponse = await axios({
@@ -33,20 +24,17 @@ export const AirDCPPSettingsForm = (): ReactElement => {
         },
       });
       if (airDCPPResponse.status === 200) {
-        dispatch(saveSettings(values, airDCPPResponse.data));
+        dispatch(
+          saveSettings({
+            host: values,
+            airDCPPUserSettings: airDCPPResponse.data,
+          }),
+        );
         setADCPPSocket(
           new AirDCPPSocket({
             hostname: `${values.hostname}`,
           }),
         );
-        const hubList = await axios({
-          url: `${values.protocol}://${values.hostname}/api/v1/hubs`,
-          method: "GET",
-          params: {
-            username: values.username,
-            password: values.password,
-          },
-        });
       }
     } catch (error) {
       console.log(error);
@@ -60,9 +48,8 @@ export const AirDCPPSettingsForm = (): ReactElement => {
 
   const validate = async () => {};
   const initFormData =
-    !isEmpty(airDCPPClientSettings.directConnect) ||
-    !isUndefined(airDCPPClientSettings.directConnect)
-      ? airDCPPClientSettings.directConnect.client
+    !isEmpty(settings.directConnect) || !isUndefined(settings.directConnect)
+      ? settings.directConnect.client.host
       : {};
   return (
     <>
@@ -140,11 +127,11 @@ export const AirDCPPSettingsForm = (): ReactElement => {
           </form>
         )}
       />
-
-      {!isEmpty(airDCPPClientSettings) ? (
-        <AirDCPPSettingsConfirmation settings={airDCPPClientSettings} />
+      {!isEmpty(settings) ? (
+        <AirDCPPSettingsConfirmation settings={settings} />
       ) : null}
-      {!isEmpty(airDCPPClientSettings) ? (
+
+      {!isEmpty(settings) ? (
         <p className="control mt-4">
           <button className="button is-danger" onClick={removeSettings}>
             Delete

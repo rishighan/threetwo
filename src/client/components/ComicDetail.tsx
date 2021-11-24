@@ -87,11 +87,11 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
 
   useEffect(() => {
     if (isEmpty(ADCPPSocket) && !isEmpty(userSettings)) {
-      console.log(userSettings.directConnect.client.hostname);
+      console.log(userSettings.directConnect.client.host.hostname);
       setADCPPSocket(
         new AirDCPPSocket({
-          protocol: `${userSettings.directConnect.client.protocol}`,
-          hostname: `${userSettings.directConnect.client.hostname}`,
+          protocol: `${userSettings.directConnect.client.host.protocol}`,
+          hostname: `${userSettings.directConnect.client.host.hostname}`,
         }),
       );
     }

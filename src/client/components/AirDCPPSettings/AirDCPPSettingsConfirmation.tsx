@@ -2,6 +2,7 @@ import React, { ReactElement } from "react";
 
 export const AirDCPPSettingsConfirmation = (settingsObject): ReactElement => {
   const { settings } = settingsObject;
+
   return (
     <div className="mt-4 is-clearfix">
       <div className="card">
@@ -15,21 +16,21 @@ export const AirDCPPSettingsConfirmation = (settingsObject): ReactElement => {
               <dt>
                 Client version:{" "}
                 {
-                  settings.directConnect.client.airdcppUserSettings.system_info
+                  settings.directConnect.client.airDCPPUserSettings.system_info
                     .client_version
                 }
               </dt>
               <dt>
                 Hostname:{" "}
                 {
-                  settings.directConnect.client.airdcppUserSettings.system_info
+                  settings.directConnect.client.airDCPPUserSettings.system_info
                     .hostname
                 }
               </dt>
               <dt>
                 Platform:{" "}
                 {
-                  settings.directConnect.client.airdcppUserSettings.system_info
+                  settings.directConnect.client.airDCPPUserSettings.system_info
                     .platform
                 }
               </dt>
@@ -37,7 +38,7 @@ export const AirDCPPSettingsConfirmation = (settingsObject): ReactElement => {
               <dt>
                 Username:{" "}
                 {
-                  settings.directConnect.client.airdcppUserSettings.user
+                  settings.directConnect.client.airDCPPUserSettings.user
                     .username
                 }
               </dt>
@@ -45,7 +46,7 @@ export const AirDCPPSettingsConfirmation = (settingsObject): ReactElement => {
               <dt>
                 Active Sessions:{" "}
                 {
-                  settings.directConnect.client.airdcppUserSettings.user
+                  settings.directConnect.client.airDCPPUserSettings.user
                     .active_sessions
                 }
               </dt>
@@ -53,7 +54,7 @@ export const AirDCPPSettingsConfirmation = (settingsObject): ReactElement => {
                 Permissions:{" "}
                 <pre>
                   {JSON.stringify(
-                    settings.directConnect.client.airdcppUserSettings.user
+                    settings.directConnect.client.airDCPPUserSettings.user
                       .permissions,
                     undefined,
                     2,

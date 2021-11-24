@@ -6,11 +6,11 @@ import {
 import { SETTINGS_SERVICE_BASE_URI } from "../constants/endpoints";
 
 export const saveSettings =
-  (settingsObject, airdcppUserSettings) => async (dispatch) => {
+  (settingsPayload, settingsObjectId?) => async (dispatch) => {
     const result = await axios({
       url: `${SETTINGS_SERVICE_BASE_URI}/saveSettings`,
       method: "POST",
-      data: { settingsObject, airdcppUserSettings },
+      data: { settingsPayload, settingsObjectId },
     });
     console.log(result.data);
     dispatch({

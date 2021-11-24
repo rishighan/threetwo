@@ -7,7 +7,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, SearchInstance } from "threetwo-ui-typings";
 import ellipsize from "ellipsize";
-import { isEmpty, isNil, isUndefined, map } from "lodash";
+import { isEmpty, isNil, isUndefined, map, pick } from "lodash";
 import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
 interface IAcquisitionPanelProps {
   comicBookMetadata: any;
@@ -43,8 +43,8 @@ export const AcquisitionPanel = (
     async (searchQuery) => {
       dispatch(
         search(searchQuery, ADCPPSocket, {
-          username: `${userSettings.directConnect.client.username}`,
-          password: `${userSettings.directConnect.client.password}`,
+          username: `${userSettings.directConnect.client.host.username}`,
+          password: `${userSettings.directConnect.client.host.password}`,
         }),
       );
     },
@@ -59,7 +59,7 @@ export const AcquisitionPanel = (
       extensions: ["cbz", "cbr"],
     },
     // "comic-scans.no-ip.biz:24674",
-    hub_urls: ["perfection.comichub.org:777"],
+    hub_urls: map(userSettings.directConnect.client.hubs, (item) => item.value),
     priority: 5,
   };
 
@@ -73,16 +73,16 @@ export const AcquisitionPanel = (
           comicBookObjectId,
           ADCPPSocket,
           {
-            username: `${userSettings.directConnect.client.username}`,
-            password: `${userSettings.directConnect.client.password}`,
+            username: `${userSettings.directConnect.client.host.username}`,
+            password: `${userSettings.directConnect.client.host.password}`,
           },
         ),
       );
       // this is to update the download count badge on the downloads tab
       dispatch(
         getBundlesForComic(comicBookObjectId, ADCPPSocket, {
-          username: `${userSettings.directConnect.client.username}`,
-          password: `${userSettings.directConnect.client.password}`,
+          username: `${userSettings.directConnect.client.host.username}`,
+          password: `${userSettings.directConnect.client.host.password}`,
         }),
       );
     },
@@ -126,6 +126,17 @@ export const AcquisitionPanel = (
                 <div className="card-content">
                   <div className="content">
                     <dl>
+                      <dt>
+                        <div className="tags">
+                          {userSettings.directConnect.client.hubs.map(
+                            ({ value }) => (
+                              <span className="tag" key={value}>
+                                {value}
+                              </span>
+                            ),
+                          )}
+                        </div>
+                      </dt>
                       <dt>Query: {searchInfo.query.pattern}</dt>
                       <dd>
                         Extensions: {searchInfo.query.extensions.join(", ")}

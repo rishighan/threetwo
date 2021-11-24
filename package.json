@@ -59,7 +59,7 @@
     "react-notification-system": "^0.4.0",
     "react-notification-system-redux": "^2.0.1",
     "react-responsive-carousel": "^3.2.21",
-    "react-select": "^4.3.1",
+    "react-select": "^5.2.1",
     "react-sliding-pane": "^7.0.0",
     "react-stickynode": "^4.0.0",
     "react-table": "^7.7.0",

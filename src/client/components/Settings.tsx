@@ -1,19 +1,31 @@
 import React, { useState, useEffect, useCallback, ReactElement } from "react";
-import { AirDCPPSettingsForm } from "./AirDCPPSettingsForm";
-import { AirDCPPConnectionForm } from "./AirDCPPConnectionForm";
+import { AirDCPPSettingsForm } from "./AirDCPPSettings/AirDCPPSettingsForm";
+import { AirDCPPHubsForm } from "./AirDCPPSettings/AirDCPPHubsForm";
 import settingsObject from "../constants/settings/settingsMenu.json";
-import { isUndefined, map } from "lodash";
+import { isEmpty, isUndefined, map } from "lodash";
+import { useDispatch, useSelector } from "react-redux";
+import { getSettings } from "../actions/settings.actions";
 
 interface ISettingsProps {}
 
 export const Settings = (props: ISettingsProps): ReactElement => {
+  // fetch saved AirDC++ settings, if any
+  const airDCPPClientSettings = useSelector(
+    (state: RootState) => state.settings.data,
+  );
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getSettings());
+  }, []);
   const [active, setActive] = useState("gen-db");
   const settingsContent = [
     {
       id: "adc-hubs",
       content: (
         <>
-          <AirDCPPConnectionForm />
+          {!isEmpty(airDCPPClientSettings) ? (
+            <AirDCPPHubsForm settings={airDCPPClientSettings} />
+          ) : null}
         </>
       ),
     },
@@ -21,7 +33,7 @@ export const Settings = (props: ISettingsProps): ReactElement => {
       id: "adc-connection",
       content: (
         <>
-          <AirDCPPSettingsForm />
+          <AirDCPPSettingsForm settings={airDCPPClientSettings} />
         </>
       ),
     },
