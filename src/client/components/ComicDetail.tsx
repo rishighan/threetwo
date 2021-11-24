@@ -86,7 +86,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   }, [page, dispatch]);
 
   useEffect(() => {
-    if (isEmpty(ADCPPSocket) && !isEmpty(userSettings)) {
+    if (isEmpty(ADCPPSocket) && !isNil(userSettings.directConnect)) {
       console.log(userSettings.directConnect.client.host.hostname);
       setADCPPSocket(
         new AirDCPPSocket({
@@ -95,7 +95,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
         }),
       );
     }
-  });
+  }, [userSettings]);
 
   const unpackComicArchive = useCallback(() => {
     dispatch(

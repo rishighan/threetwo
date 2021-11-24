@@ -33,6 +33,7 @@ export const AirDCPPSettingsForm = (airDCPPClientSettings): ReactElement => {
         setADCPPSocket(
           new AirDCPPSocket({
             hostname: `${values.hostname}`,
+            protocol: `${values.protocol}`,
           }),
         );
       }
