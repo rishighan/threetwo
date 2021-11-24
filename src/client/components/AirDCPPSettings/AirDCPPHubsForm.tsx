@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { isEmpty, isUndefined } from "lodash";
 import Select from "react-select";
 import { saveSettings } from "../../actions/settings.actions";
+import { CORS_PROXY_SERVER_URI } from "../../constants/endpoints";
 
 export const AirDCPPHubsForm = (airDCPPClientUserSettings): ReactElement => {
   const { settings } = airDCPPClientUserSettings;
@@ -14,7 +15,7 @@ export const AirDCPPHubsForm = (airDCPPClientUserSettings): ReactElement => {
   useEffect(() => {
     if (!isEmpty(settings)) {
       axios({
-        url: `${settings.directConnect.client.host.protocol}://${settings.directConnect.client.host.hostname}/api/v1/hubs`,
+        url: `${CORS_PROXY_SERVER_URI}${settings.directConnect.client.host.protocol}://${settings.directConnect.client.host.hostname}/api/v1/hubs`,
         method: "GET",
         headers: {
           Authorization: `${settings.directConnect.client.airDCPPUserSettings.auth_token}`,

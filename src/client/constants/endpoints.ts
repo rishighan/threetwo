@@ -9,6 +9,13 @@ export const hostURIBuilder = (options: Record<string, string>): string => {
   );
 };
 
+export const CORS_PROXY_SERVER_URI = hostURIBuilder({
+  protocol: "http",
+  host: process.env.UNDERLYING_HOSTNAME || "localhost",
+  port: "8050",
+  apiPath: "/",
+});
+
 export const COMICBOOKINFO_SERVICE_URI = hostURIBuilder({
   protocol: "http",
   host: process.env.UNDERLYING_HOSTNAME || "localhost",
