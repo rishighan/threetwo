@@ -19,6 +19,7 @@ services:
     depends_on:
       - db
       # - elasticsearch
+      - cors
       - libraryqueue
       - redis
       - settings
@@ -168,6 +169,13 @@ services:
       - proxy
     ports:
       - "6379:6379"
+
+  cors:
+    image: shakyshane/nginx-cors
+    ports:
+      - 8050:80
+    environment:
+      - TARGET_DOMAIN=ghost
 
   # elasticsearch:
   #   image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
