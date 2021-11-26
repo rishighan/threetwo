@@ -6,7 +6,7 @@ import { AirDCPPSettingsConfirmation } from "./AirDCPPSettingsConfirmation";
 import axios from "axios";
 import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
 import AirDCPPSocket from "../../services/DcppSearchService";
-import { isUndefined, isEmpty } from "lodash";
+import { isUndefined, isEmpty, isNil } from "lodash";
 import { CORS_PROXY_SERVER_URI } from "../../constants/endpoints";
 
 export const AirDCPPSettingsForm = (airDCPPClientSettings): ReactElement => {
@@ -16,19 +16,20 @@ export const AirDCPPSettingsForm = (airDCPPClientSettings): ReactElement => {
 
   const onSubmit = async (values) => {
     try {
-      const airDCPPResponse = await axios({
-        url: `${CORS_PROXY_SERVER_URI}${values.protocol}://${values.hostname}/api/v1/sessions/authorize`,
-        method: "POST",
-        data: {
-          username: values.username,
-          password: values.password,
-        },
+      const socket = new AirDCPPSocket({
+        hostname: `${values.hostname}`,
+        protocol: `${values.protocol}`,
       });
-      if (airDCPPResponse.status === 200) {
+      const socketConnectionResponse = await socket.connect(
+        values.username,
+        values.password,
+        true,
+      );
+      if (!isNil(socketConnectionResponse.session_id)) {
         dispatch(
           saveSettings({
             host: values,
-            airDCPPUserSettings: airDCPPResponse.data,
+            airDCPPUserSettings: socketConnectionResponse,
           }),
         );
         setADCPPSocket(

@@ -1,34 +1,34 @@
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState, useContext } from "react";
 import { Form, Field } from "react-final-form";
-import axios from "axios";
 import { useDispatch } from "react-redux";
-import { isEmpty, isUndefined } from "lodash";
+import { isEmpty, isNil, isUndefined } from "lodash";
 import Select from "react-select";
 import { saveSettings } from "../../actions/settings.actions";
-import { CORS_PROXY_SERVER_URI } from "../../constants/endpoints";
+import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
 
 export const AirDCPPHubsForm = (airDCPPClientUserSettings): ReactElement => {
   const { settings } = airDCPPClientUserSettings;
   const dispatch = useDispatch();
   const [hubList, setHubList] = useState([]);
-
+  const { ADCPPSocket } = useContext(AirDCPPSocketContext);
   useEffect(() => {
-    if (!isEmpty(settings)) {
-      axios({
-        url: `${CORS_PROXY_SERVER_URI}${settings.directConnect.client.host.protocol}://${settings.directConnect.client.host.hostname}/api/v1/hubs`,
-        method: "GET",
-        headers: {
-          Authorization: `${settings.directConnect.client.airDCPPUserSettings.auth_token}`,
-        },
-      }).then((hubs) => {
-        const hubSelectionOptions = hubs.data.map(({ hub_url, identity }) => ({
+    (async () => {
+      if (!isEmpty(settings)) {
+        console.log(ADCPPSocket);
+        await ADCPPSocket.connect(
+          settings.directConnect.client.host.username,
+          settings.directConnect.client.host.password,
+          true,
+        );
+        const hubs = await ADCPPSocket.get(`hubs`);
+        const hubSelectionOptions = hubs.map(({ hub_url, identity }) => ({
           value: hub_url,
           label: identity.name,
         }));
 
         setHubList(hubSelectionOptions);
-      });
-    }
+      }
+    })();
   }, []);
 
   const onSubmit = (values) => {

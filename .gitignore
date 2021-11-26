@@ -14,3 +14,4 @@ src/client/assets/scss/App.css.map
 yarn-error.log
 .nova
 environment.list
+.env

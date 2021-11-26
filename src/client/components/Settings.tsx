@@ -1,11 +1,19 @@
-import React, { useState, useEffect, useCallback, ReactElement } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  ReactElement,
+  useContext,
+} from "react";
 import { AirDCPPSettingsForm } from "./AirDCPPSettings/AirDCPPSettingsForm";
 import { AirDCPPHubsForm } from "./AirDCPPSettings/AirDCPPHubsForm";
 import { SystemSettingsForm } from "./SystemSettings/SystemSettingsForm";
 import settingsObject from "../constants/settings/settingsMenu.json";
-import { isEmpty, isUndefined, map } from "lodash";
+import { isEmpty, isNil, isUndefined, map } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import { getSettings } from "../actions/settings.actions";
+import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
+import AirDCPPSocket from "../services/DcppSearchService";
 
 interface ISettingsProps {}
 
@@ -15,10 +23,24 @@ export const Settings = (props: ISettingsProps): ReactElement => {
     (state: RootState) => state.settings.data,
   );
   const dispatch = useDispatch();
+  const { ADCPPSocket, setADCPPSocket } = useContext(AirDCPPSocketContext);
   useEffect(() => {
     dispatch(getSettings());
   }, []);
+
+  useEffect(() => {
+    if (!isEmpty(airDCPPClientSettings)) {
+      console.log(airDCPPClientSettings);
+      setADCPPSocket(
+        new AirDCPPSocket({
+          hostname: `${airDCPPClientSettings.directConnect.client.host.hostname}`,
+          protocol: `${airDCPPClientSettings.directConnect.client.host.protocol}`,
+        }),
+      );
+    }
+  }, [airDCPPClientSettings]);
   const [active, setActive] = useState("gen-db");
+
   const settingsContent = [
     {
       id: "adc-hubs",
