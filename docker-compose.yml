@@ -12,14 +12,13 @@ services:
       - $COMICS_DIRECTORY:/comics
       - $USERDATA_DIRECTORY:/userdata
     ports:
-      # - "8050:8050"
+      - "8050:8050"
       - "3050:3050"
     links:
       - importapi
     depends_on:
       - db
-      # - elasticsearch
-      - cors
+      - elasticsearch
       - libraryqueue
       - redis
       - settings
@@ -170,28 +169,21 @@ services:
     ports:
       - "6379:6379"
 
-  cors:
-    image: shakyshane/nginx-cors
-    ports:
-      - 8050:80
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+    container_name: elasticsearch
     environment:
-      - TARGET_DOMAIN=0.0.0.0
-
-  # elasticsearch:
-  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
-  #   container_name: elasticsearch
-  #   environment:
-  #     - "discovery.type=single-node"
-  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-  #     - "xpack.security.enabled=true"
-  #     - "xpack.security.authc.api_key.enabled=true"
-  #     - "ELASTIC_PASSWORD=password"
-  #   ulimits:
-  #     memlock:
-  #       soft: -1
-  #       hard: -1
-  #   ports:
-  #     - 9200:9200
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "xpack.security.enabled=true"
+      - "xpack.security.authc.api_key.enabled=true"
+      - "ELASTIC_PASSWORD=password"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
 
 networks:
   proxy:
