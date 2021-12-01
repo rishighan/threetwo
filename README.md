@@ -7,7 +7,7 @@ ThreeTwo! _aims to be_ a comic book curation app.
 
 ### 🦄 Early Development Support Channel
 
-Please help me test the early builds of `ThreeTwo!` on its official [Discord](https://discord.gg/DbpcSNuM)
+Please help me test the early builds of `ThreeTwo!` on its official [Discord](https://discord.gg/n4HZ4j33uT)
 
 Discuss ideas and implementations with me, and get status, progress updates!
 
