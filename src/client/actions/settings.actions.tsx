@@ -2,8 +2,13 @@ import axios from "axios";
 import {
   SETTINGS_OBJECT_FETCHED,
   SETTINGS_OBJECT_DELETED,
+  SETTINGS_CALL_IN_PROGRESS,
+  SETTINGS_DB_FLUSH_SUCCESS,
 } from "../constants/action-types";
-import { SETTINGS_SERVICE_BASE_URI } from "../constants/endpoints";
+import {
+  IMPORT_SERVICE_BASE_URI,
+  SETTINGS_SERVICE_BASE_URI,
+} from "../constants/endpoints";
 
 export const saveSettings =
   (settingsPayload, settingsObjectId?) => async (dispatch) => {
@@ -48,5 +53,19 @@ export const deleteSettings = () => async (dispatch) => {
 };
 
 export const flushDb = () => async (dispatch) => {
-  
-}
+  dispatch({
+    type: SETTINGS_CALL_IN_PROGRESS,
+  });
+
+  const flushDbResult = await axios({
+    url: `${IMPORT_SERVICE_BASE_URI}/flushDb`,
+    method: "POST",
+  });
+
+  if (flushDbResult) {
+    dispatch({
+      type: SETTINGS_DB_FLUSH_SUCCESS,
+      data: flushDbResult.data,
+    });
+  }
+};

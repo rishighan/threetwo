@@ -1,10 +1,18 @@
 import React, { ReactElement, useCallback } from "react";
 import { flushDb } from "../../actions/settings.actions";
+import { useDispatch, useSelector } from "react-redux";
 
 export const SystemSettingsForm = (settingsObject): ReactElement => {
   const { settings } = settingsObject;
 
-  // const flushDb = useC
+  const dispatch = useDispatch();
+  const isSettingsCallInProgress = useSelector(
+    (state: RootState) => state.settings.inProgress,
+  );
+  const flushDatabase = useCallback(() => {
+    dispatch(flushDb());
+  }, []);
+
   return (
     <div className="is-clearfix">
       <div className="mt-4">
@@ -34,7 +42,14 @@ export const SystemSettingsForm = (settingsObject): ReactElement => {
           </div>
         </article>
 
-        <button className="button is-danger" onClick={flushDb}>
+        <button
+          className={
+            isSettingsCallInProgress
+              ? "button is-danger is-loading"
+              : "button is-danger"
+          }
+          onClick={flushDatabase}
+        >
           <span className="icon">
             <i className="fas fa-eraser"></i>
           </span>

@@ -3,10 +3,12 @@ import {
   SETTINGS_OBJECT_FETCHED,
   SETTINGS_OBJECT_DELETED,
   SETTINGS_CALL_IN_PROGRESS,
+  SETTINGS_DB_FLUSH_SUCCESS,
 } from "../constants/action-types";
 const initialState = {
   data: {},
   inProgress: false,
+  DbFlushed: false,
 };
 
 function settingsReducer(state = initialState, action) {
@@ -28,6 +30,14 @@ function settingsReducer(state = initialState, action) {
       return {
         ...state,
         data: action.data,
+        inProgress: false,
+      };
+
+    case SETTINGS_DB_FLUSH_SUCCESS:
+      console.log(state);
+      return {
+        ...state,
+        DbFlushed: action.data,
         inProgress: false,
       };
 
