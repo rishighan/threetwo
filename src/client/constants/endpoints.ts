@@ -51,7 +51,7 @@ export const SETTINGS_SERVICE_BASE_URI = hostURIBuilder({
 });
 
 export const SOCKET_BASE_URI = hostURIBuilder({
-  protocol: "http",
+  protocol: "ws",
   host: process.env.UNDERLYING_HOSTNAME || "localhost",
   port: "3001",
   apiPath: `/`,

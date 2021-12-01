@@ -7,7 +7,6 @@ import axios from "axios";
 import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
 import AirDCPPSocket from "../../services/DcppSearchService";
 import { isUndefined, isEmpty, isNil } from "lodash";
-import { CORS_PROXY_SERVER_URI } from "../../constants/endpoints";
 
 export const AirDCPPSettingsForm = (airDCPPClientSettings): ReactElement => {
   const { settings } = airDCPPClientSettings;

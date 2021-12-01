@@ -11,6 +11,7 @@ export const AirDCPPHubsForm = (airDCPPClientUserSettings): ReactElement => {
   const dispatch = useDispatch();
   const [hubList, setHubList] = useState([]);
   const { ADCPPSocket } = useContext(AirDCPPSocketContext);
+
   useEffect(() => {
     (async () => {
       if (!isEmpty(settings)) {

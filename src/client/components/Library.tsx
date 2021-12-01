@@ -42,7 +42,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
   const RawFileDetails = ({ value }) => {
     if (!isNil(value.path)) {
       const encodedFilePath = encodeURI(
-        `${IMPORT_SERVICE_HOST}` + removeLeadingPeriod(value.path),
+        `${IMPORT_SERVICE_HOST}/${value.cover.filePath}`,
       );
       const filePath = escapePoundSymbol(encodedFilePath);
       return (
@@ -257,6 +257,9 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
 
   RawFileDetails.propTypes = {
     value: PropTypes.shape({
+      cover: PropTypes.shape({
+        filePath: PropTypes.string,
+      }),
       name: PropTypes.string,
       path: PropTypes.string,
       fileSize: PropTypes.number,

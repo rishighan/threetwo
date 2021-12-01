@@ -59,7 +59,7 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
       page: 1,
     },
   };
-  const walked = await walkFolder("./comics");
+
   // dispatch(
   //   success({
   //     // uid: 'once-please', // you can specify your own uid if required
@@ -70,13 +70,11 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
   //     autoDismiss: 0,
   //   }),
   // );
-  walked.forEach((walkedFolders) =>
-    dispatch({
-      type: LS_IMPORT,
-      meta: { remote: true },
-      data: { extractionOptions, walkedFolders },
-    }),
-  );
+  dispatch({
+    type: LS_IMPORT,
+    meta: { remote: true },
+    data: { extractionOptions },
+  });
 };
 
 export const getComicBooks = (options) => async (dispatch) => {

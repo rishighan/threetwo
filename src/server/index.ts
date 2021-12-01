@@ -30,8 +30,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // REGISTER ROUTES
 // all of the routes will be prefixed with /api
-// const routes: Router[] = Object.values(router);
-// app.use("/api", routes);
+const routes: Router[] = Object.values(router);
+app.use("/api", routes);
 
 // Send index.html on root request
 app.use(express.static("dist"));

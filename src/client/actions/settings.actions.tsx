@@ -46,3 +46,7 @@ export const deleteSettings = () => async (dispatch) => {
     });
   }
 };
+
+export const flushDb = () => async (dispatch) => {
+  
+}

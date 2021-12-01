@@ -41,8 +41,7 @@ export const RecentlyImported = ({
             let comicName = "";
             if (!isNil(rawFileDetails)) {
               const encodedFilePath = encodeURI(
-                `${IMPORT_SERVICE_HOST}` +
-                  removeLeadingPeriod(rawFileDetails.path),
+                `${IMPORT_SERVICE_HOST}/${rawFileDetails.cover.filePath}`,
               );
               imagePath = escapePoundSymbol(encodedFilePath);
               comicName = rawFileDetails.name;
@@ -77,11 +76,11 @@ export const RecentlyImported = ({
                   )}
                   {/* Issue type */}
                   {!isUndefined(sourcedMetadata.comicvine) &&
-                  !isNil(
-                    detectIssueTypes(
-                      sourcedMetadata.comicvine.volumeInformation.description,
-                    ),
-                  ) ? (
+                    !isNil(
+                      detectIssueTypes(
+                        sourcedMetadata.comicvine.volumeInformation.description,
+                      ),
+                    ) ? (
                     <span className="tag is-warning">
                       {
                         detectIssueTypes(

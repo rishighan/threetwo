@@ -7,7 +7,7 @@ import { io } from "socket.io-client";
 import socketIoMiddleware from "redux-socket.io-middleware";
 import { SOCKET_BASE_URI } from "../constants/endpoints";
 
-const socketConnection = io(SOCKET_BASE_URI);
+const socketConnection = io(SOCKET_BASE_URI, { transports: ["websocket"] });
 
 export const history = createBrowserHistory();
 const configureStore = (initialState) => {
