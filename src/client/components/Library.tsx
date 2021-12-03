@@ -1,20 +1,13 @@
 import React, { useState, useEffect, useMemo, ReactElement } from "react";
 import PropTypes from "prop-types";
 import { useHistory } from "react-router";
-import {
-  removeLeadingPeriod,
-  escapePoundSymbol,
-} from "../shared/utils/formatting.utils";
 import { useTable, usePagination } from "react-table";
-import prettyBytes from "pretty-bytes";
-import styled from "styled-components";
-import ellipsize from "ellipsize";
 import { useDispatch, useSelector } from "react-redux";
-import { Form, Field } from "react-final-form";
 import { getComicBooks } from "../actions/fileops.actions";
-import { isNil } from "lodash";
-import { IMPORT_SERVICE_HOST } from "../constants/endpoints";
-import { Link } from "react-router-dom";
+import { isEmpty, isNil } from "lodash";
+import { RawFileDetails } from "./Library/RawFileDetails";
+import { ComicVineDetails } from "./Library/ComicVineDetails";
+import { SearchBar } from "./Library/SearchBar";
 
 interface IComicBookLibraryProps {
   matches?: unknown;
@@ -38,79 +31,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
   const navigateToComicDetail = (id) => {
     history.push(`/comic/details/${id}`);
   };
-  // raw file details
-  const RawFileDetails = ({ value }) => {
-    if (!isNil(value.path)) {
-      const encodedFilePath = encodeURI(
-        `${IMPORT_SERVICE_HOST}/${value.cover.filePath}`,
-      );
-      const filePath = escapePoundSymbol(encodedFilePath);
-      return (
-        <div className="card-container">
-          <div className="card">
-            <div className="is-horizontal">
-              <div className="card-image">
-                <figure>
-                  <img className="image" src={filePath} />
-                </figure>
-              </div>
-              <ul className="card-content">
-                <li className="name has-text-weight-medium">
-                  {ellipsize(value.name, 18)}
-                </li>
-                <li>
-                  <div className="control">
-                    <div className="tags has-addons">
-                      <span className="tag is-primary is-light">
-                        {value.extension}
-                      </span>
-                      <span className="tag is-info is-light">
-                        {prettyBytes(value.fileSize)}
-                      </span>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      );
-    } else if (!isNil(value.comicvine)) {
-      return (
-        <div className="card-container">
-          <div className="card">
-            <div className="is-horizontal">
-              <div className="card-image">
-                <figure>
-                  <img
-                    className="image"
-                    src={value.comicvine.image.thumb_url}
-                  />
-                </figure>
-              </div>
-              <ul className="card-content">
-                <li className="name has-text-weight-medium">
-                  {ellipsize(value.name, 18)}
-                </li>
-                <li>
-                  <div className="control">
-                    <div className="tags has-addons">
-                      <span className="tag is-primary is-light">
-                        ComicVine ID
-                      </span>
-                      <span className="tag is-info is-light">
-                        {value.comicvine.id}
-                      </span>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      );
-    }
-  };
+
   const ImportStatus = ({ value }) => {
     return value ? (
       <span className="tag is-info is-light">Imported</span>
@@ -119,53 +40,6 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
     );
   };
 
-  const foo = () => {};
-  const SearchBar = () => {
-    return (
-      <div className="box columns sticky">
-        <Form
-          onSubmit={foo}
-          initialValues={{}}
-          render={({ handleSubmit, form, submitting, pristine, values }) => (
-            <div className="column is-three-quarters search">
-              <label>Search</label>
-              <Field name="search">
-                {({ input, meta }) => {
-                  return (
-                    <input
-                      {...input}
-                      className="input main-search-bar is-medium"
-                      placeholder="Type an issue/volume name"
-                    />
-                  );
-                }}
-              </Field>
-            </div>
-          )}
-        />
-        <div className="column one-fifth">
-          <div className="field has-addons">
-            <p className="control">
-              <button className="button">
-                <span className="icon is-small">
-                  <i className="fa-solid fa-list"></i>
-                </span>
-              </button>
-            </p>
-            <p className="control">
-              <button className="button">
-                <Link to="/library-grid">
-                  <span className="icon is-small">
-                    <i className="fa-solid fa-image"></i>
-                  </span>
-                </Link>
-              </button>
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  };
   const columns = useMemo(
     () => [
       {
@@ -178,7 +52,16 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
               !isNil(row.rawFileDetails)
                 ? row.rawFileDetails
                 : row.sourcedMetadata,
-            Cell: RawFileDetails,
+            Cell: ({ value }) => {
+              // If no CV info available, use raw file metadata
+              if (!isNil(value.cover)) {
+                return <RawFileDetails data={value} />;
+              }
+              // If CV metadata available, show it
+              if (!isNil(value.comicvine)) {
+                return <ComicVineDetails data={value} />;
+              }
+            },
           },
           {
             Header: "Import Status",
@@ -254,18 +137,6 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
     ],
     [],
   );
-
-  RawFileDetails.propTypes = {
-    value: PropTypes.shape({
-      cover: PropTypes.shape({
-        filePath: PropTypes.string,
-      }),
-      name: PropTypes.string,
-      path: PropTypes.string,
-      fileSize: PropTypes.number,
-      extension: PropTypes.string,
-    }),
-  };
 
   ImportStatus.propTypes = {
     value: PropTypes.bool.isRequired,

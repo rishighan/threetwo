@@ -45,7 +45,7 @@ export const RecentlyImported = ({
               );
               imagePath = escapePoundSymbol(encodedFilePath);
               comicName = rawFileDetails.name;
-            } else if (!isNil(sourcedMetadata)) {
+            } else if (!isNil(sourcedMetadata.comicvine)) {
               imagePath = sourcedMetadata.comicvine.image.small_url;
               comicName = sourcedMetadata.comicvine.name;
             }
