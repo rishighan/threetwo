@@ -8,8 +8,7 @@ import React, {
 import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
 import Card from "./Carda";
-import MatchResult from "./MatchResult";
-import ComicVineSearchForm from "./ComicVineSearchForm";
+import { ComicVineMatchPanel } from "./ComicDetail/ComicVineMatchPanel";
 import AcquisitionPanel from "./AcquisitionPanel";
 import DownloadsPanel from "./DownloadsPanel";
 import SlidingPane from "react-sliding-pane";
@@ -118,64 +117,33 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const contentForSlidingPanel = {
     CVMatches: {
       content: () => {
-        return (
-          <>
-            {!isEmpty(comicVineSearchQueryObject) &&
-            !isUndefined(comicVineSearchQueryObject) ? (
-              <div className="card search-criteria-card">
-                <div className="card-content">
-                  <ComicVineSearchForm />
-                  <p className="is-size-6">Searching against:</p>
-                  <div className="field is-grouped is-grouped-multiline">
-                    <div className="control">
-                      <div className="tags has-addons">
-                        <span className="tag">Title</span>
-                        <span className="tag is-info">
-                          {
-                            comicVineSearchQueryObject.issue.searchParams
-                              .searchTerms.name
-                          }
-                        </span>
-                      </div>
-                    </div>
-                    <div className="control">
-                      <div className="tags has-addons">
-                        <span className="tag">Number</span>
-                        <span className="tag is-info">
-                          {
-                            comicVineSearchQueryObject.issue.searchParams
-                              .searchTerms.number
-                          }
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="progress-indicator-container">
-                <div className="indicator">
-                  <Loader
-                    type="MutatingDots"
-                    color="#CCC"
-                    secondaryColor="#999"
-                    height={100}
-                    width={100}
-                    visible={comicVineAPICallProgress}
-                  />
-                </div>
-              </div>
-            )}
-            <div className="search-results-container">
-              {!isEmpty(comicVineSearchResults) && (
-                <MatchResult
-                  matchData={comicVineSearchResults}
-                  comicObjectId={comicObjectId}
+        if (!comicVineAPICallProgress) {
+          return (
+            <ComicVineMatchPanel
+              props={{
+                comicVineSearchQueryObject,
+                comicVineAPICallProgress,
+                comicVineSearchResults,
+                comicObjectId,
+              }}
+            />
+          );
+        } else {
+          return (
+            <div className="progress-indicator-container">
+              <div className="indicator">
+                <Loader
+                  type="MutatingDots"
+                  color="#CCC"
+                  secondaryColor="#999"
+                  height={100}
+                  width={100}
+                  visible={comicVineAPICallProgress}
                 />
-              )}
+              </div>
             </div>
-          </>
-        );
+          );
+        }
       },
     },
     editComicArchive: {

@@ -5,9 +5,9 @@ import { useTable, usePagination } from "react-table";
 import { useDispatch, useSelector } from "react-redux";
 import { getComicBooks } from "../actions/fileops.actions";
 import { isEmpty, isNil } from "lodash";
-import { RawFileDetails } from "./Library/RawFileDetails";
-import { ComicVineDetails } from "./Library/ComicVineDetails";
-import { SearchBar } from "./Library/SearchBar";
+import RawFileDetails from "./Library/RawFileDetails";
+import ComicVineDetails from "./Library/ComicVineDetails";
+import SearchBar from "./Library/SearchBar";
 
 interface IComicBookLibraryProps {
   matches?: unknown;
@@ -61,6 +61,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
               if (!isNil(value.comicvine)) {
                 return <ComicVineDetails data={value} />;
               }
+              return <div>null</div>;
             },
           },
           {
