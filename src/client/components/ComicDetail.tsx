@@ -5,12 +5,15 @@ import React, {
   ReactElement,
   useContext,
 } from "react";
-import PropTypes from "prop-types";
+
 import { useParams } from "react-router-dom";
 import Card from "./Carda";
 import { ComicVineMatchPanel } from "./ComicDetail/ComicVineMatchPanel";
-import AcquisitionPanel from "./AcquisitionPanel";
-import DownloadsPanel from "./DownloadsPanel";
+import { VolumeInformation } from "./ComicDetail/Tabs/VolumeInformation";
+import { ComicVineDetails } from "./ComicDetail/ComicVineDetails";
+import { RawFileDetails } from "./ComicDetail/RawFileDetails";
+import AcquisitionPanel from "./ComicDetail/AcquisitionPanel";
+import DownloadsPanel from "./ComicDetail/DownloadsPanel";
 import SlidingPane from "react-sliding-pane";
 import Select, { components } from "react-select";
 
@@ -24,8 +27,7 @@ import {
   getComicBookDetailById,
   extractComicArchive,
 } from "../actions/comicinfo.actions";
-import { detectIssueTypes } from "../shared/utils/tradepaperback.utils";
-import dayjs from "dayjs";
+
 const prettyBytes = require("pretty-bytes");
 import { DnD } from "./DnD";
 import { useDispatch, useSelector } from "react-redux";
@@ -158,9 +160,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   }, [dispatch, comicBookDetailData]);
 
   const [active, setActive] = useState(1);
-  const createDescriptionMarkup = (html) => {
-    return { __html: html };
-  };
+
   const isComicBookMetadataAvailable =
     comicBookDetailData.sourcedMetadata &&
     !isUndefined(comicBookDetailData.sourcedMetadata.comicvine) &&
@@ -173,59 +173,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       name: "Volume Information",
       icon: <i className="fa-solid fa-layer-group"></i>,
       content: isComicBookMetadataAvailable ? (
-        <div key={1}>
-          <div className="columns">
-            <div className="column is-narrow">
-              <figure className="card-image">
-                <img
-                  src={
-                    comicBookDetailData.sourcedMetadata.comicvine
-                      .volumeInformation.image.thumb_url
-                  }
-                />
-              </figure>
-            </div>
-            <div className="column is-4">
-              <dl>
-                <dt>
-                  Is a part of{" "}
-                  <span className="has-text-info">
-                    {
-                      comicBookDetailData.sourcedMetadata.comicvine
-                        .volumeInformation.name
-                    }
-                  </span>
-                </dt>
-                <dd>
-                  Published by
-                  <span className="has-text-weight-semibold">
-                    {" "}
-                    {
-                      comicBookDetailData.sourcedMetadata.comicvine
-                        .volumeInformation.publisher.name
-                    }
-                  </span>
-                </dd>
-                <dd>
-                  Total issues in this volume:
-                  {
-                    comicBookDetailData.sourcedMetadata.comicvine
-                      .volumeInformation.count_of_issues
-                  }
-                </dd>
-              </dl>
-            </div>
-          </div>
-          <div className="columns">
-            <div
-              className="column is-three-quarters"
-              dangerouslySetInnerHTML={createDescriptionMarkup(
-                comicBookDetailData.sourcedMetadata.comicvine.volumeInformation
-                  .description,
-              )}
-            ></div>
-          </div>
-        </div>
+        <VolumeInformation data={comicBookDetailData} key={1} />
       ) : null,
     },
     {
@@ -339,118 +287,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     );
   };
 
-  const RawFileDetails = (props) => (
-    <div className="content comic-detail">
-      <dl>
-        <dt>Raw File Details</dt>
-        <dd className="is-size-7">
-          {props.data.containedIn +
-            "/" +
-            props.data.name +
-            props.data.extension}
-        </dd>
-        <dd>
-          <div className="field is-grouped">
-            <div className="control">
-              <div className="tags has-addons">
-                <span className="tag">Size</span>
-                <span className="tag is-info is-light">
-                  {prettyBytes(props.data.fileSize)}
-                </span>
-              </div>
-            </div>
-            <div className="control">
-              <div className="tags has-addons">
-                <span className="tag">Extension</span>
-                <span className="tag is-primary is-light">
-                  {props.data.extension}
-                </span>
-              </div>
-            </div>
-          </div>
-        </dd>
-      </dl>
-    </div>
-  );
-
-  const ComicVineDetails = (props) => (
-    <div className="content comic-detail">
-      <dl>
-        <dt>ComicVine Metadata</dt>
-        <dd className="is-size-7">
-          Last scraped on{" "}
-          {dayjs(props.updatedAt).format("MMM D YYYY [at] h:mm a")}
-        </dd>
-        <dd>
-          <h6>{props.data.name}</h6>
-        </dd>
-        <dd>{props.data.number}</dd>
-        <dd>
-          <div className="field is-grouped is-grouped-multiline">
-            {!isUndefined(
-              detectIssueTypes(
-                comicBookDetailData.sourcedMetadata.comicvine.volumeInformation
-                  .description,
-              ),
-            ) ? (
-              <div className="control">
-                <div className="tags has-addons">
-                  <span className="tag is-light">Detected Type</span>
-                  <span className="tag is-warning">
-                    {
-                      detectIssueTypes(
-                        comicBookDetailData.sourcedMetadata.comicvine
-                          .volumeInformation.description,
-                      ).displayName
-                    }
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div className="control">
-                <div className="tags has-addons">
-                  <span className="tag is-light">Type</span>
-                  <span className="tag is-warning">
-                    {props.data.resource_type}
-                  </span>
-                </div>
-              </div>
-            )}
-            <div className="control">
-              <div className="tags has-addons">
-                <span className="tag is-light">ComicVine Issue ID</span>
-                <span className="tag is-success">{props.data.id}</span>
-              </div>
-            </div>
-          </div>
-        </dd>
-      </dl>
-    </div>
-  );
-
-  ComicVineDetails.propTypes = {
-    updatedAt: PropTypes.string,
-    data: PropTypes.shape({
-      name: PropTypes.string,
-      number: PropTypes.string,
-      resource_type: PropTypes.string,
-      id: PropTypes.number,
-    }),
-  };
-
-  RawFileDetails.propTypes = {
-    data: PropTypes.shape({
-      containedIn: PropTypes.string,
-      name: PropTypes.string,
-      fileSize: PropTypes.number,
-      path: PropTypes.string,
-      extension: PropTypes.string,
-      cover: PropTypes.shape({
-        filePath: PropTypes.string,
-      }),
-    }),
-  };
-
   // Determine which cover image to use:
   // 1. from the locally imported or
   // 2. from the CV-scraped version
@@ -506,7 +342,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
         break;
     }
   };
-
   return (
     <section className="container">
       <div className="section">

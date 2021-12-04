@@ -9,12 +9,12 @@ import {
   search,
   downloadAirDCPPItem,
   getBundlesForComic,
-} from "../actions/airdcpp.actions";
+} from "../../actions/airdcpp.actions";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, SearchInstance } from "threetwo-ui-typings";
 import ellipsize from "ellipsize";
 import { isEmpty, isNil, map } from "lodash";
-import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
+import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
 interface IAcquisitionPanelProps {
   comicBookMetadata: any;
 }

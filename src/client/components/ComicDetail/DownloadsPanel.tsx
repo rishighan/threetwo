@@ -2,14 +2,14 @@ import React, { useEffect, useContext, ReactElement } from "react";
 import {
   getDownloadProgress,
   getBundlesForComic,
-} from "../actions/airdcpp.actions";
+} from "../../actions/airdcpp.actions";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "threetwo-ui-typings";
 import { isEmpty, isNil, map } from "lodash";
 import prettyBytes from "pretty-bytes";
 import dayjs from "dayjs";
 import ellipsize from "ellipsize";
-import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
+import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
 
 interface IDownloadsPanelProps {
   data: any;
