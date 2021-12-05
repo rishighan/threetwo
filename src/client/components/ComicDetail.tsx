@@ -5,37 +5,30 @@ import React, {
   ReactElement,
   useContext,
 } from "react";
-
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import Card from "./Carda";
 import { ComicVineMatchPanel } from "./ComicDetail/ComicVineMatchPanel";
 import { VolumeInformation } from "./ComicDetail/Tabs/VolumeInformation";
 import { ComicVineDetails } from "./ComicDetail/ComicVineDetails";
 import { RawFileDetails } from "./ComicDetail/RawFileDetails";
+import { ArchiveOperations } from "./ComicDetail/Tabs/ArchiveOperations";
 import AcquisitionPanel from "./ComicDetail/AcquisitionPanel";
 import DownloadsPanel from "./ComicDetail/DownloadsPanel";
-import SlidingPane from "react-sliding-pane";
-import Select, { components } from "react-select";
+import { Menu } from "./ComicDetail/ActionMenu/Menu";
+
+import { isEmpty, isUndefined, isNil } from "lodash";
+import { RootState } from "threetwo-ui-typings";
+
+import { getComicBookDetailById } from "../actions/comicinfo.actions";
 
 import "react-sliding-pane/dist/react-sliding-pane.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Loader from "react-loader-spinner";
-import { isEmpty, isUndefined, isNil } from "lodash";
-import { RootState } from "threetwo-ui-typings";
-import { fetchComicVineMatches } from "../actions/fileops.actions";
-import {
-  getComicBookDetailById,
-  extractComicArchive,
-} from "../actions/comicinfo.actions";
+import SlidingPane from "react-sliding-pane";
 
-const prettyBytes = require("pretty-bytes");
-import { DnD } from "./DnD";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  removeLeadingPeriod,
-  escapePoundSymbol,
-} from "../shared/utils/formatting.utils";
-import Sticky from "react-stickynode";
+import { escapePoundSymbol } from "../shared/utils/formatting.utils";
+
 import { IMPORT_SERVICE_HOST } from "../constants/endpoints";
 import { getSettings } from "../actions/settings.actions";
 import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
@@ -69,12 +62,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const comicBookDetailData = useSelector(
     (state: RootState) => state.comicInfo.comicBookDetail,
   );
-  const isComicBookExtractionInProgress = useSelector(
-    (state: RootState) => state.fileOps.comicBookExtractionInProgress,
-  );
-  const extractedComicBookArchive = useSelector(
-    (state: RootState) => state.fileOps.extractedComicBookArchive,
-  );
 
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
   const userSettings = useSelector((state: RootState) => state.settings.data);
@@ -97,23 +84,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       );
     }
   }, [userSettings]);
-
-  const unpackComicArchive = useCallback(() => {
-    dispatch(
-      extractComicArchive(
-        comicBookDetailData.rawFileDetails.containedIn +
-          "/" +
-          comicBookDetailData.rawFileDetails.name +
-          comicBookDetailData.rawFileDetails.extension,
-        {
-          extractTarget: "book",
-          targetExtractionFolder:
-            "./userdata/expanded/" + comicBookDetailData.rawFileDetails.name,
-          extractionMode: "all",
-        },
-      ),
-    );
-  }, [dispatch, comicBookDetailData]);
 
   // sliding panel init
   const contentForSlidingPanel = {
@@ -153,12 +123,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     },
   };
 
-  const openDrawerWithCVMatches = useCallback(() => {
-    dispatch(fetchComicVineMatches(comicBookDetailData));
-    setSlidingPanelContentId("CVMatches");
-    setVisible(true);
-  }, [dispatch, comicBookDetailData]);
-
   const [active, setActive] = useState(1);
 
   const isComicBookMetadataAvailable =
@@ -180,47 +144,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       id: 2,
       icon: <i className="fa-regular fa-file-archive"></i>,
       name: "Archive Operations",
-      content: (
-        <div key={2}>
-          <button
-            className={
-              isComicBookExtractionInProgress
-                ? "button is-loading is-warning"
-                : "button is-warning"
-            }
-            onClick={unpackComicArchive}
-          >
-            <span className="icon is-small">
-              <i className="fa-solid fa-box-open"></i>
-            </span>
-            <span>Unpack comic archive</span>
-          </button>
-          <div className="columns">
-            <div className="mt-5">
-              {!isEmpty(extractedComicBookArchive) ? (
-                <DnD data={extractedComicBookArchive} />
-              ) : null}
-            </div>
-            {!isEmpty(extractedComicBookArchive) ? (
-              <div className="column mt-5">
-                <Sticky enabled={true} top={70} bottomBoundary={3000}>
-                  <div className="card">
-                    <div className="card-content">
-                      {extractedComicBookArchive.length} pages
-                      <button className="button is-small is-light is-primary is-outlined">
-                        <span className="icon is-small">
-                          <i className="fa-solid fa-compress"></i>
-                        </span>
-                        <span>Convert to CBZ</span>
-                      </button>
-                    </div>
-                  </div>
-                </Sticky>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      ),
+      content: <ArchiveOperations data={comicBookDetailData} key={2} />,
     },
     {
       id: 3,
@@ -306,42 +230,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     comicBookTitle = comicBookDetailData.sourcedMetadata.comicvine.name;
   }
 
-  //  Actions menu options and handler
-  const CVMatchLabel = (
-    <span>
-      <i className="fa-solid fa-wand-magic"></i> Match on ComicVine
-    </span>
-  );
-
-  const editLabel = (
-    <span>
-      <i className="fa-regular fa-pen-to-square"></i> Edit Metadata
-    </span>
-  );
-  const deleteLabel = (
-    <span>
-      <i className="fa-regular fa-trash-alt"></i> Delete Comic
-    </span>
-  );
-  const Placeholder = (props) => {
-    return <components.Placeholder {...props} />;
-  };
-  const actionOptions = [
-    { value: "match-on-comic-vine", label: CVMatchLabel },
-    { value: "edit-metdata", label: editLabel },
-    { value: "delete-comic", label: deleteLabel },
-  ];
-
-  const handleActionSelection = (action) => {
-    switch (action.value) {
-      case "match-on-comic-vine":
-        openDrawerWithCVMatches();
-        break;
-      default:
-        console.log("No valid action selected.");
-        break;
-    }
-  };
   return (
     <section className="container">
       <div className="section">
@@ -373,19 +261,9 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
               </div>
               {/* action dropdown */}
               <div className="column is-one-fifth is-narrow is-size-7">
-                <Select
-                  className="basic-single"
-                  classNamePrefix="select"
-                  components={{ Placeholder }}
-                  placeholder={
-                    <span>
-                      <i className="fa-solid fa-list"></i> Actions
-                    </span>
-                  }
-                  name="actions"
-                  isSearchable={false}
-                  options={actionOptions}
-                  onChange={handleActionSelection}
+                <Menu
+                  data={comicBookDetailData}
+                  handlers={{ setSlidingPanelContentId, setVisible }}
                 />
               </div>
             </div>

@@ -12,7 +12,7 @@ export const RawFileDetails = (props): ReactElement => {
           {data.containedIn + "/" + data.name + data.extension}
         </dd>
         <dd>
-          <div className="field is-grouped">
+          <div className="field is-grouped mt-2">
             <div className="control">
               <div className="tags has-addons">
                 <span className="tag">Size</span>
