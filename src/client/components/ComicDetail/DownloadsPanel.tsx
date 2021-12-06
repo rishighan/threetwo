@@ -124,10 +124,10 @@ export const DownloadsPanel = (
 
   return !isNil(props.data) ? (
     <>
-      {!isNil(downloadProgressTick) ? (
-        <ProgressTick data={downloadProgressTick} />
-      ) : null}
-      <div className="columns">
+      <div className="columns is-multiline">
+        {!isNil(downloadProgressTick) ? (
+          <ProgressTick data={downloadProgressTick} />
+        ) : null}
         {!isEmpty(ADCPPSocket) ? (
           <Bundles data={bundles} />
         ) : (

@@ -15,6 +15,7 @@ import { RawFileDetails } from "./ComicDetail/RawFileDetails";
 import { ArchiveOperations } from "./ComicDetail/Tabs/ArchiveOperations";
 import AcquisitionPanel from "./ComicDetail/AcquisitionPanel";
 import DownloadsPanel from "./ComicDetail/DownloadsPanel";
+import { EditMetadataPanel } from "./ComicDetail/EditMetadataPanel";
 import { Menu } from "./ComicDetail/ActionMenu/Menu";
 
 import { isEmpty, isUndefined, isNil } from "lodash";
@@ -62,7 +63,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const comicBookDetailData = useSelector(
     (state: RootState) => state.comicInfo.comicBookDetail,
   );
-
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
   const userSettings = useSelector((state: RootState) => state.settings.data);
   const { ADCPPSocket, setADCPPSocket } = useContext(AirDCPPSocketContext);
@@ -75,7 +75,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
 
   useEffect(() => {
     if (isEmpty(ADCPPSocket) && !isNil(userSettings.directConnect)) {
-      console.log(userSettings.directConnect.client.host.hostname);
       setADCPPSocket(
         new AirDCPPSocket({
           protocol: `${userSettings.directConnect.client.host.protocol}`,
@@ -118,10 +117,11 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
         }
       },
     },
-    editComicArchive: {
-      content: () => <></>,
+    editComicBookMetadata: {
+      content: () => <EditMetadataPanel />,
     },
   };
+  console.log(comicVineSearchQueryObject);
 
   const [active, setActive] = useState(1);
 

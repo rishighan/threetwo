@@ -154,66 +154,58 @@ export const fetchVolumeGroups = () => (dispatch) => {
     });
   }
 };
-export const fetchComicVineMatches = (searchPayload) => (dispatch) => {
-  try {
-    const issueString = searchPayload.rawFileDetails.name;
-    const issueSearchQuery: IComicVineSearchQuery = refineQuery(issueString);
-    let seriesSearchQuery: IComicVineSearchQuery = {} as IComicVineSearchQuery;
-    if (searchPayload.rawFileDetails.containedIn !== "comics") {
-      seriesSearchQuery = refineQuery(
-        searchPayload.rawFileDetails.containedIn.split("/").pop(),
-      );
-    }
+export const fetchComicVineMatches =
+  (searchPayload, issueSearchQuery, seriesSearchQuery?) => (dispatch) => {
+    try {
+      dispatch({
+        type: CV_API_CALL_IN_PROGRESS,
+      });
 
-    dispatch({
-      type: CV_API_CALL_IN_PROGRESS,
-    });
-
-    axios
-      .request({
-        url: `${COMICBOOKINFO_SERVICE_URI}/fetchresource`,
-        method: "POST",
-        data: {
-          format: "json",
-          sort: "name%3Aasc",
-          // hack
-          query: issueSearchQuery.searchParams.searchTerms.name
-            .replace(/[^a-zA-Z0-9 ]/g, "")
-            .trim(),
-          fieldList: "id",
-          limit: "20",
-          offset: "0",
-          resources: "issue",
-          scorerConfiguration: {
-            searchQuery: {
+      axios
+        .request({
+          url: `${COMICBOOKINFO_SERVICE_URI}/fetchresource`,
+          method: "POST",
+          data: {
+            format: "json",
+            sort: "name%3Aasc",
+            // hack
+            query: issueSearchQuery.searchParams.searchTerms.name
+              .replace(/[^a-zA-Z0-9 ]/g, "")
+              .trim(),
+            fieldList: "id",
+            limit: "20",
+            offset: "0",
+            resources: "issue",
+            scorerConfiguration: {
+              searchQuery: {
+                issue: issueSearchQuery,
+                series: seriesSearchQuery,
+              },
+              rawFileDetails: searchPayload.rawFileDetails,
+            },
+          },
+          transformResponse: (r) => {
+            const matches = JSON.parse(r);
+            return sortBy(matches, (match) => -match.score);
+          },
+        })
+        .then((response) => {
+          dispatch({
+            type: CV_SEARCH_SUCCESS,
+            searchResults: response.data,
+            searchQueryObject: {
               issue: issueSearchQuery,
               series: seriesSearchQuery,
             },
-            rawFileDetails: searchPayload.rawFileDetails,
-          },
-        },
-        transformResponse: (r) => {
-          const matches = JSON.parse(r);
-          return sortBy(matches, (match) => -match.score);
-        },
-      })
-      .then((response) => {
-        dispatch({
-          type: CV_SEARCH_SUCCESS,
-          searchResults: response.data,
-          searchQueryObject: {
-            issue: issueSearchQuery,
-            series: seriesSearchQuery,
-          },
+          });
         });
-      });
 
-    /* return { issueSearchQuery, series: seriesSearchQuery.searchParams }; */
-  } catch (error) {
-    console.log(error);
-  }
+      /* return { issueSearchQuery, series: seriesSearchQuery.searchParams }; */
+    } catch (error) {
+      console.log(error);
+    }
 
-  dispatch({
-    type: CV_CLEANUP,
-  });
-};
+    dispatch({
+      type: CV_CLEANUP,
+    });
+  };
