@@ -44,9 +44,6 @@ export const ComicVineMatchPanel = (comicVineData): ReactElement => {
           </div>
         </div>
       </div>
-      
-     
-      
       <div className="search-results-container">
         {!isEmpty(comicVineSearchResults) && (
           <MatchResult

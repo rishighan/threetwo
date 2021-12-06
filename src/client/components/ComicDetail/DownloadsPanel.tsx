@@ -37,14 +37,14 @@ export const DownloadsPanel = (
       if (!isEmpty(userSettings)) {
         dispatch(
           getBundlesForComic(props.comicObjectId, ADCPPSocket, {
-            username: `${userSettings.directConnect.client.username}`,
-            password: `${userSettings.directConnect.client.password}`,
+            username: `${userSettings.directConnect.client.host.username}`,
+            password: `${userSettings.directConnect.client.host.password}`,
           }),
         );
         dispatch(
           getDownloadProgress(props.comicObjectId, ADCPPSocket, {
-            username: `${userSettings.directConnect.client.username}`,
-            password: `${userSettings.directConnect.client.password}`,
+            username: `${userSettings.directConnect.client.host.username}`,
+            password: `${userSettings.directConnect.client.host.password}`,
           }),
         );
       }
@@ -89,19 +89,18 @@ export const DownloadsPanel = (
   };
 
   const Bundles = (props) => {
-    return (
-      <table className="table is-striped">
-        <thead>
-          <tr>
-            <th>Filename</th>
-            <th>Size</th>
-            <th>Download Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {!isNil(props.data) &&
-            props.data &&
-            map(props.data, (bundle) => (
+    return !isEmpty(props.data) ? (
+      <div className="column is-full">
+        <table className="table is-striped">
+          <thead>
+            <tr>
+              <th>Filename</th>
+              <th>Size</th>
+              <th>Download Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {map(props.data, (bundle) => (
               <tr key={bundle.id}>
                 <td>
                   <h5>{ellipsize(bundle.name, 58)}</h5>
@@ -115,29 +114,34 @@ export const DownloadsPanel = (
                 </td>
               </tr>
             ))}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <div className="column is-full"> {"No Downloads Found"} </div>
     );
   };
 
   return !isNil(props.data) ? (
-    <div className="columns">
+    <>
       {!isNil(downloadProgressTick) ? (
         <ProgressTick data={downloadProgressTick} />
       ) : null}
-      {!isEmpty(ADCPPSocket) ? (
-        <Bundles data={bundles} />
-      ) : (
-        <div className="column is-three-fifths">
-          <article className="message is-info">
-            <div className="message-body is-size-6 is-family-secondary">
-              AirDC++ is not configured. Please configure it in{" "}
-              <code>Settings</code>.
-            </div>
-          </article>
-        </div>
-      )}
-    </div>
+      <div className="columns">
+        {!isEmpty(ADCPPSocket) ? (
+          <Bundles data={bundles} />
+        ) : (
+          <div className="column is-three-fifths">
+            <article className="message is-info">
+              <div className="message-body is-size-6 is-family-secondary">
+                AirDC++ is not configured. Please configure it in{" "}
+                <code>Settings</code>.
+              </div>
+            </article>
+          </div>
+        )}
+      </div>
+    </>
   ) : null;
 };
 
