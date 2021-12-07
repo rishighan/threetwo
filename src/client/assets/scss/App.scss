@@ -312,8 +312,18 @@ $size-8: 0.9rem;
   }
 }
 
+// drawer content padding override
+.slide-pane__content {
+  padding: 24px 12px;
+}
+
+.slide-pane__header {
+  margin-top: 3.5rem;
+}
+
 .comic-vine-match-drawer {
   // comic detail drawer
+ 
   .search-criteria-card {
     width: 100%;
     .card-content {

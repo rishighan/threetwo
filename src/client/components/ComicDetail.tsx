@@ -121,7 +121,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       content: () => <EditMetadataPanel />,
     },
   };
-  console.log(comicVineSearchQueryObject);
 
   const [active, setActive] = useState(1);
 

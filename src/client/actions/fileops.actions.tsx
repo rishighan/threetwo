@@ -173,7 +173,7 @@ export const fetchComicVineMatches =
               .replace(/[^a-zA-Z0-9 ]/g, "")
               .trim(),
             fieldList: "id",
-            limit: "20",
+            limit: "100",
             offset: "0",
             resources: "issue",
             scorerConfiguration: {

@@ -1,9 +1,8 @@
-import React, { ReactElement, useCallback, useContext, useEffect } from "react";
+import React, { ReactElement, useCallback, useContext } from "react";
 import { Form, Field } from "react-final-form";
 import { useDispatch } from "react-redux";
 import { saveSettings, deleteSettings } from "../../actions/settings.actions";
 import { AirDCPPSettingsConfirmation } from "./AirDCPPSettingsConfirmation";
-import axios from "axios";
 import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
 import AirDCPPSocket from "../../services/DcppSearchService";
 import { isUndefined, isEmpty, isNil } from "lodash";

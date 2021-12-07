@@ -1,7 +1,6 @@
 import React, { ReactElement } from "react";
 import { ComicVineSearchForm } from "../ComicVineSearchForm";
 import MatchResult from "../MatchResult";
-import Loader from "react-loader-spinner";
 import { isEmpty } from "lodash";
 
 export const ComicVineMatchPanel = (comicVineData): ReactElement => {
@@ -11,7 +10,6 @@ export const ComicVineMatchPanel = (comicVineData): ReactElement => {
     comicVineAPICallProgress,
     comicVineSearchResults,
   } = comicVineData.props;
-  console.log(comicVineData);
   return (
     <>
       {!isEmpty(comicVineSearchQueryObject) && (
