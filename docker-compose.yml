@@ -177,6 +177,7 @@ services:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - "xpack.security.enabled=true"
       - "xpack.security.authc.api_key.enabled=true"
+      - "ELASTIC_PASSWORD=password"
     ulimits:
       memlock:
         soft: -1
