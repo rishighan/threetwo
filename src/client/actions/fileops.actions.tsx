@@ -160,7 +160,8 @@ export const fetchComicVineMatches =
       dispatch({
         type: CV_API_CALL_IN_PROGRESS,
       });
-
+      console.log(issueSearchQuery);
+      console.log(seriesSearchQuery);
       axios
         .request({
           url: `${COMICBOOKINFO_SERVICE_URI}/fetchresource`,
@@ -175,6 +176,7 @@ export const fetchComicVineMatches =
             fieldList: "id",
             limit: "100",
             offset: "0",
+            page: 1,
             resources: "issue",
             scorerConfiguration: {
               searchQuery: {

@@ -73,6 +73,8 @@ export const tokenize = (inputString: string) => {
   const doc = nlp(inputString);
   const sentence = doc.sentences().json();
 
+  const yearMatches = extractYears(inputString);
+
   // filter out anything at the end of the title in parantheses
   inputString = inputString.replace(/\((.*?)\)$/gi, "");
 
@@ -127,8 +129,6 @@ export const tokenize = (inputString: string) => {
   inputString = voca.replace(inputString, /_.-# /gi, "");
   inputString = nlp(inputString).text("normal").trim();
 
-  const yearMatches = inputString.match(/\d{4}/gi);
-
   const sentenceToProcess = sentence[0].normal.replace(/_/g, " ");
   const normalizedSentence = nlp(sentenceToProcess)
     .text("normal")
@@ -140,9 +140,7 @@ export const tokenize = (inputString: string) => {
       inputString,
       parsedIssueNumber,
     },
-    years: {
-      yearMatches,
-    },
+    years: yearMatches,
     sentence_tokens: {
       detailed: sentence,
       normalized: normalizedSentence,
@@ -162,17 +160,22 @@ export const extractNumerals = (inputString: string): MatchArray[string] => {
   return matches;
 };
 
+export const extractYears = (inputString: string): RegExpMatchArray | null => {
+  // Searches through the given string left-to-right, seeing if an intelligible
+  // publication year can be extracted.
+  const yearRegex = /(?:19|20)\d{2}/gm;
+  return inputString.match(yearRegex);
+};
+
 export const refineQuery = (inputString: string) => {
   const queryObj = tokenize(inputString);
-  const removedYears = xor(
-    queryObj.sentence_tokens.normalized,
-    queryObj.years.yearMatches,
-  );
+  const removedYears = xor(queryObj.sentence_tokens.normalized, queryObj.years);
   return {
     searchParams: {
       searchTerms: {
         name: queryObj.comicbook_identifier_tokens.inputString,
         number: queryObj.comicbook_identifier_tokens.parsedIssueNumber,
+        year: queryObj.years?.toString(),
       },
     },
     meta: {
