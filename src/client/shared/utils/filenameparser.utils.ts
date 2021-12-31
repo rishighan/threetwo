@@ -5,7 +5,7 @@ import { default as numbers } from "compromise-numbers";
 import xregexp from "xregexp";
 import { MatchArray } from "xregexp/types";
 import voca from "voca";
-import { xor, isEmpty, isNull } from "lodash";
+import { xor, isEmpty, isNull, isNil } from "lodash";
 
 nlp.extend(sentences);
 nlp.extend(numbers);
@@ -75,17 +75,68 @@ export const tokenize = (inputString: string) => {
 
   const yearMatches = extractYears(inputString);
 
-  // filter out anything at the end of the title in parantheses
-  inputString = inputString.replace(/\((.*?)\)$/gi, "");
+  const hyphenatedIssueRange = inputString.match(/(\d)(-\d+)/gi);
+  if (!isNull(hyphenatedIssueRange) && hyphenatedIssueRange.length > 2) {
+    const issueNumber = hyphenatedIssueRange[0];
+  }
 
-  // regexes to match constituent parts of the search string
-  // and isolate the search terms
+  const readingListIndicators = inputString.match(
+    /^\s*\d+(\.\s+?|\s*-?\s*)/gim,
+  );
 
-  inputString.replace(/ch(a?p?t?e?r?)(\W?)(\_?)(\#?)(\d)/gi, "");
+  // Issue numbers
+  let issueNumbers = "";
+  let parsedIssueNumber = "";
+
+  // https://regex101.com/r/fgmd22/1
+  const issues = inputString.match(/(^|[_\s#])(-?\d*\.?\d\w*)/gi);
+  const tpbIssueNumber = inputString.match(/((\s|\|-|:)v?\d?\s)/gim);
   inputString.replace(
     /(\b(vo?l?u?m?e?)\.?)(\s*-|\s*_)?(\s*[0-9]+[.0-9a-z]*)/gi,
     "",
   );
+
+  // find the matches for a tpb "issue" number such as v2
+  if (!isNil(tpbIssueNumber)) {
+    parsedIssueNumber = tpbIssueNumber[0].trim();
+  }
+  if (!isEmpty(issues) && !isNull(issues)) {
+    issueNumbers = issues[0].trim();
+    const matches = extractNumerals(issueNumbers);
+    // if we parsed out some potential issue numbers, designate the LAST
+    // (rightmost) one as the actual issue number, and remove it from the name
+
+    if (matches.length > 0) {
+      parsedIssueNumber = matches[0].pop();
+    }
+  }
+
+  inputString = voca.replace(inputString, parsedIssueNumber, "");
+
+  // filter out anything at the end of the title in parantheses
+  inputString = inputString.replace(/\((.*?)\)$/gi, "");
+
+  // get a subtitle for titles such as:
+  // Commando 4779 - Evil in the East (2015) (Digital) (DR & Quinch-Empire)
+  // will match "Evil in the East (2015) (Digital) (DR & Quinch-Empire)"
+  const subtitleMatch = inputString.match(/\s\-\s(.*)/gm);
+  let subtitle = "";
+  if (!isNil(subtitleMatch)) {
+    subtitle = subtitleMatch[0].replace(/[^a-zA-Z0-9 ]/gm, "");
+    subtitle = subtitle.trim();
+
+    // Remove the subtitle from the main input string
+    // Commando 4779 - Evil in the East (2015) (Digital) (DR & Quinch-Empire)
+    // will return "Commando 4779"
+    inputString = inputString.replace(/\s\-\s(.*)/gm, "");
+  }
+
+  // replace special characters with... nothing
+  inputString = inputString.replace(/[^a-zA-Z0-9 ]/gm, "");
+
+  // regexes to match constituent parts of the search string
+  // and isolate the search terms
+  inputString.replace(/ch(a?p?t?e?r?)(\W?)(\_?)(\#?)(\d)/gi, "");
   inputString.replace(/\b[.,]?\s*\d+\s*(p|pg|pgs|pages)\b\s*/gi, "");
 
   // if the name has things like "4 of 5", remove the " of 5" part
@@ -101,31 +152,6 @@ export const tokenize = (inputString: string) => {
 
   inputString.replace(/([^\d]+)(\s*(of|de|di|von|van|z)\s*#*\d+)/gi, "");
 
-  const hyphenatedIssueRange = inputString.match(/(\d)(-\d+)/gi);
-  if (!isNull(hyphenatedIssueRange) && hyphenatedIssueRange.length > 2) {
-    const issueNumber = hyphenatedIssueRange[0];
-  }
-
-  const readingListIndicators = inputString.match(
-    /^\s*\d+(\.\s+?|\s*-?\s*)/gim,
-  );
-
-  let issueNumbers = "";
-  let parsedIssueNumber = "";
-  const issues = inputString.match(/(^|[_\s#])(-?\d*\.?\d\w*)/gi);
-
-  if (!isEmpty(issues) && !isNull(issues)) {
-    issueNumbers = issues[0].trim();
-    const matches = extractNumerals(issueNumbers);
-    // if we parsed out some potential issue numbers, designate the LAST
-    // (rightmost) one as the actual issue number, and remove it from the name
-
-    if (matches.length > 0) {
-      parsedIssueNumber = matches[0].pop();
-    }
-  }
-
-  inputString = voca.replace(inputString, parsedIssueNumber, "");
   inputString = voca.replace(inputString, /_.-# /gi, "");
   inputString = nlp(inputString).text("normal").trim();
 
@@ -138,7 +164,8 @@ export const tokenize = (inputString: string) => {
   const queryObject = {
     comicbook_identifier_tokens: {
       inputString,
-      parsedIssueNumber,
+      parsedIssueNumber: Number(parsedIssueNumber),
+      subtitle,
     },
     years: yearMatches,
     sentence_tokens: {
@@ -154,7 +181,7 @@ export const extractNumerals = (inputString: string): MatchArray[string] => {
   // "issue number-like" re.match objects.  For example, this method finds
   // matches substrings like:  3, #4, 5a, 6.00, 10.0b, .5, -1.0
   const matches: MatchArray[string] = [];
-  xregexp.forEach(inputString, /(^|[_\s#])(-?\d*\.?\d\w*)/gmu, (match) => {
+  xregexp.forEach(inputString, /(^|[_\s#v?])(-?\d*\.?\d\w*)/gmu, (match) => {
     matches.push(match);
   });
   return matches;
@@ -176,6 +203,7 @@ export const refineQuery = (inputString: string) => {
         name: queryObj.comicbook_identifier_tokens.inputString,
         number: queryObj.comicbook_identifier_tokens.parsedIssueNumber,
         year: queryObj.years?.toString(),
+        subtitle: queryObj.comicbook_identifier_tokens.subtitle,
       },
     },
     meta: {

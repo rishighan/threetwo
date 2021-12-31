@@ -164,37 +164,32 @@ export const fetchComicVineMatches =
       console.log(seriesSearchQuery);
       axios
         .request({
-          url: `${COMICBOOKINFO_SERVICE_URI}/fetchresource`,
+          url: `${COMICBOOKINFO_SERVICE_URI}/volumeBasedSearch`,
           method: "POST",
           data: {
             format: "json",
-            sort: "name%3Aasc",
             // hack
             query: issueSearchQuery.searchParams.searchTerms.name
               .replace(/[^a-zA-Z0-9 ]/g, "")
               .trim(),
-            fieldList: "id",
             limit: "100",
-            offset: "0",
             page: 1,
-            resources: "issue",
+            resources: "volume",
             scorerConfiguration: {
-              searchQuery: {
-                issue: issueSearchQuery,
-                series: seriesSearchQuery,
-              },
-              rawFileDetails: searchPayload.rawFileDetails,
+              searchParams: issueSearchQuery.searchParams,
             },
+            rawFileDetails: searchPayload.rawFileDetails,
           },
           transformResponse: (r) => {
             const matches = JSON.parse(r);
-            return sortBy(matches, (match) => -match.score);
+            return matches;
+            // return sortBy(matches, (match) => -match.score);
           },
         })
         .then((response) => {
           dispatch({
             type: CV_SEARCH_SUCCESS,
-            searchResults: response.data,
+            searchResults: response.data.results,
             searchQueryObject: {
               issue: issueSearchQuery,
               series: seriesSearchQuery,

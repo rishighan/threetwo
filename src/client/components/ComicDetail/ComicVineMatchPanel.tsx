@@ -10,6 +10,7 @@ export const ComicVineMatchPanel = (comicVineData): ReactElement => {
     comicVineAPICallProgress,
     comicVineSearchResults,
   } = comicVineData.props;
+  console.log(comicVineData);
   return (
     <>
       {!isEmpty(comicVineSearchQueryObject) && (
