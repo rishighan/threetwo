@@ -22,6 +22,7 @@ import {
 import { refineQuery } from "../shared/utils/filenameparser.utils";
 import sortBy from "array-sort-by";
 import { success } from "react-notification-system-redux";
+import { isNil } from "lodash";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
@@ -187,9 +188,20 @@ export const fetchComicVineMatches =
           },
         })
         .then((response) => {
+          console.log(response);
+          let matches: any = [];
+          if (
+            !isNil(response.data.results) &&
+            response.data.results.length === 1
+          ) {
+            matches = response.data.results;
+          } else {
+            matches = response.data.map((match) => match);
+          }
+          console.log(matches);
           dispatch({
             type: CV_SEARCH_SUCCESS,
-            searchResults: response.data.results,
+            searchResults: matches,
             searchQueryObject: {
               issue: issueSearchQuery,
               series: seriesSearchQuery,

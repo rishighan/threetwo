@@ -344,30 +344,35 @@ $size-8: 0.9rem;
   margin: 15px 0 0 0;
   overflow: hidden;
 
-  table {
-    width: 100%;
-    tbody tr:nth-child(odd) {
-      background: #f6f6f6;
-      border-radius: 5px;
-    }
-  }
-
   .search-result {
-    display: flex;
-    flex-direction: row;
-    padding: 10px;
     margin: 0 0 10px 0;
-
     .cover-image {
       border-radius: 5px;
     }
     .search-result-details {
-      width: 100%;
+      
+
       .score {
         float: right;
       }
-      margin-left: 10px;
     }
+    .volume-information {
+      margin-top: -2em;
+      width: 80%;
+      background: $white-ter;
+      border-radius: 10px;
+    }
+    .vertical-line {
+      position: relative;
+      top: -10px;
+      border: 1px solid #CCC;
+      width:20px;
+      height:25px;
+      
+    border-color: transparent transparent #999 #999;
+      border-bottom-left-radius: 10px;
+  }
+  
   }
 }
 

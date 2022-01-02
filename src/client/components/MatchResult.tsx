@@ -13,6 +13,7 @@ const handleBrokenImage = (e) => {
 };
 
 export const MatchResult = (props: MatchResultProps) => {
+  console.log(props);
   const dispatch = useDispatch();
   const applyCVMatch = useCallback(
     (match, comicObjectId) => {
@@ -22,64 +23,90 @@ export const MatchResult = (props: MatchResultProps) => {
   );
   return (
     <>
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {map(props.matchData, (match, idx) => {
-            return (
-              <tr className="search-result" key={idx}>
-                <td>
-                  <img
-                    className="cover-image"
-                    src={match.image.thumb_url}
-                    onError={handleBrokenImage}
-                  />
-                </td>
-                <td className="search-result-details">
-                  <div className="tag score is-primary is-medium is-pulled-right">
-                    {parseFloat(match.score).toFixed(2)}
-                  </div>
-                  <div className="is-size-5">{match.name}</div>
-                  <div className="is-size-6">{match.volume.name}</div>
+      {map(props.matchData, (match, idx) => {
+        return (
+          <div className="search-result">
+            <div className="columns">
+              <div className="column is-one-fifth">
+                <img
+                  className="cover-image"
+                  src={match.image.thumb_url}
+                  onError={handleBrokenImage}
+                />
+              </div>
 
-                  <div className="field is-grouped is-grouped-multiline">
-                    <div className="control">
-                      <div className="tags has-addons">
-                        <span className="tag">Number</span>
-                        <span className="tag is-primary">
-                          {match.issue_number}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="control">
-                      <div className="tags has-addons">
-                        <span className="tag">Type</span>
-                        <span className="tag is-warning">
-                          {match.resource_type}
-                        </span>
-                      </div>
+              <div className="search-result-details column">
+                
+                <div className="is-size-5">{match.name}</div>
+
+                <div className="field is-grouped is-grouped-multiline mt-1">
+                  <div className="control">
+                    <div className="tags has-addons">
+                      <span className="tag">Number</span>
+                      <span className="tag is-primary">
+                        {match.issue_number}
+                      </span>
                     </div>
                   </div>
+                  <div className="control">
+                    <div className="tags has-addons">
+                      <span className="tag">Cover Date</span>
+                      <span className="tag is-warning">{match.cover_date}</span>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  className="button mt-6 is-small is-outlined is-primary is-light is-pulled-right"
+                  onClick={() => applyCVMatch(match, props.comicObjectId)}
+                >
+                  <span className="icon is-size-5">
+                    <i className="fas fa-clipboard-check"></i>
+                  </span>
+                  <span>Apply Match</span>
+                </button>
+              </div>
+            </div>
 
-                  <button
-                    className="button is-small is-outlined is-primary is-light is-pulled-right"
-                    onClick={() => applyCVMatch(match, props.comicObjectId)}
-                  >
-                    <span className="icon is-size-5">
-                      <i className="fas fa-clipboard-check"></i>
-                    </span>
-                    <span>Apply Match</span>
-                  </button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            <div className="vertical-line"></div>
+
+            <div className="columns ml-5 volume-information">
+              <div className="column is-one-fifth">
+                <img
+                  src={match.volumeInformation.results.image.icon_url}
+                  className="cover-image"
+                  onError={handleBrokenImage}
+                />
+              </div>
+
+              <div className="column">
+              <div className="is-size-6">{match.volume.name}</div>
+                <div className="field is-grouped is-grouped-multiline mt-2">
+                  
+                  <div className="control">
+                    <div className="tags has-addons">
+                      <span className="tag">Total Issues</span>
+                      <span className="tag is-warning">
+                        {match.volumeInformation.results.count_of_issues}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="control">
+                    <div className="tags has-addons">
+                      <span className="tag">Publisher</span>
+                      <span className="tag is-warning">
+                        {match.volumeInformation.results.publisher.name}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </>
   );
 };
