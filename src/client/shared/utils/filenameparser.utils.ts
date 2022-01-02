@@ -201,7 +201,7 @@ export const refineQuery = (inputString: string) => {
   return {
     searchParams: {
       searchTerms: {
-        name: queryObj.comicbook_identifier_tokens.inputString,
+        name: queryObj.comicbook_identifier_tokens.inputString.trim(),
         number: queryObj.comicbook_identifier_tokens.parsedIssueNumber,
         year: queryObj.years?.toString(),
         subtitle: queryObj.comicbook_identifier_tokens.subtitle,

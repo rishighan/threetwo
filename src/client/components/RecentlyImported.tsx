@@ -76,11 +76,11 @@ export const RecentlyImported = ({
                   )}
                   {/* Issue type */}
                   {!isUndefined(sourcedMetadata.comicvine) &&
-                    !isNil(
-                      detectIssueTypes(
-                        sourcedMetadata.comicvine.volumeInformation.description,
-                      ),
-                    ) ? (
+                  !isNil(
+                    detectIssueTypes(
+                      sourcedMetadata.comicvine.volumeInformation.description,
+                    ),
+                  ) ? (
                     <span className="tag is-warning">
                       {
                         detectIssueTypes(

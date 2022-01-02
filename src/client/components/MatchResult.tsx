@@ -1,7 +1,9 @@
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { map } from "lodash";
+import { isNil, map } from "lodash";
 import { applyComicVineMatch } from "../actions/comicinfo.actions";
+import { convert } from "html-to-text";
+import ellipsize from "ellipsize";
 
 interface MatchResultProps {
   matchData: any;
@@ -24,6 +26,14 @@ export const MatchResult = (props: MatchResultProps) => {
   return (
     <>
       {map(props.matchData, (match, idx) => {
+        let issueDescription = "";
+        if (!isNil(match.description)) {
+          issueDescription = convert(match.description, {
+            baseElements: {
+              selectors: ["p"],
+            },
+          });
+        }
         return (
           <div className="search-result mb-4">
             <div className="columns">
@@ -55,7 +65,7 @@ export const MatchResult = (props: MatchResultProps) => {
                   </div>
                 </div>
                 <div className="is-size-7">
-                  {match.deck}
+                  {ellipsize(issueDescription, 300)}
                 </div>
               </div>
             </div>
@@ -93,11 +103,10 @@ export const MatchResult = (props: MatchResultProps) => {
                   </div>
                 </div>
               </div>
-              
             </div>
             <div className="columns">
               <div className="column">
-            <button
+                <button
                   className="button is-normal is-outlined is-primary is-light is-pulled-right"
                   onClick={() => applyCVMatch(match, props.comicObjectId)}
                 >
@@ -106,7 +115,7 @@ export const MatchResult = (props: MatchResultProps) => {
                   </span>
                   <span>Apply Match</span>
                 </button>
-                </div>
+              </div>
             </div>
           </div>
         );
