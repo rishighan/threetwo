@@ -346,6 +346,9 @@ $size-8: 0.9rem;
 
   .search-result {
     margin: 0 0 10px 0;
+    padding: 1em;
+    border-radius: 10px;
+    background: #F2F1F9;
     .cover-image {
       border-radius: 5px;
     }
@@ -357,19 +360,20 @@ $size-8: 0.9rem;
       }
     }
     .volume-information {
-      margin-top: -2em;
+      margin-top: -2.5em;
       width: 80%;
-      background: $white-ter;
+      background: #FDECD1;
       border-radius: 10px;
     }
     .vertical-line {
       position: relative;
-      top: -10px;
-      border: 1px solid #CCC;
+      top: -25px;
+      left: 1.5rem;
+      border: 2px dotted #CCC;
       width:20px;
-      height:25px;
+      min-height:25px;
       
-    border-color: transparent transparent #999 #999;
+    border-color: transparent transparent #F3A22D #F3A22D;
       border-bottom-left-radius: 10px;
   }
   

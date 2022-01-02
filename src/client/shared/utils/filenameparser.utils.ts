@@ -132,7 +132,7 @@ export const tokenize = (inputString: string) => {
   }
 
   // replace special characters with... nothing
-  inputString = inputString.replace(/[^a-zA-Z0-9 ]/gm, "");
+  inputString = inputString.replace(/[^a-zA-Z0-9(\+?\s?\-?\'?)]/gm, "");
 
   // regexes to match constituent parts of the search string
   // and isolate the search terms
@@ -152,8 +152,8 @@ export const tokenize = (inputString: string) => {
 
   inputString.replace(/([^\d]+)(\s*(of|de|di|von|van|z)\s*#*\d+)/gi, "");
 
-  inputString = voca.replace(inputString, /_.-# /gi, "");
-  inputString = nlp(inputString).text("normal").trim();
+  // inputString = voca.replace(inputString, /_.-# /gi, "");
+  // inputString = nlp(inputString).text("normal").trim();
 
   const sentenceToProcess = sentence[0].normal.replace(/_/g, " ");
   const normalizedSentence = nlp(sentenceToProcess)
@@ -161,6 +161,7 @@ export const tokenize = (inputString: string) => {
     .trim()
     .split(" ");
 
+  console.log(inputString)
   const queryObject = {
     comicbook_identifier_tokens: {
       inputString,

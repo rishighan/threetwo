@@ -25,7 +25,7 @@ export const MatchResult = (props: MatchResultProps) => {
     <>
       {map(props.matchData, (match, idx) => {
         return (
-          <div className="search-result">
+          <div className="search-result mb-4">
             <div className="columns">
               <div className="column is-one-fifth">
                 <img
@@ -36,7 +36,6 @@ export const MatchResult = (props: MatchResultProps) => {
               </div>
 
               <div className="search-result-details column">
-                
                 <div className="is-size-5">{match.name}</div>
 
                 <div className="field is-grouped is-grouped-multiline mt-1">
@@ -55,21 +54,15 @@ export const MatchResult = (props: MatchResultProps) => {
                     </div>
                   </div>
                 </div>
-                <button
-                  className="button mt-6 is-small is-outlined is-primary is-light is-pulled-right"
-                  onClick={() => applyCVMatch(match, props.comicObjectId)}
-                >
-                  <span className="icon is-size-5">
-                    <i className="fas fa-clipboard-check"></i>
-                  </span>
-                  <span>Apply Match</span>
-                </button>
+                <div className="is-size-7">
+                  {match.deck}
+                </div>
               </div>
             </div>
 
             <div className="vertical-line"></div>
 
-            <div className="columns ml-5 volume-information">
+            <div className="columns ml-6 volume-information">
               <div className="column is-one-fifth">
                 <img
                   src={match.volumeInformation.results.image.icon_url}
@@ -79,9 +72,8 @@ export const MatchResult = (props: MatchResultProps) => {
               </div>
 
               <div className="column">
-              <div className="is-size-6">{match.volume.name}</div>
+                <div className="is-size-6">{match.volume.name}</div>
                 <div className="field is-grouped is-grouped-multiline mt-2">
-                  
                   <div className="control">
                     <div className="tags has-addons">
                       <span className="tag">Total Issues</span>
@@ -100,9 +92,21 @@ export const MatchResult = (props: MatchResultProps) => {
                     </div>
                   </div>
                 </div>
-
-                
               </div>
+              
+            </div>
+            <div className="columns">
+              <div className="column">
+            <button
+                  className="button is-normal is-outlined is-primary is-light is-pulled-right"
+                  onClick={() => applyCVMatch(match, props.comicObjectId)}
+                >
+                  <span className="icon is-size-5">
+                    <i className="fas fa-clipboard-check"></i>
+                  </span>
+                  <span>Apply Match</span>
+                </button>
+                </div>
             </div>
           </div>
         );

@@ -7,9 +7,7 @@ export const AirDCPPSettingsConfirmation = (settingsObject): ReactElement => {
     <div className="mt-4 is-clearfix">
       <div className="card">
         <div className="card-content">
-          <span className="icon is-medium is-pulled-right">
-            <i className="fa-solid fa-circle has-text-success"></i>
-          </span>
+          <span className="tag is-pulled-right is-primary">Connected</span>
           <div className="content is-size-7">
             <dl>
               <dt>{settings._id}</dt>
