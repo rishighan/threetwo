@@ -1,12 +1,10 @@
 import axios from "axios";
-import { IFolderData, IExtractedComicBookCoverFile } from "threetwo-ui-typings";
+import { IFolderData } from "threetwo-ui-typings";
 import {
-  API_BASE_URI,
   COMICBOOKINFO_SERVICE_URI,
   IMPORT_SERVICE_BASE_URI,
 } from "../constants/endpoints";
 import {
-  IMS_COMICBOOK_METADATA_FETCHED,
   IMS_COMIC_BOOK_GROUPS_FETCHED,
   IMS_COMIC_BOOK_GROUPS_CALL_IN_PROGRESS,
   IMS_COMIC_BOOK_GROUPS_CALL_FAILED,
@@ -19,8 +17,6 @@ import {
   IMS_CV_METADATA_IMPORT_FAILED,
   LS_IMPORT,
 } from "../constants/action-types";
-import { refineQuery } from "../shared/utils/filenameparser.utils";
-import sortBy from "array-sort-by";
 import { success } from "react-notification-system-redux";
 import { isNil } from "lodash";
 
@@ -208,8 +204,6 @@ export const fetchComicVineMatches =
             },
           });
         });
-
-      /* return { issueSearchQuery, series: seriesSearchQuery.searchParams }; */
     } catch (error) {
       console.log(error);
     }

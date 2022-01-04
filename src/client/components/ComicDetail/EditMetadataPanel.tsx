@@ -1,6 +1,11 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useCallback, useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Form, Field } from "react-final-form";
 import DatePicker from "react-datepicker";
+import Creatable from "react-select/creatable";
+import { fetchMetronResource } from "../../actions/metron.actions";
+import { withAsyncPaginate } from "react-select-async-paginate";
+const CreatableAsyncPaginate = withAsyncPaginate(Creatable);
 
 import "react-datepicker/dist/react-datepicker.css";
 export const EditMetadataPanel = (props): ReactElement => {
@@ -9,6 +14,20 @@ export const EditMetadataPanel = (props): ReactElement => {
   const DayPickerAdapter = ({ input, ...rest }) => {
     return <DatePicker {...input} {...rest} />;
   };
+  const dispatch = useDispatch();
+  const [value, onChange] = useState(null);
+
+  const mudasir = useCallback((query) => {
+    return fetchMetronResource({
+      method: "GET",
+      resource: "publisher",
+      query: {
+        name: query,
+        page: 1,
+      },
+    });
+  }, []);
+
   return (
     <>
       <Form
@@ -85,6 +104,29 @@ export const EditMetadataPanel = (props): ReactElement => {
                     <span className="icon is-small is-left">
                       <i className="fa-solid fa-user-ninja"></i>
                     </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Publisher */}
+            <div className="field is-horizontal">
+              <div className="field-label is-normal">
+                <label className="label">Publisher</label>
+              </div>
+              <div className="field-body">
+                <div className="field">
+                  <p className="control is-expanded has-icons-left">
+                    <CreatableAsyncPaginate
+                      SelectComponent={Creatable}
+                      debounceTimeout={3}
+                      // isDisabled={isAddingInProgress}
+                      value={value}
+                      loadOptions={(e) => mudasir(e)}
+                      // onCreateOption={onCreateOption}
+                      onChange={onChange}
+                      // cacheUniqs={[cacheUniq]}
+                    />
                   </p>
                 </div>
               </div>

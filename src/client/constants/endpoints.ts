@@ -23,6 +23,13 @@ export const COMICBOOKINFO_SERVICE_URI = hostURIBuilder({
   apiPath: "/api/comicvine",
 });
 
+export const METRON_SERVICE_URI = hostURIBuilder({
+  protocol: "http",
+  host: process.env.UNDERLYING_HOSTNAME || "localhost",
+  port: "3080",
+  apiPath: "/api/metron",
+});
+
 export const API_BASE_URI = hostURIBuilder({
   protocol: "http",
   host: process.env.UNDERLYING_HOSTNAME || "localhost",
