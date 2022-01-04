@@ -1,9 +1,5 @@
 import axios from "axios";
 import { METRON_SERVICE_URI } from "../constants/endpoints";
-import {
-  METRON_DATA_FETCH_SUCCESS,
-  METRON_DATA_FETCH_IN_PROGRESS,
-} from "../constants/action-types";
 
 export const fetchMetronResource = async (options) => {
   console.log(options);
