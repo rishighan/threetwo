@@ -1,20 +1,28 @@
 import axios from "axios";
+import { isNil } from "lodash";
 import { METRON_SERVICE_URI } from "../constants/endpoints";
 
 export const fetchMetronResource = async (options) => {
-  console.log(options);
-
   const metronResourceResults = await axios.post(
     `${METRON_SERVICE_URI}/fetchResource`,
     options,
   );
   console.log(metronResourceResults);
-  const foo = metronResourceResults.data.results.map((result) => {
+  console.log("has more? ", !isNil(metronResourceResults.data.results.next));
+  const results = metronResourceResults.data.results.map((result) => {
     return {
       label: result.name,
       value: result.id,
     };
   });
-  console.log({ options: foo, hasMore: false });
-  return { options: foo, hasMore: false };
+
+  return {
+    options: results,
+    hasMore: !isNil(metronResourceResults.data.next),
+    additional: {
+      page: !isNil(metronResourceResults.data.next)
+        ? options.query.page + 1
+        : null,
+    },
+  };
 };

@@ -16,14 +16,15 @@ export const EditMetadataPanel = (props): ReactElement => {
   };
   const dispatch = useDispatch();
   const [value, onChange] = useState(null);
+  const [isAddingInProgress, setIsAddingInProgress] = useState(false);
 
-  const mudasir = useCallback((query) => {
+  const mudasir = useCallback((query, loadedOptions, { page }) => {
     return fetchMetronResource({
       method: "GET",
       resource: "publisher",
       query: {
         name: query,
-        page: 1,
+        page,
       },
     });
   }, []);
@@ -119,13 +120,14 @@ export const EditMetadataPanel = (props): ReactElement => {
                   <p className="control is-expanded has-icons-left">
                     <CreatableAsyncPaginate
                       SelectComponent={Creatable}
-                      debounceTimeout={3}
-                      // isDisabled={isAddingInProgress}
+                      debounceTimeout={200}
+                      isDisabled={isAddingInProgress}
                       value={value}
-                      loadOptions={(e) => mudasir(e)}
+                      loadOptions={mudasir}
                       // onCreateOption={onCreateOption}
                       onChange={onChange}
                       // cacheUniqs={[cacheUniq]}
+                      additional={{ page: 1 }}
                     />
                   </p>
                 </div>
