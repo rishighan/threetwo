@@ -1,6 +1,8 @@
 import React, { ReactElement, useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Form, Field } from "react-final-form";
+import arrayMutators from "final-form-arrays";
+import { FieldArray } from "react-final-form-arrays";
 import DatePicker from "react-datepicker";
 import Creatable from "react-select/creatable";
 import { fetchMetronResource } from "../../actions/metron.actions";
@@ -15,13 +17,15 @@ export const EditMetadataPanel = (props): ReactElement => {
     return <DatePicker {...input} {...rest} />;
   };
   const dispatch = useDispatch();
-  const [value, onChange] = useState(null);
+  const [publisherValue, onPublisherValueChange] = useState(null);
+  const [seriesValue, onSeriesValueChange] = useState(null);
   const [isAddingInProgress, setIsAddingInProgress] = useState(false);
 
-  const mudasir = useCallback((query, loadedOptions, { page }) => {
+  const mudasir = useCallback((query, loadedOptions, { page, resource }) => {
+    console.log(resource);
     return fetchMetronResource({
       method: "GET",
-      resource: "publisher",
+      resource,
       query: {
         name: query,
         page,
@@ -34,7 +38,19 @@ export const EditMetadataPanel = (props): ReactElement => {
       <Form
         onSubmit={onSubmit}
         validate={validate}
-        render={({ handleSubmit }) => (
+        mutators={{
+          ...arrayMutators,
+        }}
+        render={({
+          handleSubmit,
+          form: {
+            mutators: { push, pop },
+          }, // injected from final-form-arrays above
+          pristine,
+          form,
+          submitting,
+          values,
+        }) => (
           <form onSubmit={handleSubmit}>
             {/* Issue Name */}
             <div className="field is-horizontal">
@@ -122,17 +138,120 @@ export const EditMetadataPanel = (props): ReactElement => {
                       SelectComponent={Creatable}
                       debounceTimeout={200}
                       isDisabled={isAddingInProgress}
-                      value={value}
+                      value={publisherValue}
                       loadOptions={mudasir}
+                      placeholder={"Publisher Name"}
                       // onCreateOption={onCreateOption}
-                      onChange={onChange}
+                      onChange={onPublisherValueChange}
                       // cacheUniqs={[cacheUniq]}
-                      additional={{ page: 1 }}
+                      additional={{ page: 1, resource: "publisher" }}
                     />
                   </p>
                 </div>
               </div>
             </div>
+
+            {/* series */}
+            <div className="field is-horizontal">
+              <div className="field-label is-normal">
+                <label className="label">Series</label>
+              </div>
+              <div className="field-body">
+                <div className="field">
+                  <p className="control is-expanded has-icons-left">
+                    <CreatableAsyncPaginate
+                      SelectComponent={Creatable}
+                      debounceTimeout={200}
+                      isDisabled={isAddingInProgress}
+                      value={seriesValue}
+                      loadOptions={mudasir}
+                      placeholder={"Series Name"}
+                      // onCreateOption={onCreateOption}
+                      onChange={onSeriesValueChange}
+                      // cacheUniqs={[cacheUniq]}
+                      additional={{ page: 1, resource: "series" }}
+                    />
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <hr size="1" />
+
+            {/* team credits */}
+            <div className="field is-horizontal">
+              <div className="field-label is-normal">
+                <label className="label">Team Credits</label>
+              </div>
+              <div className="field-body mt-4">
+                <div className="field">
+                  <div className="buttons">
+                    <button
+                      type="button"
+                      className="button is-small"
+                      onClick={() => push("credits", undefined)}
+                    >
+                      Add credit
+                    </button>
+                    <button
+                      type="button"
+                      className="button is-small"
+                      onClick={() => pop("credits")}
+                    >
+                      Remove credit
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <FieldArray name="credits">
+              {({ fields }) =>
+                fields.map((name, index) => (
+                  <div className="field is-horizontal" key={name}>
+                    <div className="field-label is-normal">
+                      <label></label>
+                    </div>
+                    <div className="field-body">
+                      <div className="field">
+                        <p className="control">
+                          <CreatableAsyncPaginate
+                            SelectComponent={Creatable}
+                            debounceTimeout={200}
+                            isDisabled={isAddingInProgress}
+                            value={publisherValue}
+                            loadOptions={mudasir}
+                            placeholder={"Creator Name"}
+                            // onCreateOption={onCreateOption}
+                            onChange={onPublisherValueChange}
+                            // cacheUniqs={[cacheUniq]}
+                            additional={{ page: 1, resource: "creator" }}
+                          />
+                        </p>
+                      </div>
+
+                      <div className="field">
+                        <p className="control">
+                          <Field
+                            name={`${name}.lastName`}
+                            component="input"
+                            className="input"
+                            placeholder="role"
+                          />
+                        </p>
+                      </div>
+                      <span
+                        className="icon is-danger mt-2"
+                        onClick={() => fields.remove(index)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <i className="fas fa-times"></i>
+                      </span>
+                    </div>
+                  </div>
+                ))
+              }
+            </FieldArray>
           </form>
         )}
       />
