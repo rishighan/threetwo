@@ -11,7 +11,16 @@ export const EditMetadataPanel = (props): ReactElement => {
   const validate = async () => {};
   const onSubmit = async () => {};
   const DayPickerAdapter = ({ input, ...rest }) => {
-    return <DatePicker {...input} {...rest} />;
+    return <DatePicker {...input} {...rest} placeholderText={"Cover Date"} />;
+  };
+  const AsyncSelectPaginateAdapter = ({ input, ...rest }) => {
+    return (
+      <AsyncSelectPaginate
+        {...input}
+        {...rest}
+        onChange={(value) => input.onChange(value)}
+      />
+    );
   };
   const dispatch = useDispatch();
 
@@ -79,30 +88,7 @@ export const EditMetadataPanel = (props): ReactElement => {
                       name="issue_year"
                       component={DayPickerAdapter}
                       className="input"
-                      placeholder="Issue Year"
                     />
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Story title */}
-            <div className="field is-horizontal">
-              <div className="field-label is-normal">
-                <label className="label">Story</label>
-              </div>
-              <div className="field-body">
-                <div className="field">
-                  <p className="control is-expanded has-icons-left">
-                    <Field
-                      name="story_title"
-                      component="input"
-                      className="input"
-                      placeholder="Story Title"
-                    />
-                    <span className="icon is-small is-left">
-                      <i className="fa-solid fa-user-ninja"></i>
-                    </span>
                   </p>
                 </div>
               </div>
@@ -116,9 +102,38 @@ export const EditMetadataPanel = (props): ReactElement => {
               <div className="field-body">
                 <div className="field">
                   <p className="control is-expanded has-icons-left">
-                    <AsyncSelectPaginate
-                      placeholder={"Publisher"}
+                    <Field
+                      name={"publisher"}
+                      component={AsyncSelectPaginateAdapter}
+                      placeholder={
+                        <div>
+                          <i className="fas fa-print"></i> Publisher
+                        </div>
+                      }
                       metronResource={"publisher"}
+                    />
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Arc */}
+            <div className="field is-horizontal">
+              <div className="field-label is-normal">
+                <label className="label">Story Arc</label>
+              </div>
+              <div className="field-body">
+                <div className="field">
+                  <p className="control is-expanded has-icons-left">
+                    <Field
+                      name={"story_arc"}
+                      component={AsyncSelectPaginateAdapter}
+                      placeholder={
+                        <div>
+                          <i className="fas fa-book-open"></i> Story Arc
+                        </div>
+                      }
+                      metronResource={"arc"}
                     />
                   </p>
                 </div>
@@ -133,8 +148,14 @@ export const EditMetadataPanel = (props): ReactElement => {
               <div className="field-body">
                 <div className="field">
                   <p className="control is-expanded has-icons-left">
-                    <AsyncSelectPaginate
-                      placeholder={"Series"}
+                    <Field
+                      name={"series"}
+                      component={AsyncSelectPaginateAdapter}
+                      placeholder={
+                        <div>
+                          <i className="fas fa-layer-group"></i> Series
+                        </div>
+                      }
                       metronResource={"series"}
                     />
                   </p>
@@ -181,8 +202,14 @@ export const EditMetadataPanel = (props): ReactElement => {
                     <div className="field-body">
                       <div className="field">
                         <p className="control">
-                          <AsyncSelectPaginate
-                            placeholder={"Creator"}
+                          <Field
+                            name={`${name}.creator`}
+                            component={AsyncSelectPaginateAdapter}
+                            placeholder={
+                              <div>
+                                <i className="fas fa-book-open"></i> Creator
+                              </div>
+                            }
                             metronResource={"creator"}
                           />
                         </p>
@@ -191,10 +218,10 @@ export const EditMetadataPanel = (props): ReactElement => {
                       <div className="field">
                         <p className="control">
                           <Field
-                            name={`${name}.lastName`}
-                            component="input"
-                            className="input"
-                            placeholder="role"
+                            name={`${name}.role`}
+                            metronResource={"role"}
+                            placeholder={"Role"}
+                            component={AsyncSelectPaginateAdapter}
                           />
                         </p>
                       </div>
@@ -210,6 +237,7 @@ export const EditMetadataPanel = (props): ReactElement => {
                 ))
               }
             </FieldArray>
+            <pre>{JSON.stringify(values, undefined, 2)}</pre>
           </form>
         )}
       />
