@@ -4,10 +4,7 @@ import { Form, Field } from "react-final-form";
 import arrayMutators from "final-form-arrays";
 import { FieldArray } from "react-final-form-arrays";
 import DatePicker from "react-datepicker";
-import Creatable from "react-select/creatable";
-import { fetchMetronResource } from "../../actions/metron.actions";
-import { withAsyncPaginate } from "react-select-async-paginate";
-const CreatableAsyncPaginate = withAsyncPaginate(Creatable);
+import AsyncSelectPaginate from "./AsyncSelectPaginate/AsyncSelectPaginate";
 
 import "react-datepicker/dist/react-datepicker.css";
 export const EditMetadataPanel = (props): ReactElement => {
@@ -17,21 +14,10 @@ export const EditMetadataPanel = (props): ReactElement => {
     return <DatePicker {...input} {...rest} />;
   };
   const dispatch = useDispatch();
-  const [publisherValue, onPublisherValueChange] = useState(null);
-  const [seriesValue, onSeriesValueChange] = useState(null);
-  const [isAddingInProgress, setIsAddingInProgress] = useState(false);
 
-  const mudasir = useCallback((query, loadedOptions, { page, resource }) => {
-    console.log(resource);
-    return fetchMetronResource({
-      method: "GET",
-      resource,
-      query: {
-        name: query,
-        page,
-      },
-    });
-  }, []);
+  const [seriesValue, onSeriesValueChange] = useState(null);
+  const [creatorValue, onCreatorValueChange] = useState(null);
+  const [isAddingInProgress, setIsAddingInProgress] = useState(false);
 
   return (
     <>
@@ -134,17 +120,9 @@ export const EditMetadataPanel = (props): ReactElement => {
               <div className="field-body">
                 <div className="field">
                   <p className="control is-expanded has-icons-left">
-                    <CreatableAsyncPaginate
-                      SelectComponent={Creatable}
-                      debounceTimeout={200}
-                      isDisabled={isAddingInProgress}
-                      value={publisherValue}
-                      loadOptions={mudasir}
-                      placeholder={"Publisher Name"}
-                      // onCreateOption={onCreateOption}
-                      onChange={onPublisherValueChange}
-                      // cacheUniqs={[cacheUniq]}
-                      additional={{ page: 1, resource: "publisher" }}
+                    <AsyncSelectPaginate
+                      placeholder={"Publisher"}
+                      metronResource={"publisher"}
                     />
                   </p>
                 </div>
@@ -159,17 +137,9 @@ export const EditMetadataPanel = (props): ReactElement => {
               <div className="field-body">
                 <div className="field">
                   <p className="control is-expanded has-icons-left">
-                    <CreatableAsyncPaginate
-                      SelectComponent={Creatable}
-                      debounceTimeout={200}
-                      isDisabled={isAddingInProgress}
-                      value={seriesValue}
-                      loadOptions={mudasir}
-                      placeholder={"Series Name"}
-                      // onCreateOption={onCreateOption}
-                      onChange={onSeriesValueChange}
-                      // cacheUniqs={[cacheUniq]}
-                      additional={{ page: 1, resource: "series" }}
+                    <AsyncSelectPaginate
+                      placeholder={"Series"}
+                      metronResource={"series"}
                     />
                   </p>
                 </div>
@@ -215,17 +185,9 @@ export const EditMetadataPanel = (props): ReactElement => {
                     <div className="field-body">
                       <div className="field">
                         <p className="control">
-                          <CreatableAsyncPaginate
-                            SelectComponent={Creatable}
-                            debounceTimeout={200}
-                            isDisabled={isAddingInProgress}
-                            value={publisherValue}
-                            loadOptions={mudasir}
-                            placeholder={"Creator Name"}
-                            // onCreateOption={onCreateOption}
-                            onChange={onPublisherValueChange}
-                            // cacheUniqs={[cacheUniq]}
-                            additional={{ page: 1, resource: "creator" }}
+                          <AsyncSelectPaginate
+                            placeholder={"Creator"}
+                            metronResource={"creator"}
                           />
                         </p>
                       </div>
