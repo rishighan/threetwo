@@ -6,12 +6,10 @@ import { withAsyncPaginate } from "react-select-async-paginate";
 const CreatableAsyncPaginate = withAsyncPaginate(Creatable);
 
 export const AsyncSelectPaginate = (props): ReactElement => {
-  console.log(props);
   const [value, onValueChange] = useState(null);
   const [isAddingInProgress, setIsAddingInProgress] = useState(false);
 
   const mudasir = useCallback((query, loadedOptions, { page }) => {
-    console.log(page);
     return fetchMetronResource({
       method: "GET",
       resource: props.metronResource,

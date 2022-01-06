@@ -15,10 +15,6 @@ export const EditMetadataPanel = (props): ReactElement => {
   };
   const dispatch = useDispatch();
 
-  const [seriesValue, onSeriesValueChange] = useState(null);
-  const [creatorValue, onCreatorValueChange] = useState(null);
-  const [isAddingInProgress, setIsAddingInProgress] = useState(false);
-
   return (
     <>
       <Form

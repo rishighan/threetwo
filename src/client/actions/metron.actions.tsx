@@ -11,7 +11,7 @@ export const fetchMetronResource = async (options) => {
   console.log("has more? ", !isNil(metronResourceResults.data.next));
   const results = metronResourceResults.data.results.map((result) => {
     return {
-      label: result.name,
+      label: result.name || result.__str__,
       value: result.id,
     };
   });
