@@ -5,6 +5,7 @@ import arrayMutators from "final-form-arrays";
 import { FieldArray } from "react-final-form-arrays";
 import DatePicker from "react-datepicker";
 import AsyncSelectPaginate from "./AsyncSelectPaginate/AsyncSelectPaginate";
+import TextareaAutosize from "react-textarea-autosize";
 
 import "react-datepicker/dist/react-datepicker.css";
 export const EditMetadataPanel = (props): ReactElement => {
@@ -22,7 +23,20 @@ export const EditMetadataPanel = (props): ReactElement => {
       />
     );
   };
+  const TextareaAutosizeAdapter = ({ input, ...rest }) => {
+    return (
+      <TextareaAutosize
+        {...input}
+        {...rest}
+        onChange={(value) => input.onChange(value)}
+      />
+    );
+  };
+  const rawFileDetails = useSelector(
+    (state: RootState) => state.comicInfo.comicBookDetail.rawFileDetails.name,
+  );
   const dispatch = useDispatch();
+  console.log(rawFileDetails);
 
   return (
     <>
@@ -55,7 +69,8 @@ export const EditMetadataPanel = (props): ReactElement => {
                       name="issue_name"
                       component="input"
                       className="input"
-                      placeholder="Issue Name"
+                      initialValue={rawFileDetails}
+                      placeholder={"Issue Name"}
                     />
                     <span className="icon is-small is-left">
                       <i className="fa-solid fa-user-ninja"></i>
@@ -68,17 +83,18 @@ export const EditMetadataPanel = (props): ReactElement => {
             <div className="field is-horizontal">
               <div className="field-label"></div>
               <div className="field-body">
-                <div className="field is-expanded">
-                  <div className="field">
-                    <p className="control">
-                      <Field
-                        name="issue_number"
-                        component="input"
-                        className="input"
-                        placeholder="Issue Number"
-                      />
-                    </p>
-                  </div>
+                <div className="field">
+                  <p className="control has-icons-left">
+                    <Field
+                      name="issue_number"
+                      component="input"
+                      className="input"
+                      placeholder="Issue Number"
+                    />
+                    <span className="icon is-small is-left">
+                      <i className="fa-solid fa-hashtag"></i>
+                    </span>
+                  </p>
                   <p className="help">Do not enter the first zero</p>
                 </div>
                 {/* year */}
@@ -94,6 +110,87 @@ export const EditMetadataPanel = (props): ReactElement => {
               </div>
             </div>
 
+            {/* page count */}
+            <div className="field is-horizontal">
+              <div className="field-label"></div>
+              <div className="field-body">
+                <div className="field">
+                  <p className="control has-icons-left">
+                    <Field
+                      name="page_count"
+                      component="input"
+                      className="input"
+                      placeholder="Page Count"
+                    />
+                    <span className="icon is-small is-left">
+                      <i className="fa-solid fa-note-sticky"></i>
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="field is-horizontal">
+              <div className="field-label is-normal">
+                <label className="label">Description</label>
+              </div>
+              <div className="field-body">
+                <div className="field">
+                  <p className="control is-expanded has-icons-left">
+                    <Field
+                      name={"description"}
+                      className="textarea"
+                      component={TextareaAutosizeAdapter}
+                      placeholder={"Description"}
+                    />
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <hr size="1" />
+
+            <div className="field is-horizontal">
+              <div className="field-label">
+                <label className="label">Distributor Info</label>
+              </div>
+              <div className="field-body">
+                <div className="field is-expanded">
+                  <div className="field">
+                    <p className="control has-icons-left">
+                      <Field
+                        name="distributor_sku"
+                        component="input"
+                        className="input"
+                        placeholder="SKU"
+                      />
+                      <span className="icon is-small is-left">
+                        <i className="fa-solid fa-barcode"></i>
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* UPC code */}
+                <div className="field">
+                  <p className="control has-icons-left">
+                    <Field
+                      name="upc_code"
+                      component="input"
+                      className="input"
+                      placeholder="UPC Code"
+                    />
+                    <span className="icon is-small is-left">
+                      <i className="fa-solid fa-box"></i>
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <hr size="1" />
+
             {/* Publisher */}
             <div className="field is-horizontal">
               <div className="field-label is-normal">
@@ -107,7 +204,7 @@ export const EditMetadataPanel = (props): ReactElement => {
                       component={AsyncSelectPaginateAdapter}
                       placeholder={
                         <div>
-                          <i className="fas fa-print"></i> Publisher
+                          <i className="fas fa-print mr-2"></i> Publisher
                         </div>
                       }
                       metronResource={"publisher"}
@@ -130,7 +227,7 @@ export const EditMetadataPanel = (props): ReactElement => {
                       component={AsyncSelectPaginateAdapter}
                       placeholder={
                         <div>
-                          <i className="fas fa-book-open"></i> Story Arc
+                          <i className="fas fa-book-open mr-2"></i> Story Arc
                         </div>
                       }
                       metronResource={"arc"}
@@ -153,7 +250,7 @@ export const EditMetadataPanel = (props): ReactElement => {
                       component={AsyncSelectPaginateAdapter}
                       placeholder={
                         <div>
-                          <i className="fas fa-layer-group"></i> Series
+                          <i className="fas fa-layer-group mr-2"></i> Series
                         </div>
                       }
                       metronResource={"series"}
@@ -207,7 +304,7 @@ export const EditMetadataPanel = (props): ReactElement => {
                             component={AsyncSelectPaginateAdapter}
                             placeholder={
                               <div>
-                                <i className="fas fa-book-open"></i> Creator
+                                <i className="fa-solid fa-ghost"></i> Creator
                               </div>
                             }
                             metronResource={"creator"}
@@ -220,7 +317,11 @@ export const EditMetadataPanel = (props): ReactElement => {
                           <Field
                             name={`${name}.role`}
                             metronResource={"role"}
-                            placeholder={"Role"}
+                            placeholder={
+                              <div>
+                                <i className="fa-solid fa-key"></i> Role
+                              </div>
+                            }
                             component={AsyncSelectPaginateAdapter}
                           />
                         </p>
