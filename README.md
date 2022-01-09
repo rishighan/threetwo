@@ -16,7 +16,7 @@ Discuss ideas and implementations with me, and get status, progress updates!
 ThreeTwo! currently is set up as:
 
 1. The UI, this repo.
-2. [threetwo-import-service](https://github.com/rishighan/threetwo-import-service)
+2. [threetwo-core-services](https://github.com/rishighan/threetwo-core-services)
 3. [comicvine-service](https://github.com/rishighan/comicvine-service)
 4. [threetwo-ui-typings](https://github.com/rishighan/threetwo-frontend-types) which are the types used across the UI, installable as an `npm` dependency.
 ## Docker Instructions
