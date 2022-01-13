@@ -1,5 +1,16 @@
-version: "3.3"
+version: "3.5"
 
+x-userdata-volume:
+  &userdata-volume
+  type: bind
+  source: ${USERDATA_DIRECTORY}
+  target: /userdata 
+
+x-comics-volume:
+  &comics-volume
+  type: bind
+  source: ${COMICS_DIRECTORY}
+  target: /comics
 services:
   threetwo:
     build:
@@ -8,9 +19,7 @@ services:
     container_name: threetwo-ui
     env_file: ./environment.list
     restart: unless-stopped
-    volumes:
-      - $COMICS_DIRECTORY:/comics
-      - $USERDATA_DIRECTORY:/userdata
+    
     ports:
       - "8050:8050"
       - "3050:3050"
@@ -19,12 +28,8 @@ services:
     depends_on:
       - db
       - elasticsearch
-      - libraryqueue
       - redis
-      - settings
-      - importapi
-      - import
-      - imagetransformation
+      
     networks:
       - proxy
 
@@ -35,9 +40,9 @@ services:
     container_name: comicvine-api
     ports:
       - "3080:3080"
-    volumes:
-      - ${COMICS_DIRECTORY}:/comicvine-service/comics
-      - ${USERDATA_DIRECTORY}:/comicvine-service/userdata
+    volumes: 
+      - *comics-volume
+      - *userdata-volume
     environment:
       SERVICES: api
     env_file: comicvine-service.env
@@ -53,10 +58,9 @@ services:
     container_name: comicvine-service
     environment:
       SERVICES: comicvine
-    volumes:
-      - ${COMICS_DIRECTORY}:/comicvine-service/comics
-      - ${USERDATA_DIRECTORY}:/comicvine-service/userdata
-      - ${SERVICE_ENV_FILE}:/comicvine-service/.env/service.env
+    volumes: 
+      - *comics-volume
+      - *userdata-volume
     env_file: comicvine-service.env
     networks:
       - proxy
@@ -72,9 +76,9 @@ services:
     environment:
       SERVICES: api
     env_file: threetwo-import-service.env
-    volumes:
-      - ${USERDATA_DIRECTORY}:/threetwo-import-service/userdata
-      - ${COMICS_DIRECTORY}:/threetwo-import-service/comics
+    volumes: 
+      - *comics-volume
+      - *userdata-volume
     depends_on:
       - redis
       - db
@@ -85,70 +89,21 @@ services:
     build:
       context: https://github.com/rishighan/threetwo-core-service.git
     image: frishi/threetwo-core-service
-    container_name: import
+    container_name: core-services
     depends_on:
       - db
       - redis
     environment:
-      SERVICES: import
-    volumes:
-      - ${USERDATA_DIRECTORY}:/threetwo-import-service/userdata
-      - ${COMICS_DIRECTORY}:/threetwo-import-service/comics
-      - ${SERVICE_ENV_FILE}:/threetwo-import-service/.env/service.env
+      name: core-services
+      SERVICES: import,libraryqueue,settings,imagetransformation
+    volumes: 
+      - *comics-volume
+      - *userdata-volume
+      
     env_file: threetwo-import-service.env
     networks:
       - proxy
 
-  imagetransformation:
-    build:
-      context: https://github.com/rishighan/threetwo-core-service.git
-    image: frishi/threetwo-core-service
-    container_name: image-transformation
-    volumes:
-      - ${USERDATA_DIRECTORY}:/threetwo-import-service/userdata
-      - ${COMICS_DIRECTORY}:/threetwo-import-service/comics
-    depends_on:
-      - db
-      - redis
-    environment:
-      SERVICES: imagetransformation
-    env_file: threetwo-import-service.env
-    networks:
-      - proxy
-
-  libraryqueue:
-    build:
-      context: https://github.com/rishighan/threetwo-core-service.git
-    image: frishi/threetwo-core-service
-    container_name: library-queue
-    volumes:
-      - ${USERDATA_DIRECTORY}:/threetwo-import-service/userdata
-      - ${COMICS_DIRECTORY}:/threetwo-import-service/comics
-    depends_on:
-      - db
-      - redis
-    environment:
-      SERVICES: libraryqueue
-    env_file: threetwo-import-service.env
-    networks:
-      - proxy
-
-  settings:
-    build:
-      context: https://github.com/rishighan/threetwo-core-service.git
-    image: frishi/threetwo-core-service
-    container_name: settings
-    volumes:
-      - ${USERDATA_DIRECTORY}:/threetwo-import-service/userdata
-      - ${COMICS_DIRECTORY}:/threetwo-import-service/comics
-    depends_on:
-      - db
-      - redis
-    environment:
-      SERVICES: settings
-    env_file: threetwo-import-service.env
-    networks:
-      - proxy
   db:
     image: "bitnami/mongodb:latest"
     container_name: database
@@ -188,6 +143,7 @@ services:
 networks:
   proxy:
     external: true
+
 
 volumes:
   mongodb_data:

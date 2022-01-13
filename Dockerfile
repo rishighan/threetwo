@@ -1,4 +1,4 @@
-FROM node:12.21.0
+FROM node:14-slim
 LABEL maintainer="Rishi Ghan <rishi.ghan@gmail.com>"
 
 RUN mkdir -p /usr/src/threetwo
