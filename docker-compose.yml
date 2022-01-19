@@ -4,13 +4,13 @@ x-userdata-volume:
   &userdata-volume
   type: bind
   source: ${USERDATA_DIRECTORY}
-  target: /userdata 
+  target: /Users/rishi/work/threetwo/userdata 
 
 x-comics-volume:
   &comics-volume
   type: bind
   source: ${COMICS_DIRECTORY}
-  target: /comics
+  target: /Users/rishi/work/threetwo/comics
 services:
   threetwo:
     build:
@@ -85,7 +85,7 @@ services:
     networks:
       - proxy
 
-  import:
+  core-services:
     build:
       context: https://github.com/rishighan/threetwo-core-service.git
     image: frishi/threetwo-core-service
@@ -93,6 +93,7 @@ services:
     depends_on:
       - db
       - redis
+      - elasticsearch
     environment:
       name: core-services
       SERVICES: import,libraryqueue,settings,imagetransformation
@@ -125,7 +126,7 @@ services:
       - "6379:6379"
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
     container_name: elasticsearch
     environment:
       - "discovery.type=single-node"
