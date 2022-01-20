@@ -17,7 +17,6 @@ import { detectIssueTypes } from "../shared/utils/tradepaperback.utils";
 import { Link } from "react-router-dom";
 import { IMPORT_SERVICE_HOST } from "../constants/endpoints";
 
-
 interface ILibraryGridProps {}
 export const LibraryGrid = (libraryGridProps: ILibraryGridProps) => {
   const data = useSelector(
