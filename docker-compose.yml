@@ -1,23 +1,22 @@
-version: "3.5"
+version: "3.7"
 
 x-userdata-volume:
   &userdata-volume
   type: bind
   source: ${USERDATA_DIRECTORY}
-  target: /Users/rishi/work/threetwo/userdata 
+  target: /userdata 
 
 x-comics-volume:
   &comics-volume
   type: bind
   source: ${COMICS_DIRECTORY}
-  target: /Users/rishi/work/threetwo/comics
+  target: /comics
 services:
   threetwo:
     build:
-      context: .
+      context: . 
     image: frishi/threetwo
     container_name: threetwo-ui
-    env_file: ./environment.list
     restart: unless-stopped
     
     ports:
@@ -45,7 +44,7 @@ services:
       - *userdata-volume
     environment:
       SERVICES: api
-    env_file: comicvine-service.env
+    env_file: docker-compose.env
     depends_on:
       - redis
     networks:
@@ -58,10 +57,10 @@ services:
     container_name: comicvine-service
     environment:
       SERVICES: comicvine
+    env_file: docker-compose.env
     volumes: 
       - *comics-volume
       - *userdata-volume
-    env_file: comicvine-service.env
     networks:
       - proxy
 
@@ -75,7 +74,7 @@ services:
       - "3001:3001"
     environment:
       SERVICES: api
-    env_file: threetwo-import-service.env
+    env_file: docker-compose.env
     volumes: 
       - *comics-volume
       - *userdata-volume
@@ -97,11 +96,11 @@ services:
     environment:
       name: core-services
       SERVICES: import,libraryqueue,settings,imagetransformation
+    env_file: docker-compose.env
     volumes: 
       - *comics-volume
       - *userdata-volume
       
-    env_file: threetwo-import-service.env
     networks:
       - proxy
 
