@@ -45,8 +45,8 @@ Then:
 ### Ports
 
 1. `threetwo`, the UI runs on port `8050`
-2. `import` service on `3000`
-3. `comicvine` service on `3080`
+2. `threetwo-core-service` service on `3000`
+3. `threetwo-metadata-service` service on `3080`
 
 ## Local Development
 
