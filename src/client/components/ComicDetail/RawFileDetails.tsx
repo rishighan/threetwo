@@ -4,6 +4,7 @@ import prettyBytes from "pretty-bytes";
 
 export const RawFileDetails = (props): ReactElement => {
   const { data } = props;
+  console.log(data);
   return (
     <div className="content comic-detail">
       <dl>

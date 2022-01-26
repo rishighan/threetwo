@@ -1,9 +1,7 @@
 import { LOCATION_CHANGE } from "connected-react-router";
 import {
   RMQ_SOCKET_CONNECTED,
-  RMQ_SOCKET_DISCONNECTED,
   IMS_COMICBOOK_METADATA_FETCHED,
-  RMQ_SOCKET_ERROR,
   IMS_RAW_IMPORT_SUCCESSFUL,
   IMS_RAW_IMPORT_FAILED,
   IMS_RECENT_COMICS_FETCHED,
@@ -18,6 +16,7 @@ import {
   IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
   LS_IMPORT,
   LS_COVER_EXTRACTED,
+  LS_COMIC_ADDED,
 } from "../constants/action-types";
 const initialState = {
   IMSCallInProgress: false,
@@ -126,6 +125,12 @@ function fileOpsReducer(state = initialState, action) {
     }
     case LS_COVER_EXTRACTED: {
       console.log("BASH", action);
+      return {
+        ...state,
+      };
+    }
+    case LS_COMIC_ADDED: {
+      console.log("ADDED na anna", action);
       return {
         ...state,
       };
