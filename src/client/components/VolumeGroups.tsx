@@ -2,6 +2,7 @@ import { isNil, map } from "lodash";
 import React, { ReactElement, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ellipsize from "ellipsize";
+import { Link } from "react-router-dom";
 import { fetchVolumeGroups } from "../actions/fileops.actions";
 import Masonry from "react-masonry-css";
 
@@ -34,12 +35,15 @@ export const VolumeGroups = (): ReactElement => {
           volumeGroups &&
           map(volumeGroups.data, (group) => {
             if (!isNil(group)) {
+              console.log(group);
               return (
                 <div className="stack" key={group.results.id}>
                   <img src={group.results.image.small_url} />
                   <div className="content">
                     <div className="stack-title is-size-8">
-                      {ellipsize(group.results.name, 18)}
+                      <Link to={`/volume/details/${group.comicObjectId}`}>
+                        {ellipsize(group.results.name, 18)}
+                      </Link>
                     </div>
                     <div className="control">
                       <span className="tags has-addons">

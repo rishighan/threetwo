@@ -1,5 +1,5 @@
-import React, { ReactElement, useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { ReactElement, useState } from "react";
+import { useSelector } from "react-redux";
 import { hot } from "react-hot-loader";
 import Dashboard from "./Dashboard";
 
@@ -9,6 +9,7 @@ import Library from "./Library";
 import LibraryGrid from "./LibraryGrid";
 import Search from "./Search";
 import Settings from "./Settings";
+import VolumeDetail from "./VolumeDetail/VolumeDetail";
 
 import { Switch, Route } from "react-router";
 import Navbar from "./Navbar";
@@ -97,6 +98,10 @@ export const App = (): ReactElement => {
           <Route
             path={"/comic/details/:comicObjectId"}
             component={ComicDetail}
+          />
+          <Route
+            path={"/volume/details/:comicObjectId"}
+            component={VolumeDetail}
           />
           <Route path="/settings">
             <Settings />
