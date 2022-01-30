@@ -2,10 +2,7 @@ import React, { ReactElement } from "react";
 import Card from "./Carda";
 import { Link } from "react-router-dom";
 import ellipsize from "ellipsize";
-import {
-  removeLeadingPeriod,
-  escapePoundSymbol,
-} from "../shared/utils/formatting.utils";
+import { escapePoundSymbol } from "../shared/utils/formatting.utils";
 import { isNil, isUndefined, map } from "lodash";
 import { detectIssueTypes } from "../shared/utils/tradepaperback.utils";
 import Masonry from "react-masonry-css";
@@ -22,7 +19,7 @@ export const RecentlyImported = ({
     default: 5,
     1100: 4,
     700: 2,
-    500: 1,
+    600: 1,
   };
   return (
     <>

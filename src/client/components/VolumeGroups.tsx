@@ -35,7 +35,6 @@ export const VolumeGroups = (): ReactElement => {
           volumeGroups &&
           map(volumeGroups.data, (group) => {
             if (!isNil(group)) {
-              console.log(group);
               return (
                 <div className="stack" key={group.results.id}>
                   <img src={group.results.image.small_url} />

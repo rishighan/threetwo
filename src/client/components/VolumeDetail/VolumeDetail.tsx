@@ -6,9 +6,16 @@ import {
   getComicBookDetailById,
   getIssuesForSeries,
 } from "../../actions/comicinfo.actions";
+import Masonry from "react-masonry-css";
 import { Card } from "../Carda";
 
 const VolumeDetails = (props): ReactElement => {
+  const breakpointColumnsObj = {
+    default: 5,
+    1100: 4,
+    700: 2,
+    600: 1,
+  };
   const comicBookDetails = useSelector(
     (state: RootState) => state.comicInfo.comicBookDetail,
   );
@@ -28,13 +35,13 @@ const VolumeDetails = (props): ReactElement => {
     !isUndefined(comicBookDetails.sourcedMetadata.comicvine)
   ) {
     return (
-      <div className="container">
+      <div className="container volume-details">
         <div className="section">
           <h1 className="title">
             {comicBookDetails.sourcedMetadata.comicvine.volumeInformation.name}
           </h1>
           <div className="columns is-multiline">
-            <div className="column is-narrow">
+            <div className="column is-narrow is-full">
               <Card
                 imageUrl={
                   comicBookDetails.sourcedMetadata.comicvine.volumeInformation
@@ -44,11 +51,22 @@ const VolumeDetails = (props): ReactElement => {
                 hasDetails={false}
               />
             </div>
-            <div>
-              {issues.map((issue, idx) => {
-                return <img key={idx} src={issue.image.thumb_url} />;
+            <Masonry
+              breakpointCols={breakpointColumnsObj}
+              className="issues-container"
+              columnClassName="issues-column"
+            >
+              {issues.map((issue) => {
+                return (
+                  <Card
+                    key={issue.id}
+                    imageUrl={issue.image.thumb_url}
+                    orientation={"vertical"}
+                    hasDetails={false}
+                  />
+                );
               })}
-            </div>
+            </Masonry>
             {/* <pre>{JSON.stringify(comicBookDetails, undefined, 2)}</pre> */}
           </div>
         </div>

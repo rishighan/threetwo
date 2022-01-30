@@ -323,7 +323,7 @@ $size-8: 0.9rem;
 
 .comic-vine-match-drawer {
   // comic detail drawer
- 
+
   .search-criteria-card {
     width: 100%;
     .card-content {
@@ -339,6 +339,25 @@ $size-8: 0.9rem;
   }
 }
 
+// Volume detail
+.volume-details {
+  .issues-container {
+    display: -webkit-box; /* Not needed if autoprefixing */
+    display: -ms-flexbox; /* Not needed if autoprefixing */
+    display: flex;
+    width: auto;
+    .issues-column {
+      padding: 10px;
+      background-clip: padding-box;
+      & > div {
+        /* change div to reference your elements you put in <Masonry> */
+        margin-bottom: 20px;
+      }
+    }
+    
+  }
+}
+
 // comicvine search results
 .search-results-container {
   margin: 15px 0 0 0;
@@ -348,13 +367,11 @@ $size-8: 0.9rem;
     margin: 0 0 10px 0;
     padding: 1em;
     border-radius: 10px;
-    background: #F2F1F9;
+    background: #f2f1f9;
     .cover-image {
       border-radius: 5px;
     }
     .search-result-details {
-      
-
       .score {
         float: right;
       }
@@ -362,21 +379,20 @@ $size-8: 0.9rem;
     .volume-information {
       margin-top: -2.5em;
       width: 80%;
-      background: #FDECD1;
+      background: #fdecd1;
       border-radius: 10px;
     }
     .vertical-line {
       position: relative;
       top: -25px;
       left: 1.5rem;
-      border: 2px dotted #CCC;
-      width:20px;
-      min-height:35px;
-      
-    border-color: transparent transparent #F3A22D #F3A22D;
+      border: 2px dotted #ccc;
+      width: 20px;
+      min-height: 35px;
+
+      border-color: transparent transparent #f3a22d #f3a22d;
       border-bottom-left-radius: 10px;
-  }
-  
+    }
   }
 }
 
