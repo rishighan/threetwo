@@ -3,7 +3,7 @@ import React, { ReactElement, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Select, { components } from "react-select";
 import { fetchComicVineMatches } from "../../../actions/fileops.actions";
-import { refineQuery } from "../../../shared/utils/filenameparser.utils";
+import { refineQuery } from "filename-parser";
 
 export const Menu = (props): ReactElement => {
   const { data } = props;

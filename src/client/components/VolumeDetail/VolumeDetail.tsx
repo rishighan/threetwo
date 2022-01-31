@@ -1,4 +1,4 @@
-import { isUndefined } from "lodash";
+import { isEmpty, isNil, isUndefined } from "lodash";
 import React, { useEffect, ReactElement } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
@@ -58,12 +58,17 @@ const VolumeDetails = (props): ReactElement => {
             >
               {issues.map((issue) => {
                 return (
-                  <Card
-                    key={issue.id}
-                    imageUrl={issue.image.thumb_url}
-                    orientation={"vertical"}
-                    hasDetails={false}
-                  />
+                  <>
+                    <Card
+                      key={issue.id}
+                      imageUrl={issue.image.thumb_url}
+                      orientation={"vertical"}
+                      hasDetails={false}
+                    />
+                    {!isEmpty(issue.potentialMatches)
+                      ? "matches available"
+                      : null}
+                  </>
                 );
               })}
             </Masonry>
