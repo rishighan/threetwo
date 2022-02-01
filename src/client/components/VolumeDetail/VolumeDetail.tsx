@@ -56,21 +56,23 @@ const VolumeDetails = (props): ReactElement => {
               className="issues-container"
               columnClassName="issues-column"
             >
-              {issues.map((issue) => {
-                return (
-                  <>
-                    <Card
-                      key={issue.id}
-                      imageUrl={issue.image.thumb_url}
-                      orientation={"vertical"}
-                      hasDetails={false}
-                    />
-                    {!isEmpty(issue.potentialMatches)
-                      ? "matches available"
-                      : null}
-                  </>
-                );
-              })}
+              {!isUndefined(issues) && !isEmpty(issues)
+                ? issues.map((issue) => {
+                    return (
+                      <>
+                        <Card
+                          key={issue.id}
+                          imageUrl={issue.image.thumb_url}
+                          orientation={"vertical"}
+                          hasDetails={false}
+                        />
+                        {!isEmpty(issue.potentialMatches)
+                          ? "matches available"
+                          : null}
+                      </>
+                    );
+                  })
+                : "loading"}
             </Masonry>
             {/* <pre>{JSON.stringify(comicBookDetails, undefined, 2)}</pre> */}
           </div>

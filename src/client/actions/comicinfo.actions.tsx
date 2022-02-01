@@ -70,7 +70,8 @@ export const getIssuesForSeries = (comicObjectID: any) => async (dispatch) => {
   });
 
   const issues = await axios({
-    url: `${COMICBOOKINFO_SERVICE_URI}/getIssuesForVolume`,
+    url: `${IMPORT_SERVICE_BASE_URI}/getIssuesForSeries`,
+    method: "POST",
     params: {
       comicObjectID,
     },
