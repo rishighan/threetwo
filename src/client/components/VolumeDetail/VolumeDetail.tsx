@@ -1,13 +1,14 @@
-import { isEmpty, isNil, isUndefined } from "lodash";
-import React, { useEffect, ReactElement } from "react";
+import { isEmpty, isNil, isUndefined, map } from "lodash";
+import React, { useEffect, ReactElement, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import {
   getComicBookDetailById,
-  getIssuesForSeries,
+  findIssuesForSeriesInLibrary,
 } from "../../actions/comicinfo.actions";
 import Masonry from "react-masonry-css";
 import { Card } from "../Carda";
+import SlidingPane from "react-sliding-pane";
 
 const VolumeDetails = (props): ReactElement => {
   const breakpointColumnsObj = {
@@ -16,15 +17,45 @@ const VolumeDetails = (props): ReactElement => {
     700: 2,
     600: 1,
   };
+  // sliding panel config
+  const [visible, setVisible] = useState(false);
+  const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
+  const [matches, setMatches] = useState([]);
+
+  // sliding panel init
+  const contentForSlidingPanel = {
+    potentialMatchesInLibrary: {
+      content: () => {
+        console.log(matches);
+
+        return (
+          <div className="mt-10">
+            {map(matches, (match) => (
+              <pre>{JSON.stringify(match, undefined, 2)}</pre>
+            ))}
+          </div>
+        );
+      },
+    },
+  };
+
+  // sliding panel handlers
+  const openPotentialLibraryMatchesPanel = useCallback((potentialMatches) => {
+    setSlidingPanelContentId("potentialMatchesInLibrary");
+    setMatches(potentialMatches);
+    setVisible(true);
+  }, []);
+
   const comicBookDetails = useSelector(
     (state: RootState) => state.comicInfo.comicBookDetail,
   );
-  const issues = useSelector(
+  const issuesForVolume = useSelector(
     (state: RootState) => state.comicInfo.issuesForVolume,
   );
+
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(getIssuesForSeries(comicObjectId));
+    dispatch(findIssuesForSeriesInLibrary(comicObjectId));
     dispatch(getComicBookDetailById(comicObjectId));
   }, []);
 
@@ -56,27 +87,50 @@ const VolumeDetails = (props): ReactElement => {
               className="issues-container"
               columnClassName="issues-column"
             >
-              {!isUndefined(issues) && !isEmpty(issues)
-                ? issues.map((issue) => {
+              {!isUndefined(issuesForVolume) && !isEmpty(issuesForVolume)
+                ? issuesForVolume.map((issue) => {
                     return (
                       <>
                         <Card
-                          key={issue.id}
-                          imageUrl={issue.image.thumb_url}
+                          key={issue.issue.id}
+                          imageUrl={issue.issue.image.thumb_url}
                           orientation={"vertical"}
-                          hasDetails={false}
-                        />
-                        {!isEmpty(issue.potentialMatches)
-                          ? "matches available"
-                          : null}
+                          hasDetails={!isEmpty(issue.matches) ? true : false}
+                          borderColorClass={
+                            !isEmpty(issue.matches) ? "green-border" : ""
+                          }
+                          backgroundColor={
+                            !isEmpty(issue.matches) ? "#e0f5d0" : ""
+                          }
+                          onClick={() =>
+                            openPotentialLibraryMatchesPanel(issue.matches)
+                          }
+                        >
+                          {!isEmpty(issue.matches) ? (
+                            <span className="icon is-success">
+                              <i className="fa-solid fa-hands-asl-interpreting"></i>
+                            </span>
+                          ) : null}
+                        </Card>
+                        {/* { JSON.stringify(issue, undefined, 2)} */}
                       </>
                     );
                   })
                 : "loading"}
             </Masonry>
-            {/* <pre>{JSON.stringify(comicBookDetails, undefined, 2)}</pre> */}
+            {/* <pre>{JSON.stringify(issuesForVolume, undefined, 2)}</pre> */}
           </div>
         </div>
+
+        <SlidingPane
+          isOpen={visible}
+          onRequestClose={() => setVisible(false)}
+          title={"Potential Matches in Library"}
+          width={"600px"}
+        >
+          {slidingPanelContentId !== "" &&
+            contentForSlidingPanel[slidingPanelContentId].content()}
+        </SlidingPane>
       </div>
     );
   } else {

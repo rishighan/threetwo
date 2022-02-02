@@ -13,6 +13,7 @@ import {
   IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
   CV_ISSUES_METADATA_CALL_IN_PROGRESS,
   CV_ISSUES_METADATA_FETCH_SUCCESS,
+  CV_CLEANUP,
 } from "../constants/action-types";
 import {
   COMICBOOKINFO_SERVICE_URI,
@@ -64,24 +65,24 @@ export const comicinfoAPICall = (options) => async (dispatch) => {
     });
   }
 };
-export const getIssuesForSeries = (comicObjectID: any) => async (dispatch) => {
-  dispatch({
-    type: CV_ISSUES_METADATA_CALL_IN_PROGRESS,
-  });
+export const findIssuesForSeriesInLibrary =
+  (comicObjectID: any) => async (dispatch) => {
+    dispatch({
+      type: CV_ISSUES_METADATA_CALL_IN_PROGRESS,
+    });
+    dispatch({
+      type: CV_CLEANUP,
+    });
 
-  const issues = await axios({
-    url: `${IMPORT_SERVICE_BASE_URI}/getIssuesForSeries`,
-    method: "POST",
-    params: {
-      comicObjectID,
-    },
-  });
-  console.log(issues);
-  dispatch({
-    type: CV_ISSUES_METADATA_FETCH_SUCCESS,
-    issues,
-  });
-};
+    await axios({
+      url: `${IMPORT_SERVICE_BASE_URI}/findIssuesForSeriesInLibrary`,
+      method: "POST",
+      params: {
+        comicObjectID,
+      },
+    });
+  };
+
 export const getComicBookDetailById =
   (comicBookObjectId: string) => async (dispatch) => {
     dispatch({

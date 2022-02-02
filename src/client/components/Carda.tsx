@@ -8,6 +8,9 @@ interface ICardProps {
   hasDetails: boolean;
   title?: PropTypes.ReactElementLike | null;
   children?: PropTypes.ReactNodeLike;
+  borderColorClass?: string;
+  backgroundColor?: string;
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
 const renderCard = (props): ReactElement => {
@@ -16,9 +19,15 @@ const renderCard = (props): ReactElement => {
       return <>horiztonal</>;
     case "vertical":
       return (
-        <div>
+        <div onClick={props.onClick}>
           <div className="generic-card">
-            <div>
+            <div
+              className={
+                !isNil(props.borderColorClass)
+                  ? `${props.borderColorClass}`
+                  : ""
+              }
+            >
               <div
                 className={
                   props.hasDetails
@@ -31,10 +40,15 @@ const renderCard = (props): ReactElement => {
                 </figure>
               </div>
               {props.hasDetails && (
-                <div className="card-content">
-                  <div className="card-title is-size-8 is-family-secondary">
-                    {isNil(props.title) ? "No Name" : props.title}
-                  </div>
+                <div
+                  className="card-content"
+                  style={{ backgroundColor: props.backgroundColor }}
+                >
+                  {!isNil(props.title) ? (
+                    <div className="card-title is-size-8 is-family-secondary">
+                      {props.title}
+                    </div>
+                  ) : null}
                   {props.children}
                 </div>
               )}

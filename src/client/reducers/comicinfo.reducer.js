@@ -4,10 +4,11 @@ import {
   CV_CLEANUP,
   IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
   IMS_COMIC_BOOK_DB_OBJECT_CALL_IN_PROGRESS,
-  IMS_COMIC_BOOK_DB_OBJECT_CALL_FAILED,
   CV_ISSUES_METADATA_CALL_IN_PROGRESS,
   CV_ISSUES_METADATA_FETCH_SUCCESS,
+  CV_ISSUES_FOR_VOLUME_IN_LIBRARY_SUCCESS,
 } from "../constants/action-types";
+
 const initialState = {
   searchResults: [],
   searchQuery: {},
@@ -48,17 +49,20 @@ function comicinfoReducer(state = initialState, action) {
         ...state,
         searchResults: [],
         searchQuery: {},
+        issuesForVolume: [],
       };
     case CV_ISSUES_METADATA_CALL_IN_PROGRESS:
       return {
         inProgress: true,
         ...state,
       };
-    case CV_ISSUES_METADATA_FETCH_SUCCESS:
-      console.log(action);
+
+    case CV_ISSUES_FOR_VOLUME_IN_LIBRARY_SUCCESS:
+      console.log("jagan", action);
       return {
         ...state,
-        issuesForVolume: action.issues.data,
+        issuesForVolume: [...state.issuesForVolume, action.result],
+        inProgress: false,
       };
     default:
       return state;

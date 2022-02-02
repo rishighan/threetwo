@@ -128,6 +128,11 @@ $size-8: 0.9rem;
   border-bottom-right-radius: 0.3rem;
   box-shadow: 1px 8px 23px 7px rgba(0, 0, 0, 0.12);
 
+  .green-border {
+    border:2px dotted #999;
+    border-radius: 0.3rem;
+  }
+
   .truncate {
     width: 100px;
     white-space: nowrap;
