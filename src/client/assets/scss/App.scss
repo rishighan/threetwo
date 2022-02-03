@@ -6,7 +6,8 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 $bg-color: yellow;
 $border-color: red;
 
-$volume-color: #f2f1f9;
+$volume-color: #fdecd1;
+$issue-color: #f2f1f9;
 $size-8: 0.9rem;
 
 .is-size-8 {
@@ -131,7 +132,7 @@ $size-8: 0.9rem;
   box-shadow: 1px 8px 23px 7px rgba(0, 0, 0, 0.12);
 
   .green-border {
-    border:2px dotted #168B64;
+    border: 1px dotted #168b64;
     border-radius: 0.3rem;
   }
 
@@ -358,7 +359,7 @@ $size-8: 0.9rem;
     // margin-left: -30px; /* gutter size offset */
     width: auto;
     .issues-column {
-      max-width:102px;
+      max-width: 102px;
       margin: 10px;
       background-clip: padding-box;
       & > div {
@@ -366,13 +367,27 @@ $size-8: 0.9rem;
         margin-bottom: 20px;
       }
     }
-    
   }
 }
 // Potential issue matches in library slideout panel
 .potential-matches-container {
-  .generic-card {
+  .potential-issue-match {
+    border-radius: 0.3rem;
+    background-color: $issue-color;
+    padding: 10px;
+    pre {
+      padding: 5px;
+      background-color: transparent;
+      border-radius: 0.3rem;
+      white-space: pre-wrap; /* Since CSS 2.1 */
+      white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+      white-space: -pre-wrap; /* Opera 4-6 */
+      white-space: -o-pre-wrap; /* Opera 7 */
+      word-wrap: break-word;
+    }
+    .generic-card {
       max-width: 90px;
+    }
   }
 }
 

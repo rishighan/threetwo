@@ -6,7 +6,7 @@ import { escapePoundSymbol } from "../shared/utils/formatting.utils";
 import { isNil, isUndefined, map } from "lodash";
 import { detectIssueTypes } from "../shared/utils/tradepaperback.utils";
 import Masonry from "react-masonry-css";
-import { IMPORT_SERVICE_HOST } from "../constants/endpoints";
+import { LIBRARY_SERVICE_HOST } from "../constants/endpoints";
 
 type RecentlyImportedProps = {
   comicBookCovers: any;
@@ -19,7 +19,7 @@ export const RecentlyImported = ({
     default: 5,
     1100: 4,
     700: 2,
-    600: 1,
+    600: 2,
   };
   return (
     <>
@@ -38,7 +38,7 @@ export const RecentlyImported = ({
             let comicName = "";
             if (!isNil(rawFileDetails)) {
               const encodedFilePath = encodeURI(
-                `${IMPORT_SERVICE_HOST}/${rawFileDetails.cover.filePath}`,
+                `${LIBRARY_SERVICE_HOST}/${rawFileDetails.cover.filePath}`,
               );
               imagePath = escapePoundSymbol(encodedFilePath);
               comicName = rawFileDetails.name;

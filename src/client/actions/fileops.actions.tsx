@@ -2,7 +2,7 @@ import axios from "axios";
 import { IFolderData } from "threetwo-ui-typings";
 import {
   COMICBOOKINFO_SERVICE_URI,
-  IMPORT_SERVICE_BASE_URI,
+  LIBRARY_SERVICE_BASE_URI,
 } from "../constants/endpoints";
 import {
   IMS_COMIC_BOOK_GROUPS_FETCHED,
@@ -23,7 +23,7 @@ import { isNil } from "lodash";
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
     .request<Array<IFolderData>>({
-      url: `${IMPORT_SERVICE_BASE_URI}/walkFolders`,
+      url: `${LIBRARY_SERVICE_BASE_URI}/walkFolders`,
       method: "POST",
       data: {
         basePathToWalk: path,
@@ -78,7 +78,7 @@ export const getComicBooks = (options) => async (dispatch) => {
   const { paginationOptions } = options;
   return axios
     .request({
-      url: `${IMPORT_SERVICE_BASE_URI}/getComicBooks`,
+      url: `${LIBRARY_SERVICE_BASE_URI}/getComicBooks`,
       method: "POST",
       data: {
         paginationOptions,
@@ -109,7 +109,7 @@ export const importToDB = (payload?: any) => (dispatch) => {
     });
     return axios
       .request({
-        url: `${IMPORT_SERVICE_BASE_URI}/rawImportToDb`,
+        url: `${LIBRARY_SERVICE_BASE_URI}/rawImportToDb`,
         method: "POST",
         data: comicBookMetadata,
         transformResponse: (r: string) => JSON.parse(r),
@@ -135,7 +135,7 @@ export const fetchVolumeGroups = () => (dispatch) => {
     });
     axios
       .request({
-        url: `${IMPORT_SERVICE_BASE_URI}/getComicBookGroups`,
+        url: `${LIBRARY_SERVICE_BASE_URI}/getComicBookGroups`,
         method: "GET",
       })
       .then((data) => {

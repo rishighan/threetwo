@@ -17,7 +17,7 @@ import {
 } from "../constants/action-types";
 import {
   COMICBOOKINFO_SERVICE_URI,
-  IMPORT_SERVICE_BASE_URI,
+  LIBRARY_SERVICE_BASE_URI,
 } from "../constants/endpoints";
 
 const http = rateLimiter(axios.create(), {
@@ -75,7 +75,7 @@ export const findIssuesForSeriesInLibrary =
     });
 
     await axios({
-      url: `${IMPORT_SERVICE_BASE_URI}/findIssuesForSeriesInLibrary`,
+      url: `${LIBRARY_SERVICE_BASE_URI}/findIssuesForSeriesInLibrary`,
       method: "POST",
       params: {
         comicObjectID,
@@ -90,7 +90,7 @@ export const getComicBookDetailById =
       IMS_inProgress: true,
     });
     const result = await axios.request({
-      url: `${IMPORT_SERVICE_BASE_URI}/getComicBookById`,
+      url: `${LIBRARY_SERVICE_BASE_URI}/getComicBookById`,
       method: "POST",
       data: {
         id: comicBookObjectId,
@@ -110,7 +110,7 @@ export const getComicBooksDetailsByIds =
       IMS_inProgress: true,
     });
     const result = await axios.request({
-      url: `${IMPORT_SERVICE_BASE_URI}/getComicBooksByIds`,
+      url: `${LIBRARY_SERVICE_BASE_URI}/getComicBooksByIds`,
       method: "POST",
       data: {
         ids: comicBookObjectIds,
@@ -129,7 +129,7 @@ export const applyComicVineMatch =
       IMS_inProgress: true,
     });
     const result = await axios.request({
-      url: `${IMPORT_SERVICE_BASE_URI}/applyComicVineMetadata`,
+      url: `${LIBRARY_SERVICE_BASE_URI}/applyComicVineMetadata`,
       method: "POST",
       data: {
         match,
@@ -151,7 +151,7 @@ export const extractComicArchive =
     });
     const extractedComicBookArchive = await axios({
       method: "POST",
-      url: `${IMPORT_SERVICE_BASE_URI}/unrarArchive`,
+      url: `${LIBRARY_SERVICE_BASE_URI}/unrarArchive`,
       headers: {
         "Content-Type": "application/json; charset=utf-8",
       },
@@ -164,7 +164,7 @@ export const extractComicArchive =
       const foo = page.path.split("/");
       const folderName = foo[foo.length - 1];
       const imagePath = encodeURI(
-        `${IMPORT_SERVICE_BASE_URI}/userdata/expanded/` +
+        `${LIBRARY_SERVICE_BASE_URI}/userdata/expanded/` +
           folderName +
           `/` +
           page.name +

@@ -37,17 +37,17 @@ export const API_BASE_URI = hostURIBuilder({
   apiPath: "/api",
 });
 
-export const IMPORT_SERVICE_HOST = hostURIBuilder({
+export const LIBRARY_SERVICE_HOST = hostURIBuilder({
   protocol: "http",
   host: process.env.UNDERLYING_HOSTNAME || "localhost",
   port: "3000",
   apiPath: ``,
 });
-export const IMPORT_SERVICE_BASE_URI = hostURIBuilder({
+export const LIBRARY_SERVICE_BASE_URI = hostURIBuilder({
   protocol: "http",
   host: process.env.UNDERLYING_HOSTNAME || "localhost",
   port: "3000",
-  apiPath: "/api/import",
+  apiPath: "/api/library",
 });
 
 export const SETTINGS_SERVICE_BASE_URI = hostURIBuilder({

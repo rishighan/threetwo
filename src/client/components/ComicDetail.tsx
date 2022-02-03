@@ -24,7 +24,7 @@ import SlidingPane from "react-sliding-pane";
 
 import { escapePoundSymbol } from "../shared/utils/formatting.utils";
 
-import { IMPORT_SERVICE_HOST } from "../constants/endpoints";
+import { LIBRARY_SERVICE_HOST } from "../constants/endpoints";
 import { getSettings } from "../actions/settings.actions";
 import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
 import AirDCPPSocket from "../services/DcppSearchService";
@@ -210,7 +210,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   let comicBookTitle = "";
   if (!isNil(comicBookDetailData.rawFileDetails)) {
     const encodedFilePath = encodeURI(
-      `${IMPORT_SERVICE_HOST}/${comicBookDetailData.rawFileDetails.cover.filePath}`,
+      `${LIBRARY_SERVICE_HOST}/${comicBookDetailData.rawFileDetails.cover.filePath}`,
     );
     imagePath = escapePoundSymbol(encodedFilePath);
     comicBookTitle = comicBookDetailData.rawFileDetails.name;

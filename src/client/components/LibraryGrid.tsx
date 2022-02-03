@@ -15,7 +15,7 @@ import Masonry from "react-masonry-css";
 import Card from "./Carda";
 import { detectIssueTypes } from "../shared/utils/tradepaperback.utils";
 import { Link } from "react-router-dom";
-import { IMPORT_SERVICE_HOST } from "../constants/endpoints";
+import { LIBRARY_SERVICE_HOST } from "../constants/endpoints";
 
 interface ILibraryGridProps {}
 export const LibraryGrid = (libraryGridProps: ILibraryGridProps) => {
@@ -47,7 +47,7 @@ export const LibraryGrid = (libraryGridProps: ILibraryGridProps) => {
             let comicName = "";
             if (!isNil(rawFileDetails)) {
               const encodedFilePath = encodeURI(
-                `${IMPORT_SERVICE_HOST}` +
+                `${LIBRARY_SERVICE_HOST}` +
                   removeLeadingPeriod(rawFileDetails.cover.filePath),
               );
               imagePath = escapePoundSymbol(encodedFilePath);

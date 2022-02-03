@@ -4,8 +4,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { getComicBooksDetailsByIds } from "../../actions/comicinfo.actions";
 import { Card } from "../Carda";
 import ellipsize from "ellipsize";
-import { IMPORT_SERVICE_HOST } from "../../constants/endpoints";
+import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
 import { escapePoundSymbol } from "../../shared/utils/formatting.utils";
+import prettyBytes from "pretty-bytes";
 
 const PotentialLibraryMatches = (props): ReactElement => {
   const dispatch = useDispatch();
@@ -20,13 +21,11 @@ const PotentialLibraryMatches = (props): ReactElement => {
       {isArray(comicBooks) ? (
         map(comicBooks, (match) => {
           const encodedFilePath = encodeURI(
-            `${IMPORT_SERVICE_HOST}/${match.rawFileDetails.cover.filePath}`,
+            `${LIBRARY_SERVICE_HOST}/${match.rawFileDetails.cover.filePath}`,
           );
           const filePath = escapePoundSymbol(encodedFilePath);
           return (
-            <>
-              {/* <pre>{JSON.stringify(match, undefined, 2)}</pre> */}
-
+            <div className="potential-issue-match mb-3">
               <div className="columns">
                 <div className="column is-one-fifth">
                   <Card
@@ -38,9 +37,9 @@ const PotentialLibraryMatches = (props): ReactElement => {
 
                 <div className="search-result-details column">
                   <div className="is-size-5">{match.rawFileDetails.name}</div>
-                  <span className="subtitle is-size-7">
-                    {match.rawFileDetails.cover.filePath}
-                  </span>
+                  <pre className="code is-size-7">
+                    {match.rawFileDetails.containedIn}
+                  </pre>
                   <div className="field is-grouped is-grouped-multiline mt-4">
                     <div className="control">
                       <div className="tags has-addons">
@@ -54,17 +53,14 @@ const PotentialLibraryMatches = (props): ReactElement => {
                       <div className="tags has-addons">
                         <span className="tag">File Size</span>
                         <span className="tag is-warning">
-                          {match.rawFileDetails.fileSize}
+                          {prettyBytes(match.rawFileDetails.fileSize)}
                         </span>
                       </div>
                     </div>
                   </div>
-                  {/* <div className="is-size-7">
-                  {ellipsize(issueDescription, 300)}
-                </div> */}
                 </div>
               </div>
-            </>
+            </div>
           );
         })
       ) : (

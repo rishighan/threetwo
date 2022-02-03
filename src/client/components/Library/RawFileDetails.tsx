@@ -3,13 +3,13 @@ import PropTypes from "prop-types";
 import { escapePoundSymbol } from "../../shared/utils/formatting.utils";
 import prettyBytes from "pretty-bytes";
 import ellipsize from "ellipsize";
-import { IMPORT_SERVICE_HOST } from "../../constants/endpoints";
+import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
 
 // raw file details
 export const RawFileDetails = (rawFileData): ReactElement => {
   const { data } = rawFileData;
   const encodedFilePath = encodeURI(
-    `${IMPORT_SERVICE_HOST}/${data.cover.filePath}`,
+    `${LIBRARY_SERVICE_HOST}/${data.cover.filePath}`,
   );
   const filePath = escapePoundSymbol(encodedFilePath);
   return (

@@ -6,7 +6,7 @@ import {
   SETTINGS_DB_FLUSH_SUCCESS,
 } from "../constants/action-types";
 import {
-  IMPORT_SERVICE_BASE_URI,
+  LIBRARY_SERVICE_BASE_URI,
   SETTINGS_SERVICE_BASE_URI,
 } from "../constants/endpoints";
 
@@ -58,7 +58,7 @@ export const flushDb = () => async (dispatch) => {
   });
 
   const flushDbResult = await axios({
-    url: `${IMPORT_SERVICE_BASE_URI}/flushDb`,
+    url: `${LIBRARY_SERVICE_BASE_URI}/flushDb`,
     method: "POST",
   });
 

@@ -82,8 +82,8 @@ const VolumeDetails = (props): ReactElement => {
                     <span className="icon has-text-success">
                       <i className="fa-regular fa-clone"></i>
                     </span>
-                    <span className="is-primary is-size-7">
-                      {issue.issue.issue_number}
+                    <span className="tag is-light is-warning is-size-7">
+                      {"#" + issue.issue.issue_number}
                     </span>
                   </>
                 ) : null}

@@ -6,7 +6,7 @@ import {
 } from "../shared/utils/formatting.utils";
 import { isUndefined, isEmpty, isNil } from "lodash";
 import { Link } from "react-router-dom";
-import { IMPORT_SERVICE_HOST } from "../constants/endpoints";
+import { LIBRARY_SERVICE_HOST } from "../constants/endpoints";
 import ellipsize from "ellipsize";
 
 interface IProps {
@@ -27,7 +27,7 @@ class Card extends React.Component<IProps, IState> {
     metadata: IExtractedComicBookCoverFile,
   ): JSX.Element => {
     const encodedFilePath = encodeURI(
-      `${IMPORT_SERVICE_HOST}` + removeLeadingPeriod(metadata.path),
+      `${LIBRARY_SERVICE_HOST}` + removeLeadingPeriod(metadata.path),
     );
     const filePath = escapePoundSymbol(encodedFilePath);
     return (
