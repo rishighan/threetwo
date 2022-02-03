@@ -5,6 +5,8 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import "../../../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss";
 $bg-color: yellow;
 $border-color: red;
+
+$volume-color: #f2f1f9;
 $size-8: 0.9rem;
 
 .is-size-8 {
@@ -129,7 +131,7 @@ $size-8: 0.9rem;
   box-shadow: 1px 8px 23px 7px rgba(0, 0, 0, 0.12);
 
   .green-border {
-    border:2px dotted #999;
+    border:2px dotted #168B64;
     border-radius: 0.3rem;
   }
 
@@ -346,13 +348,18 @@ $size-8: 0.9rem;
 
 // Volume detail
 .volume-details {
+  .is-volume-related {
+    $tag-background-color: $volume-color;
+  }
   .issues-container {
     display: -webkit-box; /* Not needed if autoprefixing */
     display: -ms-flexbox; /* Not needed if autoprefixing */
     display: flex;
+    // margin-left: -30px; /* gutter size offset */
     width: auto;
     .issues-column {
-      padding: 10px;
+      max-width:102px;
+      margin: 10px;
       background-clip: padding-box;
       & > div {
         /* change div to reference your elements you put in <Masonry> */
@@ -360,6 +367,12 @@ $size-8: 0.9rem;
       }
     }
     
+  }
+}
+// Potential issue matches in library slideout panel
+.potential-matches-container {
+  .generic-card {
+      max-width: 90px;
   }
 }
 

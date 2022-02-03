@@ -15,7 +15,6 @@ const handleBrokenImage = (e) => {
 };
 
 export const MatchResult = (props: MatchResultProps) => {
-  console.log(props);
   const dispatch = useDispatch();
   const applyCVMatch = useCallback(
     (match, comicObjectId) => {

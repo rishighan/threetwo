@@ -41,6 +41,7 @@ type ComicDetailProps = {};
  */
 
 export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
+  const [active, setActive] = useState(1);
   const [page, setPage] = useState(1);
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
@@ -115,8 +116,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       content: () => <EditMetadataPanel />,
     },
   };
-
-  const [active, setActive] = useState(1);
 
   const isComicBookMetadataAvailable =
     comicBookDetailData.sourcedMetadata &&

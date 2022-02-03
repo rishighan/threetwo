@@ -3,6 +3,7 @@ import {
   CV_SEARCH_SUCCESS,
   CV_CLEANUP,
   IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
+  IMS_COMIC_BOOKS_DB_OBJECTS_FETCHED,
   IMS_COMIC_BOOK_DB_OBJECT_CALL_IN_PROGRESS,
   CV_ISSUES_METADATA_CALL_IN_PROGRESS,
   CV_ISSUES_METADATA_FETCH_SUCCESS,
@@ -14,6 +15,7 @@ const initialState = {
   searchQuery: {},
   inProgress: false,
   comicBookDetail: {},
+  comicBooksDetails: [],
   issuesForVolume: [],
   IMS_inProgress: false,
 };
@@ -42,6 +44,13 @@ function comicinfoReducer(state = initialState, action) {
       return {
         ...state,
         comicBookDetail: action.comicBookDetail,
+        IMS_inProgress: false,
+      };
+    case IMS_COMIC_BOOKS_DB_OBJECTS_FETCHED:
+      console.log(action);
+      return {
+        ...state,
+        comicBooksDetails: action.comicBooks,
         IMS_inProgress: false,
       };
     case CV_CLEANUP:

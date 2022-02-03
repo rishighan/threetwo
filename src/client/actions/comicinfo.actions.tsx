@@ -12,8 +12,8 @@ import {
   IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
   IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
   CV_ISSUES_METADATA_CALL_IN_PROGRESS,
-  CV_ISSUES_METADATA_FETCH_SUCCESS,
   CV_CLEANUP,
+  IMS_COMIC_BOOKS_DB_OBJECTS_FETCHED,
 } from "../constants/action-types";
 import {
   COMICBOOKINFO_SERVICE_URI,
@@ -100,6 +100,25 @@ export const getComicBookDetailById =
       type: IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
       comicBookDetail: result.data,
       IMS_inProgress: false,
+    });
+  };
+
+export const getComicBooksDetailsByIds =
+  (comicBookObjectIds: Array<string>) => async (dispatch) => {
+    dispatch({
+      type: IMS_COMIC_BOOK_DB_OBJECT_CALL_IN_PROGRESS,
+      IMS_inProgress: true,
+    });
+    const result = await axios.request({
+      url: `${IMPORT_SERVICE_BASE_URI}/getComicBooksByIds`,
+      method: "POST",
+      data: {
+        ids: comicBookObjectIds,
+      },
+    });
+    dispatch({
+      type: IMS_COMIC_BOOKS_DB_OBJECTS_FETCHED,
+      comicBooks: result.data,
     });
   };
 

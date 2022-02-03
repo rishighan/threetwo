@@ -24,7 +24,7 @@ export const AcquisitionPanel = (
 ): ReactElement => {
   const volumeName =
     props.comicBookMetadata.sourcedMetadata.comicvine.volumeInformation.name;
-  const sanitizedVolumeName = volumeName.replace(/[^a-zA-Z0-9 ]/g, "");
+  const sanitizedVolumeName = volumeName.replace(/[^a-zA-Z0-9 ]/g, " ");
   const issueName = props.comicBookMetadata.sourcedMetadata.comicvine.name;
 
   // Selectors for picking state
