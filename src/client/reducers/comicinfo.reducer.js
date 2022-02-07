@@ -1,4 +1,4 @@
-import { isEmpty, extend, each } from "lodash";
+import { isEmpty, extend, each, matches } from "lodash";
 import {
   CV_API_CALL_IN_PROGRESS,
   CV_SEARCH_SUCCESS,
@@ -71,19 +71,30 @@ function comicinfoReducer(state = initialState, action) {
       };
 
     case CV_ISSUES_FOR_VOLUME_IN_LIBRARY_SUCCESS:
-      // console.log("jagan", action);
       return {
         ...state,
         issuesForVolume: action.issues,
         inProgress: false,
       };
-    case CV_ISSUES_MATCHES_IN_LIBRARY_FETCHED:
-      console.log(action);
-      const updatedState = [...state.issuesForVolume];
 
-      // updatedState[issueToUpdateIndex].matches = action.result.matches;
-      // console.log(issueToUpdateIndex);
-      // console.log(updatedState[issueToUpdateIndex]);
+    case CV_ISSUES_MATCHES_IN_LIBRARY_FETCHED:
+      const updatedState = [...state.issuesForVolume];
+      const matches = action.matches.filter(
+        (match) => !isEmpty(match.hits.hits),
+      );
+      matches.forEach((match) => {
+        state.issuesForVolume.forEach((issue, idx) => {
+          issue.matches = [];
+          match.hits.hits.forEach((hit) => {
+            if (
+              parseInt(issue.issue_number, 10) ===
+              hit._source.inferredMetadata.issue.number
+            ) {
+              issue.matches.push(hit);
+            }
+          });
+        });
+      });
 
       return {
         ...state,
