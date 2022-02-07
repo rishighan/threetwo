@@ -1,7 +1,7 @@
 import axios from "axios";
 import { IFolderData } from "threetwo-ui-typings";
 import {
-  COMICBOOKINFO_SERVICE_URI,
+  COMICVINE_SERVICE_URI,
   LIBRARY_SERVICE_BASE_URI,
 } from "../constants/endpoints";
 import {
@@ -161,19 +161,19 @@ export const fetchComicVineMatches =
       console.log(seriesSearchQuery);
       axios
         .request({
-          url: `${COMICBOOKINFO_SERVICE_URI}/volumeBasedSearch`,
+          url: `${COMICVINE_SERVICE_URI}/volumeBasedSearch`,
           method: "POST",
           data: {
             format: "json",
             // hack
-            query: issueSearchQuery.searchParams.searchTerms.name
+            query: issueSearchQuery.inferredIssueDetails.name
               .replace(/[^a-zA-Z0-9 ]/g, "")
               .trim(),
             limit: "100",
             page: 1,
             resources: "volume",
             scorerConfiguration: {
-              searchParams: issueSearchQuery.searchParams,
+              searchParams: issueSearchQuery.inferredIssueDetails,
             },
             rawFileDetails: searchPayload.rawFileDetails,
           },

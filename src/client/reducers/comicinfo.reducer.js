@@ -1,3 +1,4 @@
+import { isEmpty, extend, each } from "lodash";
 import {
   CV_API_CALL_IN_PROGRESS,
   CV_SEARCH_SUCCESS,
@@ -7,8 +8,11 @@ import {
   IMS_COMIC_BOOK_DB_OBJECT_CALL_IN_PROGRESS,
   CV_ISSUES_METADATA_CALL_IN_PROGRESS,
   CV_ISSUES_METADATA_FETCH_SUCCESS,
+  CV_ISSUES_FOR_VOLUME_IN_LIBRARY_UPDATED,
+  CV_ISSUES_MATCHES_IN_LIBRARY_FETCHED,
   CV_ISSUES_FOR_VOLUME_IN_LIBRARY_SUCCESS,
 } from "../constants/action-types";
+import { refineQuery } from "filename-parser";
 
 const initialState = {
   searchResults: [],
@@ -67,11 +71,23 @@ function comicinfoReducer(state = initialState, action) {
       };
 
     case CV_ISSUES_FOR_VOLUME_IN_LIBRARY_SUCCESS:
-      console.log("jagan", action);
+      // console.log("jagan", action);
       return {
         ...state,
-        issuesForVolume: [...state.issuesForVolume, action.result],
+        issuesForVolume: action.issues,
         inProgress: false,
+      };
+    case CV_ISSUES_MATCHES_IN_LIBRARY_FETCHED:
+      console.log(action);
+      const updatedState = [...state.issuesForVolume];
+
+      // updatedState[issueToUpdateIndex].matches = action.result.matches;
+      // console.log(issueToUpdateIndex);
+      // console.log(updatedState[issueToUpdateIndex]);
+
+      return {
+        ...state,
+        issuesForVolume: updatedState,
       };
     default:
       return state;

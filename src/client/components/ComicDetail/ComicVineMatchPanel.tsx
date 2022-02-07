@@ -23,10 +23,7 @@ export const ComicVineMatchPanel = (comicVineData): ReactElement => {
                 <div className="tags has-addons">
                   <span className="tag">Title</span>
                   <span className="tag is-info">
-                    {
-                      comicVineSearchQueryObject.issue.searchParams.searchTerms
-                        .name
-                    }
+                    {comicVineSearchQueryObject.issue.inferredIssueDetails.name}
                   </span>
                 </div>
               </div>
@@ -35,7 +32,7 @@ export const ComicVineMatchPanel = (comicVineData): ReactElement => {
                   <span className="tag">Number</span>
                   <span className="tag is-info">
                     {
-                      comicVineSearchQueryObject.issue.searchParams.searchTerms
+                      comicVineSearchQueryObject.issue.inferredIssueDetails
                         .number
                     }
                   </span>

@@ -5805,10 +5805,10 @@ filehound@^1.17.5:
     moment "^2.29.1"
     unit-compare "^1.0.1"
 
-filename-parser@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/filename-parser/-/filename-parser-1.0.0.tgz#bad742add537ec075136cee49129e0146ed34596"
-  integrity sha512-3j7TgfElImSXhYcBzCP75+mC08IdRGmIBOm6XcJciI3xnQU6A4imzzUEJ2Ps717s5ycBkzQgUtjArGWGh/Gmkg==
+filename-parser@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/filename-parser/-/filename-parser-1.0.1.tgz#cd54d9131913dd2bf96c2a1d19edf7c1ee75c4cc"
+  integrity sha512-MMzuklXc1r4N6uQXg8CQYxoiTX7w6QPeJE73L5lCTSoNR7CftCXHIA6tyINomkvWIUanrlqTB629DyTIqCucEA==
   dependencies:
     compromise "^13.11.4"
     compromise-dates "^2.2.1"
@@ -12857,10 +12857,10 @@ text-table@^0.2.0, text-table@~0.2.0:
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=
 
-threetwo-ui-typings@^1.0.12:
-  version "1.0.12"
-  resolved "https://registry.yarnpkg.com/threetwo-ui-typings/-/threetwo-ui-typings-1.0.12.tgz#9f05542d7fa67b2349e20b0555ab196521fa8448"
-  integrity sha512-lKADNpD2Oa3Wmf6tdZhaPSNfIFa0KtstsZLE0yalTjqKmtQZM7Ct2OnlCkH7aonDuVn+jgcRMwkcP9krCqa2fw==
+threetwo-ui-typings@^1.0.13:
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/threetwo-ui-typings/-/threetwo-ui-typings-1.0.13.tgz#9437a8c08a6984ebd1dcdf308e06e404dee11c81"
+  integrity sha512-AQiY8/hbp+TobBoehNTEoNco97AoiKYQjAANSFDR3pSD5jFn5qjLlKntvqdNF9Fg5tcS0ReYe0AjsvKshKpixQ==
   dependencies:
     typescript "^4.3.2"
 

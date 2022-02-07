@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import {
   getComicBookDetailById,
-  findIssuesForSeriesInLibrary,
+  getIssuesForSeries,
+  analyzeLibrary,
 } from "../../actions/comicinfo.actions";
 import PotentialLibraryMatches from "./PotentialLibraryMatches";
 import Masonry from "react-masonry-css";
@@ -31,7 +32,7 @@ const VolumeDetails = (props): ReactElement => {
     potentialMatchesInLibrary: {
       content: () => {
         const ids = map(matches, partialRight(pick, "_id"));
-        const matchIds = ids.map((id:any) => id._id);
+        const matchIds = ids.map((id: any) => id._id);
         return <PotentialLibraryMatches matches={matchIds} />;
       },
     },
@@ -44,6 +45,10 @@ const VolumeDetails = (props): ReactElement => {
     setVisible(true);
   }, []);
 
+  const analyzeIssues = useCallback((issues) => {
+    dispatch(analyzeLibrary(issues));
+  }, []);
+
   const comicBookDetails = useSelector(
     (state: RootState) => state.comicInfo.comicBookDetail,
   );
@@ -53,45 +58,56 @@ const VolumeDetails = (props): ReactElement => {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(findIssuesForSeriesInLibrary(comicObjectId));
+    dispatch(getIssuesForSeries(comicObjectId));
     dispatch(getComicBookDetailById(comicObjectId));
   }, []);
 
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
 
   const IssuesInVolume = () => (
-    <Masonry
-      breakpointCols={breakpointColumnsObj}
-      className="issues-container"
-      columnClassName="issues-column"
-    >
-      {!isUndefined(issuesForVolume) && !isEmpty(issuesForVolume)
-        ? issuesForVolume.map((issue) => {
-            return (
-              <Card
-                key={issue.issue.id}
-                imageUrl={issue.issue.image.thumb_url}
-                orientation={"vertical"}
-                hasDetails={!isEmpty(issue.matches) ? true : false}
-                borderColorClass={!isEmpty(issue.matches) ? "green-border" : ""}
-                backgroundColor={!isEmpty(issue.matches) ? "#e0f5d0" : ""}
-                onClick={() => openPotentialLibraryMatchesPanel(issue.matches)}
-              >
-                {!isEmpty(issue.matches) ? (
-                  <>
-                    <span className="icon has-text-success">
-                      <i className="fa-regular fa-clone"></i>
-                    </span>
-                    <span className="tag is-light is-warning is-size-7">
-                      {"#" + issue.issue.issue_number}
-                    </span>
-                  </>
-                ) : null}
-              </Card>
-            );
-          })
-        : "loading"}
-    </Masonry>
+    <>
+      {!isUndefined(issuesForVolume) ? (
+        <div className="button" onClick={() => analyzeIssues(issuesForVolume)}>
+          Analyze Library
+        </div>
+      ) : null}
+      <Masonry
+        breakpointCols={breakpointColumnsObj}
+        className="issues-container"
+        columnClassName="issues-column"
+      >
+        {!isUndefined(issuesForVolume) && !isEmpty(issuesForVolume)
+          ? issuesForVolume.map((issue) => {
+              return (
+                <Card
+                  key={issue.id}
+                  imageUrl={issue.image.thumb_url}
+                  orientation={"vertical"}
+                  hasDetails={!isEmpty(issue.matches) ? true : false}
+                  borderColorClass={
+                    !isEmpty(issue.matches) ? "green-border" : ""
+                  }
+                  backgroundColor={!isEmpty(issue.matches) ? "#e0f5d0" : ""}
+                  onClick={() =>
+                    openPotentialLibraryMatchesPanel(issue.matches)
+                  }
+                >
+                  {!isEmpty(issue.matches) ? (
+                    <>
+                      <span className="icon has-text-success">
+                        <i className="fa-regular fa-clone"></i>
+                      </span>
+                      <span className="tag is-light is-warning is-size-7">
+                        {"#" + issue.issue_number}
+                      </span>
+                    </>
+                  ) : null}
+                </Card>
+              );
+            })
+          : "loading"}
+      </Masonry>
+    </>
   );
 
   // Tab content and header details

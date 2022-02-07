@@ -16,7 +16,7 @@ export const CORS_PROXY_SERVER_URI = hostURIBuilder({
   apiPath: "/",
 });
 
-export const COMICBOOKINFO_SERVICE_URI = hostURIBuilder({
+export const COMICVINE_SERVICE_URI = hostURIBuilder({
   protocol: "http",
   host: process.env.UNDERLYING_HOSTNAME || "localhost",
   port: "3080",

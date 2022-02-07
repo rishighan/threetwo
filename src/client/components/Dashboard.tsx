@@ -32,15 +32,7 @@ export const Dashboard = (): ReactElement => {
 
         {!isEmpty(recentComics) && !isEmpty(recentComics.docs) ? (
           <>
-            <div className="columns">
-              <div className="column is-half card">
-                <div className="card-content">
-                  <h1 className="is-size-5">13,476 Books</h1>
-                </div>
-              </div>
-            </div>
             <RecentlyImported comicBookCovers={recentComics} />
-
             {!isNil(volumeGroups) ? <VolumeGroups /> : null}
           </>
         ) : (

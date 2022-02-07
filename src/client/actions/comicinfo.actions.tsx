@@ -14,9 +14,11 @@ import {
   CV_ISSUES_METADATA_CALL_IN_PROGRESS,
   CV_CLEANUP,
   IMS_COMIC_BOOKS_DB_OBJECTS_FETCHED,
+  CV_ISSUES_MATCHES_IN_LIBRARY_FETCHED,
+  CV_ISSUES_FOR_VOLUME_IN_LIBRARY_SUCCESS,
 } from "../constants/action-types";
 import {
-  COMICBOOKINFO_SERVICE_URI,
+  COMICVINE_SERVICE_URI,
   LIBRARY_SERVICE_BASE_URI,
 } from "../constants/endpoints";
 
@@ -32,7 +34,7 @@ export const comicinfoAPICall = (options) => async (dispatch) => {
       type: CV_API_CALL_IN_PROGRESS,
       inProgress: true,
     });
-    const serviceURI = `${COMICBOOKINFO_SERVICE_URI}/${options.callURIAction}`;
+    const serviceURI = `${COMICVINE_SERVICE_URI}/${options.callURIAction}`;
     const response = await http(serviceURI, {
       method: options.callMethod,
       params: options.callParams,
@@ -65,23 +67,54 @@ export const comicinfoAPICall = (options) => async (dispatch) => {
     });
   }
 };
-export const findIssuesForSeriesInLibrary =
-  (comicObjectID: any) => async (dispatch) => {
-    dispatch({
-      type: CV_ISSUES_METADATA_CALL_IN_PROGRESS,
-    });
-    dispatch({
-      type: CV_CLEANUP,
-    });
+export const getIssuesForSeries = (comicObjectID: any) => async (dispatch) => {
+  dispatch({
+    type: CV_ISSUES_METADATA_CALL_IN_PROGRESS,
+  });
+  dispatch({
+    type: CV_CLEANUP,
+  });
 
-    await axios({
-      url: `${LIBRARY_SERVICE_BASE_URI}/findIssuesForSeriesInLibrary`,
-      method: "POST",
-      params: {
-        comicObjectID,
-      },
-    });
-  };
+  const issues = await axios({
+    url: `${COMICVINE_SERVICE_URI}/getIssuesForSeries`,
+    method: "POST",
+    params: {
+      comicObjectID,
+    },
+  });
+
+  dispatch({
+    type: CV_ISSUES_FOR_VOLUME_IN_LIBRARY_SUCCESS,
+    issues: issues.data,
+  });
+};
+
+export const analyzeLibrary = (issues) => async (dispatch) => {
+  dispatch({
+    type: CV_ISSUES_METADATA_CALL_IN_PROGRESS,
+  });
+  const queryObjects = issues.map((issue) => {
+    const { id, name, issue_number } = issue;
+    return {
+      issueId: id,
+      issueName: name,
+      volumeName: issue.volume.name,
+      issueNumber: issue_number,
+    };
+  });
+  const foo = await axios({
+    url: `${LIBRARY_SERVICE_BASE_URI}/findIssueForSeries`,
+    method: "POST",
+    data: {
+      queryObjects,
+    },
+  });
+  console.log(foo);
+  dispatch({
+    type: CV_ISSUES_MATCHES_IN_LIBRARY_FETCHED,
+    matches: foo.data,
+  });
+};
 
 export const getComicBookDetailById =
   (comicBookObjectId: string) => async (dispatch) => {
