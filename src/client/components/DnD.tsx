@@ -18,7 +18,7 @@ import {
 import { Grid } from "./Grid";
 import { SortableCover } from "./SortableCover";
 import { Cover } from "./Cover";
-import {  map } from "lodash";
+import { map } from "lodash";
 
 export const DnD = (data) => {
   const [items, setItems] = useState(data.data);
@@ -57,7 +57,25 @@ export const DnD = (data) => {
       <SortableContext items={items} strategy={rectSortingStrategy}>
         <Grid columns={4}>
           {map(items, (url, index) => {
-            return <SortableCover key={url} url={url} index={index} />;
+            return (
+              <div>
+                <SortableCover key={url} url={url} index={index} />
+                <div
+                  className="mt-2 mb-2"
+                  onClick={(e) => data.onClickHandler(url)}
+                >
+                  <div className="box p-2 pl-3 control-palette">
+                    <span className="tag is-warning mr-2">{index}</span>
+                    <span className="icon is-small mr-2">
+                      <i className="fa-solid fa-vial"></i>
+                    </span>
+                    <span className="icon is-small mr-2">
+                      <i className="fa-regular fa-trash-can"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
           })}
         </Grid>
       </SortableContext>

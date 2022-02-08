@@ -17,9 +17,13 @@ import {
   LS_IMPORT,
   LS_COVER_EXTRACTED,
   LS_COMIC_ADDED,
+  IMG_ANALYSIS_CALL_IN_PROGRESS,
+  IMG_ANALYSIS_DATA_FETCH_SUCCESS,
 } from "../constants/action-types";
 const initialState = {
   IMSCallInProgress: false,
+  IMGCallInProgress: false,
+  imageAnalysisResults: {},
   comicBookExtractionInProgress: false,
   comicBookMetadata: [],
   comicVolumeGroups: [],
@@ -133,6 +137,18 @@ function fileOpsReducer(state = initialState, action) {
       console.log("ADDED na anna", action);
       return {
         ...state,
+      };
+    }
+    case IMG_ANALYSIS_CALL_IN_PROGRESS: {
+      return {
+        ...state,
+        IMGCallInProgress: true,
+      };
+    }
+    case IMG_ANALYSIS_DATA_FETCH_SUCCESS: {
+      return {
+        ...state,
+        imageAnalysisResults: action.result,
       };
     }
     default:

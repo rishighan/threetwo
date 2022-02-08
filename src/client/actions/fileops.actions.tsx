@@ -2,7 +2,9 @@ import axios from "axios";
 import { IFolderData } from "threetwo-ui-typings";
 import {
   COMICVINE_SERVICE_URI,
+  IMAGETRANSFORMATION_SERVICE_BASE_URI,
   LIBRARY_SERVICE_BASE_URI,
+  LIBRARY_SERVICE_HOST,
 } from "../constants/endpoints";
 import {
   IMS_COMIC_BOOK_GROUPS_FETCHED,
@@ -16,9 +18,13 @@ import {
   IMS_CV_METADATA_IMPORT_SUCCESSFUL,
   IMS_CV_METADATA_IMPORT_FAILED,
   LS_IMPORT,
+  IMG_ANALYSIS_CALL_IN_PROGRESS,
+  IMG_ANALYSIS_DATA_FETCH_SUCCESS,
+  IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
+  IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
 } from "../constants/action-types";
 import { success } from "react-notification-system-redux";
-import { isNil } from "lodash";
+import { isNil, map } from "lodash";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
@@ -210,5 +216,63 @@ export const fetchComicVineMatches =
 
     dispatch({
       type: CV_CLEANUP,
+    });
+  };
+
+export const extractComicArchive =
+  (path: string, options: IExtractionOptions) => async (dispatch) => {
+    const comicBookPages: string[] = [];
+    dispatch({
+      type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
+    });
+    const extractedComicBookArchive = await axios({
+      method: "POST",
+      url: `${LIBRARY_SERVICE_BASE_URI}/unrarArchive`,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      data: {
+        options,
+        filePath: path,
+      },
+    });
+    map(extractedComicBookArchive.data, (page) => {
+      const pathItems = page.filePath.split("/");
+      const folderName = pathItems[pathItems.length - 2];
+
+      const imagePath = encodeURI(
+        `${LIBRARY_SERVICE_HOST}/userdata/expanded/` +
+          folderName +
+          `/` +
+          page.name +
+          page.extension,
+      );
+      comicBookPages.push(imagePath);
+    });
+    console.log(comicBookPages);
+    dispatch({
+      type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
+      extractedComicBookArchive: comicBookPages,
+    });
+  };
+
+export const analyzeImage =
+  (imageFilePath: string | Buffer) => async (dispatch) => {
+    console.log(imageFilePath);
+    dispatch({
+      type: IMG_ANALYSIS_CALL_IN_PROGRESS,
+    });
+
+    const foo = await axios({
+      url: `${IMAGETRANSFORMATION_SERVICE_BASE_URI}/analyze`,
+      method: "POST",
+      data: {
+        imageFilePath,
+      },
+    });
+    console.log(foo);
+    dispatch({
+      type: IMG_ANALYSIS_DATA_FETCH_SUCCESS,
+      result: foo.data,
     });
   };

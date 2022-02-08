@@ -19,7 +19,7 @@ const VolumeDetails = (props): ReactElement => {
     default: 6,
     1100: 4,
     700: 3,
-    600: 2,
+    500: 2,
   };
   // sliding panel config
   const [visible, setVisible] = useState(false);

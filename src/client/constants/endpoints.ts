@@ -57,6 +57,13 @@ export const SETTINGS_SERVICE_BASE_URI = hostURIBuilder({
   apiPath: "/api/settings",
 });
 
+export const IMAGETRANSFORMATION_SERVICE_BASE_URI = hostURIBuilder({
+  protocol: "http",
+  host: process.env.UNDERLYING_HOSTNAME || "localhost",
+  port: "3000",
+  apiPath: "/api/imagetransformation",
+});
+
 export const SOCKET_BASE_URI = hostURIBuilder({
   protocol: "ws",
   host: process.env.UNDERLYING_HOSTNAME || "localhost",

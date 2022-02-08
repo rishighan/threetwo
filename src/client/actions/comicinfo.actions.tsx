@@ -1,6 +1,6 @@
 import axios from "axios";
 import rateLimiter from "axios-rate-limit";
-import { map } from "lodash";
+
 import qs from "qs";
 import { IExtractionOptions } from "threetwo-ui-typings";
 import {
@@ -9,8 +9,6 @@ import {
   CV_API_GENERIC_FAILURE,
   IMS_COMIC_BOOK_DB_OBJECT_CALL_IN_PROGRESS,
   IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
-  IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
-  IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
   CV_ISSUES_METADATA_CALL_IN_PROGRESS,
   CV_CLEANUP,
   IMS_COMIC_BOOKS_DB_OBJECTS_FETCHED,
@@ -173,41 +171,5 @@ export const applyComicVineMatch =
       type: IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
       comicBookDetail: result.data,
       IMS_inProgress: false,
-    });
-  };
-
-export const extractComicArchive =
-  (path: string, options: IExtractionOptions) => async (dispatch) => {
-    const comicBookPages: string[] = [];
-    dispatch({
-      type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
-    });
-    const extractedComicBookArchive = await axios({
-      method: "POST",
-      url: `${LIBRARY_SERVICE_BASE_URI}/unrarArchive`,
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      data: {
-        options,
-        filePath: path,
-      },
-    });
-    map(extractedComicBookArchive.data, (page) => {
-      const foo = page.path.split("/");
-      const folderName = foo[foo.length - 1];
-      const imagePath = encodeURI(
-        `${LIBRARY_SERVICE_BASE_URI}/userdata/expanded/` +
-          folderName +
-          `/` +
-          page.name +
-          page.extension,
-      );
-      comicBookPages.push(imagePath);
-    });
-    console.log(comicBookPages);
-    dispatch({
-      type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
-      extractedComicBookArchive: comicBookPages,
     });
   };

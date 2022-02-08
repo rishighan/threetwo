@@ -18,7 +18,7 @@ export const Cover = forwardRef(
       ...style,
     };
 
-    return <div ref={ref} style={inlineStyles} {...props} />;
+    return <div ref={ref} style={inlineStyles} {...props}></div>;
   },
 );
 

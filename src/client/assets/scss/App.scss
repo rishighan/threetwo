@@ -14,6 +14,13 @@ $size-8: 0.9rem;
   font-size: $size-8;
 }
 
+
+// global style overrides 
+
+pre {
+  border-radius: 0.5rem;
+}
+
 .container {
   margin-top: 2em;
 }
@@ -307,6 +314,15 @@ $size-8: 0.9rem;
 }
 
 // Comic Detail
+.control-palette {
+  display: inline-block;
+  i {
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  // padding: 1.5rem 2rem;
+  }
+}
 
 // airdcpp downloads tab
 .tabs {

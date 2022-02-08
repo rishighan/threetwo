@@ -9,6 +9,7 @@ import { escapePoundSymbol } from "../../shared/utils/formatting.utils";
 import prettyBytes from "pretty-bytes";
 
 const PotentialLibraryMatches = (props): ReactElement => {
+  console.log(props);
   const dispatch = useDispatch();
   const comicBooks = useSelector(
     (state: RootState) => state.comicInfo.comicBooksDetails,
@@ -64,7 +65,7 @@ const PotentialLibraryMatches = (props): ReactElement => {
           );
         })
       ) : (
-        <div>asdasd</div>
+        <div>No matches found in library.</div>
       )}
     </div>
   );

@@ -1,4 +1,4 @@
-import { isEmpty, extend, each, matches } from "lodash";
+import { isEmpty } from "lodash";
 import {
   CV_API_CALL_IN_PROGRESS,
   CV_SEARCH_SUCCESS,
@@ -7,12 +7,9 @@ import {
   IMS_COMIC_BOOKS_DB_OBJECTS_FETCHED,
   IMS_COMIC_BOOK_DB_OBJECT_CALL_IN_PROGRESS,
   CV_ISSUES_METADATA_CALL_IN_PROGRESS,
-  CV_ISSUES_METADATA_FETCH_SUCCESS,
-  CV_ISSUES_FOR_VOLUME_IN_LIBRARY_UPDATED,
   CV_ISSUES_MATCHES_IN_LIBRARY_FETCHED,
   CV_ISSUES_FOR_VOLUME_IN_LIBRARY_SUCCESS,
 } from "../constants/action-types";
-import { refineQuery } from "filename-parser";
 
 const initialState = {
   searchResults: [],
@@ -79,23 +76,24 @@ function comicinfoReducer(state = initialState, action) {
 
     case CV_ISSUES_MATCHES_IN_LIBRARY_FETCHED:
       const updatedState = [...state.issuesForVolume];
-      const matches = action.matches.filter(
-        (match) => !isEmpty(match.hits.hits),
-      );
-      matches.forEach((match) => {
-        state.issuesForVolume.forEach((issue, idx) => {
-          issue.matches = [];
-          match.hits.hits.forEach((hit) => {
-            if (
-              parseInt(issue.issue_number, 10) ===
-              hit._source.inferredMetadata.issue.number
-            ) {
-              issue.matches.push(hit);
-            }
-          });
+      action.matches.map((match) => {
+        updatedState.map((issue, idx) => {
+          let matches = [];
+          if (!isEmpty(match.hits.hits)) {
+            return match.hits.hits.map((hit) => {
+              if (
+                parseInt(issue.issue_number, 10) ===
+                hit._source.inferredMetadata.issue.number
+              ) {
+                matches.push(hit);
+                const updatedIssueResult = { ...issue, matches };
+                updatedState[idx] = updatedIssueResult;
+              }
+            });
+          }
         });
       });
-
+      console.log(updatedState);
       return {
         ...state,
         issuesForVolume: updatedState,

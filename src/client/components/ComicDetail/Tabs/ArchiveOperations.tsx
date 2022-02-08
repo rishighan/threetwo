@@ -1,9 +1,11 @@
-import React, { ReactElement, useCallback } from "react";
+import React, { ReactElement, useCallback, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { DnD } from "../../DnD";
 import { isEmpty } from "lodash";
 import Sticky from "react-stickynode";
-import { extractComicArchive } from "../../../actions/comicinfo.actions";
+import SlidingPane from "react-sliding-pane";
+import { extractComicArchive } from "../../../actions/fileops.actions";
+import { analyzeImage } from "../../../actions/fileops.actions";
 
 export const ArchiveOperations = (props): ReactElement => {
   const { data } = props;
@@ -14,23 +16,52 @@ export const ArchiveOperations = (props): ReactElement => {
     (state: RootState) => state.fileOps.extractedComicBookArchive,
   );
 
+  const imageAnalysisResult = useSelector(
+    (state: RootState) => state.fileOps.imageAnalysisResults,
+  );
+
   const dispatch = useDispatch();
   const unpackComicArchive = useCallback(() => {
     dispatch(
-      extractComicArchive(
-        data.rawFileDetails.containedIn +
-          "/" +
-          data.rawFileDetails.name +
-          data.rawFileDetails.extension,
-        {
-          extractTarget: "book",
-          targetExtractionFolder:
-            "./userdata/expanded/" + data.rawFileDetails.name,
-          extractionMode: "all",
-        },
-      ),
+      extractComicArchive(data.rawFileDetails.filePath, {
+        extractTarget: "book",
+        targetExtractionFolder:
+          "./userdata/expanded/" + data.rawFileDetails.name,
+        extractionMode: "all",
+      }),
     );
   }, [dispatch, data]);
+
+  // sliding panel config
+  const [visible, setVisible] = useState(false);
+  const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
+  // current image
+  const [currentImage, setCurrentImage] = useState([]);
+
+  // sliding panel init
+  const contentForSlidingPanel = {
+    imageAnalysis: {
+      content: () => {
+        return (
+          <div>
+            <pre>{currentImage}</pre>
+            <pre className="is-size-7">
+              {JSON.stringify(imageAnalysisResult, null, 2)}
+            </pre>
+          </div>
+        );
+      },
+    },
+  };
+
+  // sliding panel handlers
+  const openImageAnalysisPanel = useCallback((imageFilePath) => {
+    setSlidingPanelContentId("imageAnalysis");
+    dispatch(analyzeImage(imageFilePath));
+    setCurrentImage(imageFilePath);
+    setVisible(true);
+  }, []);
+
   return (
     <div key={2}>
       <button
@@ -49,7 +80,10 @@ export const ArchiveOperations = (props): ReactElement => {
       <div className="columns">
         <div className="mt-5">
           {!isEmpty(extractedComicBookArchive) ? (
-            <DnD data={extractedComicBookArchive} />
+            <DnD
+              data={extractedComicBookArchive}
+              onClickHandler={openImageAnalysisPanel}
+            />
           ) : null}
         </div>
         {!isEmpty(extractedComicBookArchive) ? (
@@ -70,6 +104,15 @@ export const ArchiveOperations = (props): ReactElement => {
           </div>
         ) : null}
       </div>
+      <SlidingPane
+        isOpen={visible}
+        onRequestClose={() => setVisible(false)}
+        title={"Image Analysis"}
+        width={"600px"}
+      >
+        {slidingPanelContentId !== "" &&
+          contentForSlidingPanel[slidingPanelContentId].content()}
+      </SlidingPane>
     </div>
   );
 };
