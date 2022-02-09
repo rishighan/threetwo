@@ -14,8 +14,7 @@ $size-8: 0.9rem;
   font-size: $size-8;
 }
 
-
-// global style overrides 
+// global style overrides
 
 pre {
   border-radius: 0.5rem;
@@ -245,7 +244,19 @@ pre {
   }
 }
 
-// Import
+// raw file details
+.raw-file-details {
+  padding: 1rem;
+  background-color: beige;
+  border-radius: 0.5rem;
+}
+
+// comicvine metadata
+.comicvine-metadata {
+  background-color: #f2f1f9;
+  padding: 0.8rem;
+  border-radius: 0.5rem;
+}
 
 // Comic Detail
 .comic-detail {
@@ -315,12 +326,13 @@ pre {
 
 // Comic Detail
 .control-palette {
+  background-color: #fff6de;
   display: inline-block;
   i {
     display: flex;
-  justify-content: center;
-  align-items: center;
-  // padding: 1.5rem 2rem;
+    justify-content: center;
+    align-items: center;
+    // padding: 1.5rem 2rem;
   }
 }
 
@@ -389,7 +401,7 @@ pre {
 .potential-matches-container {
   .potential-issue-match {
     border-radius: 0.3rem;
-    background-color: $issue-color;
+    background-color: beige; 
     padding: 10px;
     pre {
       padding: 5px;

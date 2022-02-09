@@ -235,12 +235,24 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                   orientation={"vertical"}
                   hasDetails={false}
                 />
+                {/* action dropdown */}
+                <div className="mt-4 is-size-7">
+                  <Menu
+                    data={comicBookDetailData}
+                    handlers={{ setSlidingPanelContentId, setVisible }}
+                  />
+                </div>
               </div>
               {/* raw file details */}
               <div className="column is-three-fifths">
                 {!isNil(comicBookDetailData.rawFileDetails) && (
                   <>
-                    <RawFileDetails data={comicBookDetailData.rawFileDetails} />
+                    <RawFileDetails
+                      data={{
+                        rawFileDetails: comicBookDetailData.rawFileDetails,
+                        inferredMetadata: comicBookDetailData.inferredMetadata,
+                      }}
+                    />
                   </>
                 )}
                 {/* comic vine scraped metadata */}
@@ -250,13 +262,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                     updatedAt={comicBookDetailData.updatedAt}
                   />
                 )}
-              </div>
-              {/* action dropdown */}
-              <div className="column is-one-fifth is-narrow is-size-7">
-                <Menu
-                  data={comicBookDetailData}
-                  handlers={{ setSlidingPanelContentId, setVisible }}
-                />
               </div>
             </div>
 

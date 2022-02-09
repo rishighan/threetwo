@@ -87,7 +87,7 @@ const VolumeDetails = (props): ReactElement => {
                   borderColorClass={
                     !isEmpty(issue.matches) ? "green-border" : ""
                   }
-                  backgroundColor={!isEmpty(issue.matches) ? "#e0f5d0" : ""}
+                  backgroundColor={!isEmpty(issue.matches) ? "beige" : ""}
                   onClick={() =>
                     openPotentialLibraryMatchesPanel(issue.matches)
                   }
@@ -97,7 +97,7 @@ const VolumeDetails = (props): ReactElement => {
                       <span className="icon has-text-success">
                         <i className="fa-regular fa-clone"></i>
                       </span>
-                      <span className="tag is-light is-warning is-size-7">
+                      <span className="tag is-success is-size-7">
                         {"#" + issue.issue_number}
                       </span>
                     </>

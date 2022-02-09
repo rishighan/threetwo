@@ -70,6 +70,9 @@ export const DnD = (data) => {
                       <i className="fa-solid fa-vial"></i>
                     </span>
                     <span className="icon is-small mr-2">
+                      <i className="fa-solid fa-bullseye"></i>
+                    </span>
+                    <span className="icon is-small mr-2">
                       <i className="fa-regular fa-trash-can"></i>
                     </span>
                   </div>

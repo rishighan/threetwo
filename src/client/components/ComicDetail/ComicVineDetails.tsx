@@ -7,7 +7,7 @@ import { isUndefined } from "lodash";
 export const ComicVineDetails = (props): ReactElement => {
   const { data, updatedAt } = props;
   return (
-    <div className="content comic-detail">
+    <div className="content comic-detail comicvine-metadata">
       <dl>
         <dt>ComicVine Metadata</dt>
         <dd className="is-size-7">
@@ -40,14 +40,14 @@ export const ComicVineDetails = (props): ReactElement => {
                   </span>
                 </div>
               </div>
-            ) : (
+            ) : data.resource_type ? (
               <div className="control">
                 <div className="tags has-addons">
                   <span className="tag is-light">Type</span>
                   <span className="tag is-warning">{data.resource_type}</span>
                 </div>
               </div>
-            )}
+            ) : null}
             <div className="control">
               <div className="tags has-addons">
                 <span className="tag is-light">ComicVine Issue ID</span>

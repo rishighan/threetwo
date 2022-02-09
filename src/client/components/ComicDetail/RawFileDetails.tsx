@@ -1,15 +1,20 @@
 import React, { ReactElement } from "react";
 import PropTypes from "prop-types";
 import prettyBytes from "pretty-bytes";
+import { isUndefined } from "lodash";
 
 export const RawFileDetails = (props): ReactElement => {
-  const { data } = props;
+  const { rawFileDetails, inferredMetadata } = props.data;
+  console.log(props);
   return (
-    <div className="content comic-detail">
+    <div className="content comic-detail raw-file-details">
       <dl>
         <dt>Raw File Details</dt>
         <dd className="is-size-7">
-          {data.containedIn + "/" + data.name + data.extension}
+          {rawFileDetails.containedIn +
+            "/" +
+            rawFileDetails.name +
+            rawFileDetails.extension}
         </dd>
         <dd>
           <div className="field is-grouped mt-2">
@@ -17,7 +22,7 @@ export const RawFileDetails = (props): ReactElement => {
               <div className="tags has-addons">
                 <span className="tag">Size</span>
                 <span className="tag is-info is-light">
-                  {prettyBytes(data.fileSize)}
+                  {prettyBytes(rawFileDetails.fileSize)}
                 </span>
               </div>
             </div>
@@ -25,10 +30,34 @@ export const RawFileDetails = (props): ReactElement => {
               <div className="tags has-addons">
                 <span className="tag">Extension</span>
                 <span className="tag is-primary is-light">
-                  {data.extension}
+                  {rawFileDetails.extension}
                 </span>
               </div>
             </div>
+          </div>
+        </dd>
+        {/* inferred metadata */}
+        <dd className="mt-3">
+          <dt>Inferred Issue Metadata</dt>
+          <div className="field is-grouped mt-2">
+            <div className="control">
+              <div className="tags has-addons">
+                <span className="tag">Name</span>
+                <span className="tag is-info is-light">
+                  {inferredMetadata.issue.name}
+                </span>
+              </div>
+            </div>
+            {!isUndefined(inferredMetadata.issue.number) ? (
+              <div className="control">
+                <div className="tags has-addons">
+                  <span className="tag">Number</span>
+                  <span className="tag is-primary is-light">
+                    {inferredMetadata.issue.number}
+                  </span>
+                </div>
+              </div>
+            ) : null}
           </div>
         </dd>
       </dl>
@@ -40,13 +69,23 @@ export default RawFileDetails;
 
 RawFileDetails.propTypes = {
   data: PropTypes.shape({
-    containedIn: PropTypes.string,
-    name: PropTypes.string,
-    fileSize: PropTypes.number,
-    path: PropTypes.string,
-    extension: PropTypes.string,
-    cover: PropTypes.shape({
-      filePath: PropTypes.string,
+    rawFileDetails: PropTypes.shape({
+      containedIn: PropTypes.string,
+      name: PropTypes.string,
+      fileSize: PropTypes.number,
+      path: PropTypes.string,
+      extension: PropTypes.string,
+      cover: PropTypes.shape({
+        filePath: PropTypes.string,
+      }),
+    }),
+    inferredMetadata: PropTypes.shape({
+      issue: PropTypes.shape({
+        year: PropTypes.string,
+        name: PropTypes.string,
+        number: PropTypes.number,
+        subtitle: PropTypes.string,
+      }),
     }),
   }),
 };
