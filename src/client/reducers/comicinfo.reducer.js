@@ -93,7 +93,6 @@ function comicinfoReducer(state = initialState, action) {
           }
         });
       });
-      console.log(updatedState);
       return {
         ...state,
         issuesForVolume: updatedState,

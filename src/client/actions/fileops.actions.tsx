@@ -22,6 +22,7 @@ import {
   IMG_ANALYSIS_DATA_FETCH_SUCCESS,
   IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
   IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
+  FILEOPS_STATE_RESET,
 } from "../constants/action-types";
 import { success } from "react-notification-system-redux";
 import { isNil, map } from "lodash";
@@ -258,7 +259,10 @@ export const extractComicArchive =
 
 export const analyzeImage =
   (imageFilePath: string | Buffer) => async (dispatch) => {
-    console.log(imageFilePath);
+    dispatch({
+      type: FILEOPS_STATE_RESET,
+    });
+
     dispatch({
       type: IMG_ANALYSIS_CALL_IN_PROGRESS,
     });
@@ -270,7 +274,6 @@ export const analyzeImage =
         imageFilePath,
       },
     });
-    console.log(foo);
     dispatch({
       type: IMG_ANALYSIS_DATA_FETCH_SUCCESS,
       result: foo.data,

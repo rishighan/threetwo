@@ -42,11 +42,20 @@ pre {
 }
 
 // Dashboard
+//  Comic Detail
+.stats-palette {
+  background-color: #fff6de;
+  display: inline-block;
+  p {
+    display: flex;
+    // padding: 1.5rem 2rem;
+  }
+}
 .recent-comics-container {
   display: -webkit-box; /* Not needed if autoprefixing */
   display: -ms-flexbox; /* Not needed if autoprefixing */
   display: flex;
-  margin-left: -30px; /* gutter size offset */
+  margin-left: -22px; /* gutter size offset */
   width: auto;
 
   .recent-comics-column {

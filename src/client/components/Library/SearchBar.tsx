@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 export const SearchBar = (): ReactElement => {
   const foo = () => {};
   return (
-    <div className="box columns sticky">
+    <div className="box sticky">
       <Form
         onSubmit={foo}
         initialValues={{}}

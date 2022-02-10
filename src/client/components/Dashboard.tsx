@@ -32,6 +32,28 @@ export const Dashboard = (): ReactElement => {
 
         {!isEmpty(recentComics) && !isEmpty(recentComics.docs) ? (
           <>
+            {/* stats */}
+            <div>
+              <div className="box stats-palette p-3 column is-one-quarter">
+                <dl>
+                  <dd className="is-size-4">
+                    <span className="has-text-weight-bold">113123</span> files
+                  </dd>
+                  <dd className="is-size-6">
+                    <span className="has-text-weight-bold">140</span> tagged
+                    with ComicVine
+                  </dd>
+                  <dd className="is-size-6">
+                    <span className="has-text-weight-bold">1304</span> with
+                    custom metadata
+                  </dd>
+                </dl>
+              </div>
+
+              <div className="box stats-palette p-3 column ml-5 is-one-quarter">
+                asdasd
+              </div>
+            </div>
             <RecentlyImported comicBookCovers={recentComics} />
             {!isNil(volumeGroups) ? <VolumeGroups /> : null}
           </>

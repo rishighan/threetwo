@@ -1,11 +1,12 @@
 import React, { ReactElement, useCallback, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { DnD } from "../../DnD";
-import { isEmpty } from "lodash";
+import { isEmpty, isNil, isUndefined } from "lodash";
 import Sticky from "react-stickynode";
 import SlidingPane from "react-sliding-pane";
 import { extractComicArchive } from "../../../actions/fileops.actions";
 import { analyzeImage } from "../../../actions/fileops.actions";
+import { Canvas } from "../../shared/Canvas";
 
 export const ArchiveOperations = (props): ReactElement => {
   const { data } = props;
@@ -16,9 +17,9 @@ export const ArchiveOperations = (props): ReactElement => {
     (state: RootState) => state.fileOps.extractedComicBookArchive,
   );
 
-  const imageAnalysisResult = useSelector(
-    (state: RootState) => state.fileOps.imageAnalysisResults,
-  );
+  const imageAnalysisResult = useSelector((state: RootState) => {
+    return state.fileOps.imageAnalysisResults;
+  });
 
   const dispatch = useDispatch();
   const unpackComicArchive = useCallback(() => {
@@ -44,9 +45,14 @@ export const ArchiveOperations = (props): ReactElement => {
       content: () => {
         return (
           <div>
-            <pre>{currentImage}</pre>
-            <pre className="is-size-7">
-              {JSON.stringify(imageAnalysisResult, null, 2)}
+            <pre className="is-size-7">{currentImage}</pre>
+            {!isEmpty(imageAnalysisResult) ? (
+              <pre className="is-size-7 p-2 mt-3">
+                <Canvas data={imageAnalysisResult} />
+              </pre>
+            ) : null}
+            <pre className="is-size-7 mt-3">
+              {JSON.stringify(imageAnalysisResult.analyzedData, null, 2)}
             </pre>
           </div>
         );

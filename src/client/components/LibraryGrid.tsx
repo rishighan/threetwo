@@ -47,8 +47,9 @@ export const LibraryGrid = (libraryGridProps: ILibraryGridProps) => {
             let comicName = "";
             if (!isNil(rawFileDetails)) {
               const encodedFilePath = encodeURI(
-                `${LIBRARY_SERVICE_HOST}` +
-                  removeLeadingPeriod(rawFileDetails.cover.filePath),
+                `${LIBRARY_SERVICE_HOST}/${removeLeadingPeriod(
+                  rawFileDetails.cover.filePath,
+                )}`,
               );
               imagePath = escapePoundSymbol(encodedFilePath);
               comicName = rawFileDetails.name;

@@ -5,7 +5,6 @@ import {
   IMS_RAW_IMPORT_SUCCESSFUL,
   IMS_RAW_IMPORT_FAILED,
   IMS_RECENT_COMICS_FETCHED,
-  IMS_DATA_FETCH_ERROR,
   IMS_CV_METADATA_IMPORT_SUCCESSFUL,
   IMS_CV_METADATA_IMPORT_FAILED,
   IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
@@ -19,6 +18,7 @@ import {
   LS_COMIC_ADDED,
   IMG_ANALYSIS_CALL_IN_PROGRESS,
   IMG_ANALYSIS_DATA_FETCH_SUCCESS,
+  FILEOPS_STATE_RESET,
 } from "../constants/action-types";
 const initialState = {
   IMSCallInProgress: false,
@@ -149,6 +149,13 @@ function fileOpsReducer(state = initialState, action) {
       return {
         ...state,
         imageAnalysisResults: action.result,
+      };
+    }
+
+    case FILEOPS_STATE_RESET: {
+      return {
+        ...state,
+        imageAnalysisResults: {},
       };
     }
     default:

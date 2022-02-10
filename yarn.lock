@@ -5805,10 +5805,10 @@ filehound@^1.17.5:
     moment "^2.29.1"
     unit-compare "^1.0.1"
 
-filename-parser@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/filename-parser/-/filename-parser-1.0.1.tgz#cd54d9131913dd2bf96c2a1d19edf7c1ee75c4cc"
-  integrity sha512-MMzuklXc1r4N6uQXg8CQYxoiTX7w6QPeJE73L5lCTSoNR7CftCXHIA6tyINomkvWIUanrlqTB629DyTIqCucEA==
+filename-parser@^1.0.2:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/filename-parser/-/filename-parser-1.0.4.tgz#dfa2ae09040997e4e4d2063b735edae6e21bfbaa"
+  integrity sha512-r/cFGGlCFaz2taSlDzOtVWO66WvqPDBv6CtyqKw4GCP7+V3r5D5J0ci3fnYaDm5/GkqWL5aGA6JTbu8e+oKQMA==
   dependencies:
     compromise "^13.11.4"
     compromise-dates "^2.2.1"
