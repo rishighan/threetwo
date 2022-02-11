@@ -68,7 +68,7 @@ export const RecentlyImported = ({
                   {/* Raw file presence  */}
                   {isNil(rawFileDetails) && (
                     <span className="icon has-text-info">
-                      <i className="fas fa-adjust" />
+                      <i className="has-text-danger fa-regular fa-circle"></i>
                     </span>
                   )}
                   {/* Issue type */}

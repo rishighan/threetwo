@@ -50,8 +50,15 @@ export const Dashboard = (): ReactElement => {
                 </dl>
               </div>
 
-              <div className="box stats-palette p-3 column ml-5 is-one-quarter">
-                asdasd
+              <div className="box stats-palette p-3 column ml-5">
+                <dl>
+                  <dd className="is-size-6">
+                    <span className="has-text-weight-bold">1320</span> Issues
+                  </dd>
+                  <dd className="is-size-6">
+                    <span className="has-text-weight-bold">304</span> Volumes
+                  </dd>
+                </dl>
               </div>
             </div>
             <RecentlyImported comicBookCovers={recentComics} />
