@@ -61,14 +61,14 @@ export const RecentlyImported = ({
               >
                 <div className="content is-flex is-flex-direction-row">
                   {!isNil(sourcedMetadata.comicvine) && (
-                    <span className="icon cv-icon is-small">
+                    <span className="icon custom-icon is-small">
                       <img src="/img/cvlogo.svg" />
                     </span>
                   )}
                   {/* Raw file presence  */}
                   {isNil(rawFileDetails) && (
-                    <span className="icon has-text-info">
-                      <i className="has-text-danger fa-regular fa-circle"></i>
+                    <span className="icon custom-icon is-small has-text-danger">
+                      <img src="/img/missing-file.svg" />
                     </span>
                   )}
                   {/* Issue type */}

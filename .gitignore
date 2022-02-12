@@ -15,3 +15,4 @@ yarn-error.log
 .nova
 environment.list
 .env
+src/client/assets/img/missing-file.pxd
