@@ -1,9 +1,7 @@
 import React, { ReactElement, useCallback, useContext } from "react";
-import { isEmpty, isNil, isUndefined } from "lodash";
+import { isEmpty } from "lodash";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchComicBookMetadata } from "../actions/fileops.actions";
-import { IFolderData } from "threetwo-ui-typings";
-import { LazyLog, ScrollFollow } from "react-lazylog";
 import DynamicList, { createCache } from "react-window-dynamic-list";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Loader from "react-loader-spinner";

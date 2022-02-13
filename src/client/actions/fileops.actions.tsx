@@ -148,7 +148,7 @@ export const fetchVolumeGroups = () => (dispatch) => {
       .then((data) => {
         dispatch({
           type: IMS_COMIC_BOOK_GROUPS_FETCHED,
-          data,
+          data: data.data,
         });
       });
   } catch (error) {

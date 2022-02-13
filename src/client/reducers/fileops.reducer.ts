@@ -89,6 +89,7 @@ function fileOpsReducer(state = initialState, action) {
       };
     }
     case IMS_COMIC_BOOK_GROUPS_FETCHED: {
+      console.log(action)
       return {
         ...state,
         comicVolumeGroups: action.data,

@@ -20,6 +20,7 @@ export const VolumeGroups = (): ReactElement => {
   const volumeGroups = useSelector(
     (state: RootState) => state.fileOps.comicVolumeGroups,
   );
+  console.log(volumeGroups);
   return (
     <section className="volumes-container mt-4">
       <div className="content">
@@ -33,22 +34,22 @@ export const VolumeGroups = (): ReactElement => {
       >
         {!isNil(volumeGroups) &&
           volumeGroups &&
-          map(volumeGroups.data, (group) => {
-            if (!isNil(group)) {
+          map(volumeGroups, (group) => {
+            if (!isNil(group._id)) {
               return (
-                <div className="stack" key={group.results.id}>
-                  <img src={group.results.image.small_url} />
+                <div className="stack" key={group._id.id}>
+                  <img src={group.data[0].image.small_url} />
                   <div className="content">
                     <div className="stack-title is-size-8">
-                      <Link to={`/volume/details/${group.comicObjectId}`}>
-                        {ellipsize(group.results.name, 18)}
+                      <Link to={`/volume/details/${group.comicBookObjectId}`}>
+                        {ellipsize(group.data[0].name, 18)}
                       </Link>
                     </div>
                     <div className="control">
                       <span className="tags has-addons">
                         <span className="tag is-primary is-light">Issues</span>
                         <span className="tag">
-                          {group.results.count_of_issues}
+                          {group.data[0].count_of_issues}
                         </span>
                       </span>
                     </div>
