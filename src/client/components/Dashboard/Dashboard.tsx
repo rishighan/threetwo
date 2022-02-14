@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import ZeroState from "./ZeroState";
 import { RecentlyImported } from "./RecentlyImported";
 import { VolumeGroups } from "./VolumeGroups";
-import { getComicBooks } from "../actions/fileops.actions";
+import { PullList } from "./PullList";
+import { getComicBooks } from "../../actions/fileops.actions";
 import { isEmpty, isNil, isUndefined } from "lodash";
 
 export const Dashboard = (): ReactElement => {
@@ -32,6 +33,9 @@ export const Dashboard = (): ReactElement => {
 
         {!isEmpty(recentComics) && !isEmpty(recentComics.docs) ? (
           <>
+            {/* Pull List */}
+            <PullList issues={recentComics} />
+
             {/* stats */}
             <div>
               <div className="box stats-palette p-3 column is-one-quarter">

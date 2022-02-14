@@ -2766,6 +2766,15 @@ axe-core@^4.3.5:
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.3.5.tgz#78d6911ba317a8262bfee292aeafcc1e04b49cc5"
   integrity sha512-WKTW1+xAzhMS5dJsxWkliixlO/PqC4VhmO9T4juNYcaTg9jzWiJsou6m5pxWYGfigWbwzJWeFY6z47a+4neRXA==
 
+axios-cache-interceptor@^0.8.8:
+  version "0.8.8"
+  resolved "https://registry.yarnpkg.com/axios-cache-interceptor/-/axios-cache-interceptor-0.8.8.tgz#533b617b05a2c9f1602183631651ecbf62cad581"
+  integrity sha512-1F9Yt2V193dmVTYZn5BqGIi9xe++TTq/2CmAluXaHFVrZ9w/Vf2fp5BEH9q57tOe5l0GCE5+0dvjeGgBzzCBEw==
+  dependencies:
+    cache-parser "1.2.0"
+    fast-defer "^1.1.3"
+    object-code "^1.0.1"
+
 axios-rate-limit@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/axios-rate-limit/-/axios-rate-limit-1.3.0.tgz#03241d24c231c47432dab6e8234cfde819253c2e"
@@ -3458,6 +3467,11 @@ cache-base@^1.0.1:
     to-object-path "^0.3.0"
     union-value "^1.0.0"
     unset-value "^1.0.0"
+
+cache-parser@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/cache-parser/-/cache-parser-1.2.0.tgz#42cad5decefb079232b87baf8489cc78925e6d68"
+  integrity sha512-ExJkjMrEu+tG95DBSgk9UZwhKzTSTpvNu5dawNkGpubj3AUBih92gN5NJbGSbqHo6ZDR8nJ0jxT7t3t4FkofGQ==
 
 cacheable-request@^2.1.1:
   version "2.1.4"
@@ -5642,6 +5656,11 @@ fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz#3a7d56b559d6cbc3eb512325244e619a65c6c525"
   integrity sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==
+
+fast-defer@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/fast-defer/-/fast-defer-1.1.3.tgz#6f558e10c2fb796daa283978726283e6918594c0"
+  integrity sha512-nQejwC+FxKmCnRVzuQssIHsDWPNm6WAEogd5GXOCe9gBMtSoaZtxcuYaEQnz5H0+sDJvPJbllNitBepMqiL/6g==
 
 fast-diff@^1.1.2:
   version "1.2.0"
@@ -9579,6 +9598,11 @@ object-assign@^4, object-assign@^4.0.1, object-assign@^4.1.0, object-assign@^4.1
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
   integrity sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM=
+
+object-code@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/object-code/-/object-code-1.0.1.tgz#57a6243fde3b47f0093fd71d5883e3335a297706"
+  integrity sha512-zt/mZJvjm3nyMH9BMcrV/NYgPrqKwno0sx2bdqD4juT2EWa7wxDPn5nQnYMIsfz4pIIDh6gupQ5bMJ+tTy1Kqw==
 
 object-copy@^0.1.0:
   version "0.1.0"

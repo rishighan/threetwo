@@ -1,7 +1,7 @@
 import React, { ReactElement, useState } from "react";
 import { useSelector } from "react-redux";
 import { hot } from "react-hot-loader";
-import Dashboard from "./Dashboard";
+import Dashboard from "./Dashboard/Dashboard";
 
 import Import from "./Import";
 import { ComicDetail } from "./ComicDetail";

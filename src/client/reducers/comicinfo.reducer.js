@@ -1,4 +1,4 @@
-import { isEmpty } from "lodash";
+import { isEmpty, pull } from "lodash";
 import {
   CV_API_CALL_IN_PROGRESS,
   CV_SEARCH_SUCCESS,
@@ -9,9 +9,12 @@ import {
   CV_ISSUES_METADATA_CALL_IN_PROGRESS,
   CV_ISSUES_MATCHES_IN_LIBRARY_FETCHED,
   CV_ISSUES_FOR_VOLUME_IN_LIBRARY_SUCCESS,
+  CV_WEEKLY_PULLLIST_FETCHED,
+  CV_WEEKLY_PULLLIST_CALL_IN_PROGRESS,
 } from "../constants/action-types";
 
 const initialState = {
+  pullList: [],
   searchResults: [],
   searchQuery: {},
   inProgress: false,
@@ -97,6 +100,20 @@ function comicinfoReducer(state = initialState, action) {
         ...state,
         issuesForVolume: updatedState,
       };
+
+    case CV_WEEKLY_PULLLIST_CALL_IN_PROGRESS:
+      return {
+        inProgress: true,
+        ...state,
+      };
+    case CV_WEEKLY_PULLLIST_FETCHED: {
+      console.log(action.data);
+      return {
+        ...state,
+        inProgress: false,
+        pullList: [...action.data],
+      };
+    }
     default:
       return state;
   }

@@ -3,7 +3,7 @@ import React, { ReactElement, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ellipsize from "ellipsize";
 import { Link } from "react-router-dom";
-import { fetchVolumeGroups } from "../actions/fileops.actions";
+import { fetchVolumeGroups } from "../../actions/fileops.actions";
 import Masonry from "react-masonry-css";
 
 export const VolumeGroups = (): ReactElement => {
@@ -20,7 +20,6 @@ export const VolumeGroups = (): ReactElement => {
   const volumeGroups = useSelector(
     (state: RootState) => state.fileOps.comicVolumeGroups,
   );
-  console.log(volumeGroups);
   return (
     <section className="volumes-container mt-4">
       <div className="content">

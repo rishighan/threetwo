@@ -1,12 +1,12 @@
 import React, { ReactElement } from "react";
-import Card from "./Carda";
+import Card from "../Carda";
 import { Link } from "react-router-dom";
 import ellipsize from "ellipsize";
-import { escapePoundSymbol } from "../shared/utils/formatting.utils";
+import { escapePoundSymbol } from "../../shared/utils/formatting.utils";
 import { isNil, isUndefined, map } from "lodash";
-import { detectIssueTypes } from "../shared/utils/tradepaperback.utils";
+import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
 import Masonry from "react-masonry-css";
-import { LIBRARY_SERVICE_HOST } from "../constants/endpoints";
+import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
 
 type RecentlyImportedProps = {
   comicBookCovers: any;
@@ -67,7 +67,7 @@ export const RecentlyImported = ({
                   )}
                   {/* Raw file presence  */}
                   {isNil(rawFileDetails) && (
-                    <span className="icon custom-icon is-small has-text-danger">
+                    <span className="icon custom-icon is-small has-text-danger mr-2">
                       <img src="/img/missing-file.svg" />
                     </span>
                   )}

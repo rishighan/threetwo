@@ -2,7 +2,6 @@ import axios from "axios";
 import rateLimiter from "axios-rate-limit";
 
 import qs from "qs";
-import { IExtractionOptions } from "threetwo-ui-typings";
 import {
   CV_SEARCH_SUCCESS,
   CV_API_CALL_IN_PROGRESS,
@@ -14,17 +13,47 @@ import {
   IMS_COMIC_BOOKS_DB_OBJECTS_FETCHED,
   CV_ISSUES_MATCHES_IN_LIBRARY_FETCHED,
   CV_ISSUES_FOR_VOLUME_IN_LIBRARY_SUCCESS,
+  CV_WEEKLY_PULLLIST_CALL_IN_PROGRESS,
+  CV_WEEKLY_PULLLIST_FETCHED,
 } from "../constants/action-types";
 import {
   COMICVINE_SERVICE_URI,
   LIBRARY_SERVICE_BASE_URI,
 } from "../constants/endpoints";
 
+import { setupCache } from "axios-cache-interceptor";
+
+// same object, but with updated typings.
+const axiosWithCache = setupCache(axios);
+
 const http = rateLimiter(axios.create(), {
   maxRequests: 1,
   perMilliseconds: 1000,
   maxRPS: 1,
 });
+
+export const getWeeklyPullList = (options) => async (dispatch) => {
+  try {
+    dispatch({
+      type: CV_WEEKLY_PULLLIST_CALL_IN_PROGRESS,
+    });
+    axiosWithCache({
+      url: `${COMICVINE_SERVICE_URI}/getWeeklyPullList`,
+      method: "get",
+      params: {
+        startDate: "2022-2-9",
+        endDate: "2022-2-16",
+      },
+    }).then((response) => {
+      dispatch({
+        type: CV_WEEKLY_PULLLIST_FETCHED,
+        data: response.data.results,
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export const comicinfoAPICall = (options) => async (dispatch) => {
   try {
@@ -65,27 +94,28 @@ export const comicinfoAPICall = (options) => async (dispatch) => {
     });
   }
 };
-export const getIssuesForSeries = (comicObjectID: any) => async (dispatch) => {
-  dispatch({
-    type: CV_ISSUES_METADATA_CALL_IN_PROGRESS,
-  });
-  dispatch({
-    type: CV_CLEANUP,
-  });
+export const getIssuesForSeries =
+  (comicObjectID: string) => async (dispatch) => {
+    dispatch({
+      type: CV_ISSUES_METADATA_CALL_IN_PROGRESS,
+    });
+    dispatch({
+      type: CV_CLEANUP,
+    });
 
-  const issues = await axios({
-    url: `${COMICVINE_SERVICE_URI}/getIssuesForSeries`,
-    method: "POST",
-    params: {
-      comicObjectID,
-    },
-  });
+    const issues = await axios({
+      url: `${COMICVINE_SERVICE_URI}/getIssuesForSeries`,
+      method: "POST",
+      params: {
+        comicObjectID,
+      },
+    });
 
-  dispatch({
-    type: CV_ISSUES_FOR_VOLUME_IN_LIBRARY_SUCCESS,
-    issues: issues.data,
-  });
-};
+    dispatch({
+      type: CV_ISSUES_FOR_VOLUME_IN_LIBRARY_SUCCESS,
+      issues: issues.data,
+    });
+  };
 
 export const analyzeLibrary = (issues) => async (dispatch) => {
   dispatch({
@@ -107,7 +137,7 @@ export const analyzeLibrary = (issues) => async (dispatch) => {
       queryObjects,
     },
   });
-  console.log(foo);
+
   dispatch({
     type: CV_ISSUES_MATCHES_IN_LIBRARY_FETCHED,
     matches: foo.data,
