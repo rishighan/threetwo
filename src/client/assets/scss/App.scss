@@ -51,6 +51,13 @@ pre {
     // padding: 1.5rem 2rem;
   }
 }
+// slick slider overrides
+.slick-slider {
+  margin-left: -10px;
+  .slick-list {
+    padding: 0 0px 15px 10px;
+  }
+}
 .recent-comics-container {
   display: -webkit-box; /* Not needed if autoprefixing */
   display: -ms-flexbox; /* Not needed if autoprefixing */
@@ -69,7 +76,7 @@ pre {
 }
 .volumes-container {
   .stack {
-    max-width: 200px;
+    display: inline-block;
     border-radius: 0.3rem;
     box-shadow:
     /* The top layer shadow */ 0 -1px 1px rgba(0, 0, 0, 0.15),
@@ -140,7 +147,7 @@ pre {
 }
 
 .generic-card {
-  max-width: 200px;
+  display: inline-block;
   background-color: #fff;
   border-bottom-left-radius: 0.3rem;
   border-bottom-right-radius: 0.3rem;
@@ -410,7 +417,7 @@ pre {
 .potential-matches-container {
   .potential-issue-match {
     border-radius: 0.3rem;
-    background-color: beige; 
+    background-color: beige;
     padding: 10px;
     pre {
       padding: 5px;

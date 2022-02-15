@@ -5,6 +5,7 @@ import { RecentlyImported } from "./RecentlyImported";
 import { VolumeGroups } from "./VolumeGroups";
 import { PullList } from "./PullList";
 import { getComicBooks } from "../../actions/fileops.actions";
+import { getLibraryStatistics } from "../../actions/comicinfo.actions";
 import { isEmpty, isNil, isUndefined } from "lodash";
 
 export const Dashboard = (): ReactElement => {
@@ -19,12 +20,17 @@ export const Dashboard = (): ReactElement => {
         },
       }),
     );
+    dispatch(getLibraryStatistics());
   }, [dispatch]);
   const recentComics = useSelector(
     (state: RootState) => state.fileOps.recentComics,
   );
   const volumeGroups = useSelector(
     (state: RootState) => state.fileOps.comicVolumeGroups,
+  );
+
+  const libraryStatistics = useSelector(
+    (state: RootState) => state.comicInfo.libraryStatistics,
   );
   return (
     <div className="container">
@@ -38,15 +44,23 @@ export const Dashboard = (): ReactElement => {
 
             {/* stats */}
             <div>
+              <h4 className="title is-4">Statistics</h4>
               <div className="box stats-palette p-3 column is-one-quarter">
                 <dl>
                   <dd className="is-size-4">
-                    <span className="has-text-weight-bold">113123</span> files
+                    <span className="has-text-weight-bold">
+                      {libraryStatistics.totalDocuments}
+                    </span>{" "}
+                    files
                   </dd>
-                  <dd className="is-size-6">
-                    <span className="has-text-weight-bold">140</span> tagged
-                    with ComicVine
-                  </dd>
+                  {!isUndefined(libraryStatistics.statistics) && (
+                    <dd className="is-size-6">
+                      <span className="has-text-weight-bold">
+                        {libraryStatistics.statistics[0].issues.length}
+                      </span>{" "}
+                      tagged with ComicVine
+                    </dd>
+                  )}
                   <dd className="is-size-6">
                     <span className="has-text-weight-bold">1304</span> with
                     custom metadata
@@ -57,8 +71,35 @@ export const Dashboard = (): ReactElement => {
               <div className="box stats-palette p-3 column ml-5">
                 <dl>
                   <dd className="is-size-6">
-                    <span className="has-text-weight-bold">1320</span> Issues
+                    <span className="has-text-weight-bold"></span> Issues
                   </dd>
+                  <dd className="is-size-6">
+                    <span className="has-text-weight-bold">304</span> Volumes
+                  </dd>
+                </dl>
+              </div>
+
+              {/* file types */}
+              <div className="box stats-palette p-3 column ml-5">
+                <dl>
+                  {!isUndefined(libraryStatistics.statistics) && (
+                    <dd className="is-size-6">
+                      <span className="has-text-weight-bold">
+                        {
+                          libraryStatistics.statistics[0]
+                            .publisherWithMostComicsInLibrary[0]._id
+                        }
+                      </span>
+                      {" has the most issues "}(
+                      <span className="has-text-weight-bold">
+                        {
+                          libraryStatistics.statistics[0]
+                            .publisherWithMostComicsInLibrary[0].count
+                        }
+                      </span>
+                      )
+                    </dd>
+                  )}
                   <dd className="is-size-6">
                     <span className="has-text-weight-bold">304</span> Volumes
                   </dd>

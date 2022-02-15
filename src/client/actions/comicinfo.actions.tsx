@@ -15,6 +15,8 @@ import {
   CV_ISSUES_FOR_VOLUME_IN_LIBRARY_SUCCESS,
   CV_WEEKLY_PULLLIST_CALL_IN_PROGRESS,
   CV_WEEKLY_PULLLIST_FETCHED,
+  LIBRARY_STATISTICS_CALL_IN_PROGRESS,
+  LIBRARY_STATISTICS_FETCHED,
 } from "../constants/action-types";
 import {
   COMICVINE_SERVICE_URI,
@@ -42,12 +44,13 @@ export const getWeeklyPullList = (options) => async (dispatch) => {
       method: "get",
       params: {
         startDate: "2022-2-9",
-        endDate: "2022-2-16",
+        pageSize: "15",
+        currentPage: "1",
       },
     }).then((response) => {
       dispatch({
         type: CV_WEEKLY_PULLLIST_FETCHED,
-        data: response.data.results,
+        data: response.data.result,
       });
     });
   } catch (error) {
@@ -141,6 +144,21 @@ export const analyzeLibrary = (issues) => async (dispatch) => {
   dispatch({
     type: CV_ISSUES_MATCHES_IN_LIBRARY_FETCHED,
     matches: foo.data,
+  });
+};
+
+export const getLibraryStatistics = () => async dispatch => {
+  dispatch({
+    type: LIBRARY_STATISTICS_CALL_IN_PROGRESS,
+  });
+  const result = await axios({
+    url: `${LIBRARY_SERVICE_BASE_URI}/libraryStatistics`,
+    method: "GET",
+  });
+
+  dispatch({
+    type: LIBRARY_STATISTICS_FETCHED,
+    data: result.data,
   });
 };
 

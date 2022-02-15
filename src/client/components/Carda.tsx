@@ -11,6 +11,7 @@ interface ICardProps {
   borderColorClass?: string;
   backgroundColor?: string;
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+  cardContainerStyle?: PropTypes.object;
 }
 
 const renderCard = (props): ReactElement => {
@@ -20,7 +21,7 @@ const renderCard = (props): ReactElement => {
     case "vertical":
       return (
         <div onClick={props.onClick}>
-          <div className="generic-card">
+          <div className="generic-card" style={props.cardContainerStyle}>
             <div
               className={
                 !isNil(props.borderColorClass)

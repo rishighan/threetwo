@@ -11,10 +11,13 @@ import {
   CV_ISSUES_FOR_VOLUME_IN_LIBRARY_SUCCESS,
   CV_WEEKLY_PULLLIST_FETCHED,
   CV_WEEKLY_PULLLIST_CALL_IN_PROGRESS,
+  LIBRARY_STATISTICS_CALL_IN_PROGRESS,
+  LIBRARY_STATISTICS_FETCHED,
 } from "../constants/action-types";
 
 const initialState = {
   pullList: [],
+  libraryStatistics: [],
   searchResults: [],
   searchQuery: {},
   inProgress: false,
@@ -114,6 +117,18 @@ function comicinfoReducer(state = initialState, action) {
         pullList: [...action.data],
       };
     }
+    case LIBRARY_STATISTICS_CALL_IN_PROGRESS:
+      return {
+        inProgress: true,
+        ...state,
+      };
+    case LIBRARY_STATISTICS_FETCHED:
+      console.log(action);
+      return {
+        ...state,
+        inProgress: false,
+        libraryStatistics: action.data,
+      };
     default:
       return state;
   }
