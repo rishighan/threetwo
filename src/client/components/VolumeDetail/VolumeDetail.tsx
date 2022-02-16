@@ -178,6 +178,7 @@ const VolumeDetails = (props): ReactElement => {
                   comicBookDetails.sourcedMetadata.comicvine.volumeInformation
                     .image.small_url
                 }
+                cardContainerStyle={{ maxWidth: 275 }}
                 orientation={"vertical"}
                 hasDetails={false}
               />

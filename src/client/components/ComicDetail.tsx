@@ -234,6 +234,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                   imageUrl={imagePath}
                   orientation={"vertical"}
                   hasDetails={false}
+                  cardContainerStyle={{ maxWidth: 275 }}
                 />
                 {/* action dropdown */}
                 <div className="mt-4 is-size-7">

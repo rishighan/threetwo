@@ -85,12 +85,12 @@ export const PullList = ({ issues }: PullListProps): ReactElement => {
           <div className="field has-addons">
             <div className="control">
               <button className="button is-rounded is-small" onClick={previous}>
-              <i className="fa-solid fa-caret-left"></i>
+                <i className="fa-solid fa-caret-left"></i>
               </button>
             </div>
             <div className="control">
               <button className="button is-rounded is-small" onClick={next}>
-              <i className="fa-solid fa-caret-right"></i>
+                <i className="fa-solid fa-caret-right"></i>
               </button>
             </div>
           </div>

@@ -53,14 +53,15 @@ export const Dashboard = (): ReactElement => {
                     </span>{" "}
                     files
                   </dd>
-                  {!isUndefined(libraryStatistics.statistics) && (
-                    <dd className="is-size-6">
-                      <span className="has-text-weight-bold">
-                        {libraryStatistics.statistics[0].issues.length}
-                      </span>{" "}
-                      tagged with ComicVine
-                    </dd>
-                  )}
+                  {!isUndefined(libraryStatistics.statistics) &&
+                    !isEmpty(libraryStatistics.statistics[0].issues) && (
+                      <dd className="is-size-6">
+                        <span className="has-text-weight-bold">
+                          {libraryStatistics.statistics[0].issues.length}
+                        </span>{" "}
+                        tagged with ComicVine
+                      </dd>
+                    )}
                   <dd className="is-size-6">
                     <span className="has-text-weight-bold">1304</span> with
                     custom metadata
@@ -82,24 +83,27 @@ export const Dashboard = (): ReactElement => {
               {/* file types */}
               <div className="box stats-palette p-3 column ml-5">
                 <dl>
-                  {!isUndefined(libraryStatistics.statistics) && (
-                    <dd className="is-size-6">
-                      <span className="has-text-weight-bold">
-                        {
-                          libraryStatistics.statistics[0]
-                            .publisherWithMostComicsInLibrary[0]._id
-                        }
-                      </span>
-                      {" has the most issues "}(
-                      <span className="has-text-weight-bold">
-                        {
-                          libraryStatistics.statistics[0]
-                            .publisherWithMostComicsInLibrary[0].count
-                        }
-                      </span>
-                      )
-                    </dd>
-                  )}
+                  {!isUndefined(libraryStatistics.statistics) &&
+                    !isEmpty(
+                      libraryStatistics.statistics[0]
+                        .publisherWithMostComicsInLibrary[0],
+                    ) && (
+                      <dd className="is-size-6">
+                        <span className="has-text-weight-bold">
+                          {
+                            libraryStatistics.statistics[0]
+                              .publisherWithMostComicsInLibrary[0]._id
+                          }
+                        </span>
+                        {" has the most issues "}
+                        <span className="has-text-weight-bold">
+                          {
+                            libraryStatistics.statistics[0]
+                              .publisherWithMostComicsInLibrary[0].count
+                          }
+                        </span>
+                      </dd>
+                    )}
                   <dd className="is-size-6">
                     <span className="has-text-weight-bold">304</span> Volumes
                   </dd>
