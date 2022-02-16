@@ -6,7 +6,7 @@ import { VolumeGroups } from "./VolumeGroups";
 import { PullList } from "./PullList";
 import { getComicBooks } from "../../actions/fileops.actions";
 import { getLibraryStatistics } from "../../actions/comicinfo.actions";
-import { isEmpty, isNil, isUndefined } from "lodash";
+import { isEmpty, isNil, isUndefined, map } from "lodash";
 
 export const Dashboard = (): ReactElement => {
   const dispatch = useDispatch();
@@ -43,10 +43,11 @@ export const Dashboard = (): ReactElement => {
             <PullList issues={recentComics} />
 
             {/* stats */}
-            <div>
-              <h4 className="title is-4">Statistics</h4>
-              <div className="box stats-palette p-3 column is-one-quarter">
-                <dl>
+
+            <h4 className="title is-4 mt-2">Statistics</h4>
+            <div className="columns is-multiline">
+              <div className="column is-narrow is-one-quarter">
+                <dl className="box">
                   <dd className="is-size-4">
                     <span className="has-text-weight-bold">
                       {libraryStatistics.totalDocuments}
@@ -69,20 +70,40 @@ export const Dashboard = (): ReactElement => {
                 </dl>
               </div>
 
-              <div className="box stats-palette p-3 column ml-5">
-                <dl>
+              <div className="p-3 column is-one-quarter">
+                <dl className="box">
                   <dd className="is-size-6">
                     <span className="has-text-weight-bold"></span> Issues
                   </dd>
                   <dd className="is-size-6">
                     <span className="has-text-weight-bold">304</span> Volumes
                   </dd>
+                  <dd className="is-size-6">
+                    {!isUndefined(libraryStatistics.statistics) &&
+                      !isEmpty(libraryStatistics.statistics[0].fileTypes) &&
+                      map(
+                        libraryStatistics.statistics[0].fileTypes,
+                        (fileType) => {
+                          return (
+                            <>
+                              <span className="has-text-weight-bold">
+                                {fileType.data.length}
+                              </span>
+                              <span className="tag is-warning has-text-weight-bold mr-2 ml-1">
+                                {fileType._id}
+                              </span>
+                            </>
+                          );
+                        },
+                      )}
+                  </dd>
                 </dl>
               </div>
 
               {/* file types */}
-              <div className="box stats-palette p-3 column ml-5">
-                <dl>
+              <div className="p-3 column is-two-fifths">
+                {/* publisher with most issues */}
+                <dl className="box">
                   {!isUndefined(libraryStatistics.statistics) &&
                     !isEmpty(
                       libraryStatistics.statistics[0]

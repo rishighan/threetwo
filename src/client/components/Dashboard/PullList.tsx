@@ -99,9 +99,10 @@ export const PullList = ({ issues }: PullListProps): ReactElement => {
       <Slider {...settings} ref={(c) => (sliderRef = c)}>
         {!isNil(pullList) &&
           pullList &&
-          map(pullList, (issue) => {
+          map(pullList, (issue, idx) => {
             return (
               <Card
+                key={idx}
                 orientation={"vertical"}
                 imageUrl={issue.cover}
                 hasDetails
