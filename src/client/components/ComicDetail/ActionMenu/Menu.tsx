@@ -14,13 +14,11 @@ export const Menu = (props): ReactElement => {
     let issueSearchQuery: IComicVineSearchQuery = {} as IComicVineSearchQuery;
 
     if (!isUndefined(data.rawFileDetails)) {
-      console.log(data.rawFileDetails);
       issueSearchQuery = refineQuery(data.rawFileDetails.name);
     } else if (!isEmpty(data.sourcedMetadata)) {
       issueSearchQuery = refineQuery(data.sourcedMetadata.comicvine.name);
     }
 
-    console.log(seriesSearchQuery);
     dispatch(fetchComicVineMatches(data, issueSearchQuery, seriesSearchQuery));
     setSlidingPanelContentId("CVMatches");
     setVisible(true);
