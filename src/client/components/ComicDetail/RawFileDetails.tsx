@@ -37,8 +37,8 @@ export const RawFileDetails = (props): ReactElement => {
           </div>
         </dd>
         {/* inferred metadata */}
-        <dd className="mt-3">
-          <dt>Inferred Issue Metadata</dt>
+        <dt className="mt-3">Inferred Issue Metadata</dt>
+        <dd>
           <div className="field is-grouped mt-2">
             <div className="control">
               <div className="tags has-addons">

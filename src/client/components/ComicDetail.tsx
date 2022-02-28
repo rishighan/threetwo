@@ -134,23 +134,50 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       content: isComicBookMetadataAvailable ? (
         <VolumeInformation data={comicBookDetailData} key={1} />
       ) : null,
+      include: isComicBookMetadataAvailable,
     },
     {
       id: 2,
-      icon: <i className="fa-regular fa-file-archive"></i>,
-      name: "Archive Operations",
-      content: <ArchiveOperations data={comicBookDetailData} key={2} />,
+      name: "ComicInfo.xml",
+      icon: <i className="fa-solid fa-code"></i>,
+      content: (
+        <div className="columns" key={2}>
+          <div className="column is-three-quarters">
+            {!isNil(comicBookDetailData.sourcedMetadata) &&
+              !isNil(comicBookDetailData.sourcedMetadata.comicInfo) && (
+                <pre className="has-text-size-7">
+                  {JSON.stringify(
+                    comicBookDetailData.sourcedMetadata.comicInfo,
+                    null,
+                    2,
+                  )}
+                </pre>
+              )}
+          </div>
+        </div>
+      ),
+      include:
+        !isNil(comicBookDetailData.sourcedMetadata) &&
+        !isEmpty(comicBookDetailData.sourcedMetadata.comicInfo),
     },
     {
       id: 3,
-      icon: <i className="fa-solid fa-floppy-disk"></i>,
-      name: "Acquisition",
-      content: (
-        <AcquisitionPanel comicBookMetadata={comicBookDetailData} key={3} />
-      ),
+      icon: <i className="fa-regular fa-file-archive"></i>,
+      name: "Archive Operations",
+      content: <ArchiveOperations data={comicBookDetailData} key={3} />,
+      include: !isNil(comicBookDetailData.rawFileDetails),
     },
     {
       id: 4,
+      icon: <i className="fa-solid fa-floppy-disk"></i>,
+      name: "Acquisition",
+      content: (
+        <AcquisitionPanel comicBookMetadata={comicBookDetailData} key={4} />
+      ),
+      include: !isNil(comicBookDetailData.rawFileDetails),
+    },
+    {
+      id: 5,
       icon: null,
       name:
         !isNil(comicBookDetailData) && !isEmpty(comicBookDetailData) ? (
@@ -162,18 +189,21 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
         <DownloadsPanel
           data={comicBookDetailData.acquisition.directconnect}
           comicObjectId={comicObjectId}
-          key={4}
+          key={5}
         />
       ),
+      include: !isNil(comicBookDetailData.rawFileDetails),
     },
   ];
   // Tabs
   const MetadataTabGroup = () => {
+    const filteredTabs = tabGroup.filter((tab) => tab.include);
+    console.log("filter:m", filteredTabs);
     return (
       <>
         <div className="tabs">
           <ul>
-            {tabGroup.map(({ id, name, icon }) => (
+            {filteredTabs.map(({ id, name, icon }) => (
               <li
                 key={id}
                 className={id === active ? "is-active" : ""}
@@ -199,7 +229,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
             ))}
           </ul>
         </div>
-        {tabGroup.map(({ id, content }) => {
+        {filteredTabs.map(({ id, content }) => {
           return active === id ? content : null;
         })}
       </>
@@ -254,15 +284,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                         inferredMetadata: comicBookDetailData.inferredMetadata,
                       }}
                     />
-                    {!isNil(comicBookDetailData.sourcedMetadata.comicInfo) && (
-                      <div className="box">
-                        <pre className="has-text-size-7">
-                          {JSON.stringify(
-                            comicBookDetailData.sourcedMetadata, null, 2
-                          )}
-                        </pre>
-                      </div>
-                    )}
                   </>
                 )}
                 {/* comic vine scraped metadata */}
@@ -275,7 +296,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
               </div>
             </div>
 
-            {isComicBookMetadataAvailable ? <MetadataTabGroup /> : null}
+            {<MetadataTabGroup />}
 
             <SlidingPane
               isOpen={visible}

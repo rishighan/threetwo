@@ -92,16 +92,16 @@ export const Dashboard = (): ReactElement => {
                       !isEmpty(libraryStatistics.statistics[0].fileTypes) &&
                       map(
                         libraryStatistics.statistics[0].fileTypes,
-                        (fileType) => {
+                        (fileType, idx) => {
                           return (
-                            <>
+                            <span key={idx}>
                               <span className="has-text-weight-bold">
                                 {fileType.data.length}
                               </span>
                               <span className="tag is-warning has-text-weight-bold mr-2 ml-1">
                                 {fileType._id}
                               </span>
-                            </>
+                            </span>
                           );
                         },
                       )}
