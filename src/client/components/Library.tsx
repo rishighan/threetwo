@@ -4,7 +4,7 @@ import { useHistory } from "react-router";
 import { useTable, usePagination } from "react-table";
 import { useDispatch, useSelector } from "react-redux";
 import { getComicBooks } from "../actions/fileops.actions";
-import { isEmpty, isNil } from "lodash";
+import { isEmpty, isNil, isUndefined } from "lodash";
 import RawFileDetails from "./Library/RawFileDetails";
 import ComicVineDetails from "./Library/ComicVineDetails";
 import SearchBar from "./Library/SearchBar";
@@ -79,7 +79,8 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
             accessor: "sourcedMetadata",
             Cell(props) {
               return (
-                !isNil(props.cell.value.comicvine) && (
+                !isUndefined(props.cell.value) &&
+                !isUndefined(props.cell.value.comicvine) && (
                   <div>{props.cell.value.comicvine.issue_number}</div>
                 )
               );

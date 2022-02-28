@@ -7,6 +7,7 @@ import { PullList } from "./PullList";
 import { getComicBooks } from "../../actions/fileops.actions";
 import { getLibraryStatistics } from "../../actions/comicinfo.actions";
 import { isEmpty, isNil, isUndefined, map } from "lodash";
+import prettyBytes from "pretty-bytes";
 
 export const Dashboard = (): ReactElement => {
   const dispatch = useDispatch();
@@ -46,13 +47,21 @@ export const Dashboard = (): ReactElement => {
 
             <h4 className="title is-4 mt-2">Statistics</h4>
             <div className="columns is-multiline">
-              <div className="column is-narrow is-one-quarter">
+              <div className="column is-narrow is-two-quarter">
                 <dl className="box">
                   <dd className="is-size-4">
                     <span className="has-text-weight-bold">
                       {libraryStatistics.totalDocuments}
                     </span>{" "}
                     files
+                  </dd>
+                  <dd className="is-size-4">
+                    Library size
+                    <span className="has-text-weight-bold">
+                      {" "}
+                      {libraryStatistics.comicDirectorySize &&
+                        prettyBytes(libraryStatistics.comicDirectorySize)}
+                    </span>
                   </dd>
                   {!isUndefined(libraryStatistics.statistics) &&
                     !isEmpty(libraryStatistics.statistics[0].issues) && (

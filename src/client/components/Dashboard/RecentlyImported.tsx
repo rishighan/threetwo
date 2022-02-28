@@ -3,7 +3,7 @@ import Card from "../Carda";
 import { Link } from "react-router-dom";
 import ellipsize from "ellipsize";
 import { escapePoundSymbol } from "../../shared/utils/formatting.utils";
-import { isNil, isUndefined, map } from "lodash";
+import { isEmpty, isNil, isUndefined, map } from "lodash";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
 import Masonry from "react-masonry-css";
 import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
@@ -21,6 +21,7 @@ export const RecentlyImported = ({
     700: 2,
     600: 2,
   };
+
   return (
     <>
       <div className="content">
@@ -37,6 +38,11 @@ export const RecentlyImported = ({
         {map(
           comicBookCovers.docs,
           ({ _id, rawFileDetails, sourcedMetadata }) => {
+            const isComicBookMetadataAvailable =
+              sourcedMetadata &&
+              !isUndefined(sourcedMetadata.comicvine) &&
+              !isUndefined(sourcedMetadata.comicvine.volumeInformation) &&
+              !isEmpty(sourcedMetadata);
             let imagePath = "";
             let comicName = "";
             if (!isNil(rawFileDetails)) {
@@ -45,7 +51,7 @@ export const RecentlyImported = ({
               );
               imagePath = escapePoundSymbol(encodedFilePath);
               comicName = rawFileDetails.name;
-            } else if (!isNil(sourcedMetadata.comicvine)) {
+            } else if (!isEmpty(sourcedMetadata.comicvine)) {
               imagePath = sourcedMetadata.comicvine.image.small_url;
               comicName = sourcedMetadata.comicvine.name;
             }
@@ -63,7 +69,7 @@ export const RecentlyImported = ({
                 title={comicName ? titleElement : null}
               >
                 <div className="content is-flex is-flex-direction-row">
-                  {!isNil(sourcedMetadata.comicvine) && (
+                  {isComicBookMetadataAvailable && (
                     <span className="icon custom-icon is-small">
                       <img src="/img/cvlogo.svg" />
                     </span>
@@ -75,7 +81,7 @@ export const RecentlyImported = ({
                     </span>
                   )}
                   {/* Issue type */}
-                  {!isUndefined(sourcedMetadata.comicvine) &&
+                  {isComicBookMetadataAvailable &&
                   !isNil(
                     detectIssueTypes(
                       sourcedMetadata.comicvine.volumeInformation.description,

@@ -120,6 +120,9 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const isComicBookMetadataAvailable =
     comicBookDetailData.sourcedMetadata &&
     !isUndefined(comicBookDetailData.sourcedMetadata.comicvine) &&
+    !isUndefined(
+      comicBookDetailData.sourcedMetadata.comicvine.volumeInformation,
+    ) &&
     !isEmpty(comicBookDetailData.sourcedMetadata);
 
   // Tab content and header details
@@ -214,10 +217,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     );
     imagePath = escapePoundSymbol(encodedFilePath);
     comicBookTitle = comicBookDetailData.rawFileDetails.name;
-  } else if (
-    !isNil(comicBookDetailData.sourcedMetadata) &&
-    !isNil(comicBookDetailData.sourcedMetadata.comicvine)
-  ) {
+  } else if (isComicBookMetadataAvailable) {
     imagePath = comicBookDetailData.sourcedMetadata.comicvine.image.small_url;
     comicBookTitle = comicBookDetailData.sourcedMetadata.comicvine.name;
   }
@@ -254,10 +254,19 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                         inferredMetadata: comicBookDetailData.inferredMetadata,
                       }}
                     />
+                    {!isNil(comicBookDetailData.sourcedMetadata.comicInfo) && (
+                      <div className="box">
+                        <pre className="has-text-size-7">
+                          {JSON.stringify(
+                            comicBookDetailData.sourcedMetadata, null, 2
+                          )}
+                        </pre>
+                      </div>
+                    )}
                   </>
                 )}
                 {/* comic vine scraped metadata */}
-                {!isNil(comicBookDetailData.sourcedMetadata.comicvine) && (
+                {isComicBookMetadataAvailable && (
                   <ComicVineDetails
                     data={comicBookDetailData.sourcedMetadata.comicvine}
                     updatedAt={comicBookDetailData.updatedAt}

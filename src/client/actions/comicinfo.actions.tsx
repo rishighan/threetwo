@@ -43,7 +43,7 @@ export const getWeeklyPullList = (options) => async (dispatch) => {
       url: `${COMICVINE_SERVICE_URI}/getWeeklyPullList`,
       method: "get",
       params: {
-        startDate: "2022-2-28",
+        startDate: "2022-3-7",
         pageSize: "15",
         currentPage: "1",
       },
