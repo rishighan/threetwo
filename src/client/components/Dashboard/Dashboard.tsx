@@ -72,10 +72,23 @@ export const Dashboard = (): ReactElement => {
                         tagged with ComicVine
                       </dd>
                     )}
-                  <dd className="is-size-6">
-                    <span className="has-text-weight-bold">1304</span> with
-                    custom metadata
-                  </dd>
+                  {!isUndefined(libraryStatistics.statistics) &&
+                    !isEmpty(
+                      libraryStatistics.statistics[0].issuesWithComicInfoXML,
+                    ) && (
+                      <dd className="is-size-6">
+                        <span className="has-text-weight-bold">
+                          {
+                            libraryStatistics.statistics[0]
+                              .issuesWithComicInfoXML.length
+                          }
+                        </span>{" "}
+                        with
+                        <span className="tag is-warning has-text-weight-bold mr-2 ml-1">
+                          ComicInfo.xml
+                        </span>
+                      </dd>
+                    )}
                 </dl>
               </div>
 
