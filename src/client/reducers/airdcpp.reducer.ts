@@ -7,7 +7,7 @@ import {
   AIRDCPP_DOWNLOAD_PROGRESS_TICK,
   AIRDCPP_BUNDLES_FETCHED,
 } from "../constants/action-types";
-import { LOCATION_CHANGE } from "connected-react-router";
+import { LOCATION_CHANGE } from "redux-first-history";
 import { difference } from "../shared/utils/object.utils";
 
 const initialState = {

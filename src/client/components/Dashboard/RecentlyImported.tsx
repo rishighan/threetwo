@@ -45,7 +45,7 @@ export const RecentlyImported = ({
               !isEmpty(sourcedMetadata);
             let imagePath = "";
             let comicName = "";
-            if (!isNil(rawFileDetails)) {
+            if (!isEmpty(rawFileDetails.cover)) {
               const encodedFilePath = encodeURI(
                 `${LIBRARY_SERVICE_HOST}/${rawFileDetails.cover.filePath}`,
               );

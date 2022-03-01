@@ -1,4 +1,4 @@
-import { isEmpty, pull } from "lodash";
+import { isEmpty } from "lodash";
 import {
   CV_API_CALL_IN_PROGRESS,
   CV_SEARCH_SUCCESS,

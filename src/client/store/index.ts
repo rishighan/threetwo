@@ -1,28 +1,32 @@
-import { routerMiddleware } from "connected-react-router";
-import { createStore, applyMiddleware, compose } from "redux";
+import { createStore, combineReducers, applyMiddleware } from "redux";
 import { createBrowserHistory } from "history";
+import { composeWithDevTools } from "redux-devtools-extension";
 import thunk from "redux-thunk";
-import createRootReducer from "../reducers";
+import { createReduxHistoryContext } from "redux-first-history";
+import { reducers } from "../reducers/index";
+
 import { io } from "socket.io-client";
 import socketIoMiddleware from "redux-socket.io-middleware";
 import { SOCKET_BASE_URI } from "../constants/endpoints";
-
 const socketConnection = io(SOCKET_BASE_URI, { transports: ["websocket"] });
 
-export const history = createBrowserHistory();
-const configureStore = (initialState) => {
-  const store = createStore(
-    createRootReducer(history),
-    initialState,
-    compose(
-      applyMiddleware(
-        socketIoMiddleware(socketConnection),
-        thunk,
-        routerMiddleware(history),
-      ),
-      // window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+const { createReduxHistory, routerMiddleware, routerReducer } =
+  createReduxHistoryContext({
+    history: createBrowserHistory(),
+  });
+
+export const store = createStore(
+  combineReducers({
+    router: routerReducer,
+    ...reducers,
+  }),
+  composeWithDevTools(
+    applyMiddleware(
+      socketIoMiddleware(socketConnection),
+      thunk,
+      routerMiddleware,
     ),
-  );
-  return store;
-};
-export default configureStore;
+    // window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+  ),
+);
+export const history = createReduxHistory(store);

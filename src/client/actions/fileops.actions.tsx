@@ -257,6 +257,7 @@ export const extractComicArchive =
     });
   };
 
+export const searchIssue = (options) => async (dispatch) => {};
 export const analyzeImage =
   (imageFilePath: string | Buffer) => async (dispatch) => {
     dispatch({

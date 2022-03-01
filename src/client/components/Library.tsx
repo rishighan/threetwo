@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, ReactElement } from "react";
 import PropTypes from "prop-types";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useTable, usePagination } from "react-table";
 import { useDispatch, useSelector } from "react-redux";
 import { getComicBooks } from "../actions/fileops.actions";
@@ -27,9 +27,9 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
     collapsePageSizeDropdown(!isPageSizeDropdownCollapsed);
 
   // programatically navigate to comic detail
-  const history = useHistory();
+  const navigate = useNavigate();
   const navigateToComicDetail = (id) => {
-    history.push(`/comic/details/${id}`);
+    navigate(`/comic/details/${id}`);
   };
 
   const ImportStatus = ({ value }) => {
@@ -49,7 +49,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
             Header: "File Details",
             id: "fileDetails",
             accessor: (row) =>
-              !isNil(row.rawFileDetails)
+              !isEmpty(row.rawFileDetails.cover)
                 ? row.rawFileDetails
                 : row.sourcedMetadata,
             Cell: ({ value }) => {
@@ -102,7 +102,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
             accessor: "sourcedMetadata.comicvine",
             Cell(props) {
               return (
-                !isNil(props.cell.value) && (
+                !isEmpty(props.cell.value) && (
                   <span className="tag is-info is-light">
                     {props.cell.value.resource_type}
                   </span>
@@ -189,7 +189,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
     <section className="container">
       <div className="section">
         <h1 className="title">Library</h1>
-
+        {/* Search bar */}
         <SearchBar />
         <div>
           <div className="library">

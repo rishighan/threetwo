@@ -1,4 +1,4 @@
-import { LOCATION_CHANGE } from "connected-react-router";
+import { LOCATION_CHANGE } from "redux-first-history";
 import {
   RMQ_SOCKET_CONNECTED,
   IMS_COMICBOOK_METADATA_FETCHED,

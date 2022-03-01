@@ -38,35 +38,35 @@ export const RawFileDetails = (props): ReactElement => {
             </div>
           </dd>
         </dl>
-        </div>
-        <div className="content comic-detail raw-file-details mt-3">
-          <dl>
-            {/* inferred metadata */}
-            <dt>Inferred Issue Metadata</dt>
-            <dd>
-              <div className="field is-grouped mt-2">
+      </div>
+      <div className="content comic-detail raw-file-details mt-3">
+        <dl>
+          {/* inferred metadata */}
+          <dt>Inferred Issue Metadata</dt>
+          <dd>
+            <div className="field is-grouped mt-2">
+              <div className="control">
+                <div className="tags has-addons">
+                  <span className="tag">Name</span>
+                  <span className="tag is-info is-light">
+                    {inferredMetadata.issue.name}
+                  </span>
+                </div>
+              </div>
+              {!isUndefined(inferredMetadata.issue.number) ? (
                 <div className="control">
                   <div className="tags has-addons">
-                    <span className="tag">Name</span>
-                    <span className="tag is-info is-light">
-                      {inferredMetadata.issue.name}
+                    <span className="tag">Number</span>
+                    <span className="tag is-primary is-light">
+                      {inferredMetadata.issue.number}
                     </span>
                   </div>
                 </div>
-                {!isUndefined(inferredMetadata.issue.number) ? (
-                  <div className="control">
-                    <div className="tags has-addons">
-                      <span className="tag">Number</span>
-                      <span className="tag is-primary is-light">
-                        {inferredMetadata.issue.number}
-                      </span>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            </dd>
-          </dl>
-        </div>
+              ) : null}
+            </div>
+          </dd>
+        </dl>
+      </div>
     </>
   );
 };

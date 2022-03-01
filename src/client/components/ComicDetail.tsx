@@ -12,7 +12,7 @@ import DownloadsPanel from "./ComicDetail/DownloadsPanel";
 import { EditMetadataPanel } from "./ComicDetail/EditMetadataPanel";
 import { Menu } from "./ComicDetail/ActionMenu/Menu";
 
-import { isEmpty, isUndefined, isNil } from "lodash";
+import { isEmpty, isUndefined, isNil, findIndex } from "lodash";
 import { RootState } from "threetwo-ui-typings";
 
 import { getComicBookDetailById } from "../actions/comicinfo.actions";
@@ -41,8 +41,8 @@ type ComicDetailProps = {};
  */
 
 export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
-  const [active, setActive] = useState(1);
   const [page, setPage] = useState(1);
+  const [active, setActive] = useState(1);
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
 
@@ -165,7 +165,9 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       icon: <i className="fa-regular fa-file-archive"></i>,
       name: "Archive Operations",
       content: <ArchiveOperations data={comicBookDetailData} key={3} />,
-      include: !isNil(comicBookDetailData.rawFileDetails),
+      include:
+        !isUndefined(comicBookDetailData.rawFileDetails) &&
+        !isEmpty(comicBookDetailData.rawFileDetails.cover),
     },
     {
       id: 4,
@@ -195,10 +197,12 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       include: !isNil(comicBookDetailData.rawFileDetails),
     },
   ];
+  // filtered Tabs
+  const filteredTabs = tabGroup.filter((tab) => tab.include);
+
+
   // Tabs
   const MetadataTabGroup = () => {
-    const filteredTabs = tabGroup.filter((tab) => tab.include);
-    console.log("filter:m", filteredTabs);
     return (
       <>
         <div className="tabs">
@@ -211,7 +215,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
               >
                 {/* Downloads tab and count badge */}
                 <a>
-                  {id === 4 &&
+                  {id === 5 &&
                   !isNil(comicBookDetailData) &&
                   !isEmpty(comicBookDetailData) ? (
                     <span className="download-icon-labels">
@@ -241,7 +245,10 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   // 2. from the CV-scraped version
   let imagePath = "";
   let comicBookTitle = "";
-  if (!isNil(comicBookDetailData.rawFileDetails)) {
+  if (
+    !isUndefined(comicBookDetailData.rawFileDetails) &&
+    !isEmpty(comicBookDetailData.rawFileDetails.cover)
+  ) {
     const encodedFilePath = encodeURI(
       `${LIBRARY_SERVICE_HOST}/${comicBookDetailData.rawFileDetails.cover.filePath}`,
     );
@@ -276,16 +283,18 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
               </div>
               {/* raw file details */}
               <div className="column is-three-fifths">
-                {!isNil(comicBookDetailData.rawFileDetails) && (
-                  <>
-                    <RawFileDetails
-                      data={{
-                        rawFileDetails: comicBookDetailData.rawFileDetails,
-                        inferredMetadata: comicBookDetailData.inferredMetadata,
-                      }}
-                    />
-                  </>
-                )}
+                {!isUndefined(comicBookDetailData.rawFileDetails) &&
+                  !isEmpty(comicBookDetailData.rawFileDetails.cover) && (
+                    <>
+                      <RawFileDetails
+                        data={{
+                          rawFileDetails: comicBookDetailData.rawFileDetails,
+                          inferredMetadata:
+                            comicBookDetailData.inferredMetadata,
+                        }}
+                      />
+                    </>
+                  )}
               </div>
             </div>
 

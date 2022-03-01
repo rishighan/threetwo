@@ -1,6 +1,5 @@
 import React, { ReactElement, useState } from "react";
 import { useSelector } from "react-redux";
-import { hot } from "react-hot-loader";
 import Dashboard from "./Dashboard/Dashboard";
 
 import Import from "./Import";
@@ -11,14 +10,11 @@ import Search from "./Search";
 import Settings from "./Settings";
 import VolumeDetail from "./VolumeDetail/VolumeDetail";
 
-import { Switch, Route } from "react-router";
+import { Routes, Route } from "react-router-dom";
 import Navbar from "./Navbar";
 import "../assets/scss/App.scss";
 import Notifications from "react-notification-system-redux";
-import { getSettings } from "../actions/settings.actions";
 import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
-import { isEmpty, isUndefined } from "lodash";
-import AirDCPPSocket from "../services/DcppSearchService";
 
 //Optional styling
 const style = {
@@ -66,7 +62,6 @@ const style = {
 
 export const App = (): ReactElement => {
   const notifications = useSelector((state: RootState) => state.notifications);
-
   const [ADCPPSocket, setADCPPSocket] = useState({});
 
   return (
@@ -79,37 +74,25 @@ export const App = (): ReactElement => {
           newOnTop={true}
           allowHTML={true}
         />
-        <Switch>
-          <Route exact path="/">
-            <Dashboard />
-          </Route>
-          <Route path="/import">
-            <Import path={"./comics"} />
-          </Route>
-          <Route path="/library">
-            <Library />
-          </Route>
-          <Route path="/library-grid">
-            <LibraryGrid />
-          </Route>
-          <Route path="/search">
-            <Search />
-          </Route>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/import" element={<Import path={"./comics"} />} />
+          <Route path="/library" element={<Library />} />
+          <Route path="/library-grid" element={<LibraryGrid />} />
+          <Route path="/search" element={<Search />} />
           <Route
             path={"/comic/details/:comicObjectId"}
-            component={ComicDetail}
+            element={<ComicDetail />}
           />
           <Route
             path={"/volume/details/:comicObjectId"}
-            component={VolumeDetail}
+            element={<VolumeDetail />}
           />
-          <Route path="/settings">
-            <Settings />
-          </Route>
-        </Switch>
+          <Route path="/settings" element={<Settings />} />
+        </Routes>
       </div>
     </AirDCPPSocketContext.Provider>
   );
 };
 
-export default hot(module)(App);
+export default App;
