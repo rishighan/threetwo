@@ -1,4 +1,5 @@
 import React, { ReactElement } from "react";
+import ComicVineDetails from "../ComicVineDetails";
 
 export const VolumeInformation = (props): ReactElement => {
   const { data } = props;
@@ -8,44 +9,13 @@ export const VolumeInformation = (props): ReactElement => {
 
   return (
     <div key={1}>
-      <div className="columns">
-        <div className="column is-narrow">
-          <figure className="card-image">
-            <img
-              src={
-                data.sourcedMetadata.comicvine.volumeInformation.image.thumb_url
-              }
-            />
-          </figure>
-        </div>
-        <div className="column is-4">
-          <dl>
-            <dt>
-              Is a part of{" "}
-              <span className="has-text-info">
-                {data.sourcedMetadata.comicvine.volumeInformation.name}
-              </span>
-            </dt>
-            <dd>
-              Published by
-              <span className="has-text-weight-semibold">
-                {" "}
-                {
-                  data.sourcedMetadata.comicvine.volumeInformation.publisher
-                    .name
-                }
-              </span>
-            </dd>
-            <dd>
-              Total issues in this volume:
-              {data.sourcedMetadata.comicvine.volumeInformation.count_of_issues}
-            </dd>
-          </dl>
-        </div>
-      </div>
-      <div className="columns">
+      <div className="columns is-multiline">
+        <ComicVineDetails
+          data={data.sourcedMetadata.comicvine}
+          updatedAt={data.updatedAt}
+        />
         <div
-          className="column is-three-quarters"
+          className="column is-8"
           dangerouslySetInnerHTML={createDescriptionMarkup(
             data.sourcedMetadata.comicvine.volumeInformation.description,
           )}

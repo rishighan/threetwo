@@ -286,13 +286,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                     />
                   </>
                 )}
-                {/* comic vine scraped metadata */}
-                {isComicBookMetadataAvailable && (
-                  <ComicVineDetails
-                    data={comicBookDetailData.sourcedMetadata.comicvine}
-                    updatedAt={comicBookDetailData.updatedAt}
-                  />
-                )}
               </div>
             </div>
 
