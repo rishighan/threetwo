@@ -161,7 +161,7 @@ const VolumeDetails = (props): ReactElement => {
 
   if (
     !isUndefined(comicBookDetails.sourcedMetadata) &&
-    !isUndefined(comicBookDetails.sourcedMetadata.comicvine)
+    !isUndefined(comicBookDetails.sourcedMetadata.comicvine.volumeInformation)
   ) {
     return (
       <div className="container volume-details">

@@ -1,5 +1,5 @@
 import { createStore, combineReducers, applyMiddleware } from "redux";
-import { createBrowserHistory } from "history";
+import { createHashHistory } from "history";
 import { composeWithDevTools } from "redux-devtools-extension";
 import thunk from "redux-thunk";
 import { createReduxHistoryContext } from "redux-first-history";
@@ -12,7 +12,7 @@ const socketConnection = io(SOCKET_BASE_URI, { transports: ["websocket"] });
 
 const { createReduxHistory, routerMiddleware, routerReducer } =
   createReduxHistoryContext({
-    history: createBrowserHistory(),
+    history: createHashHistory(),
   });
 
 export const store = createStore(

@@ -5,6 +5,7 @@ import {
   IMAGETRANSFORMATION_SERVICE_BASE_URI,
   LIBRARY_SERVICE_BASE_URI,
   LIBRARY_SERVICE_HOST,
+  SEARCH_SERVICE_BASE_URI,
 } from "../constants/endpoints";
 import {
   IMS_COMIC_BOOK_GROUPS_FETCHED,
@@ -257,7 +258,14 @@ export const extractComicArchive =
     });
   };
 
-export const searchIssue = (options) => async (dispatch) => {};
+export const searchIssue = (query) => async (dispatch) => {
+  const foo = await axios({
+    url: `${SEARCH_SERVICE_BASE_URI}/searchIssue`,
+    method: "POST",
+    data: query,
+  });
+  console.log(foo);
+};
 export const analyzeImage =
   (imageFilePath: string | Buffer) => async (dispatch) => {
     dispatch({

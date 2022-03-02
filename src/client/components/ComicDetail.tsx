@@ -12,7 +12,7 @@ import DownloadsPanel from "./ComicDetail/DownloadsPanel";
 import { EditMetadataPanel } from "./ComicDetail/EditMetadataPanel";
 import { Menu } from "./ComicDetail/ActionMenu/Menu";
 
-import { isEmpty, isUndefined, isNil, findIndex } from "lodash";
+import { isEmpty, isUndefined, isNil } from "lodash";
 import { RootState } from "threetwo-ui-typings";
 
 import { getComicBookDetailById } from "../actions/comicinfo.actions";
@@ -117,6 +117,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     },
   };
 
+  // check for the availability of CV metadata
   const isComicBookMetadataAvailable =
     comicBookDetailData.sourcedMetadata &&
     !isUndefined(comicBookDetailData.sourcedMetadata.comicvine) &&
@@ -124,6 +125,29 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       comicBookDetailData.sourcedMetadata.comicvine.volumeInformation,
     ) &&
     !isEmpty(comicBookDetailData.sourcedMetadata);
+
+  // check for the availability of rawFileDetails
+  const areRawFileDetailsAvailable =
+    !isUndefined(comicBookDetailData.rawFileDetails) &&
+    !isEmpty(comicBookDetailData.rawFileDetails.cover);
+
+  // query for airdc++
+  const airDCPPQuery = {};
+  if (isComicBookMetadataAvailable) {
+    Object.assign(airDCPPQuery, {
+      issue: {
+        name: comicBookDetailData.sourcedMetadata.comicvine.volumeInformation
+          .name,
+      },
+    });
+  } else if (areRawFileDetailsAvailable) {
+    Object.assign(airDCPPQuery, {
+      issue: {
+        name: comicBookDetailData.inferredMetadata.issue.name,
+        number: comicBookDetailData.inferredMetadata.issue.number,
+      },
+    });
+  }
 
   // Tab content and header details
   const tabGroup = [
@@ -134,7 +158,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       content: isComicBookMetadataAvailable ? (
         <VolumeInformation data={comicBookDetailData} key={1} />
       ) : null,
-      include: isComicBookMetadataAvailable,
+      shouldShow: isComicBookMetadataAvailable,
     },
     {
       id: 2,
@@ -156,8 +180,8 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
           </div>
         </div>
       ),
-      include:
-        !isNil(comicBookDetailData.sourcedMetadata) &&
+      shouldShow:
+        !isUndefined(comicBookDetailData.sourcedMetadata) &&
         !isEmpty(comicBookDetailData.sourcedMetadata.comicInfo),
     },
     {
@@ -165,18 +189,14 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       icon: <i className="fa-regular fa-file-archive"></i>,
       name: "Archive Operations",
       content: <ArchiveOperations data={comicBookDetailData} key={3} />,
-      include:
-        !isUndefined(comicBookDetailData.rawFileDetails) &&
-        !isEmpty(comicBookDetailData.rawFileDetails.cover),
+      shouldShow: areRawFileDetailsAvailable,
     },
     {
       id: 4,
       icon: <i className="fa-solid fa-floppy-disk"></i>,
       name: "Acquisition",
-      content: (
-        <AcquisitionPanel comicBookMetadata={comicBookDetailData} key={4} />
-      ),
-      include: !isNil(comicBookDetailData.rawFileDetails),
+      content: <AcquisitionPanel query={airDCPPQuery} key={4} />,
+      shouldShow: true,
     },
     {
       id: 5,
@@ -194,12 +214,11 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
           key={5}
         />
       ),
-      include: !isNil(comicBookDetailData.rawFileDetails),
+      shouldShow: true,
     },
   ];
   // filtered Tabs
-  const filteredTabs = tabGroup.filter((tab) => tab.include);
-
+  const filteredTabs = tabGroup.filter((tab) => tab.shouldShow);
 
   // Tabs
   const MetadataTabGroup = () => {
@@ -245,10 +264,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   // 2. from the CV-scraped version
   let imagePath = "";
   let comicBookTitle = "";
-  if (
-    !isUndefined(comicBookDetailData.rawFileDetails) &&
-    !isEmpty(comicBookDetailData.rawFileDetails.cover)
-  ) {
+  if (areRawFileDetailsAvailable) {
     const encodedFilePath = encodeURI(
       `${LIBRARY_SERVICE_HOST}/${comicBookDetailData.rawFileDetails.cover.filePath}`,
     );

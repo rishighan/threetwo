@@ -16,16 +16,15 @@ import ellipsize from "ellipsize";
 import { isEmpty, isNil, map } from "lodash";
 import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
 interface IAcquisitionPanelProps {
-  comicBookMetadata: any;
+  query: any;
 }
 
 export const AcquisitionPanel = (
   props: IAcquisitionPanelProps,
 ): ReactElement => {
-  const volumeName =
-    props.comicBookMetadata.sourcedMetadata.comicvine.volumeInformation.name;
-  const sanitizedVolumeName = volumeName.replace(/[^a-zA-Z0-9 ]/g, " ");
-  const issueName = props.comicBookMetadata.sourcedMetadata.comicvine.name;
+  console.log(props);
+  const issueName = props.query.issue.name;
+  const sanitizedIssueName = issueName.replace(/[^a-zA-Z0-9 ]/g, " ");
 
   // Selectors for picking state
   const airDCPPSearchResults = useSelector((state: RootState) => {
@@ -51,7 +50,7 @@ export const AcquisitionPanel = (
       // AirDC++ search query
       const dcppSearchQuery = {
         query: {
-          pattern: `${sanitizedVolumeName.replace(/#/g, "")}`,
+          pattern: `${sanitizedIssueName.replace(/#/g, "")}`,
           extensions: ["cbz", "cbr"],
         },
         hub_urls: map(

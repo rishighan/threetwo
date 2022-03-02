@@ -73,9 +73,9 @@ module.exports = () => {
       aliasFields: ["browser", "browser.esm"],
     },
     devServer: {
+      hot: true,
       port: 3050,
       open: true,
-      hot: true,
       proxy: {
         "/api/**": {
           target: "http://localhost:8050",

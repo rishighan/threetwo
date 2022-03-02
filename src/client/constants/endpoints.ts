@@ -49,6 +49,12 @@ export const LIBRARY_SERVICE_BASE_URI = hostURIBuilder({
   port: "3000",
   apiPath: "/api/library",
 });
+export const SEARCH_SERVICE_BASE_URI = hostURIBuilder({
+  protocol: "http",
+  host: process.env.UNDERLYING_HOSTNAME || "localhost",
+  port: "3000",
+  apiPath: "/api/search",
+});
 
 export const SETTINGS_SERVICE_BASE_URI = hostURIBuilder({
   protocol: "http",

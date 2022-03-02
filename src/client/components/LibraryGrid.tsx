@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, ReactElement } from "react";
 import PropTypes from "prop-types";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router";
 import {
   removeLeadingPeriod,
   escapePoundSymbol,
@@ -10,7 +10,7 @@ import prettyBytes from "pretty-bytes";
 import ellipsize from "ellipsize";
 import { useDispatch, useSelector } from "react-redux";
 import { getComicBooks } from "../actions/fileops.actions";
-import { isNil, isEmpty } from "lodash";
+import { isNil, isEmpty, isUndefined } from "lodash";
 import Masonry from "react-masonry-css";
 import Card from "./Carda";
 import { detectIssueTypes } from "../shared/utils/tradepaperback.utils";
@@ -45,7 +45,7 @@ export const LibraryGrid = (libraryGridProps: ILibraryGridProps) => {
           {data.map(({ _id, rawFileDetails, sourcedMetadata }) => {
             let imagePath = "";
             let comicName = "";
-            if (!isNil(rawFileDetails)) {
+            if (!isEmpty(rawFileDetails.cover)) {
               const encodedFilePath = encodeURI(
                 `${LIBRARY_SERVICE_HOST}/${removeLeadingPeriod(
                   rawFileDetails.cover.filePath,
@@ -71,7 +71,7 @@ export const LibraryGrid = (libraryGridProps: ILibraryGridProps) => {
                 title={comicName ? titleElement : null}
               >
                 <div className="content is-flex is-flex-direction-row">
-                  {!isNil(sourcedMetadata.comicvine) && (
+                  {!isEmpty(sourcedMetadata.comicvine) && (
                     <span className="icon cv-icon is-small">
                       <img src="/dist/img/cvlogo.svg" />
                     </span>
@@ -81,13 +81,13 @@ export const LibraryGrid = (libraryGridProps: ILibraryGridProps) => {
                       <i className="fas fa-adjust" />
                     </span>
                   )}
-                  {!isNil(sourcedMetadata.comicvine) &&
+                  {!isUndefined(sourcedMetadata.comicvine.volumeInformation) &&
                   !isEmpty(
                     detectIssueTypes(
                       sourcedMetadata.comicvine.volumeInformation.description,
                     ),
                   ) ? (
-                    <span className="tag is-warning">
+                    <span className="tag is-warning ml-1">
                       {
                         detectIssueTypes(
                           sourcedMetadata.comicvine.volumeInformation
