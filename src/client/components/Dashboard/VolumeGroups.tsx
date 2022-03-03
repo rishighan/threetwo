@@ -1,25 +1,16 @@
-import { isNil, map } from "lodash";
-import React, { ReactElement, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { map } from "lodash";
+import React, { ReactElement } from "react";
 import ellipsize from "ellipsize";
 import { Link } from "react-router-dom";
-import { fetchVolumeGroups } from "../../actions/fileops.actions";
 import Masonry from "react-masonry-css";
 
-export const VolumeGroups = (): ReactElement => {
+export const VolumeGroups = (props): ReactElement => {
   const breakpointColumnsObj = {
     default: 5,
     1100: 4,
     700: 2,
     500: 1,
   };
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(fetchVolumeGroups());
-  }, [dispatch]);
-  const volumeGroups = useSelector(
-    (state: RootState) => state.fileOps.comicVolumeGroups,
-  );
   return (
     <section className="volumes-container mt-4">
       <div className="content">
@@ -31,32 +22,30 @@ export const VolumeGroups = (): ReactElement => {
         className="volumes-grid"
         columnClassName="volumes-grid-column"
       >
-        {!isNil(volumeGroups) &&
-          volumeGroups &&
-          map(volumeGroups, (group) => {
-            if (!isNil(group._id)) {
-              return (
-                <div className="stack" key={group._id.id}>
-                  <img src={group.data[0].image.small_url} />
-                  <div className="content">
-                    <div className="stack-title is-size-8">
-                      <Link to={`/volume/details/${group.comicBookObjectId}`}>
-                        {ellipsize(group.data[0].name, 18)}
-                      </Link>
-                    </div>
-                    <div className="control">
-                      <span className="tags has-addons">
-                        <span className="tag is-primary is-light">Issues</span>
-                        <span className="tag">
-                          {group.data[0].count_of_issues}
-                        </span>
+        {map(props.volumeGroups, (data) => {
+          return map(data.data, (group) => {
+            return (
+              <div className="stack" key={group.id}>
+                <img src={group.volume.image.small_url} />
+                <div className="content">
+                  <div className="stack-title is-size-8">
+                    <Link to={`/volume/details/${group.id}`}>
+                      {ellipsize(group.volume.name, 18)}
+                    </Link>
+                  </div>
+                  <div className="control">
+                    <span className="tags has-addons">
+                      <span className="tag is-primary is-light">Issues</span>
+                      <span className="tag">
+                        {group.volume.count_of_issues}
                       </span>
-                    </div>
+                    </span>
                   </div>
                 </div>
-              );
-            }
-          })}
+              </div>
+            );
+          });
+        })}
       </Masonry>
     </section>
   );

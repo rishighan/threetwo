@@ -5,6 +5,7 @@ import {
   IMS_RAW_IMPORT_SUCCESSFUL,
   IMS_RAW_IMPORT_FAILED,
   IMS_RECENT_COMICS_FETCHED,
+  IMS_WANTED_COMICS_FETCHED,
   IMS_CV_METADATA_IMPORT_SUCCESSFUL,
   IMS_CV_METADATA_IMPORT_FAILED,
   IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
@@ -32,6 +33,8 @@ const initialState = {
   comicVineMetadataImportError: {},
   rawImportError: {},
   extractedComicBookArchive: [],
+  recentComics: [],
+  wantedComics: [],
 };
 
 function fileOpsReducer(state = initialState, action) {
@@ -64,6 +67,12 @@ function fileOpsReducer(state = initialState, action) {
       return {
         ...state,
         recentComics: action.data,
+      };
+    case IMS_WANTED_COMICS_FETCHED:
+      console.log(action.data);
+      return {
+        ...state,
+        wantedComics: action.data,
       };
     case IMS_CV_METADATA_IMPORT_SUCCESSFUL:
       return {

@@ -12,6 +12,7 @@ import {
   IMS_COMIC_BOOK_GROUPS_CALL_IN_PROGRESS,
   IMS_COMIC_BOOK_GROUPS_CALL_FAILED,
   IMS_RECENT_COMICS_FETCHED,
+  IMS_WANTED_COMICS_FETCHED,
   CV_API_CALL_IN_PROGRESS,
   CV_SEARCH_SUCCESS,
   CV_CLEANUP,
@@ -83,21 +84,33 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
 };
 
 export const getComicBooks = (options) => async (dispatch) => {
-  const { paginationOptions } = options;
-  return axios
-    .request({
-      url: `${LIBRARY_SERVICE_BASE_URI}/getComicBooks`,
-      method: "POST",
-      data: {
-        paginationOptions,
-      },
-    })
-    .then((response) => {
+  const { paginationOptions, predicate, comicStatus } = options;
+
+  const response = await axios.request({
+    url: `${LIBRARY_SERVICE_BASE_URI}/getComicBooks`,
+    method: "POST",
+    data: {
+      paginationOptions,
+      predicate,
+    },
+  });
+
+  switch (comicStatus) {
+    case "recent":
       dispatch({
         type: IMS_RECENT_COMICS_FETCHED,
         data: response.data,
       });
-    });
+      break;
+    case "wanted":
+      dispatch({
+        type: IMS_WANTED_COMICS_FETCHED,
+        data: response.data.docs,
+      });
+      break;
+    default:
+      console.log("Unrecognized comic status.");
+  }
 };
 
 export const importToDB = (payload?: any) => (dispatch) => {
@@ -111,6 +124,7 @@ export const importToDB = (payload?: any) => (dispatch) => {
         },
       },
       sourcedMetadata: { comicvine: payload || null },
+      acquisition: { wanted: true },
     };
     dispatch({
       type: IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
@@ -136,37 +150,30 @@ export const importToDB = (payload?: any) => (dispatch) => {
     });
   }
 };
-export const fetchVolumeGroups = () => (dispatch) => {
+export const fetchVolumeGroups = () => async (dispatch) => {
   try {
     dispatch({
       type: IMS_COMIC_BOOK_GROUPS_CALL_IN_PROGRESS,
     });
-    axios
-      .request({
-        url: `${LIBRARY_SERVICE_BASE_URI}/getComicBookGroups`,
-        method: "GET",
-      })
-      .then((data) => {
-        dispatch({
-          type: IMS_COMIC_BOOK_GROUPS_FETCHED,
-          data: data.data,
-        });
-      });
-  } catch (error) {
-    dispatch({
-      type: IMS_COMIC_BOOK_GROUPS_CALL_FAILED,
-      error,
+    const response = await axios.request({
+      url: `${LIBRARY_SERVICE_BASE_URI}/getComicBookGroups`,
+      method: "GET",
     });
+
+    dispatch({
+      type: IMS_COMIC_BOOK_GROUPS_FETCHED,
+      data: response.data,
+    });
+  } catch (error) {
+    console.log(error);
   }
 };
 export const fetchComicVineMatches =
-  (searchPayload, issueSearchQuery, seriesSearchQuery?) => (dispatch) => {
+  (searchPayload, issueSearchQuery, seriesSearchQuery?) => async (dispatch) => {
     try {
       dispatch({
         type: CV_API_CALL_IN_PROGRESS,
       });
-      console.log(issueSearchQuery);
-      console.log(seriesSearchQuery);
       axios
         .request({
           url: `${COMICVINE_SERVICE_URI}/volumeBasedSearch`,

@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import Card from "./Carda";
 import { ComicVineMatchPanel } from "./ComicDetail/ComicVineMatchPanel";
 import { VolumeInformation } from "./ComicDetail/Tabs/VolumeInformation";
-import { ComicVineDetails } from "./ComicDetail/ComicVineDetails";
 import { RawFileDetails } from "./ComicDetail/RawFileDetails";
 import { ArchiveOperations } from "./ComicDetail/Tabs/ArchiveOperations";
 import AcquisitionPanel from "./ComicDetail/AcquisitionPanel";
