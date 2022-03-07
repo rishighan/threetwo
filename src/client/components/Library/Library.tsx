@@ -1,28 +1,31 @@
-import React, { useState, useEffect, useMemo, ReactElement } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  ReactElement,
+  useCallback,
+} from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { useTable, usePagination } from "react-table";
-import { useDispatch, useSelector } from "react-redux";
-import { getComicBooks } from "../actions/fileops.actions";
 import { isEmpty, isNil, isUndefined } from "lodash";
-import RawFileDetails from "./Library/RawFileDetails";
-import ComicVineDetails from "./Library/ComicVineDetails";
-import SearchBar from "./Library/SearchBar";
+import RawFileDetails from "./RawFileDetails";
+import ComicVineDetails from "./ComicVineDetails";
+import SearchBar from "./SearchBar";
+import { useDispatch } from "react-redux";
+import { searchIssue } from "../../actions/fileops.actions";
 
 interface IComicBookLibraryProps {
-  matches?: unknown;
+  data: {
+    searchResults: any;
+  };
 }
 
-export const Library = ({}: IComicBookLibraryProps): ReactElement => {
+export const Library = (data: IComicBookLibraryProps): ReactElement => {
+  const { searchResults } = data.data;
+  const pageTotal = searchResults.hits.total.value;
   const [isPageSizeDropdownCollapsed, collapsePageSizeDropdown] =
     useState(false);
-
-  const data = useSelector(
-    (state: RootState) => state.fileOps.recentComics.docs,
-  );
-  const pageTotal = useSelector(
-    (state: RootState) => state.fileOps.recentComics.totalDocs,
-  );
   const togglePageSizeDropdown = () =>
     collapsePageSizeDropdown(!isPageSizeDropdownCollapsed);
 
@@ -40,6 +43,8 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
     );
   };
 
+  console.log(searchResults);
+  // return null;
   const columns = useMemo(
     () => [
       {
@@ -49,9 +54,9 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
             Header: "File Details",
             id: "fileDetails",
             accessor: (row) =>
-              !isEmpty(row.rawFileDetails.cover)
-                ? row.rawFileDetails
-                : row.sourcedMetadata,
+              !isEmpty(row._source.rawFileDetails.cover)
+                ? row._source.rawFileDetails
+                : row._source.sourcedMetadata,
             Cell: ({ value }) => {
               // If no CV info available, use raw file metadata
               if (!isNil(value.cover)) {
@@ -66,7 +71,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
           },
           {
             Header: "Import Status",
-            accessor: "importStatus.isImported",
+            accessor: "_source.importStatus.isImported",
             Cell: ImportStatus,
           },
         ],
@@ -76,7 +81,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
         columns: [
           {
             Header: "Issue #",
-            accessor: "sourcedMetadata",
+            accessor: "_source.sourcedMetadata",
             Cell(props) {
               return (
                 !isUndefined(props.cell.value) &&
@@ -89,7 +94,8 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
 
           {
             Header: "Publisher",
-            accessor: "sourcedMetadata.comicvine.volumeInformation.publisher",
+            accessor:
+              "_source.sourcedMetadata.comicvine.volumeInformation.publisher",
             Cell(props) {
               return (
                 !isNil(props.cell.value) && <h6>{props.cell.value.name}</h6>
@@ -99,7 +105,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
 
           {
             Header: "Type",
-            accessor: "sourcedMetadata.comicvine",
+            accessor: "_source.sourcedMetadata.comicvine",
             Cell(props) {
               return (
                 !isEmpty(props.cell.value) && (
@@ -113,7 +119,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
 
           {
             Header: "Volume",
-            accessor: "sourcedMetadata.comicvine.volumeInformation",
+            accessor: "_source.sourcedMetadata.comicvine.volumeInformation",
             Cell(props) {
               return (
                 !isNil(props.cell.value) && <h6>{props.cell.value.name}</h6>
@@ -123,7 +129,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
 
           {
             Header: "Match Score",
-            accessor: "sourcedMetadata.comicvine.score",
+            accessor: "_source.sourcedMetadata.comicvine.score",
             Cell(props) {
               return (
                 !isNil(props.cell.value) && (
@@ -143,7 +149,6 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
   ImportStatus.propTypes = {
     value: PropTypes.bool.isRequired,
   };
-
   const {
     getTableProps,
     getTableBodyProps,
@@ -162,28 +167,59 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
   } = useTable(
     {
       columns,
-      data,
+      data: searchResults.hits.hits,
       manualPagination: true,
       initialState: {
         pageIndex: 1,
-        pageSize: 15,
+        pageSize: 25,
       },
-      pageCount: pageTotal,
+      pageCount: searchResults.hits.total.value,
     },
     usePagination,
   );
-
   const dispatch = useDispatch();
-  useEffect(() => {
+  const goToNextPage = useCallback(() => {
+    // incremement pageIndex
+    nextPage();
+    console.log(pageIndex);
+    console.log("from", pageSize * pageIndex + 1);
     dispatch(
-      getComicBooks({
-        paginationOptions: {
-          page: pageIndex,
-          limit: pageSize,
+      searchIssue(
+        {
+          query: {},
         },
-      }),
+        {
+          pagination: {
+            size: pageSize,
+            from: pageSize * pageIndex + 1,
+          },
+        },
+      ),
     );
-  }, [pageIndex, pageSize]);
+  }, [pageIndex]);
+
+  const goToPreviousPage = useCallback(() => {
+    previousPage();
+    let from = 0;
+    if (pageIndex === 2) {
+      from = (pageIndex - 1) * pageSize + 2 - 27;
+    } else {
+      from = (pageIndex - 1) * pageSize + 2 - 26;
+    }
+    dispatch(
+      searchIssue(
+        {
+          query: {},
+        },
+        {
+          pagination: {
+            size: pageSize,
+            from,
+          },
+        },
+      ),
+    );
+  }, [pageIndex]);
 
   return (
     <section className="container">
@@ -191,7 +227,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
         <h1 className="title">Library</h1>
         {/* Search bar */}
         <SearchBar />
-        {!isUndefined(data) ? (
+        {!isUndefined(searchResults) && (
           <div>
             <div className="library">
               <table {...getTableProps()} className="table is-hoverable">
@@ -250,7 +286,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
                   <p className="control">
                     <button
                       className="button"
-                      onClick={() => previousPage()}
+                      onClick={() => goToPreviousPage()}
                       disabled={!canPreviousPage}
                     >
                       Previous Page
@@ -259,7 +295,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
                   <p className="control">
                     <button
                       className="button"
-                      onClick={() => nextPage()}
+                      onClick={() => goToNextPage()}
                       disabled={!canNextPage}
                     >
                       <span>Next Page</span>
@@ -338,7 +374,7 @@ export const Library = ({}: IComicBookLibraryProps): ReactElement => {
               </nav>
             </div>
           </div>
-        ) : null}
+        )}
       </div>
     </section>
   );

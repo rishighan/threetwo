@@ -24,7 +24,10 @@ import {
   IMG_ANALYSIS_DATA_FETCH_SUCCESS,
   IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
   IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
+  SS_SEARCH_RESULTS_FETCHED,
+  SS_SEARCH_IN_PROGRESS,
   FILEOPS_STATE_RESET,
+  LS_IMPORT_CALL_IN_PROGRESS,
 } from "../constants/action-types";
 import { success } from "react-notification-system-redux";
 import { isNil, map } from "lodash";
@@ -65,6 +68,9 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
       page: 1,
     },
   };
+  dispatch({
+    type: LS_IMPORT_CALL_IN_PROGRESS,
+  });
 
   // dispatch(
   //   success({
@@ -265,13 +271,20 @@ export const extractComicArchive =
     });
   };
 
-export const searchIssue = (query) => async (dispatch) => {
-  const foo = await axios({
+export const searchIssue = (query, options) => async (dispatch) => {
+  dispatch({
+    type: SS_SEARCH_IN_PROGRESS,
+  });
+
+  const response = await axios({
     url: `${SEARCH_SERVICE_BASE_URI}/searchIssue`,
     method: "POST",
-    data: query,
+    data: { ...query, ...options },
   });
-  console.log(foo);
+  dispatch({
+    type: SS_SEARCH_RESULTS_FETCHED,
+    data: response.data.body,
+  });
 };
 export const analyzeImage =
   (imageFilePath: string | Buffer) => async (dispatch) => {

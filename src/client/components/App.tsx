@@ -4,8 +4,8 @@ import Dashboard from "./Dashboard/Dashboard";
 
 import Import from "./Import";
 import { ComicDetail } from "./ComicDetail";
-import Library from "./Library";
-import LibraryGrid from "./LibraryGrid";
+import LibraryContainer from "./Library/LibraryContainer";
+import LibraryGrid from "./Library/LibraryGrid";
 import Search from "./Search";
 import Settings from "./Settings";
 import VolumeDetail from "./VolumeDetail/VolumeDetail";
@@ -77,7 +77,7 @@ export const App = (): ReactElement => {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/import" element={<Import path={"./comics"} />} />
-          <Route path="/library" element={<Library />} />
+          <Route path="/library" element={<LibraryContainer />} />
           <Route path="/library-grid" element={<LibraryGrid />} />
           <Route path="/search" element={<Search />} />
           <Route

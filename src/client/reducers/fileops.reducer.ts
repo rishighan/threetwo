@@ -1,6 +1,5 @@
 import { LOCATION_CHANGE } from "redux-first-history";
 import {
-  RMQ_SOCKET_CONNECTED,
   IMS_COMICBOOK_METADATA_FETCHED,
   IMS_RAW_IMPORT_SUCCESSFUL,
   IMS_RAW_IMPORT_FAILED,
@@ -19,11 +18,15 @@ import {
   LS_COMIC_ADDED,
   IMG_ANALYSIS_CALL_IN_PROGRESS,
   IMG_ANALYSIS_DATA_FETCH_SUCCESS,
+  SS_SEARCH_RESULTS_FETCHED,
+  SS_SEARCH_IN_PROGRESS,
   FILEOPS_STATE_RESET,
+  LS_IMPORT_CALL_IN_PROGRESS,
 } from "../constants/action-types";
 const initialState = {
   IMSCallInProgress: false,
   IMGCallInProgress: false,
+  SSCallInProgress: false,
   imageAnalysisResults: {},
   comicBookExtractionInProgress: false,
   comicBookMetadata: [],
@@ -35,6 +38,8 @@ const initialState = {
   extractedComicBookArchive: [],
   recentComics: [],
   wantedComics: [],
+  librarySearchResultCount: 0,
+  libraryQueueResults: [],
 };
 
 function fileOpsReducer(state = initialState, action) {
@@ -46,13 +51,12 @@ function fileOpsReducer(state = initialState, action) {
         IMSCallInProgress: false,
       };
 
-    case RMQ_SOCKET_CONNECTED:
+    case LS_IMPORT_CALL_IN_PROGRESS: {
       return {
         ...state,
-        isSocketConnected: action.isSocketConnected,
-        socketId: action.socketId,
         IMSCallInProgress: true,
       };
+    }
     case IMS_RAW_IMPORT_SUCCESSFUL:
       return {
         ...state,
@@ -140,6 +144,7 @@ function fileOpsReducer(state = initialState, action) {
       console.log("BASH", action);
       return {
         ...state,
+        librarySearchResultCount: state.librarySearchResultCount + 1,
       };
     }
     case LS_COMIC_ADDED: {
@@ -158,6 +163,22 @@ function fileOpsReducer(state = initialState, action) {
       return {
         ...state,
         imageAnalysisResults: action.result,
+      };
+    }
+
+    case SS_SEARCH_IN_PROGRESS: {
+      return {
+        ...state,
+        SSCallInProgress: true,
+      };
+    }
+
+    case SS_SEARCH_RESULTS_FETCHED: {
+      console.log(action.data);
+      return {
+        ...state,
+        librarySearchResults: action.data,
+        SSCallInProgress: false,
       };
     }
 

@@ -28,13 +28,10 @@ interface IProps {
 
 export const Import = (props: IProps): ReactElement => {
   const dispatch = useDispatch();
-  const isSocketConnected = useSelector((state: RootState) => {
-    return state.fileOps.isSocketConnected;
-  });
-  const importResults = useSelector(
-    (state: RootState) => state.fileOps.comicBookMetadata,
+  const libraryQueueResults = useSelector(
+    (state: RootState) => state.fileOps.librarySearchResultCount,
   );
-  const IMSCallInProgress = useSelector(
+  const libraryQueueImportStatus = useSelector(
     (state: RootState) => state.fileOps.IMSCallInProgress,
   );
   const initiateImport = useCallback(() => {
@@ -42,21 +39,11 @@ export const Import = (props: IProps): ReactElement => {
       dispatch(fetchComicBookMetadata(props.path));
     }
   }, [dispatch]);
-  const cache = createCache();
-  const renderRow = ({ index, style }) => (
-    <li className="is-size-7" style={style}>
-      <strong>{importResults[index].comicBookCoverMetadata.name} </strong>
-      <br />
-      {importResults[index].comicBookCoverMetadata.path}
-      <hr />
-    </li>
-  );
 
   return (
     <div className="container">
       <section className="section is-small">
         <h1 className="title">Import</h1>
-        {isSocketConnected}
         <article className="message is-dark">
           <div className="message-body">
             <p className="mb-2">
@@ -76,7 +63,14 @@ export const Import = (props: IProps): ReactElement => {
           </div>
         </article>
         <p className="buttons">
-          <button className="button is-medium" onClick={initiateImport}>
+          <button
+            className={
+              libraryQueueImportStatus
+                ? "button is-loading is-medium"
+                : "button is-medium"
+            }
+            onClick={initiateImport}
+          >
             <span className="icon">
               <i className="fas fa-file-import"></i>
             </span>
@@ -91,36 +85,7 @@ export const Import = (props: IProps): ReactElement => {
           </button>
         </p>
 
-        {!isEmpty(importResults) ? (
-          <>
-            <h3>Import Results</h3>
-            <hr />
-            <ul>
-              <DynamicList
-                data={importResults}
-                cache={cache}
-                height={800}
-                width={"100%"}
-                lazyMeasurement={false}
-              >
-                {renderRow}
-              </DynamicList>
-            </ul>
-          </>
-        ) : (
-          <div className="progress-indicator-container">
-            <div className="indicator">
-              <Loader
-                type="MutatingDots"
-                color="#CCC"
-                secondaryColor="#999"
-                height={100}
-                width={100}
-                visible={IMSCallInProgress}
-              />
-            </div>
-          </div>
-        )}
+        <pre>{JSON.stringify(libraryQueueResults, null, 2)}</pre>
       </section>
     </div>
   );

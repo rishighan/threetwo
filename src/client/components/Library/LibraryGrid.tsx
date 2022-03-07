@@ -4,18 +4,18 @@ import { useNavigate } from "react-router";
 import {
   removeLeadingPeriod,
   escapePoundSymbol,
-} from "../shared/utils/formatting.utils";
+} from "../../shared/utils/formatting.utils";
 import { useTable, usePagination } from "react-table";
 import prettyBytes from "pretty-bytes";
 import ellipsize from "ellipsize";
 import { useDispatch, useSelector } from "react-redux";
-import { getComicBooks } from "../actions/fileops.actions";
+import { getComicBooks } from "../../actions/fileops.actions";
 import { isNil, isEmpty, isUndefined } from "lodash";
 import Masonry from "react-masonry-css";
-import Card from "./Carda";
-import { detectIssueTypes } from "../shared/utils/tradepaperback.utils";
+import Card from "../Carda";
+import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
 import { Link } from "react-router-dom";
-import { LIBRARY_SERVICE_HOST } from "../constants/endpoints";
+import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
 
 interface ILibraryGridProps {}
 export const LibraryGrid = (libraryGridProps: ILibraryGridProps) => {

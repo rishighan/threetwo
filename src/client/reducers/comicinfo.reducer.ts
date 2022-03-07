@@ -84,7 +84,7 @@ function comicinfoReducer(state = initialState, action) {
       const updatedState = [...state.issuesForVolume];
       action.matches.map((match) => {
         updatedState.map((issue, idx) => {
-          let matches = [];
+          const matches = [];
           if (!isEmpty(match.hits.hits)) {
             return match.hits.hits.map((hit) => {
               if (

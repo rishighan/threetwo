@@ -10,11 +10,19 @@ export const SearchBar = (): ReactElement => {
   const handleSubmit = useCallback((e) => {
     console.log(e);
     dispatch(
-      searchIssue({
-        queryObject: {
-          volumeName: e.search,
+      searchIssue(
+        {
+          query: {
+            volumeName: e.search,
+          },
         },
-      }),
+        {
+          pagination: {
+            size: 25,
+            from: 0,
+          },
+        },
+      ),
     );
   }, []);
   return (
