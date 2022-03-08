@@ -54,7 +54,7 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
             Header: "File Details",
             id: "fileDetails",
             accessor: (row) =>
-              !isEmpty(row._source.rawFileDetails.cover)
+              !isEmpty(row._source.rawFileDetails)
                 ? row._source.rawFileDetails
                 : row._source.sourcedMetadata,
             Cell: ({ value }) => {
@@ -77,16 +77,20 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
         ],
       },
       {
-        Header: "ComicVine Metadata",
+        Header: "Additional Metadata",
         columns: [
           {
             Header: "Issue #",
-            accessor: "_source.sourcedMetadata",
+            accessor: "_source.inferredMetadata.issue",
             Cell(props) {
               return (
-                !isUndefined(props.cell.value) &&
-                !isUndefined(props.cell.value.comicvine) && (
-                  <div>{props.cell.value.comicvine.issue_number}</div>
+                !isUndefined(props.cell.value) && (
+                  <div className="control">
+                    <div className="tags has-addons">
+                      <span className="tag is-light is-warning">Inferred</span>
+                      <span className="tag">{props.cell.value.number}</span>
+                    </div>
+                  </div>
                 )
               );
             },
