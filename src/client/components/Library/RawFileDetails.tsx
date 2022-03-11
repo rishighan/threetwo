@@ -23,7 +23,7 @@ export const RawFileDetails = (rawFileData): ReactElement => {
           </div>
           <ul className="card-content">
             <li className="name has-text-weight-medium">
-              {ellipsize(data.name, 18)}
+              {ellipsize(data.name, 28)}
             </li>
             <li>
               <div className="control">
