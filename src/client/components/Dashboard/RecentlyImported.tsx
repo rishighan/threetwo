@@ -80,6 +80,12 @@ export const RecentlyImported = ({
                       <img src="/img/missing-file.svg" />
                     </span>
                   )}
+                  {/* ComicInfo.xml presence */}
+                  {!isNil(sourcedMetadata.comicInfo) && (
+                    <span className="icon custom-icon is-small has-text-danger">
+                      <img src="/img/comicinfoxml.svg" />
+                    </span>
+                  )}
                   {/* Issue type */}
                   {isComicBookMetadataAvailable &&
                   !isNil(

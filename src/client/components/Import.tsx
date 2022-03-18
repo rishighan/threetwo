@@ -51,7 +51,16 @@ export const Import = (props: IProps): ReactElement => {
       dispatch(toggleImportQueueStatus({ action: "pause" }));
     }
   }, [isImportQueuePaused]);
-
+  const pauseIconText = (
+    <>
+      <i className="fa-solid fa-pause mr-2"></i> Pause Import
+    </>
+  );
+  const playIconText = (
+    <>
+      <i className="fa-solid fa-play mr-2"></i> Resume Import
+    </>
+  );
   return (
     <div className="container">
       <section className="section is-small">
@@ -96,11 +105,27 @@ export const Import = (props: IProps): ReactElement => {
             <span>Import and Tag</span>
           </button>
         </p>
-
-        <pre>{JSON.stringify(libraryQueueResults, null, 2)}</pre>
-        <button className="button is-warning" onClick={toggleImport}>
-          Pause Queue
-        </button>
+        <div className="columns is-multiline">
+          <div className="column is-one-fifth">
+            <div className="box control-palette">
+              <span className="is-size-2 has-text-weight-bold">
+                {JSON.stringify(libraryQueueResults, null, 2)}
+              </span>
+            </div>
+            <div className="is-half">
+              <div className="content">
+                <div className="control">
+                  <button
+                    className="button is-warning is-light"
+                    onClick={toggleImport}
+                  >
+                    {isImportQueuePaused ? pauseIconText : playIconText}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   );
