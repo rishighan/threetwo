@@ -12,6 +12,8 @@ export const IMS_RAW_IMPORT_FAILED = "IMS_RAW_IMPORT_FAILED";
 
 // Library service generic action types
 export const LS_IMPORT_CALL_IN_PROGRESS = "LS_IMPORT_CALL_IN_PROGRESS";
+// Library import bull mq queue control
+export const LS_TOGGLE_IMPORT_QUEUE = "LS_TOGGLE_IMPORT_QUEUE";
 
 // ComicVine Metadata
 export const IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS =

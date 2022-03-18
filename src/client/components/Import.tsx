@@ -1,7 +1,9 @@
-import React, { ReactElement, useCallback, useContext } from "react";
-import { isEmpty } from "lodash";
+import React, { ReactElement, useCallback, useContext, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchComicBookMetadata } from "../actions/fileops.actions";
+import {
+  fetchComicBookMetadata,
+  toggleImportQueueStatus,
+} from "../actions/fileops.actions";
 import DynamicList, { createCache } from "react-window-dynamic-list";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Loader from "react-loader-spinner";
@@ -34,11 +36,21 @@ export const Import = (props: IProps): ReactElement => {
   const libraryQueueImportStatus = useSelector(
     (state: RootState) => state.fileOps.IMSCallInProgress,
   );
+  const [isImportQueuePaused, setImportQueueStatus] = useState(false);
   const initiateImport = useCallback(() => {
     if (typeof props.path !== "undefined") {
       dispatch(fetchComicBookMetadata(props.path));
     }
   }, [dispatch]);
+
+  const toggleImport = useCallback(() => {
+    setImportQueueStatus(!isImportQueuePaused);
+    if (isImportQueuePaused === false) {
+      dispatch(toggleImportQueueStatus({ action: "resume" }));
+    } else if (isImportQueuePaused === true) {
+      dispatch(toggleImportQueueStatus({ action: "pause" }));
+    }
+  }, [isImportQueuePaused]);
 
   return (
     <div className="container">
@@ -86,6 +98,9 @@ export const Import = (props: IProps): ReactElement => {
         </p>
 
         <pre>{JSON.stringify(libraryQueueResults, null, 2)}</pre>
+        <button className="button is-warning" onClick={toggleImport}>
+          Pause Queue
+        </button>
       </section>
     </div>
   );

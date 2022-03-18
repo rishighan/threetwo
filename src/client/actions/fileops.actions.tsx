@@ -28,6 +28,7 @@ import {
   SS_SEARCH_IN_PROGRESS,
   FILEOPS_STATE_RESET,
   LS_IMPORT_CALL_IN_PROGRESS,
+  LS_TOGGLE_IMPORT_QUEUE,
 } from "../constants/action-types";
 import { success } from "react-notification-system-redux";
 import { isNil, map } from "lodash";
@@ -88,7 +89,13 @@ export const fetchComicBookMetadata = (options) => async (dispatch) => {
     data: { extractionOptions },
   });
 };
-
+export const toggleImportQueueStatus = (options) => async (dispatch) => {
+  dispatch({
+    type: LS_TOGGLE_IMPORT_QUEUE,
+    meta: { remote: true },
+    data: { manjhul: "jigyadam", action: options.action },
+  });
+};
 export const getComicBooks = (options) => async (dispatch) => {
   const { paginationOptions, predicate, comicStatus } = options;
 
