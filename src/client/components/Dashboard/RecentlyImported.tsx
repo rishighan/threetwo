@@ -83,7 +83,10 @@ export const RecentlyImported = ({
                   {/* ComicInfo.xml presence */}
                   {!isNil(sourcedMetadata.comicInfo) && (
                     <span className="icon custom-icon is-small has-text-danger">
-                      <img src="/img/comicinfoxml.svg" />
+                      <img
+                        src="/img/comicinfoxml.svg"
+                        alt={"ComicInfo.xml file detected."}
+                      />
                     </span>
                   )}
                   {/* Issue type */}
