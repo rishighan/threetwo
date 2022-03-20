@@ -119,7 +119,7 @@ export const Import = (props: IProps): ReactElement => {
                     className="button is-warning is-light"
                     onClick={toggleImport}
                   >
-                    {isImportQueuePaused ? pauseIconText : playIconText}
+                    {!isImportQueuePaused ? pauseIconText : playIconText}
                   </button>
                 </div>
               </div>

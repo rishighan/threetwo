@@ -29,7 +29,7 @@ const LibraryContainer = () => {
   return !isEmpty(searchResults) ? (
     <Library data={{ searchResults }} />
   ) : (
-    "asdasd"
+    "No data found."
   );
 };
 

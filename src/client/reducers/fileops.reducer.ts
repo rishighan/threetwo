@@ -15,6 +15,7 @@ import {
   IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
   LS_IMPORT,
   LS_COVER_EXTRACTED,
+  LS_QUEUE_DRAINED,
   LS_COMIC_ADDED,
   IMG_ANALYSIS_CALL_IN_PROGRESS,
   IMG_ANALYSIS_DATA_FETCH_SUCCESS,
@@ -145,6 +146,12 @@ function fileOpsReducer(state = initialState, action) {
       return {
         ...state,
         librarySearchResultCount: state.librarySearchResultCount + 1,
+      };
+    }
+    case LS_QUEUE_DRAINED: {
+      console.log("drained", action);
+      return {
+        ...state,
       };
     }
     case LS_COMIC_ADDED: {

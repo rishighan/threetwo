@@ -7,9 +7,9 @@ import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
 
 // raw file details
 export const RawFileDetails = (rawFileData): ReactElement => {
-  const { data } = rawFileData;
+  const { rawFileDetails, inferredMetadata } = rawFileData.data;
   const encodedFilePath = encodeURI(
-    `${LIBRARY_SERVICE_HOST}/${data.cover.filePath}`,
+    `${LIBRARY_SERVICE_HOST}/${rawFileDetails.cover.filePath}`,
   );
   const filePath = escapePoundSymbol(encodedFilePath);
   return (
@@ -23,17 +23,34 @@ export const RawFileDetails = (rawFileData): ReactElement => {
           </div>
           <ul className="card-content">
             <li className="name has-text-weight-medium">
-              {ellipsize(data.name, 28)}
+              {ellipsize(rawFileDetails.name, 49)}
+            </li>
+
+            <li>
+              <dl className="is-size-7">
+                <dd>
+                  Series:{" "}
+                  <span className="has-text-weight-medium">
+                    {inferredMetadata.issue.name}
+                  </span>
+                </dd>
+              </dl>
             </li>
             <li>
-              <div className="control">
-                <div className="tags has-addons">
-                  <span className="tag is-primary is-light">
-                    {data.extension}
-                  </span>
-                  <span className="tag is-info is-light">
-                    {prettyBytes(data.fileSize)}
-                  </span>
+              <div className="mt-1 field is-grouped is-grouped-multiline">
+                <div className="control">
+                  <div className="tags">
+                    <span className="tag is-warning is-light">
+                      {inferredMetadata.issue.number}
+                    </span>
+
+                    <span className="tag is-success is-light">
+                      {rawFileDetails.extension}
+                    </span>
+                    <span className="tag">
+                      {prettyBytes(rawFileDetails.fileSize)}
+                    </span>
+                  </div>
                 </div>
               </div>
             </li>

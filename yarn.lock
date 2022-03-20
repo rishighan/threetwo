@@ -12789,10 +12789,10 @@ text-table@^0.2.0, text-table@~0.2.0:
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=
 
-threetwo-ui-typings@^1.0.13:
-  version "1.0.13"
-  resolved "https://registry.yarnpkg.com/threetwo-ui-typings/-/threetwo-ui-typings-1.0.13.tgz#9437a8c08a6984ebd1dcdf308e06e404dee11c81"
-  integrity sha512-AQiY8/hbp+TobBoehNTEoNco97AoiKYQjAANSFDR3pSD5jFn5qjLlKntvqdNF9Fg5tcS0ReYe0AjsvKshKpixQ==
+threetwo-ui-typings@^1.0.14:
+  version "1.0.14"
+  resolved "https://registry.yarnpkg.com/threetwo-ui-typings/-/threetwo-ui-typings-1.0.14.tgz#39cb8115cd311af2569504a6d32f401827de5c0a"
+  integrity sha512-nfOi2T9Pr35Bry7Y9q0r6ZnuLdGqfJY45Xu0lDGJl/oA8RLBS19FZtxsVQzYnm5jfm0tO2Q6t/JY7JnU8a9olw==
   dependencies:
     typescript "^4.3.2"
 

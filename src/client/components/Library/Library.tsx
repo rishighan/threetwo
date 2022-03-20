@@ -8,12 +8,13 @@ import React, {
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { useTable, usePagination } from "react-table";
-import { isEmpty, isNil, isUndefined } from "lodash";
+import { flatten, isEmpty, isNil, isUndefined, map } from "lodash";
 import RawFileDetails from "./RawFileDetails";
 import ComicVineDetails from "./ComicVineDetails";
 import SearchBar from "./SearchBar";
 import { useDispatch } from "react-redux";
 import { searchIssue } from "../../actions/fileops.actions";
+import ellipsize from "ellipsize";
 
 interface IComicBookLibraryProps {
   data: {
@@ -37,9 +38,35 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
 
   const ImportStatus = ({ value }) => {
     return value ? (
-      <span className="tag is-info is-light">Imported</span>
+      <div className="box">
+        <dl>
+          <span className="tags has-addons is-size-7">
+            <span className="tag is-info">Series</span>
+            <span className="tag">{ellipsize(value.series[0], 25)}</span>
+          </span>
+        </dl>
+        <dl>
+          <div className="field is-grouped is-grouped-multiline">
+            <div className="control">
+              <span className="tags has-addons is-size-7 has-text-weight-bold mt-2">
+                <span className="tag is-info">Pages</span>
+                <span className="tag">{value.pagecount[0]}</span>
+              </span>
+            </div>
+
+            <div className="control">
+              <span className="tags has-addons is-size-7 has-text-weight-bold mt-2">
+                <span className="tag is-info">Issue</span>
+                {!isNil(value.number) && (
+                  <span className="tag">{parseInt(value.number[0], 10)}</span>
+                )}
+              </span>
+            </div>
+          </div>
+        </dl>
+      </div>
     ) : (
-      "Not Imported"
+      <span className="is-size-7">No ComicInfo.xml</span>
     );
   };
 
@@ -59,11 +86,14 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
             id: "fileDetails",
             accessor: (row) =>
               !isEmpty(row._source.rawFileDetails)
-                ? row._source.rawFileDetails
+                ? {
+                    rawFileDetails: row._source.rawFileDetails,
+                    inferredMetadata: row._source.inferredMetadata,
+                  }
                 : row._source.sourcedMetadata,
             Cell: ({ value }) => {
               // If no CV info available, use raw file metadata
-              if (!isNil(value.cover)) {
+              if (!isNil(value.rawFileDetails.cover)) {
                 return <RawFileDetails data={value} />;
               }
               // If CV metadata available, show it
@@ -75,7 +105,7 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
           },
           {
             Header: "Import Status",
-            accessor: "_source.importStatus.isImported",
+            accessor: "_source.sourcedMetadata.comicInfo",
             Cell: ImportStatus,
           },
         ],
@@ -84,67 +114,12 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
         Header: "Additional Metadata",
         columns: [
           {
-            Header: "Issue #",
-            accessor: "_source.inferredMetadata.issue",
-            Cell(props) {
-              return (
-                !isUndefined(props.cell.value) && (
-                  <div className="control">
-                    <div className="tags has-addons">
-                      <span className="tag is-light is-warning">Inferred</span>
-                      <span className="tag">{props.cell.value.number}</span>
-                    </div>
-                  </div>
-                )
-              );
-            },
-          },
-
-          {
             Header: "Publisher",
             accessor:
               "_source.sourcedMetadata.comicvine.volumeInformation.publisher",
             Cell(props) {
               return (
                 !isNil(props.cell.value) && <h6>{props.cell.value.name}</h6>
-              );
-            },
-          },
-
-          {
-            Header: "Type",
-            accessor: "_source.sourcedMetadata.comicvine",
-            Cell(props) {
-              return (
-                !isEmpty(props.cell.value) && (
-                  <span className="tag is-info is-light">
-                    {props.cell.value.resource_type}
-                  </span>
-                )
-              );
-            },
-          },
-
-          {
-            Header: "Volume",
-            accessor: "_source.sourcedMetadata.comicvine.volumeInformation",
-            Cell(props) {
-              return (
-                !isNil(props.cell.value) && <h6>{props.cell.value.name}</h6>
-              );
-            },
-          },
-
-          {
-            Header: "Match Score",
-            accessor: "_source.sourcedMetadata.comicvine.score",
-            Cell(props) {
-              return (
-                !isNil(props.cell.value) && (
-                  <span className="tag is-success is-light">
-                    {parseInt(props.cell.value, 10)}
-                  </span>
-                )
               );
             },
           },

@@ -187,23 +187,24 @@ pre {
   }
 }
 .card-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  column-gap: 0.5em;
-  row-gap: 1.2em;
+  // display: grid;
+  // grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  // column-gap: 0.5em;
+  // row-gap: 1.2em;
 
   .card {
     margin: 0 0 15px 0;
+   
     .partial-rounded-card-image {
       img {
-        border-top-left-radius: 0.3rem;
-        border-top-right-radius: 0.3rem;
+        border-top-left-radius: 0.4rem;
+        border-top-right-radius: 0.4rem;
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
       }
     }
     .rounded-card-image {
-      border-radius: 0.3rem;
+      border-radius: 0.4rem;
     }
 
     .is-horizontal {
@@ -225,24 +226,20 @@ pre {
         }
       }
       .card-content {
-        align-self: center;
+        align-self: top;
         flex: 1;
         padding-left: 1em;
-        padding-top: 0;
-        padding-bottom: 0;
-        font-size: 0.8em;
+        padding-top: 0.5em;
+        padding-bottom: 0em;
+        .name {
+          font-size: 0.85em;
+        }
         ul {
           li.status {
             margin-top: 10px;
           }
         }
 
-        .truncate {
-          width: 400px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
       }
       .is-divider {
         margin-top: 1.5rem;
