@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
-import { useTable, usePagination } from "react-table";
+import { useTable, usePagination, useFlexLayout } from "react-table";
 import { flatten, isEmpty, isNil, isUndefined, map } from "lodash";
 import RawFileDetails from "./RawFileDetails";
 import ComicVineDetails from "./ComicVineDetails";
@@ -38,27 +38,27 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
 
   const ImportStatus = ({ value }) => {
     return value ? (
-      <div className="box">
+      <div className="comicvine-metadata">
         <dl>
           <span className="tags has-addons is-size-7">
-            <span className="tag is-info">Series</span>
-            <span className="tag">{ellipsize(value.series[0], 25)}</span>
+            <span className="tag">Series</span>
+            <span className="tag is-warning is-light">{ellipsize(value.series[0], 25)}</span>
           </span>
         </dl>
         <dl>
           <div className="field is-grouped is-grouped-multiline">
             <div className="control">
-              <span className="tags has-addons is-size-7 has-text-weight-bold mt-2">
-                <span className="tag is-info">Pages</span>
-                <span className="tag">{value.pagecount[0]}</span>
+              <span className="tags has-addons is-size-7  mt-2">
+                <span className="tag">Pages</span>
+                <span className="tag is-info is-light has-text-weight-bold">{value.pagecount[0]}</span>
               </span>
             </div>
 
             <div className="control">
-              <span className="tags has-addons is-size-7 has-text-weight-bold mt-2">
-                <span className="tag is-info">Issue</span>
+              <span className="tags has-addons is-size-7 mt-2">
+                <span className="tag">Issue</span>
                 {!isNil(value.number) && (
-                  <span className="tag">{parseInt(value.number[0], 10)}</span>
+                  <span className="tag has-text-weight-bold is-success is-light">{parseInt(value.number[0], 10)}</span>
                 )}
               </span>
             </div>
@@ -84,6 +84,7 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
           {
             Header: "File Details",
             id: "fileDetails",
+            minWidth: 450,
             accessor: (row) =>
               !isEmpty(row._source.rawFileDetails)
                 ? {
@@ -106,6 +107,8 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
           {
             Header: "Import Status",
             accessor: "_source.sourcedMetadata.comicInfo",
+            minWidth: 300,
+            align: "right",
             Cell: ImportStatus,
           },
         ],
@@ -121,6 +124,13 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
               return (
                 !isNil(props.cell.value) && <h6>{props.cell.value.name}</h6>
               );
+            },
+          },
+          {
+            Header: "Something",
+            accessor: "_source.acquisition.wanted",
+            Cell: (props) => {
+              return <div>asda</div>
             },
           },
         ],
@@ -159,6 +169,7 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
       pageCount: searchResults.hits.total.value,
     },
     usePagination,
+    useFlexLayout,
   );
   const dispatch = useDispatch();
   const goToNextPage = useCallback(() => {

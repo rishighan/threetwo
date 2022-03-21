@@ -4,6 +4,7 @@ import { escapePoundSymbol } from "../../shared/utils/formatting.utils";
 import prettyBytes from "pretty-bytes";
 import ellipsize from "ellipsize";
 import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
+import { Card } from "../Carda";
 
 // raw file details
 export const RawFileDetails = (rawFileData): ReactElement => {
@@ -13,48 +14,63 @@ export const RawFileDetails = (rawFileData): ReactElement => {
   );
   const filePath = escapePoundSymbol(encodedFilePath);
   return (
-    <div className="card-container">
-      <div className="card">
-        <div className="is-horizontal">
-          <div className="card-image">
-            <figure>
-              <img className="image" src={filePath} />
-            </figure>
-          </div>
-          <ul className="card-content">
-            <li className="name has-text-weight-medium">
-              {ellipsize(rawFileDetails.name, 49)}
-            </li>
+    <div className="columns">
+      <div className="column">
+        <div className="comic-detail issue-metadata">
+          <dl>
+            <dd>
+              <div className="columns mt-2">
+                <div className="column is-3">
+                  <Card
+                    imageUrl={filePath}
+                    orientation={"vertical"}
+                    hasDetails={false}
+                    // cardContainerStyle={{ maxWidth: 200 }}
+                  />
+                </div>
+                <div className="column">
+                  <dl>
+                    <dt>
+                      <h6 className="name has-text-weight-medium mb-1">
+                        {rawFileDetails.name}
+                      </h6>
+                    </dt>
+                    <dd className="is-size-7">
+                      Is a part of{" "}
+                      <span className="has-text-weight-semibold">
+                        {inferredMetadata.issue.name}
+                      </span>
+                    </dd>
 
-            <li>
-              <dl className="is-size-7">
-                <dd>
-                  Series:{" "}
-                  <span className="has-text-weight-medium">
-                    {inferredMetadata.issue.name}
-                  </span>
-                </dd>
-              </dl>
-            </li>
-            <li>
-              <div className="mt-1 field is-grouped is-grouped-multiline">
-                <div className="control">
-                  <div className="tags">
-                    <span className="tag is-warning is-light">
-                      {inferredMetadata.issue.number}
-                    </span>
-
-                    <span className="tag is-success is-light">
-                      {rawFileDetails.extension}
-                    </span>
-                    <span className="tag">
-                      {prettyBytes(rawFileDetails.fileSize)}
-                    </span>
-                  </div>
+                    <dd className="is-size-7 mt-2">
+                      <div className="field is-grouped is-grouped-multiline">
+                        <div className="control">
+                          <span className="tags">
+                            <span className="tag is-success is-light has-text-weight-semibold">
+                              {rawFileDetails.extension}
+                            </span>
+                            <span className="tag is-success is-light">
+                              {prettyBytes(rawFileDetails.fileSize)}
+                            </span>
+                          </span>
+                        </div>
+                        <div className="control">
+                          {inferredMetadata.issue.number && (
+                            <div className="tags has-addons">
+                              <span className="tag is-light">Issue #</span>
+                              <span className="tag is-warning">
+                                {inferredMetadata.issue.number}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </dd>
+                  </dl>
                 </div>
               </div>
-            </li>
-          </ul>
+            </dd>
+          </dl>
         </div>
       </div>
     </div>

@@ -263,6 +263,22 @@ pre {
   border-radius: 0.5rem;
 }
 
+.issue-metadata {
+  background-color: #FBFFEE;
+  padding: 0.8em;
+  border-radius: 0.5rem;
+  .name {
+    font-size: 0.95rem;
+    color: #4A4F50;
+  }
+}
+
+.comicvine-metadata {
+  background-color: #EBFCFF;
+  padding: 0.8rem;
+  border-radius: 0.5rem;
+}
+
 // Comic Detail
 .comic-detail {
   dl {
