@@ -95,7 +95,7 @@ services:
       - elasticsearch
     environment:
       name: core-services
-      SERVICES: import,libraryqueue,settings,imagetransformation
+      SERVICES: library,queue,settings,search,imagetransformation
     env_file: docker-compose.env
     volumes: 
       - *comics-volume

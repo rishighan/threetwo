@@ -6,6 +6,7 @@ import { ComicVineMatchPanel } from "./ComicDetail/ComicVineMatchPanel";
 import { VolumeInformation } from "./ComicDetail/Tabs/VolumeInformation";
 import { RawFileDetails } from "./ComicDetail/RawFileDetails";
 import { ArchiveOperations } from "./ComicDetail/Tabs/ArchiveOperations";
+import { ComicInfoXML } from "./ComicDetail/Tabs/ComicInfoXML";
 import AcquisitionPanel from "./ComicDetail/AcquisitionPanel";
 import DownloadsPanel from "./ComicDetail/DownloadsPanel";
 import { EditMetadataPanel } from "./ComicDetail/EditMetadataPanel";
@@ -168,13 +169,9 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
           <div className="column is-three-quarters">
             {!isNil(comicBookDetailData.sourcedMetadata) &&
               !isNil(comicBookDetailData.sourcedMetadata.comicInfo) && (
-                <pre className="has-text-size-7">
-                  {JSON.stringify(
-                    comicBookDetailData.sourcedMetadata.comicInfo,
-                    null,
-                    2,
-                  )}
-                </pre>
+                <ComicInfoXML
+                  json={comicBookDetailData.sourcedMetadata.comicInfo}
+                />
               )}
           </div>
         </div>
