@@ -8,6 +8,7 @@ import ellipsize from "ellipsize";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { Link } from "react-router-dom";
 
 type PullListProps = {
   issues: any;
@@ -16,7 +17,13 @@ type PullListProps = {
 export const PullList = ({ issues }: PullListProps): ReactElement => {
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(getWeeklyPullList(issues));
+    dispatch(
+      getWeeklyPullList({
+        startDate: "2022-4-8",
+        pageSize: "15",
+        currentPage: "1",
+      }),
+    );
   }, []);
 
   const pullList = useSelector((state: RootState) => state.comicInfo.pullList);
@@ -80,7 +87,9 @@ export const PullList = ({ issues }: PullListProps): ReactElement => {
           </div>
           {/* See all pull list issues */}
           <div className="control">
-            <button className="button is-small">View all issues</button>
+            <Link to={"/pull-list/all/"}>
+              <button className="button is-small">View all issues</button>
+            </Link>
           </div>
           <div className="field has-addons">
             <div className="control">

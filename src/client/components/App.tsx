@@ -9,6 +9,7 @@ import LibraryGrid from "./Library/LibraryGrid";
 import Search from "./Search";
 import Settings from "./Settings";
 import VolumeDetail from "./VolumeDetail/VolumeDetail";
+import PullList from "./PullList/PullList";
 
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./Navbar";
@@ -89,6 +90,7 @@ export const App = (): ReactElement => {
             element={<VolumeDetail />}
           />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/pull-list/all" element={<PullList />} />
         </Routes>
       </div>
     </AirDCPPSocketContext.Provider>

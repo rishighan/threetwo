@@ -42,11 +42,7 @@ export const getWeeklyPullList = (options) => async (dispatch) => {
     axiosWithCache({
       url: `${COMICVINE_SERVICE_URI}/getWeeklyPullList`,
       method: "get",
-      params: {
-        startDate: "2022-4-8",
-        pageSize: "15",
-        currentPage: "1",
-      },
+      params: options,
     }).then((response) => {
       dispatch({
         type: CV_WEEKLY_PULLLIST_FETCHED,

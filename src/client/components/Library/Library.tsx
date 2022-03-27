@@ -147,10 +147,6 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
 
   const dispatch = useDispatch();
   const goToNextPage = useCallback((pageIndex, pageSize) => {
-    // incremement pageIndex
-    // nextPage();
-    console.log(pageIndex);
-    console.log("from", pageSize * pageIndex + 1);
     dispatch(
       searchIssue(
         {
@@ -167,7 +163,6 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
   }, []);
 
   const goToPreviousPage = useCallback((pageIndex, pageSize) => {
-    // previousPage();
     let from = 0;
     if (pageIndex === 2) {
       from = (pageIndex - 1) * pageSize + 2 - 27;
