@@ -4,7 +4,6 @@ LABEL maintainer="Rishi Ghan <rishi.ghan@gmail.com>"
 WORKDIR /threetwo
 
 COPY package.json ./
-COPY package-lock.json ./
 COPY yarn.lock ./
 COPY nodemon.json ./
 COPY jsdoc.json ./
