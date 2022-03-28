@@ -1,10 +1,10 @@
 FROM node:17.3-alpine
 LABEL maintainer="Rishi Ghan <rishi.ghan@gmail.com>"
 
-RUN mkdir -p /usr/src/threetwo
-WORKDIR /usr/src/threetwo
+WORKDIR /threetwo
 
-COPY package.json package-lock.json ./ 
+COPY package.json ./
+COPY package-lock.json ./
 COPY yarn.lock ./
 COPY nodemon.json ./
 COPY jsdoc.json ./
