@@ -19,34 +19,10 @@ ThreeTwo! currently is set up as:
 2. [threetwo-core-service](https://github.com/rishighan/threetwo-core-service)
 3. [threetwo-metadata-service](https://github.com/rishighan/threetwo-metadata-service)
 4. [threetwo-ui-typings](https://github.com/rishighan/threetwo-frontend-types) which are the types used across the UI, installable as an `npm` dependency.
+
 ## Docker Instructions
 
-The recommended approach is to simply use `docker-compose` which spins up containers for the UI and all the associated microservices and data store.
-Make sure that you have `docker` and `docker-compose` installed. Running `docker system prune -a` can help free up some space.
-
-Then:
-
-1. Clone this repo using `git clone https://github.com/rishighan/threetwo.git`
-2. Currently, in the `docker-compose` setup, you will need to create the following folder structure:
-   
-   ```
-   - comics
-   - userdata
-     |- covers
-     |- expanded
-     |- temporary
-   ```
-3. Create an external docker network using `docker network create proxy`
-4. Run `docker-compose up --build -d` to run the containers in detatched mode
-5. For debugging, run `docker-compose up --build`
-6. Note that the first time, the process could take up to 10 minutes, since it is building containers for `threetwo`, `threetwo-import-service`, `comicvine-service`, `mongo`, `nats`, `nginx`
-7. For posterity, check that all containers are up using `docker ps`
-
-### Ports
-
-1. `threetwo`, the UI runs on port `8050`
-2. `threetwo-core-service` service on `3000`
-3. `threetwo-metadata-service` service on `3080`
+See [threetwo-docker-compose](https://github.com/rishighan/threetwo-docker-compose) for instructions on building the entire stack.
 
 ## Local Development
 
