@@ -17,6 +17,7 @@ import { isEmpty, isNil, map } from "lodash";
 import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
 interface IAcquisitionPanelProps {
   query: any;
+  comicObjectid: any;
 }
 
 export const AcquisitionPanel = (
@@ -51,7 +52,7 @@ export const AcquisitionPanel = (
       const dcppSearchQuery = {
         query: {
           pattern: `${sanitizedIssueName.replace(/#/g, "")}`,
-          extensions: ["cbz", "cbr"],
+          extensions: ["cbz", "cbr", "cb7"],
         },
         hub_urls: map(
           userSettings.directConnect.client.hubs,
@@ -243,7 +244,7 @@ export const AcquisitionPanel = (
                           downloadDCPPResult(
                             searchInstance.id,
                             result.id,
-                            props.comicBookMetadata._id,
+                            props.comicObjectid,
                           )
                         }
                       >

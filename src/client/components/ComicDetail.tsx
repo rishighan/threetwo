@@ -191,7 +191,13 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       id: 4,
       icon: <i className="fa-solid fa-floppy-disk"></i>,
       name: "Acquisition",
-      content: <AcquisitionPanel query={airDCPPQuery} key={4} />,
+      content: (
+        <AcquisitionPanel
+          query={airDCPPQuery}
+          comicObjectid={comicBookDetailData._id}
+          key={4}
+        />
+      ),
       shouldShow: true,
     },
     {
