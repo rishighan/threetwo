@@ -141,13 +141,15 @@ pre {
 .generic-card {
   display: inline-block;
   background-color: #fff;
-  border-bottom-left-radius: 0.3rem;
-  border-bottom-right-radius: 0.3rem;
+  border-top-left-radius: 0.4rem;
+  border-top-right-radius: 0.4rem;
+  border-bottom-left-radius: 0.4rem;
+  border-bottom-right-radius: 0.4rem;
   box-shadow: 1px 8px 23px 7px rgba(0, 0, 0, 0.12);
 
   .green-border {
     border: 1px dotted #168b64;
-    border-radius: 0.3rem;
+    border-radius: 0.4rem;
   }
 
   .truncate {

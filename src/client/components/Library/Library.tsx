@@ -8,7 +8,7 @@ import React, {
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import T2Table from "../shared/T2Table";
-import { isEmpty, isNil, isUndefined } from "lodash";
+import { isEmpty, isNil, isNull, isUndefined } from "lodash";
 import RawFileDetails from "./RawFileDetails";
 import ComicVineDetails from "./ComicVineDetails";
 import SearchBar from "./SearchBar";
@@ -25,14 +25,13 @@ interface IComicBookLibraryProps {
 export const Library = (data: IComicBookLibraryProps): ReactElement => {
   const { searchResults } = data.data;
 
-  console.log(searchResults);
   // programatically navigate to comic detail
   const navigate = useNavigate();
   const navigateToComicDetail = (row) => {
     navigate(`/comic/details/${row.original._id}`);
   };
 
-  const ImportStatus = ({ value }) => {
+  const ImportStatus = (value) => {
     return value ? (
       <div className="comicvine-metadata">
         <dl>
@@ -67,18 +66,13 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
           </div>
         </dl>
       </div>
-    ) : (
-      <span className="is-size-7">No ComicInfo.xml</span>
-    );
+    ) : null;
   };
 
   const WantedStatus = ({ value }) => {
-    console.log(value);
     return !value ? <span className="tag is-info is-light">Wanted</span> : null;
   };
 
-  console.log(searchResults);
-  // return null;
   const columns = useMemo(
     () => [
       {
@@ -97,7 +91,7 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
                 : row._source.sourcedMetadata,
             Cell: ({ value }) => {
               // If no CV info available, use raw file metadata
-              if (!isNil(value.rawFileDetails.cover)) {
+              if (!isUndefined(value.rawFileDetails)) {
                 return <RawFileDetails data={value} />;
               }
               // If CV metadata available, show it
@@ -112,7 +106,12 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
             accessor: "_source.sourcedMetadata.comicInfo",
             minWidth: 300,
             align: "right",
-            Cell: ImportStatus,
+            Cell: ({ value }) =>
+              !isEmpty(value) ? (
+                <ImportStatus data={value} />
+              ) : (
+                <span className="tag">No ComicInfo.xml</span>
+              ),
           },
         ],
       },
@@ -142,9 +141,9 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
     [],
   );
 
-  ImportStatus.propTypes = {
-    value: PropTypes.bool.isRequired,
-  };
+  // ImportStatus.propTypes = {
+  //   value: PropTypes.bool.isRequired,
+  // };
 
   const dispatch = useDispatch();
   const goToNextPage = useCallback((pageIndex, pageSize) => {

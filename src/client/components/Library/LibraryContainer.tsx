@@ -29,8 +29,6 @@ const LibraryContainer = () => {
     (state: RootState) => state.fileOps.librarySearchError,
   );
 
-  console.log(searchError);
-
   return !isEmpty(searchResults) ? (
     <Library data={{ searchResults }} />
   ) : (
