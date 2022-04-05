@@ -25,6 +25,7 @@ interface IComicBookLibraryProps {
 export const Library = (data: IComicBookLibraryProps): ReactElement => {
   const { searchResults } = data.data;
 
+  console.log(searchResults);
   // programatically navigate to comic detail
   const navigate = useNavigate();
   const navigateToComicDetail = (row) => {
@@ -183,7 +184,6 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
       ),
     );
   }, []);
-
   return (
     <section className="container">
       <div className="section">

@@ -69,7 +69,7 @@ pre {
 .volumes-container {
   .stack {
     display: inline-block;
-    border-radius: 0.3rem;
+    border-radius: 0.5rem;
     box-shadow:
     /* The top layer shadow */ 0 -1px 1px rgba(0, 0, 0, 0.15),
       /* The second layer */ 0 -10px 0 -5px #eee,
@@ -78,8 +78,8 @@ pre {
       /* The third layer shadow */ 0 -20px 1px -9px rgba(0, 0, 0, 0.15);
     img {
       height: auto;
-      border-top-left-radius: 0.3rem;
-      border-top-right-radius: 0.3rem;
+      border-top-left-radius: 0.5rem;
+      border-top-right-radius: 0.5rem;
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
     }
@@ -160,8 +160,8 @@ pre {
     figure {
       display: flex;
       img {
-        border-top-left-radius: 0.3rem;
-        border-top-right-radius: 0.3rem;
+        border-top-left-radius: 0.4rem;
+        border-top-right-radius: 0.4rem;
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
       }
@@ -171,7 +171,7 @@ pre {
     figure {
       display: flex;
       img {
-        border-radius: 0.3rem;
+        border-radius: 0.4rem;
       }
     }
   }

@@ -23,6 +23,9 @@ export const SystemSettingsForm = (settingsObject): ReactElement => {
         <article className="message is-danger">
           <div className="message-body is-size-6 is-family-secondary">
             Flushing and resetting will clear out:
+            <p>
+              <small>(This action is irreversible)</small>
+            </p>
             <ol>
               <li>The mongo collection that holds library metadata</li>
 
@@ -30,6 +33,9 @@ export const SystemSettingsForm = (settingsObject): ReactElement => {
                 Your <code>USERDATA_DIRECTORY</code> which includes
                 <code>covers</code>, <code>temporary</code> and
                 <code>expanded</code> subfolders.
+              </li>
+              <li>
+                Your <code>Elasticsearch indices</code>
               </li>
             </ol>
           </div>

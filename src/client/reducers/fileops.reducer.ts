@@ -23,6 +23,7 @@ import {
   SS_SEARCH_IN_PROGRESS,
   FILEOPS_STATE_RESET,
   LS_IMPORT_CALL_IN_PROGRESS,
+  SS_SEARCH_FAILED,
 } from "../constants/action-types";
 const initialState = {
   IMSCallInProgress: false,
@@ -41,6 +42,7 @@ const initialState = {
   wantedComics: [],
   librarySearchResultCount: 0,
   libraryQueueResults: [],
+  librarySearchError: {},
 };
 
 function fileOpsReducer(state = initialState, action) {
@@ -181,10 +183,17 @@ function fileOpsReducer(state = initialState, action) {
     }
 
     case SS_SEARCH_RESULTS_FETCHED: {
-      console.log(action.data);
       return {
         ...state,
         librarySearchResults: action.data,
+        SSCallInProgress: false,
+      };
+    }
+    case SS_SEARCH_FAILED: {
+      console.log(action.data);
+      return {
+        ...state,
+        librarySearchError: action.data,
         SSCallInProgress: false,
       };
     }

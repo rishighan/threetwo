@@ -29,6 +29,7 @@ import {
   FILEOPS_STATE_RESET,
   LS_IMPORT_CALL_IN_PROGRESS,
   LS_TOGGLE_IMPORT_QUEUE,
+  SS_SEARCH_FAILED,
 } from "../constants/action-types";
 import { success } from "react-notification-system-redux";
 import { isNil, map } from "lodash";
@@ -288,6 +289,13 @@ export const searchIssue = (query, options) => async (dispatch) => {
     method: "POST",
     data: { ...query, ...options },
   });
+
+  if (response.data.code === 404) {
+    dispatch({
+      type: SS_SEARCH_FAILED,
+      data: response.data,
+    });
+  }
   dispatch({
     type: SS_SEARCH_RESULTS_FETCHED,
     data: response.data.body,
