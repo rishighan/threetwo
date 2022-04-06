@@ -81,7 +81,7 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
           {
             Header: "File Details",
             id: "fileDetails",
-            minWidth: 450,
+            minWidth: 400,
             accessor: (row) =>
               !isEmpty(row._source.rawFileDetails)
                 ? {
@@ -104,7 +104,6 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
           {
             Header: "ComicInfo.xml",
             accessor: "_source.sourcedMetadata.comicInfo",
-            minWidth: 300,
             align: "right",
             Cell: ({ value }) =>
               !isEmpty(value) ? (

@@ -16,7 +16,7 @@ export const ComicVineDetails = (comicVineData): ReactElement => {
               <div className="columns mt-2">
                 <div className="column is-3">
                   <Card
-                    imageUrl={data.comicvine.image.thumb_url}
+                    imageUrl={data.comicvine.image.small_url}
                     orientation={"vertical"}
                     hasDetails={false}
                     // cardContainerStyle={{ maxWidth: 200 }}

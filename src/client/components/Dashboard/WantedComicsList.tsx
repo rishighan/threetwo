@@ -28,7 +28,7 @@ export const WantedComicsList = ({
             <span className="title is-4">Wanted Comics</span>
           </span>
           <span className="icon mt-1">
-          <i className="fa-regular fa-angle-right"></i>
+          <i className="fa-solid fa-circle-chevron-right"></i>
           </span>
         </span>
         <p className="subtitle is-7">

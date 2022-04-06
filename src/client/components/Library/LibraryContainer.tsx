@@ -17,6 +17,7 @@ const LibraryContainer = () => {
             size: 25,
             from: 0,
           },
+          type: "all",
         },
       ),
     );

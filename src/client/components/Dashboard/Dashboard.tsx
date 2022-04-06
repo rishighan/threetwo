@@ -65,11 +65,22 @@ export const Dashboard = (): ReactElement => {
             {/* Pull List */}
             <PullList issues={recentComics} />
 
-            {/* stats */}
-            <LibraryStatistics stats={libraryStatistics} />
-            <WantedComicsList comics={wantedComics} />
-            <RecentlyImported comicBookCovers={recentComics} />
-            <VolumeGroups volumeGroups={volumeGroups} />
+            {/* Stats */}
+            {!isEmpty(libraryStatistics) && (
+              <LibraryStatistics stats={libraryStatistics} />
+            )}
+            {/* Wanted comics */}
+            {!isEmpty(wantedComics) && (
+              <WantedComicsList comics={wantedComics} />
+            )}
+            {/* Recent imports */}
+            {!isEmpty(recentComics) && (
+              <RecentlyImported comicBookCovers={recentComics} />
+            )}
+            {/* Volumes */}
+            {!isEmpty(volumeGroups) && (
+              <VolumeGroups volumeGroups={volumeGroups} />
+            )}
           </>
         ) : (
           <ZeroState

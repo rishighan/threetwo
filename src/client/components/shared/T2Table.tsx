@@ -36,7 +36,7 @@ export const T2Table = (tableOptions): ReactElement => {
       pageCount: totalPages,
     },
     usePagination,
-    useFlexLayout,
+    // useFlexLayout,
   );
   return (
     <>
@@ -45,7 +45,12 @@ export const T2Table = (tableOptions): ReactElement => {
           {headerGroups.map((headerGroup, idx) => (
             <tr key={idx} {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column, idx) => (
-                <th key={idx} {...column.getHeaderProps()}>
+                <th
+                  key={idx}
+                  {...column.getHeaderProps({
+                    style: { minWidth: column.minWidth, width: column.width },
+                  })}
+                >
                   {column.render("Header")}
                 </th>
               ))}
@@ -66,7 +71,12 @@ export const T2Table = (tableOptions): ReactElement => {
                   return (
                     <td
                       key={idx}
-                      {...cell.getCellProps()}
+                      {...cell.getCellProps({
+                        style: {
+                          minWidth: cell.column.minWidth,
+                          width: cell.column.width,
+                        },
+                      })}
                       className="is-vcentered"
                     >
                       {cell.render("Cell")}

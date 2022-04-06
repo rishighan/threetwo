@@ -21,6 +21,7 @@ export const SearchBar = (): ReactElement => {
             size: 25,
             from: 0,
           },
+          type: "volumeName",
         },
       ),
     );
@@ -32,27 +33,30 @@ export const SearchBar = (): ReactElement => {
         initialValues={{}}
         render={({ handleSubmit, form, submitting, pristine, values }) => (
           <form onSubmit={handleSubmit}>
-            <div className="column is-three-quarters search">
-              <label>Search</label>
-              <Field name="search">
-                {({ input, meta }) => {
-                  return (
-                    <input
-                      {...input}
-                      className="input main-search-bar is-medium"
-                      placeholder="Type an issue/volume name"
-                    />
-                  );
-                }}
-              </Field>
-              <button className="button" type="submit">
-                Search
-              </button>
+            <div className="field is-grouped">
+              <div className="control is-expanded search">
+                <Field name="search">
+                  {({ input, meta }) => {
+                    return (
+                      <input
+                        {...input}
+                        className="input main-search-bar is-medium"
+                        placeholder="Type an issue/volume name"
+                      />
+                    );
+                  }}
+                </Field>
+              </div>
+              <div className="control">
+                <button className="button is-medium" type="submit">
+                  Search
+                </button>
+              </div>
             </div>
           </form>
         )}
       />
-      <div className="column one-fifth">
+      {/* <div className="column one-fifth">
         <div className="field has-addons">
           <p className="control">
             <button className="button">
@@ -71,7 +75,7 @@ export const SearchBar = (): ReactElement => {
             </button>
           </p>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
