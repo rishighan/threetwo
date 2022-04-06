@@ -102,7 +102,7 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
             },
           },
           {
-            Header: "Import Status",
+            Header: "ComicInfo.xml",
             accessor: "_source.sourcedMetadata.comicInfo",
             minWidth: 300,
             align: "right",
@@ -124,7 +124,11 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
               "_source.sourcedMetadata.comicvine.volumeInformation.publisher",
             Cell(props) {
               return (
-                !isNil(props.cell.value) && <h6>{props.cell.value.name}</h6>
+                !isNil(props.cell.value) && (
+                  <h6 className="is-size-7 has-text-weight-bold">
+                    {props.cell.value.name}
+                  </h6>
+                )
               );
             },
           },
