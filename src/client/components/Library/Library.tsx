@@ -8,7 +8,7 @@ import React, {
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import T2Table from "../shared/T2Table";
-import { isEmpty, isNil, isNull, isUndefined } from "lodash";
+import { isEmpty, isNil, isUndefined } from "lodash";
 import RawFileDetails from "./RawFileDetails";
 import ComicVineDetails from "./ComicVineDetails";
 import SearchBar from "./SearchBar";

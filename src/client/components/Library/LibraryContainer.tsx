@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { searchIssue } from "../../actions/fileops.actions";
 import { Library } from "./Library";
 
-const LibraryContainer = () => {
+const LibraryContainer = (): ReactElement => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(
