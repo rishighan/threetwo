@@ -10,6 +10,7 @@ import Search from "./Search";
 import Settings from "./Settings";
 import VolumeDetail from "./VolumeDetail/VolumeDetail";
 import PullList from "./PullList/PullList";
+import WantedComics from "./WantedComics/WantedComics";
 
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./Navbar";
@@ -91,6 +92,7 @@ export const App = (): ReactElement => {
           />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pull-list/all" element={<PullList />} />
+          <Route path="/wanted/all" element={<WantedComics />} />
         </Routes>
       </div>
     </AirDCPPSocketContext.Provider>

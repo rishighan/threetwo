@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import Card from "../Carda";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ellipsize from "ellipsize";
 import { isEmpty, isNil, isUndefined, map } from "lodash";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
@@ -20,15 +20,19 @@ export const WantedComicsList = ({
     600: 2,
   };
 
+  const navigate = useNavigate();
+  const navigateToWantedComics = (row) => {
+    navigate(`/wanted/all`);
+  };
   return (
     <>
       <div className="content">
-        <span className="icon-text mb-1">
+        <span className="icon-text mb-1" onClick={navigateToWantedComics}>
           <span>
             <span className="title is-4">Wanted Comics</span>
           </span>
           <span className="icon mt-1">
-          <i className="fa-solid fa-circle-chevron-right"></i>
+            <i className="fa-solid fa-circle-chevron-right"></i>
           </span>
         </span>
         <p className="subtitle is-7">

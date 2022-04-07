@@ -15,6 +15,7 @@ export const WantedComics = (props): ReactElement => {
             size: 25,
             from: 0,
           },
+          type: "wanted",
         },
       ),
     );
