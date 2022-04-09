@@ -6,7 +6,6 @@ import convert from "html-to-text";
 
 export const ComicVineDetails = (comicVineData): ReactElement => {
   const { data } = comicVineData;
-  console.log(data);
   return (
     <div className="columns">
       <div className="column">

@@ -31,14 +31,14 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
     navigate(`/comic/details/${row.original._id}`);
   };
 
-  const ImportStatus = (value) => {
-    return value ? (
+  const ComicInfoXML = (value) => {
+    return value.data ? (
       <div className="comicvine-metadata">
         <dl>
           <span className="tags has-addons is-size-7">
             <span className="tag">Series</span>
             <span className="tag is-warning is-light">
-              {ellipsize(value.series[0], 25)}
+              {ellipsize(value.data.series[0], 25)}
             </span>
           </span>
         </dl>
@@ -48,7 +48,7 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
               <span className="tags has-addons is-size-7  mt-2">
                 <span className="tag">Pages</span>
                 <span className="tag is-info is-light has-text-weight-bold">
-                  {value.pagecount[0]}
+                  {value.data.pagecount[0]}
                 </span>
               </span>
             </div>
@@ -56,9 +56,9 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
             <div className="control">
               <span className="tags has-addons is-size-7 mt-2">
                 <span className="tag">Issue</span>
-                {!isNil(value.number) && (
+                {!isNil(value.data.number) && (
                   <span className="tag has-text-weight-bold is-success is-light">
-                    {parseInt(value.number[0], 10)}
+                    {parseInt(value.data.number[0], 10)}
                   </span>
                 )}
               </span>
@@ -104,10 +104,11 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
           {
             Header: "ComicInfo.xml",
             accessor: "_source.sourcedMetadata.comicInfo",
-            align: "right",
+            align: "center",
+            minWidth: 250,
             Cell: ({ value }) =>
               !isEmpty(value) ? (
-                <ImportStatus data={value} />
+                <ComicInfoXML data={value} />
               ) : (
                 <span className="tag">No ComicInfo.xml</span>
               ),
@@ -160,6 +161,7 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
             size: pageSize,
             from: pageSize * pageIndex + 1,
           },
+          type: "all",
         },
       ),
     );
@@ -182,6 +184,7 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
             size: pageSize,
             from,
           },
+          type: "all",
         },
       ),
     );
