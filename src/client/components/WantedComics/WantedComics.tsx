@@ -1,4 +1,3 @@
-import { isUndefined } from "lodash";
 import React, { ReactElement, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { searchIssue } from "../../actions/fileops.actions";
@@ -6,6 +5,7 @@ import Card from "../Carda";
 import SearchBar from "../Library/SearchBar";
 import T2Table from "../shared/T2Table";
 import ellipsize from "ellipsize";
+import { isEmpty, isUndefined } from "lodash";
 import { convert } from "html-to-text";
 
 export const WantedComics = (props): ReactElement => {
@@ -49,8 +49,9 @@ export const WantedComics = (props): ReactElement => {
                         <dd>
                           <div className="columns mt-2">
                             <div className="column is-3">
-                              {row._source.sourcedMetadata.comicvine.image
-                                .thumb_url && (
+                              {!isEmpty(
+                                row._source.sourcedMetadata.comicvine,
+                              ) && (
                                 <Card
                                   imageUrl={
                                     row._source.sourcedMetadata.comicvine.image

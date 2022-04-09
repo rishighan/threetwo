@@ -11,6 +11,7 @@ import Settings from "./Settings";
 import VolumeDetail from "./VolumeDetail/VolumeDetail";
 import PullList from "./PullList/PullList";
 import WantedComics from "./WantedComics/WantedComics";
+import Volumes from "./Volumes/Volumes";
 
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./Navbar";
@@ -93,6 +94,7 @@ export const App = (): ReactElement => {
           <Route path="/settings" element={<Settings />} />
           <Route path="/pull-list/all" element={<PullList />} />
           <Route path="/wanted/all" element={<WantedComics />} />
+          <Route path="/volumes/all" element={<Volumes />} />
         </Routes>
       </div>
     </AirDCPPSocketContext.Provider>

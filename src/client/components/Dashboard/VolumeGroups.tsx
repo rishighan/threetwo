@@ -1,7 +1,7 @@
 import { map, unionBy } from "lodash";
 import React, { ReactElement } from "react";
 import ellipsize from "ellipsize";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Masonry from "react-masonry-css";
 
 export const VolumeGroups = (props): ReactElement => {
@@ -13,10 +13,22 @@ export const VolumeGroups = (props): ReactElement => {
   };
   // Till mongo gives us back the deduplicated results with the ObjectId
   const deduplicatedGroups = unionBy(props.volumeGroups, "volumes.id");
+  const navigate = useNavigate();
+  const navigateToVolumes = (row) => {
+    navigate(`/volumes/all`);
+  };
+
   return (
     <section className="volumes-container mt-4">
       <div className="content">
-        <p className="title is-4">Volumes</p>
+        <span className="icon-text mb-1" onClick={navigateToVolumes}>
+          <span>
+            <span className="title is-4">Volumes</span>
+          </span>
+          <span className="icon mt-1">
+            <i className="fa-solid fa-circle-chevron-right"></i>
+          </span>
+        </span>
         <p className="subtitle is-7">Based on ComicVine Volume information</p>
       </div>
       <Masonry
