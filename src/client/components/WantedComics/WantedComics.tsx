@@ -29,7 +29,6 @@ export const WantedComics = (props): ReactElement => {
       ),
     );
   }, []);
-  console.log(wantedComics);
   const columnData = useMemo(
     () => [
       {
