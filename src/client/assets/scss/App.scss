@@ -32,6 +32,11 @@ pre {
     background-color: $bg-color;
   }
 }
+
+.navbar {
+  border-bottom: 1px solid #f2f1f9;
+}
+
 .navbar-item.is-mega {
   position: static;
 
@@ -314,7 +319,7 @@ pre {
 // Library
 .sticky {
   position: sticky;
-  top: 56px;
+  top: 57px;
   z-index: 2;
   background: #fffffc;
 }
