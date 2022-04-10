@@ -40,7 +40,7 @@ export const WantedComics = (props): ReactElement => {
             minWidth: 350,
             accessor: (row) => {
               console.log(row);
-              return (
+              return row._source.sourcedMetadata.comicvine.volumeInformation ? (
                 <div className="columns">
                   <div className="column">
                     <div className="comic-detail issue-metadata">
@@ -48,8 +48,8 @@ export const WantedComics = (props): ReactElement => {
                         <dd>
                           <div className="columns mt-2">
                             <div className="column is-3">
-                              {!isEmpty(
-                                row._source.sourcedMetadata.comicvine,
+                              {!isUndefined(
+                                row._source.sourcedMetadata.comicvine.image,
                               ) && (
                                 <Card
                                   imageUrl={
@@ -139,7 +139,7 @@ export const WantedComics = (props): ReactElement => {
                     </div>
                   </div>
                 </div>
-              );
+              ) : null;
             },
           },
         ],
@@ -188,7 +188,7 @@ export const WantedComics = (props): ReactElement => {
         <h1 className="title">Wanted Comics</h1>
         {/* Search bar */}
         <SearchBar />
-        {!isUndefined(wantedComics) && (
+        {!isUndefined(wantedComics.hits) && (
           <div>
             <div className="library">
               <T2Table

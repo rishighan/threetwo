@@ -40,6 +40,7 @@ const initialState = {
   extractedComicBookArchive: [],
   recentComics: [],
   wantedComics: [],
+  librarySearchResults: [],
   librarySearchResultCount: 0,
   libraryQueueResults: [],
   librarySearchError: {},
@@ -183,6 +184,7 @@ function fileOpsReducer(state = initialState, action) {
     }
 
     case SS_SEARCH_RESULTS_FETCHED: {
+      console.log(action.data);
       return {
         ...state,
         librarySearchResults: action.data,
