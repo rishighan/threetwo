@@ -27,14 +27,14 @@ export const WantedComicsList = ({
   return (
     <>
       <div className="content">
-        <span className="icon-text mb-1" onClick={navigateToWantedComics}>
-          <span>
-            <span className="title is-4">Wanted Comics</span>
+        <a className="mb-1" onClick={navigateToWantedComics}>
+          <span className="is-size-4 has-text-weight-semibold">
+            Wanted Comics
           </span>
           <span className="icon mt-1">
-            <i className="fa-solid fa-circle-chevron-right"></i>
+            <i className="fa-solid fa-angle-right"></i>
           </span>
-        </span>
+        </a>
         <p className="subtitle is-7">
           Comics marked as wanted from various sources.
         </p>

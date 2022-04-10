@@ -21,14 +21,12 @@ export const VolumeGroups = (props): ReactElement => {
   return (
     <section className="volumes-container mt-4">
       <div className="content">
-        <span className="icon-text mb-1" onClick={navigateToVolumes}>
-          <span>
-            <span className="title is-4">Volumes</span>
-          </span>
+        <a className="mb-1" onClick={navigateToVolumes}>
+          <span className="is-size-4 has-text-weight-semibold">Volumes</span>
           <span className="icon mt-1">
-            <i className="fa-solid fa-circle-chevron-right"></i>
+            <i className="fa-solid fa-angle-right"></i>
           </span>
-        </span>
+        </a>
         <p className="subtitle is-7">Based on ComicVine Volume information</p>
       </div>
       <Masonry
