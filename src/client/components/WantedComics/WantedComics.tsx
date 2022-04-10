@@ -39,7 +39,6 @@ export const WantedComics = (props): ReactElement => {
             id: "comicDetails",
             minWidth: 350,
             accessor: (row) => {
-              console.log(row);
               return row._source.sourcedMetadata.comicvine.volumeInformation ? (
                 <div className="columns">
                   <div className="column">
