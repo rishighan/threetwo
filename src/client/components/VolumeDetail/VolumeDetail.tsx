@@ -83,7 +83,7 @@ const VolumeDetails = (props): ReactElement => {
                   key={issue.id}
                   imageUrl={issue.image.thumb_url}
                   orientation={"vertical"}
-                  hasDetails={!isEmpty(issue.matches) ? true : false}
+                  hasDetails
                   borderColorClass={
                     !isEmpty(issue.matches) ? "green-border" : ""
                   }
@@ -92,13 +92,11 @@ const VolumeDetails = (props): ReactElement => {
                     openPotentialLibraryMatchesPanel(issue.matches)
                   }
                 >
+                  <span className="tag is-warning mr-1">{issue.issue_number}</span>
                   {!isEmpty(issue.matches) ? (
                     <>
                       <span className="icon has-text-success">
-                        <i className="fa-regular fa-clone"></i>
-                      </span>
-                      <span className="tag is-success is-size-7">
-                        {"#" + issue.issue_number}
+                        <i className="fa-regular fa-asterisk"></i>
                       </span>
                     </>
                   ) : null}
