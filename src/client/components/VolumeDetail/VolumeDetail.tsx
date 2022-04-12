@@ -92,7 +92,9 @@ const VolumeDetails = (props): ReactElement => {
                     openPotentialLibraryMatchesPanel(issue.matches)
                   }
                 >
-                  <span className="tag is-warning mr-1">{issue.issue_number}</span>
+                  <span className="tag is-warning mr-1">
+                    {issue.issue_number}
+                  </span>
                   {!isEmpty(issue.matches) ? (
                     <>
                       <span className="icon has-text-success">
