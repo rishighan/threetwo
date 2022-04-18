@@ -31,7 +31,7 @@
     "@types/socket.io-client": "^3.0.0",
     "airdcpp-apisocket": "^2.4.4",
     "array-sort-by": "^1.2.1",
-    "axios-cache-interceptor": "^0.8.8",
+    "axios-simple-cache-adapter": "^1.1.0",
     "babel-polyfill": "^6.26.0",
     "better-docs": "^2.3.2",
     "calibre-opds": "^1.0.7",

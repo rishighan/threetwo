@@ -173,7 +173,6 @@ export const fetchVolumeGroups = () => async (dispatch) => {
       url: `${LIBRARY_SERVICE_BASE_URI}/getComicBookGroups`,
       method: "GET",
     });
-
     dispatch({
       type: IMS_COMIC_BOOK_GROUPS_FETCHED,
       data: response.data,
@@ -265,10 +264,10 @@ export const extractComicArchive =
 
       const imagePath = encodeURI(
         `${LIBRARY_SERVICE_HOST}/userdata/expanded/` +
-          folderName +
-          `/` +
-          page.name +
-          page.extension,
+        folderName +
+        `/` +
+        page.name +
+        page.extension,
       );
       comicBookPages.push(imagePath);
     });
