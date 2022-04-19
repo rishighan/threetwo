@@ -40,7 +40,7 @@ type ComicDetailProps = {};
  * )
  */
 
-export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
+export const ComicDetail = ({ }: ComicDetailProps): ReactElement => {
   const [page, setPage] = useState(1);
   const [active, setActive] = useState(1);
   const [visible, setVisible] = useState(false);
@@ -237,11 +237,11 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                 {/* Downloads tab and count badge */}
                 <a>
                   {id === 5 &&
-                  !isNil(comicBookDetailData) &&
-                  !isEmpty(comicBookDetailData) ? (
+                    !isNil(comicBookDetailData) &&
+                    !isEmpty(comicBookDetailData) ? (
                     <span className="download-icon-labels">
                       <i className="fa-solid fa-download"></i>
-                      <span className="tag downloads-count">
+                      <span className="tag downloads-count is-info is-light">
                         {comicBookDetailData.acquisition.directconnect.length}
                       </span>
                     </span>

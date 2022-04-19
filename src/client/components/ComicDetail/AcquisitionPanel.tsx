@@ -126,7 +126,7 @@ export const AcquisitionPanel = (
                               placeholder="Type an issue/volume name"
                             />
                             <span className="help is-clearfix is-light is-info">
-                              Use this to manually override the search.
+                              Use this to perform a manual search.
                             </span>
                           </div>
                         );
@@ -183,7 +183,12 @@ export const AcquisitionPanel = (
                       )}
                     </div>
                   </dt>
-                  <dt>Query: {searchInfo.query.pattern}</dt>
+                  <dt>
+                    Query:{" "}
+                    <span className="has-text-weight-semibold">
+                      {searchInfo.query.pattern}
+                    </span>
+                  </dt>
                   <dd>Extensions: {searchInfo.query.extensions.join(", ")}</dd>
                   <dd>File type: {searchInfo.query.file_type}</dd>
                 </dl>
