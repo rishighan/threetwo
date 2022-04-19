@@ -52,15 +52,9 @@ export async function walkFolder(path: string): Promise<Array<IFolderData>> {
 }
 /**
  * Fetches comic book covers along with some metadata
- *
- * using {@link Renderer}.
- *
- * Used by external plugins
- *
- * @param  {Object} options
- * @return {Promise<string>}                HTML of the page
+ * @return the comic book metadata
  */
-export const fetchComicBookMetadata = (options) => async (dispatch) => {
+export const fetchComicBookMetadata = () => async (dispatch) => {
   const extractionOptions = {
     extractTarget: "cover",
     targetExtractionFolder: "./userdata/covers",
@@ -97,6 +91,11 @@ export const toggleImportQueueStatus = (options) => async (dispatch) => {
     data: { manjhul: "jigyadam", action: options.action },
   });
 };
+/**
+ * Fetches comic book metadata for various types
+ * @return metadata for the comic book object categories
+ * @param options
+ **/
 export const getComicBooks = (options) => async (dispatch) => {
   const { paginationOptions, predicate, comicStatus } = options;
 
@@ -127,6 +126,11 @@ export const getComicBooks = (options) => async (dispatch) => {
   }
 };
 
+/**
+ * Makes a call to library service to import the comic book metadata into the ThreeTwo data store.
+ * @returns Nothing.
+ * @param payload
+ */
 export const importToDB = (payload?: any) => (dispatch) => {
   try {
     const comicBookMetadata = {
@@ -164,6 +168,7 @@ export const importToDB = (payload?: any) => (dispatch) => {
     });
   }
 };
+
 export const fetchVolumeGroups = () => async (dispatch) => {
   try {
     dispatch({
