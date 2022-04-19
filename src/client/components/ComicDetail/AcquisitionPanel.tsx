@@ -24,7 +24,6 @@ interface IAcquisitionPanelProps {
 export const AcquisitionPanel = (
   props: IAcquisitionPanelProps,
 ): ReactElement => {
-  console.log(props);
   const issueName = props.query.issue.name;
   const sanitizedIssueName = issueName.replace(/[^a-zA-Z0-9 ]/g, " ");
 
@@ -67,8 +66,19 @@ export const AcquisitionPanel = (
 
   const getDCPPSearchResults = useCallback(
     async (searchQuery) => {
+      const manualQuery = {
+        query: {
+          pattern: `${searchQuery.issueName}`,
+          extensions: ["cbz", "cbr", "cb7"],
+        },
+        hub_urls: map(
+          userSettings.directConnect.client.hubs,
+          (item) => item.value,
+        ),
+        priority: 5,
+      };
       dispatch(
-        search(searchQuery, ADCPPSocket, {
+        search(manualQuery, ADCPPSocket, {
           username: `${userSettings.directConnect.client.host.username}`,
           password: `${userSettings.directConnect.client.host.password}`,
         }),
@@ -113,7 +123,10 @@ export const AcquisitionPanel = (
               issueName,
             }}
             render={({ handleSubmit, form, submitting, pristine, values }) => (
-              <div className="column is-three-quarters">
+              <form
+                onSubmit={handleSubmit}
+                className="column is-three-quarters"
+              >
                 <div className="box search">
                   <div className="columns">
                     <Field name="issueName">
@@ -135,12 +148,12 @@ export const AcquisitionPanel = (
 
                     <div className="column">
                       <button
+                        type="submit"
                         className={
                           isAirDCPPSearchInProgress
                             ? "button is-loading is-warning"
                             : "button"
                         }
-                        onClick={() => getDCPPSearchResults(dcppQuery)}
                       >
                         <span className="icon is-small">
                           <img src="/img/airdcpp_logo.svg" />
@@ -150,7 +163,7 @@ export const AcquisitionPanel = (
                     </div>
                   </div>
                 </div>
-              </div>
+              </form>
             )}
           />
         ) : (
