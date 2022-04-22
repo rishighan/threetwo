@@ -58,27 +58,33 @@ export const DownloadsPanel = (
     return (
       <div className="column is-half">
         {JSON.stringify(props.data.downloadProgressTick)}
-        <progress
-          className="progress is-small is-success"
-          value={props.data.downloaded_bytes}
-          max={props.data.size}
-        >
-          {(parseInt(props.data.downloaded_bytes) / parseInt(props.data.size)) *
-            100}
-          %
-        </progress>
+
         <div className="card">
           <div className="card-content is-size-7">
             <dl>
-              <dt>{props.data.name}</dt>
+              <dt className="is-size-6">{props.data.name}</dt>
               <dd>
-                {prettyBytes(props.data.downloaded_bytes)} of{" "}
-                {prettyBytes(props.data.size)}
+                <span className="is-size-3 has-text-weight-semibold">
+                  {prettyBytes(props.data.downloaded_bytes)}/
+                  {prettyBytes(props.data.size)}{" "}
+                </span>
+                <progress
+                  className="progress is-small is-success"
+                  value={props.data.downloaded_bytes}
+                  max={props.data.size}
+                >
+                  {(parseInt(props.data.downloaded_bytes) /
+                    parseInt(props.data.size)) *
+                    100}
+                  %
+                </progress>
               </dd>
-              <dd>{prettyBytes(props.data.speed)} per second.</dd>
-              <dd>
+              <dd className="is-size-5">
+                {prettyBytes(props.data.speed)} per second.
+              </dd>
+              <dd className="is-size-5">
                 Time left:
-                {parseInt(props.data.seconds_left) / 60}
+                {Math.round(parseInt(props.data.seconds_left) / 60)}
               </dd>
               <dd>{props.data.target}</dd>
             </dl>

@@ -201,7 +201,7 @@ pre {
 
   .card {
     margin: 0 0 15px 0;
-   
+
     .partial-rounded-card-image {
       img {
         border-top-left-radius: 0.4rem;
@@ -246,7 +246,6 @@ pre {
             margin-top: 10px;
           }
         }
-
       }
       .is-divider {
         margin-top: 1.5rem;
@@ -271,17 +270,17 @@ pre {
 }
 
 .issue-metadata {
-  background-color: #FBFFEE;
+  background-color: #fbffee;
   padding: 0.8em;
   border-radius: 0.5rem;
   .name {
     font-size: 0.95rem;
-    color: #4A4F50;
+    color: #4a4f50;
   }
 }
 
 .comicInfo-metadata {
-  background-color: #F7EBDD;
+  background-color: #f7ebdd;
   padding: 0.8rem;
   border-radius: 0.5rem;
 }
@@ -368,7 +367,7 @@ pre {
 .tabs {
   .download-icon-labels {
     .downloads-count {
-      margin: 0 1em 0 0.4em;
+      margin: 0 1em -1px 0.4em;
       border: 1px solid #ccc;
     }
   }
