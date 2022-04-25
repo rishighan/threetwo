@@ -15,10 +15,10 @@ import {
   AIRDCPP_BUNDLES_FETCHED,
   AIRDCPP_SEARCH_IN_PROGRESS,
   AIRDCPP_FILE_DOWNLOAD_COMPLETED,
+  LS_SINGLE_IMPORT,
   IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
 } from "../constants/action-types";
-import { difference } from "../shared/utils/object.utils";
-import { isNil, isEmpty, isUndefined } from "lodash";
+import { isNil, isUndefined } from "lodash";
 import axios from "axios";
 
 interface SearchData {
@@ -133,6 +133,19 @@ export const downloadAirDCPPItem =
         const downloadResult = await ADCPPSocket.post(
           `search/${instanceId}/results/${resultId}/download`,
         );
+        let downloadStatus = undefined;
+        // download status check
+        await ADCPPSocket.addListener(`queue`, "queue_file_status", (status) => {
+          if (status.status.completed) {
+            downloadStatus = status;
+
+            dispatch({
+              type: LS_SINGLE_IMPORT,
+              meta: { remote: true },
+              data: { downloadStatus },
+            });
+          }
+        });
 
         let bundleId;
         let directoryIds;
@@ -197,17 +210,6 @@ export const getDownloadProgress =
             });
           },
         );
-        let downloadStatus = undefined;
-        // download status check
-        await ADCPPSocket.addListener(`queue`, "queue_file_status", (status) => {
-          if (isUndefined(downloadStatus)) {
-            downloadStatus = status;
-            dispatch({
-              type: AIRDCPP_FILE_DOWNLOAD_COMPLETED,
-              status,
-            });
-          }
-        });
       } catch (error) {
         throw error;
       }
