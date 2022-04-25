@@ -5,9 +5,11 @@ import {
   AIRDCPP_HUB_SEARCHES_SENT,
   AIRDCPP_RESULT_DOWNLOAD_INITIATED,
   AIRDCPP_DOWNLOAD_PROGRESS_TICK,
+  AIRDCPP_FILE_DOWNLOAD_COMPLETED,
   AIRDCPP_BUNDLES_FETCHED,
 } from "../constants/action-types";
 import { LOCATION_CHANGE } from "redux-first-history";
+import { isUndefined } from "lodash";
 import { difference } from "../shared/utils/object.utils";
 
 const initialState = {
@@ -17,6 +19,7 @@ const initialState = {
   searchInstance: null,
   downloadResult: null,
   bundleDBImportResult: null,
+  downloadFileStatus: {},
   bundles: [],
 };
 
@@ -72,6 +75,11 @@ function airdcppReducer(state = initialState, action) {
       return {
         ...state,
         bundles: action.bundles,
+      };
+    case AIRDCPP_FILE_DOWNLOAD_COMPLETED:
+      console.log("COMPLETED", action);
+      return {
+        ...state,
       };
     case LOCATION_CHANGE:
       return {

@@ -65,7 +65,7 @@ export const DownloadsPanel = (
               <dt className="is-size-6">{props.data.name}</dt>
               <dd>
                 <span className="is-size-3 has-text-weight-semibold">
-                  {prettyBytes(props.data.downloaded_bytes)}/
+                  {prettyBytes(props.data.downloaded_bytes)} of{" "}
                   {prettyBytes(props.data.size)}{" "}
                 </span>
                 <progress
