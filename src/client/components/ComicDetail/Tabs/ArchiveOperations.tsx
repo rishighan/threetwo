@@ -23,14 +23,7 @@ export const ArchiveOperations = (props): ReactElement => {
 
   const dispatch = useDispatch();
   const unpackComicArchive = useCallback(() => {
-    dispatch(
-      extractComicArchive(data.rawFileDetails.filePath, {
-        extractTarget: "book",
-        targetExtractionFolder:
-          "./userdata/expanded/" + data.rawFileDetails.name,
-        extractionMode: "all",
-      }),
-    );
+    dispatch(extractComicArchive(data.rawFileDetails.filePath));
   }, [dispatch, data]);
 
   // sliding panel config

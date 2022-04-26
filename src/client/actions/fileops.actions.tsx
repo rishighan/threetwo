@@ -246,42 +246,40 @@ export const fetchComicVineMatches =
     });
   };
 
-export const extractComicArchive =
-  (path: string, options: IExtractionOptions) => async (dispatch) => {
-    const comicBookPages: string[] = [];
-    dispatch({
-      type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
-    });
-    const extractedComicBookArchive = await axios({
-      method: "POST",
-      url: `${LIBRARY_SERVICE_BASE_URI}/unrarArchive`,
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      data: {
-        options,
-        filePath: path,
-      },
-    });
-    map(extractedComicBookArchive.data, (page) => {
-      const pathItems = page.filePath.split("/");
-      const folderName = pathItems[pathItems.length - 2];
+export const extractComicArchive = (path: string) => async (dispatch) => {
+  const comicBookPages: string[] = [];
+  dispatch({
+    type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
+  });
+  const extractedComicBookArchive = await axios({
+    method: "POST",
+    url: `${LIBRARY_SERVICE_BASE_URI}/uncompressFullArchive`,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+    },
+    data: {
+      filePath: path,
+    },
+  });
+  map(extractedComicBookArchive.data, (page) => {
+    const pathItems = page.filePath.split("/");
+    const folderName = pathItems[pathItems.length - 2];
 
-      const imagePath = encodeURI(
-        `${LIBRARY_SERVICE_HOST}/userdata/expanded/` +
+    const imagePath = encodeURI(
+      `${LIBRARY_SERVICE_HOST}/userdata/expanded/` +
         folderName +
         `/` +
         page.name +
         page.extension,
-      );
-      comicBookPages.push(imagePath);
-    });
-    console.log(comicBookPages);
-    dispatch({
-      type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
-      extractedComicBookArchive: comicBookPages,
-    });
-  };
+    );
+    comicBookPages.push(imagePath);
+  });
+  console.log(comicBookPages);
+  dispatch({
+    type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
+    extractedComicBookArchive: comicBookPages,
+  });
+};
 
 export const searchIssue = (query, options) => async (dispatch) => {
   dispatch({
