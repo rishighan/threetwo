@@ -264,17 +264,14 @@ export const extractComicArchive = (path: string) => async (dispatch) => {
   map(extractedComicBookArchive.data, (page) => {
     const pathItems = page.filePath.split("/");
     const folderName = pathItems[pathItems.length - 2];
-
     const imagePath = encodeURI(
-      `${LIBRARY_SERVICE_HOST}/userdata/expanded/` +
-        folderName +
-        `/` +
-        page.name +
-        page.extension,
+      `${LIBRARY_SERVICE_HOST}/${page.containedIn}` +
+      `/` +
+      page.name +
+      page.extension,
     );
     comicBookPages.push(imagePath);
   });
-  console.log(comicBookPages);
   dispatch({
     type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
     extractedComicBookArchive: comicBookPages,
