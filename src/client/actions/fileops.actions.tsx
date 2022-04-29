@@ -32,6 +32,7 @@ import {
   SS_SEARCH_FAILED,
 } from "../constants/action-types";
 import { success } from "react-notification-system-redux";
+import { removeLeadingPeriod } from "../shared/utils/formatting.utils";
 import { isNil, map } from "lodash";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
@@ -262,14 +263,9 @@ export const extractComicArchive = (path: string) => async (dispatch) => {
     },
   });
   map(extractedComicBookArchive.data, (page) => {
-    const pathItems = page.filePath.split("/");
-    const folderName = pathItems[pathItems.length - 2];
-    const imagePath = encodeURI(
-      `${LIBRARY_SERVICE_HOST}/${page.containedIn}` +
-      `/` +
-      page.name +
-      page.extension,
-    );
+    console.log(page);
+    const pageFilePath = removeLeadingPeriod(page);
+    const imagePath = encodeURI(`${LIBRARY_SERVICE_HOST}${pageFilePath}`);
     comicBookPages.push(imagePath);
   });
   dispatch({
