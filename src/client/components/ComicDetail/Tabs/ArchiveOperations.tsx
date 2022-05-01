@@ -55,6 +55,7 @@ export const ArchiveOperations = (props): ReactElement => {
 
   // sliding panel handlers
   const openImageAnalysisPanel = useCallback((imageFilePath) => {
+    console.log(imageFilePath);
     setSlidingPanelContentId("imageAnalysis");
     dispatch(analyzeImage(imageFilePath));
     setCurrentImage(imageFilePath);
@@ -90,7 +91,9 @@ export const ArchiveOperations = (props): ReactElement => {
             <Sticky enabled={true} top={70} bottomBoundary={3000}>
               <div className="card">
                 <div className="card-content">
-                  {extractedComicBookArchive.length} pages
+                  <span className="has-text-size-4">
+                    {extractedComicBookArchive.length} pages
+                  </span>
                   <button className="button is-small is-light is-primary is-outlined">
                     <span className="icon is-small">
                       <i className="fa-solid fa-compress"></i>
