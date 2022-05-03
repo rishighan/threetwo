@@ -11,7 +11,6 @@ export const Canvas = (data) => {
 
   useEffect(() => {
     const context = canvas.current.getContext("2d");
-
     const guideHeight = 8;
     const startY = height - guideHeight;
     const dx = width / 256;
@@ -27,21 +26,21 @@ export const Canvas = (data) => {
       context.strokeStyle = "rgba(220,0,0,0.5)";
       context.beginPath();
       context.moveTo(x, startY);
-      context.lineTo(x, startY - colorHistogramData.r[i] * dy);
+      context.lineTo(x, startY - colorHistogramData.r[i] / 10);
       context.closePath();
       context.stroke();
       // Green
       context.strokeStyle = "rgba(0,210,0,0.5)";
       context.beginPath();
       context.moveTo(x, startY);
-      context.lineTo(x, startY - colorHistogramData.g[i] * dy);
+      context.lineTo(x, startY - colorHistogramData.g[i] / 10);
       context.closePath();
       context.stroke();
       // Blue
       context.strokeStyle = "rgba(0,0,255,0.5)";
       context.beginPath();
       context.moveTo(x, startY);
-      context.lineTo(x, startY - colorHistogramData.b[i] * dy);
+      context.lineTo(x, startY - colorHistogramData.b[i] / 10);
       context.closePath();
       context.stroke();
 

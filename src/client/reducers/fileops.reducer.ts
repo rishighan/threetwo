@@ -170,6 +170,7 @@ function fileOpsReducer(state = initialState, action) {
       };
     }
     case IMG_ANALYSIS_DATA_FETCH_SUCCESS: {
+      console.log(action)
       return {
         ...state,
         imageAnalysisResults: action.result,
