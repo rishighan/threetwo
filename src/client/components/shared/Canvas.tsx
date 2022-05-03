@@ -11,6 +11,7 @@ export const Canvas = (data) => {
 
   useEffect(() => {
     const context = canvas.current.getContext("2d");
+    context.scale(pixelRatio, pixelRatio);
     const guideHeight = 8;
     const startY = height - guideHeight;
     const dx = width / 256;
