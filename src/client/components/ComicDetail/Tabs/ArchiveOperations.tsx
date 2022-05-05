@@ -7,8 +7,6 @@ import SlidingPane from "react-sliding-pane";
 import { extractComicArchive } from "../../../actions/fileops.actions";
 import { analyzeImage } from "../../../actions/fileops.actions";
 import { Canvas } from "../../shared/Canvas";
-import ComicViewer from "react-comic-viewer";
-import Modal from "react-modal";
 
 export const ArchiveOperations = (props): ReactElement => {
   const { data } = props;

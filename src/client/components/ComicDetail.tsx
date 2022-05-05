@@ -1,4 +1,10 @@
-import React, { useState, useEffect, ReactElement, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  ReactElement,
+  useContext,
+  useCallback,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import Card from "./Carda";
@@ -21,6 +27,8 @@ import "react-sliding-pane/dist/react-sliding-pane.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Loader from "react-loader-spinner";
 import SlidingPane from "react-sliding-pane";
+import Modal from "react-modal";
+import ComicViewer from "react-comic-viewer";
 
 import { escapePoundSymbol } from "../shared/utils/formatting.utils";
 
@@ -28,6 +36,7 @@ import { LIBRARY_SERVICE_HOST } from "../constants/endpoints";
 import { getSettings } from "../actions/settings.actions";
 import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
 import AirDCPPSocket from "../services/DcppSearchService";
+import { extractComicArchive } from "../actions/fileops.actions";
 
 type ComicDetailProps = {};
 /**
@@ -45,6 +54,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const [active, setActive] = useState(1);
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
+  const [modalIsOpen, setIsOpen] = useState(false);
 
   const comicVineSearchResults = useSelector(
     (state: RootState) => state.comicInfo.searchResults,
@@ -58,10 +68,27 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const comicBookDetailData = useSelector(
     (state: RootState) => state.comicInfo.comicBookDetail,
   );
+  const extractedComicBook = useSelector(
+    (state: RootState) => state.fileOps.extractedComicBookArchive,
+  );
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
   const userSettings = useSelector((state: RootState) => state.settings.data);
   const { ADCPPSocket, setADCPPSocket } = useContext(AirDCPPSocketContext);
   const dispatch = useDispatch();
+
+  const openModal = useCallback((filePath) => {
+    setIsOpen(true);
+    dispatch(extractComicArchive(filePath));
+  }, []);
+
+  const afterOpenModal = useCallback(() => {
+    // references are now sync'd and can be accessed.
+    // subtitle.style.color = "#f00";
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setIsOpen(false);
+  }, []);
 
   useEffect(() => {
     dispatch(getComicBookDetailById(comicObjectId));
@@ -311,6 +338,32 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                             comicBookDetailData.inferredMetadata,
                         }}
                       />
+                      {/* Read comic button */}
+                      <button
+                        className="button is-success is-light"
+                        onClick={() =>
+                          openModal(comicBookDetailData.rawFileDetails.filePath)
+                        }
+                      >
+                        <i className="fa-solid fa-book-open mr-2"></i>
+                        Read
+                      </button>
+
+                      <Modal
+                        style={{ content: { marginTop: "2rem" } }}
+                        isOpen={modalIsOpen}
+                        onAfterOpen={afterOpenModal}
+                        onRequestClose={closeModal}
+                        contentLabel="Example Modal"
+                      >
+                        <button onClick={closeModal}>close</button>
+                        {extractedComicBook && (
+                          <ComicViewer
+                            pages={extractedComicBook}
+                            direction="ltr"
+                          />
+                        )}
+                      </Modal>
                     </>
                   )}
               </div>
