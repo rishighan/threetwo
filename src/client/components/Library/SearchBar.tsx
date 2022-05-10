@@ -8,7 +8,6 @@ import { searchIssue } from "../../actions/fileops.actions";
 export const SearchBar = (): ReactElement => {
   const dispatch = useDispatch();
   const handleSubmit = useCallback((e) => {
-    console.log(e);
     dispatch(
       searchIssue(
         {
