@@ -18,7 +18,7 @@ import {
   LS_SINGLE_IMPORT,
   IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
 } from "../constants/action-types";
-import { isNil, isUndefined } from "lodash";
+import { isNil } from "lodash";
 import axios from "axios";
 
 interface SearchData {
@@ -134,16 +134,19 @@ export const downloadAirDCPPItem =
         `search/${instanceId}/results/${resultId}/download`,
       );
       let downloadStatus = undefined;
+      let count = 0;
       // download status check
       await ADCPPSocket.addListener(`queue`, "queue_file_status", (status) => {
         if (status.status.completed) {
           downloadStatus = status;
-
-          dispatch({
-            type: LS_SINGLE_IMPORT,
-            meta: { remote: true },
-            data: { downloadStatus, comicObjectId },
-          });
+          if (count === 0) {
+            dispatch({
+              type: LS_SINGLE_IMPORT,
+              meta: { remote: true },
+              data: { downloadStatus, comicObjectId },
+            });
+          }
+          count += 1;
         }
       });
 

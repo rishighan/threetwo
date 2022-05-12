@@ -81,14 +81,15 @@ export const RecentlyImported = ({
                     </span>
                   )}
                   {/* ComicInfo.xml presence */}
-                  {!isNil(sourcedMetadata.comicInfo) && (
-                    <span className="icon custom-icon is-small has-text-danger">
-                      <img
-                        src="/img/comicinfoxml.svg"
-                        alt={"ComicInfo.xml file detected."}
-                      />
-                    </span>
-                  )}
+                  {!isNil(sourcedMetadata.comicInfo) &&
+                    !isEmpty(sourcedMetadata.comicInfo) && (
+                      <span className="icon custom-icon is-small has-text-danger">
+                        <img
+                          src="/img/comicinfoxml.svg"
+                          alt={"ComicInfo.xml file detected."}
+                        />
+                      </span>
+                    )}
                   {/* Issue type */}
                   {isComicBookMetadataAvailable &&
                   !isNil(

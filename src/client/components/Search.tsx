@@ -8,9 +8,9 @@ import { search } from "../services/api/SearchApi";
 import { Form, Field } from "react-final-form";
 import Card from "./Carda";
 
-interface ISearchProps { }
+interface ISearchProps {}
 
-export const Search = ({ }: ISearchProps): ReactElement => {
+export const Search = ({}: ISearchProps): ReactElement => {
   const formData = {
     search: "",
   };
@@ -83,7 +83,7 @@ export const Search = ({ }: ISearchProps): ReactElement => {
             )}
           />
           {!isNil(comicVineSearchResults.results) &&
-            !isEmpty(comicVineSearchResults.results) ? (
+          !isEmpty(comicVineSearchResults.results) ? (
             <div>
               {comicVineSearchResults.results.map((result) => {
                 return (
