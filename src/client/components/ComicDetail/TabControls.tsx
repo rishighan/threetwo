@@ -6,8 +6,8 @@ export const TabControls = (props): ReactElement => {
   const [active, setActive] = useState(filteredTabIds[0]);
   console.log(filteredTabIds);
   useEffect(() => {
-      setActive(filteredTabIds[0]);
-  }, [filteredTabIds])
+    setActive(filteredTabIds[0]);
+  }, [filteredTabIds]);
   return (
     <>
       <div className="tabs">
