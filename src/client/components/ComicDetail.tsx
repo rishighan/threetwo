@@ -9,16 +9,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import Card from "./Carda";
 import { ComicVineMatchPanel } from "./ComicDetail/ComicVineMatchPanel";
-import { VolumeInformation } from "./ComicDetail/Tabs/VolumeInformation";
-import { RawFileDetails } from "./ComicDetail/RawFileDetails";
 import { ArchiveOperations } from "./ComicDetail/Tabs/ArchiveOperations";
 import { ComicInfoXML } from "./ComicDetail/Tabs/ComicInfoXML";
 import AcquisitionPanel from "./ComicDetail/AcquisitionPanel";
 import DownloadsPanel from "./ComicDetail/DownloadsPanel";
+import { VolumeInformation } from "./ComicDetail/Tabs/VolumeInformation";
+import { RawFileDetails } from "./ComicDetail/RawFileDetails";
+
+import TabControls from "./ComicDetail/TabControls";
 import { EditMetadataPanel } from "./ComicDetail/EditMetadataPanel";
 import { Menu } from "./ComicDetail/ActionMenu/Menu";
 
-import { isEmpty, isUndefined, isNil } from "lodash";
+import { isEmpty, isUndefined, isNil, find, filter, omitBy } from "lodash";
 import { RootState } from "threetwo-ui-typings";
 
 import { getComicBookDetailById } from "../actions/comicinfo.actions";
@@ -51,7 +53,7 @@ type ComicDetailProps = {};
 
 export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const [page, setPage] = useState(1);
-  const [active, setActive] = useState(1);
+
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
   const [modalIsOpen, setIsOpen] = useState(false);
@@ -248,45 +250,13 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   ];
   // filtered Tabs
   const filteredTabs = tabGroup.filter((tab) => tab.shouldShow);
-
-  // Tabs
-  const MetadataTabGroup = () => {
-    return (
-      <>
-        <div className="tabs">
-          <ul>
-            {filteredTabs.map(({ id, name, icon }) => (
-              <li
-                key={id}
-                className={id === active ? "is-active" : ""}
-                onClick={() => setActive(id)}
-              >
-                {/* Downloads tab and count badge */}
-                <a>
-                  {id === 5 &&
-                  !isNil(comicBookDetailData) &&
-                  !isEmpty(comicBookDetailData) ? (
-                    <span className="download-icon-labels">
-                      <i className="fa-solid fa-download"></i>
-                      <span className="tag downloads-count is-info is-light">
-                        {comicBookDetailData.acquisition.directconnect.length}
-                      </span>
-                    </span>
-                  ) : (
-                    <span className="icon is-small">{icon}</span>
-                  )}
-                  {name}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-        {filteredTabs.map(({ id, content }) => {
-          return active === id ? content : null;
-        })}
-      </>
-    );
-  };
+  const filteredTabIds = tabGroup
+    .map((tab) => {
+      if (tab.shouldShow) {
+        return tab.id;
+      }
+    })
+    .filter((tab) => !isNil(tab));
 
   // Determine which cover image to use:
   // 1. from the locally imported or
@@ -369,7 +339,14 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
               </div>
             </div>
 
-            {<MetadataTabGroup />}
+            {
+              <TabControls
+                comicBookDetailData={comicBookDetailData}
+                comicObjectId={comicObjectId}
+                filteredTabIds={filteredTabIds}
+                filteredTabs={filteredTabs}
+              />
+            }
 
             <SlidingPane
               isOpen={visible}
