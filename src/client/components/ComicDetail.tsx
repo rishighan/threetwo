@@ -20,7 +20,7 @@ import TabControls from "./ComicDetail/TabControls";
 import { EditMetadataPanel } from "./ComicDetail/EditMetadataPanel";
 import { Menu } from "./ComicDetail/ActionMenu/Menu";
 
-import { isEmpty, isUndefined, isNil, find, filter, omitBy } from "lodash";
+import { isEmpty, isUndefined, isNil } from "lodash";
 import { RootState } from "threetwo-ui-typings";
 
 import { getComicBookDetailById } from "../actions/comicinfo.actions";
