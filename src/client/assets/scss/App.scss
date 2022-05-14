@@ -215,6 +215,9 @@ pre {
     }
 
     .is-horizontal {
+      border: 1px solid #CCC;
+      border-radius: 0.25em;
+
       flex-direction: row;
       display: flex;
       flex-basis: 50ex;
@@ -225,7 +228,7 @@ pre {
       .card-image {
         align-self: center;
         .image {
-          max-width: 80px;
+          max-width: 50px;
           border-top-right-radius: 0;
           border-bottom-right-radius: 0;
           border-top-left-radius: 0.25em;

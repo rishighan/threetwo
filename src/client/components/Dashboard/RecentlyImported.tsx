@@ -61,53 +61,65 @@ export const RecentlyImported = ({
               </Link>
             );
             return (
-              <Card
-                key={_id}
-                orientation={"vertical"}
-                imageUrl={imagePath}
-                hasDetails
-                title={comicName ? titleElement : null}
-              >
-                <div className="content is-flex is-flex-direction-row">
-                  {isComicBookMetadataAvailable && (
-                    <span className="icon custom-icon is-small">
-                      <img src="/img/cvlogo.svg" />
-                    </span>
-                  )}
-                  {/* Raw file presence  */}
-                  {isNil(rawFileDetails) && (
-                    <span className="icon custom-icon is-small has-text-danger mr-2">
-                      <img src="/img/missing-file.svg" />
-                    </span>
-                  )}
-                  {/* ComicInfo.xml presence */}
-                  {!isNil(sourcedMetadata.comicInfo) &&
-                    !isEmpty(sourcedMetadata.comicInfo) && (
-                      <span className="icon custom-icon is-small has-text-danger">
-                        <img
-                          src="/img/comicinfoxml.svg"
-                          alt={"ComicInfo.xml file detected."}
-                        />
+              <>
+                <Card
+                  key={_id}
+                  orientation={"vertical"}
+                  imageUrl={imagePath}
+                  hasDetails
+                  title={comicName ? titleElement : null}
+                >
+                  <div className="content is-flex is-flex-direction-row">
+                    {isComicBookMetadataAvailable && (
+                      <span className="icon custom-icon is-small">
+                        <img src="/img/cvlogo.svg" />
                       </span>
                     )}
-                  {/* Issue type */}
-                  {isComicBookMetadataAvailable &&
-                  !isNil(
-                    detectIssueTypes(
-                      sourcedMetadata.comicvine.volumeInformation.description,
-                    ),
-                  ) ? (
-                    <span className="tag is-warning">
-                      {
-                        detectIssueTypes(
-                          sourcedMetadata.comicvine.volumeInformation
-                            .description,
-                        ).displayName
-                      }
-                    </span>
-                  ) : null}
-                </div>
-              </Card>
+                    {/* Raw file presence  */}
+                    {isNil(rawFileDetails) && (
+                      <span className="icon custom-icon is-small has-text-danger mr-2">
+                        <img src="/img/missing-file.svg" />
+                      </span>
+                    )}
+                    {/* ComicInfo.xml presence */}
+                    {!isNil(sourcedMetadata.comicInfo) &&
+                      !isEmpty(sourcedMetadata.comicInfo) && (
+                        <span className="icon custom-icon is-small has-text-danger">
+                          <img
+                            src="/img/comicinfoxml.svg"
+                            alt={"ComicInfo.xml file detected."}
+                          />
+                        </span>
+                      )}
+                    {/* Issue type */}
+                    {isComicBookMetadataAvailable &&
+                    !isNil(
+                      detectIssueTypes(
+                        sourcedMetadata.comicvine.volumeInformation.description,
+                      ),
+                    ) ? (
+                      <span className="tag is-warning">
+                        {
+                          detectIssueTypes(
+                            sourcedMetadata.comicvine.volumeInformation
+                              .description,
+                          ).displayName
+                        }
+                      </span>
+                    ) : null}
+                  </div>
+                </Card>
+                {/* original reference */}
+                <Card
+                  orientation="horizontal"
+                  hasDetails
+                  imageUrl={sourcedMetadata.comicvine.image.icon_url}
+                >
+                  <dd className="is-size-7"> 
+                        <dl>asdasd</dl>
+                  </dd>
+                </Card>
+              </>
             );
           },
         )}

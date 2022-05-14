@@ -17,7 +17,24 @@ interface ICardProps {
 const renderCard = (props): ReactElement => {
   switch (props.orientation) {
     case "horizontal":
-      return <>horiztonal</>;
+      return (
+        <div className="card-container">
+          <div className="card generic-card">
+            <div className="is-horizontal">
+              <div className="card-image">
+                <img
+                  src={props.imageUrl}
+                  alt="Placeholder image"
+                  className="image"
+                />
+              </div>
+              {props.hasDetails && (
+                <div className="card-content">{props.children}</div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
     case "vertical":
       return (
         <div onClick={props.onClick}>
