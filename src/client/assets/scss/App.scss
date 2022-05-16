@@ -9,9 +9,17 @@ $border-color: red;
 $volume-color: #fdecd1;
 $issue-color: #f2f1f9;
 $size-8: 0.9rem;
+$size-9: 0.7em;
+$flexSize: 4em;
+$boxSpacing: 1em;
+$colorText: #404646;
 
 .is-size-8 {
   font-size: $size-8;
+}
+
+.is-size-9 {
+  font-size: $size-9;
 }
 
 // global style overrides
@@ -215,45 +223,43 @@ pre {
     }
 
     .is-horizontal {
-      border: 1px solid #CCC;
-      border-radius: 0.25em;
-
-      flex-direction: row;
+      // margin: $boxSpacing / 2;
+      border-radius: 1.5em;
+      height: $flexSize;
+      max-width: $flexSize * 3;
+      flex: 1 1 auto;
       display: flex;
-      flex-basis: 50ex;
-      flex-grow: 0;
-      flex-shrink: 1;
-      box-shadow: none;
-
       .card-image {
-        align-self: center;
-        .image {
-          max-width: 50px;
+        img.image {
+          border-top-left-radius: 8px;
+          border-bottom-left-radius: 8px;
           border-top-right-radius: 0;
           border-bottom-right-radius: 0;
-          border-top-left-radius: 0.25em;
-          border-bottom-left-radius: 0.25em;
+          height: 100%;
+          max-width: $flexSize * 1.3;
+          object-fit: cover;
+          flex: 1 1 auto;
         }
       }
-      .card-content {
-        align-self: top;
-        flex: 1;
-        padding-left: 1em;
-        padding-top: 0.5em;
-        padding-bottom: 0em;
-        .name {
-          font-size: 0.85em;
-        }
-        ul {
-          li.status {
-            margin-top: 10px;
-          }
+    }
+    .card-content {
+      align-self: top;
+      flex: 1;
+      padding-left: 1em;
+      padding-top: 0.5em;
+      padding-bottom: 0em;
+      .name {
+        font-size: 0.85em;
+      }
+      ul {
+        li.status {
+          margin-top: 10px;
         }
       }
-      .is-divider {
-        margin-top: 1.5rem;
-        margin-bottom: 1rem;
-      }
+    }
+    .is-divider {
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
     }
   }
 }

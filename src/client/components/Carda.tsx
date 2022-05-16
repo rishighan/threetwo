@@ -34,6 +34,9 @@ const renderCard = (props): ReactElement => {
             </div>
           </div>
         </div>
+
+
+
       );
     case "vertical":
       return (

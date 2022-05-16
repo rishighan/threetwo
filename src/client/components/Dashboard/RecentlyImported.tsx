@@ -115,8 +115,11 @@ export const RecentlyImported = ({
                   hasDetails
                   imageUrl={sourcedMetadata.comicvine.image.icon_url}
                 >
-                  <dd className="is-size-7"> 
-                        <dl>asdasd</dl>
+                  <dd className="is-size-9">
+                    <dl>Downloaded from:</dl>
+                  </dd>
+                  <dd className="is-size-9">
+                    <dl>Bapacha naav</dl>
                   </dd>
                 </Card>
               </>
