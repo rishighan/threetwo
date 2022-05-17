@@ -110,18 +110,20 @@ export const RecentlyImported = ({
                   </div>
                 </Card>
                 {/* original reference */}
-                <Card
-                  orientation="horizontal"
-                  hasDetails
-                  imageUrl={sourcedMetadata.comicvine.image.icon_url}
-                >
-                  <dd className="is-size-9">
-                    <dl>Downloaded from:</dl>
-                  </dd>
-                  <dd className="is-size-9">
-                    <dl>Bapacha naav</dl>
-                  </dd>
-                </Card>
+                {!isUndefined(sourcedMetadata.comicvine.image) ? (
+                  <Card
+                    orientation="horizontal"
+                    hasDetails
+                    imageUrl={sourcedMetadata.comicvine.image.icon_url}
+                  >
+                    <dd className="is-size-9">
+                      <dl>
+                        {ellipsize(sourcedMetadata.comicvine.volumeInformation.name, 22)}
+                      </dl>
+                      <dl> <span className="small-tag mt-1">{sourcedMetadata.comicvine.id}</span></dl>
+                    </dd>
+                  </Card>
+                ) : null}
               </>
             );
           },

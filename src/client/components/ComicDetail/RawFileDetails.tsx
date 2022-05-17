@@ -5,7 +5,6 @@ import { isUndefined } from "lodash";
 
 export const RawFileDetails = (props): ReactElement => {
   const { rawFileDetails, inferredMetadata } = props.data;
-  console.log(props);
   return (
     <>
       <div className="comic-detail raw-file-details">

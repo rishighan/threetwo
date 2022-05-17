@@ -9,7 +9,7 @@ $border-color: red;
 $volume-color: #fdecd1;
 $issue-color: #f2f1f9;
 $size-8: 0.9rem;
-$size-9: 0.7em;
+$size-9: 0.7rem;
 $flexSize: 4em;
 $boxSpacing: 1em;
 $colorText: #404646;
@@ -20,6 +20,21 @@ $colorText: #404646;
 
 .is-size-9 {
   font-size: $size-9;
+}
+
+.small-tag {
+  align-items: center;
+  background-color: #ddc096;
+  border-radius: 4px;
+  color: #4a4a4a;
+  display: inline-flex;
+  font-size: $size-9;
+  height: 1.5em;
+  justify-content: center;
+  line-height: 1.5;
+  padding-left: 0.55em;
+  padding-right: 0.55em;
+  white-space: nowrap;
 }
 
 // global style overrides
@@ -245,22 +260,12 @@ pre {
     .card-content {
       align-self: top;
       flex: 1;
-      padding-left: 1em;
-      padding-top: 0.5em;
+      padding-left: 0.7em;
+      padding-top: 0.4em;
       padding-bottom: 0em;
-      .name {
-        font-size: 0.85em;
-      }
-      ul {
-        li.status {
-          margin-top: 10px;
-        }
-      }
+     
     }
-    .is-divider {
-      margin-top: 1.5rem;
-      margin-bottom: 1rem;
-    }
+    
   }
 }
 

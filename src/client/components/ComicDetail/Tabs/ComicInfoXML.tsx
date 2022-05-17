@@ -2,7 +2,6 @@ import React, { ReactElement } from "react";
 
 export const ComicInfoXML = (data): ReactElement => {
   const { json } = data;
-  console.log(data);
   return (
     <div className="comicInfo-metadata">
       <dl className="has-text-size-7">

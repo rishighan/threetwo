@@ -9,11 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import Card from "./Carda";
 import { ComicVineMatchPanel } from "./ComicDetail/ComicVineMatchPanel";
-import { ArchiveOperations } from "./ComicDetail/Tabs/ArchiveOperations";
-import { ComicInfoXML } from "./ComicDetail/Tabs/ComicInfoXML";
-import AcquisitionPanel from "./ComicDetail/AcquisitionPanel";
-import DownloadsPanel from "./ComicDetail/DownloadsPanel";
-import { VolumeInformation } from "./ComicDetail/Tabs/VolumeInformation";
+
 import { RawFileDetails } from "./ComicDetail/RawFileDetails";
 
 import TabControls from "./ComicDetail/TabControls";
@@ -178,86 +174,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
     });
   }
 
-  // Tab content and header details
-  const tabGroup = [
-    {
-      id: 1,
-      name: "Volume Information",
-      icon: <i className="fa-solid fa-layer-group"></i>,
-      content: isComicBookMetadataAvailable ? (
-        <VolumeInformation data={comicBookDetailData} key={1} />
-      ) : null,
-      shouldShow: isComicBookMetadataAvailable,
-    },
-    {
-      id: 2,
-      name: "ComicInfo.xml",
-      icon: <i className="fa-solid fa-code"></i>,
-      content: (
-        <div className="columns" key={2}>
-          <div className="column is-three-quarters">
-            {!isNil(comicBookDetailData.sourcedMetadata) &&
-              !isNil(comicBookDetailData.sourcedMetadata.comicInfo) && (
-                <ComicInfoXML
-                  json={comicBookDetailData.sourcedMetadata.comicInfo}
-                />
-              )}
-          </div>
-        </div>
-      ),
-      shouldShow:
-        !isUndefined(comicBookDetailData.sourcedMetadata) &&
-        !isEmpty(comicBookDetailData.sourcedMetadata.comicInfo),
-    },
-    {
-      id: 3,
-      icon: <i className="fa-regular fa-file-archive"></i>,
-      name: "Archive Operations",
-      content: <ArchiveOperations data={comicBookDetailData} key={3} />,
-      shouldShow: areRawFileDetailsAvailable,
-    },
-    {
-      id: 4,
-      icon: <i className="fa-solid fa-floppy-disk"></i>,
-      name: "Acquisition",
-      content: (
-        <AcquisitionPanel
-          query={airDCPPQuery}
-          comicObjectid={comicBookDetailData._id}
-          key={4}
-        />
-      ),
-      shouldShow: true,
-    },
-    {
-      id: 5,
-      icon: null,
-      name:
-        !isNil(comicBookDetailData) && !isEmpty(comicBookDetailData) ? (
-          <span className="download-tab-name">Downloads</span>
-        ) : (
-          "Downloads"
-        ),
-      content: !isNil(comicBookDetailData) && !isEmpty(comicBookDetailData) && (
-        <DownloadsPanel
-          data={comicBookDetailData.acquisition.directconnect}
-          comicObjectId={comicObjectId}
-          key={5}
-        />
-      ),
-      shouldShow: true,
-    },
-  ];
-  // filtered Tabs
-  const filteredTabs = tabGroup.filter((tab) => tab.shouldShow);
-  const filteredTabIds = tabGroup
-    .map((tab) => {
-      if (tab.shouldShow) {
-        return tab.id;
-      }
-    })
-    .filter((tab) => !isNil(tab));
-
   // Determine which cover image to use:
   // 1. from the locally imported or
   // 2. from the CV-scraped version
@@ -339,14 +255,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
               </div>
             </div>
 
-            {
-              <TabControls
-                comicBookDetailData={comicBookDetailData}
-                comicObjectId={comicObjectId}
-                filteredTabIds={filteredTabIds}
-                filteredTabs={filteredTabs}
-              />
-            }
+            {<TabControls comicObjectId={comicObjectId} />}
 
             <SlidingPane
               isOpen={visible}
