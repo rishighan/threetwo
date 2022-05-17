@@ -12,7 +12,7 @@ export const TabControls = (props): ReactElement => {
   useEffect(() => {
     console.log("changed");
     setActive(filteredTabs[0].id);
-  }, [filteredTabs[0]]);
+  }, [comicBookDetailData]);
 
   return (
     <>
