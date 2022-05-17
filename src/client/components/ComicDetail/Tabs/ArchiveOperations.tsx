@@ -1,7 +1,7 @@
 import React, { ReactElement, useCallback, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { DnD } from "../../DnD";
-import { isEmpty, isNil, isUndefined } from "lodash";
+import { isEmpty } from "lodash";
 import Sticky from "react-stickynode";
 import SlidingPane from "react-sliding-pane";
 import { extractComicArchive } from "../../../actions/fileops.actions";
@@ -24,7 +24,7 @@ export const ArchiveOperations = (props): ReactElement => {
   const dispatch = useDispatch();
   const unpackComicArchive = useCallback(() => {
     dispatch(extractComicArchive(data.rawFileDetails.filePath));
-  }, [dispatch, data]);
+  }, []);
 
   // sliding panel config
   const [visible, setVisible] = useState(false);
@@ -55,7 +55,6 @@ export const ArchiveOperations = (props): ReactElement => {
 
   // sliding panel handlers
   const openImageAnalysisPanel = useCallback((imageFilePath) => {
-    console.log(imageFilePath);
     setSlidingPanelContentId("imageAnalysis");
     dispatch(analyzeImage(imageFilePath));
     setCurrentImage(imageFilePath);

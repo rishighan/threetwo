@@ -1,3 +1,4 @@
+import { isUndefined } from "lodash";
 import React, { ReactElement } from "react";
 
 export const ComicInfoXML = (data): ReactElement => {
@@ -20,7 +21,7 @@ export const ComicInfoXML = (data): ReactElement => {
               <span className="tags has-addons">
                 <span className="tag">Issue #</span>
                 <span className="tag is-warning is-light">
-                  {parseInt(json.number[0], 10)}
+                  {!isUndefined(json.number) && parseInt(json.number[0], 10)}
                 </span>
               </span>
             </div>
