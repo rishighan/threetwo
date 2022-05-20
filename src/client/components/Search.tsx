@@ -37,7 +37,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
   );
 
   const addToLibrary = useCallback(
-    (comicData) => dispatch(importToDB(comicData)),
+    (comicData) => dispatch(importToDB({ comicvine: comicData })),
     [],
   );
 

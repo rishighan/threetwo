@@ -110,7 +110,7 @@ export const AcquisitionPanel = (
         }),
       );
     },
-    [dispatch],
+    [],
   );
 
   return (

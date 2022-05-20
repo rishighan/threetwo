@@ -26,7 +26,6 @@ export const DownloadsPanel = (
     return state.airdcpp.bundles;
   });
 
-  console.log(bundles);
   // AirDCPP Socket initialization
   const userSettings = useSelector((state: RootState) => state.settings.data);
   const { ADCPPSocket } = useContext(AirDCPPSocketContext);

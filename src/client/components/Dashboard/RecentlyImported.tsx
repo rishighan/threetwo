@@ -7,6 +7,7 @@ import { isEmpty, isNil, isUndefined, map } from "lodash";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
 import Masonry from "react-masonry-css";
 import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
+import { determineCoverFile } from "../../shared/utils/metadata.utils";
 
 type RecentlyImportedProps = {
   comicBookCovers: any;
@@ -37,27 +38,29 @@ export const RecentlyImported = ({
       >
         {map(
           comicBookCovers.docs,
-          ({ _id, rawFileDetails, sourcedMetadata }) => {
+          ({
+            _id,
+            rawFileDetails,
+            sourcedMetadata: { comicvine, comicInfo, locg },
+          }) => {
+            const consolidatedComicMetadata = {
+              rawFileDetails,
+              comicvine,
+              comicInfo,
+              locg,
+            };
+
+            const { issueName, url } = determineCoverFile(
+              consolidatedComicMetadata,
+            );
+
             const isComicBookMetadataAvailable =
-              sourcedMetadata &&
-              !isUndefined(sourcedMetadata.comicvine) &&
-              !isUndefined(sourcedMetadata.comicvine.volumeInformation) &&
-              !isEmpty(sourcedMetadata);
-            let imagePath = "";
-            let comicName = "";
-            if (!isEmpty(rawFileDetails.cover)) {
-              const encodedFilePath = encodeURI(
-                `${LIBRARY_SERVICE_HOST}/${rawFileDetails.cover.filePath}`,
-              );
-              imagePath = escapePoundSymbol(encodedFilePath);
-              comicName = rawFileDetails.name;
-            } else if (!isEmpty(sourcedMetadata.comicvine)) {
-              imagePath = sourcedMetadata.comicvine.image.small_url;
-              comicName = sourcedMetadata.comicvine.name;
-            }
+              !isUndefined(comicvine) &&
+              !isUndefined(comicvine.volumeInformation);
+
             const titleElement = (
               <Link to={"/comic/details/" + _id}>
-                {ellipsize(comicName, 20)}
+                {ellipsize(issueName, 20)}
               </Link>
             );
             return (
@@ -65,9 +68,9 @@ export const RecentlyImported = ({
                 <Card
                   key={_id}
                   orientation={"vertical"}
-                  imageUrl={imagePath}
+                  imageUrl={url}
                   hasDetails
-                  title={comicName ? titleElement : null}
+                  title={issueName ? titleElement : null}
                 >
                   <div className="content is-flex is-flex-direction-row">
                     {isComicBookMetadataAvailable && (
@@ -82,27 +85,23 @@ export const RecentlyImported = ({
                       </span>
                     )}
                     {/* ComicInfo.xml presence */}
-                    {!isNil(sourcedMetadata.comicInfo) &&
-                      !isEmpty(sourcedMetadata.comicInfo) && (
-                        <span className="icon custom-icon is-small has-text-danger">
-                          <img
-                            src="/img/comicinfoxml.svg"
-                            alt={"ComicInfo.xml file detected."}
-                          />
-                        </span>
-                      )}
+                    {!isNil(comicInfo) && !isEmpty(comicInfo) && (
+                      <span className="icon custom-icon is-small has-text-danger">
+                        <img
+                          src="/img/comicinfoxml.svg"
+                          alt={"ComicInfo.xml file detected."}
+                        />
+                      </span>
+                    )}
                     {/* Issue type */}
                     {isComicBookMetadataAvailable &&
                     !isNil(
-                      detectIssueTypes(
-                        sourcedMetadata.comicvine.volumeInformation.description,
-                      ),
+                      detectIssueTypes(comicvine.volumeInformation.description),
                     ) ? (
                       <span className="tag is-warning">
                         {
                           detectIssueTypes(
-                            sourcedMetadata.comicvine.volumeInformation
-                              .description,
+                            comicvine.volumeInformation.description,
                           ).displayName
                         }
                       </span>
@@ -110,17 +109,17 @@ export const RecentlyImported = ({
                   </div>
                 </Card>
                 {/* original reference */}
-                {!isUndefined(sourcedMetadata.comicvine.image) ? (
+                {!isUndefined(comicvine.image) ? (
                   <Card
                     orientation="horizontal"
                     hasDetails
-                    imageUrl={sourcedMetadata.comicvine.image.icon_url}
+                    imageUrl={comicvine.image.icon_url}
                   >
                     <dd className="is-size-9">
+                      <dl>{ellipsize(comicvine.volumeInformation.name, 22)}</dl>
                       <dl>
-                        {ellipsize(sourcedMetadata.comicvine.volumeInformation.name, 22)}
+                        <span className="small-tag mt-1">{comicvine.id}</span>
                       </dl>
-                      <dl> <span className="small-tag mt-1">{sourcedMetadata.comicvine.id}</span></dl>
                     </dd>
                   </Card>
                 ) : null}

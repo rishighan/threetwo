@@ -142,7 +142,7 @@ export const importToDB = (payload?: any) => (dispatch) => {
           score: "0",
         },
       },
-      sourcedMetadata: { comicvine: payload || null },
+      sourcedMetadata: payload || null,
       acquisition: { wanted: true },
     };
     dispatch({

@@ -1,9 +1,10 @@
 import { isNil, map } from "lodash";
-import React, { createRef, ReactElement, useEffect } from "react";
+import React, { createRef, ReactElement, useCallback, useEffect } from "react";
 import Card from "../Carda";
 import Masonry from "react-masonry-css";
 import { useDispatch, useSelector } from "react-redux";
 import { getWeeklyPullList } from "../../actions/comicinfo.actions";
+import { importToDB } from "../../actions/fileops.actions";
 import ellipsize from "ellipsize";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -19,12 +20,27 @@ export const PullList = ({ issues }: PullListProps): ReactElement => {
   useEffect(() => {
     dispatch(
       getWeeklyPullList({
-        startDate: "2022-5-17",
+        startDate: "2022-5-1",
         pageSize: "15",
         currentPage: "1",
       }),
     );
   }, []);
+  const addToLibrary = useCallback(
+    (locgMetadata) => dispatch(importToDB({ locg: locgMetadata })),
+    [],
+  );
+  /*
+  const foo = {
+    coverFile: {}, // pointer to which cover file to use
+    rawFileDetails: {}, // #1
+    sourcedMetadata: {
+      comicInfo: {},
+      comicvine: {}, // #2
+      locg: {}, // #2
+    },
+  };
+  */
 
   const pullList = useSelector((state: RootState) => state.comicInfo.pullList);
   let sliderRef = createRef();
@@ -124,6 +140,14 @@ export const PullList = ({ issues }: PullListProps): ReactElement => {
                 <div className="content">
                   <div className="control">
                     <span className="tag">{issue.publisher}</span>
+                  </div>
+                  <div className="mt-2">
+                    <button
+                      className="button is-small is-warning is-light"
+                      onClick={() => addToLibrary(issue)}
+                    >
+                      <i className="fa-solid fa-plus"></i> Want
+                    </button>
                   </div>
                 </div>
               </Card>
