@@ -112,7 +112,6 @@ export const AcquisitionPanel = (
     },
     [],
   );
-
   return (
     <>
       <div className="comic-detail columns">

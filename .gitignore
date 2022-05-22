@@ -16,3 +16,4 @@ yarn-error.log
 environment.list
 .env
 src/client/assets/img/missing-file.pxd
+*.pxd

@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import Dashboard from "./Dashboard/Dashboard";
 
 import Import from "./Import";
-import { ComicDetail } from "./ComicDetail";
+import { ComicDetailContainer } from "./ComicDetail/ComicDetailContainer";
 import LibraryContainer from "./Library/LibraryContainer";
 import LibraryGrid from "./Library/LibraryGrid";
 import Search from "./Search";
@@ -85,7 +85,7 @@ export const App = (): ReactElement => {
           <Route path="/search" element={<Search />} />
           <Route
             path={"/comic/details/:comicObjectId"}
-            element={<ComicDetail />}
+            element={<ComicDetailContainer />}
           />
           <Route
             path={"/volume/details/:comicObjectId"}

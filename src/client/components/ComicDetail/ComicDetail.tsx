@@ -7,24 +7,22 @@ import React, {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import Card from "./Carda";
-import { ComicVineMatchPanel } from "./ComicDetail/ComicVineMatchPanel";
+import Card from "../Carda";
+import { ComicVineMatchPanel } from "./ComicVineMatchPanel";
 
-import { RawFileDetails } from "./ComicDetail/RawFileDetails";
+import { RawFileDetails } from "./RawFileDetails";
 
-import TabControls from "./ComicDetail/TabControls";
-import { EditMetadataPanel } from "./ComicDetail/EditMetadataPanel";
-import { Menu } from "./ComicDetail/ActionMenu/Menu";
-import { ArchiveOperations } from "./ComicDetail/Tabs/ArchiveOperations";
-import { ComicInfoXML } from "./ComicDetail/Tabs/ComicInfoXML";
-import AcquisitionPanel from "./ComicDetail/AcquisitionPanel";
-import DownloadsPanel from "./ComicDetail/DownloadsPanel";
-import { VolumeInformation } from "./ComicDetail/Tabs/VolumeInformation";
+import TabControls from "./TabControls";
+import { EditMetadataPanel } from "./EditMetadataPanel";
+import { Menu } from "./ActionMenu/Menu";
+import { ArchiveOperations } from "./Tabs/ArchiveOperations";
+import { ComicInfoXML } from "./Tabs/ComicInfoXML";
+import AcquisitionPanel from "./AcquisitionPanel";
+import DownloadsPanel from "./DownloadsPanel";
+import { VolumeInformation } from "./Tabs/VolumeInformation";
 
 import { isEmpty, isUndefined, isNil } from "lodash";
 import { RootState } from "threetwo-ui-typings";
-
-import { getComicBookDetailById } from "../actions/comicinfo.actions";
 
 import "react-sliding-pane/dist/react-sliding-pane.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
@@ -33,13 +31,11 @@ import SlidingPane from "react-sliding-pane";
 import Modal from "react-modal";
 import ComicViewer from "react-comic-viewer";
 
-import { escapePoundSymbol } from "../shared/utils/formatting.utils";
-
-import { LIBRARY_SERVICE_HOST } from "../constants/endpoints";
-import { getSettings } from "../actions/settings.actions";
-import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
-import AirDCPPSocket from "../services/DcppSearchService";
-import { extractComicArchive } from "../actions/fileops.actions";
+import { getSettings } from "../../actions/settings.actions";
+import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
+import AirDCPPSocket from "../../services/DcppSearchService";
+import { extractComicArchive } from "../../actions/fileops.actions";
+import { determineCoverFile } from "../../shared/utils/metadata.utils";
 
 type ComicDetailProps = {};
 /**
@@ -52,9 +48,8 @@ type ComicDetailProps = {};
  * )
  */
 
-export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
+export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   const [page, setPage] = useState(1);
-
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
   const [modalIsOpen, setIsOpen] = useState(false);
@@ -68,9 +63,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   const comicVineAPICallProgress = useSelector(
     (state: RootState) => state.comicInfo.inProgress,
   );
-  const comicBookDetailData = useSelector(
-    (state: RootState) => state.comicInfo.comicBookDetail,
-  );
+
   const extractedComicBook = useSelector(
     (state: RootState) => state.fileOps.extractedComicBookArchive,
   );
@@ -94,7 +87,6 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   }, []);
 
   useEffect(() => {
-    dispatch(getComicBookDetailById(comicObjectId));
     dispatch(getSettings());
   }, [page, dispatch]);
 
@@ -108,6 +100,9 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       );
     }
   }, [userSettings]);
+
+  // destructure props
+  console.log(ADCPPSocket)
 
   // sliding panel init
   const contentForSlidingPanel = {
@@ -146,38 +141,35 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       content: () => <EditMetadataPanel />,
     },
   };
+  const {
+    data: {
+      _id,
+      rawFileDetails,
+      inferredMetadata,
+      sourcedMetadata: { comicvine, locg, comicInfo },
+    },
+  } = data;
 
   // check for the availability of CV metadata
   const isComicBookMetadataAvailable =
-    comicBookDetailData.sourcedMetadata &&
-    !isUndefined(comicBookDetailData.sourcedMetadata.comicvine) &&
-    !isUndefined(
-      comicBookDetailData.sourcedMetadata.comicvine.volumeInformation,
-    ) &&
-    !isEmpty(comicBookDetailData.sourcedMetadata);
+    !isUndefined(comicvine) && !isUndefined(comicvine.volumeInformation);
 
   // check for the availability of rawFileDetails
   const areRawFileDetailsAvailable =
-    !isUndefined(comicBookDetailData.rawFileDetails) &&
-    !isEmpty(comicBookDetailData.rawFileDetails.cover);
+    !isUndefined(rawFileDetails) && !isEmpty(rawFileDetails.cover);
+
+  const { issueName, url } = determineCoverFile({
+    rawFileDetails,
+    comicvine,
+    locg,
+  });
 
   // query for airdc++
-  const airDCPPQuery = {};
-  if (isComicBookMetadataAvailable) {
-    Object.assign(airDCPPQuery, {
-      issue: {
-        name: comicBookDetailData.sourcedMetadata.comicvine.volumeInformation
-          .name,
-      },
-    });
-  } else if (areRawFileDetailsAvailable) {
-    Object.assign(airDCPPQuery, {
-      issue: {
-        name: comicBookDetailData.inferredMetadata.issue.name,
-        number: comicBookDetailData.inferredMetadata.issue.number,
-      },
-    });
-  }
+  const airDCPPQuery = {
+    issue: {
+      name: issueName,
+    },
+  };
 
   // Tab content and header details
   const tabGroup = [
@@ -186,7 +178,7 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       name: "Volume Information",
       icon: <i className="fa-solid fa-layer-group"></i>,
       content: isComicBookMetadataAvailable ? (
-        <VolumeInformation data={comicBookDetailData} key={1} />
+        <VolumeInformation data={data.data} key={1} />
       ) : null,
       shouldShow: isComicBookMetadataAvailable,
     },
@@ -197,24 +189,17 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       content: (
         <div className="columns" key={2}>
           <div className="column is-three-quarters">
-            {!isNil(comicBookDetailData.sourcedMetadata) &&
-              !isNil(comicBookDetailData.sourcedMetadata.comicInfo) && (
-                <ComicInfoXML
-                  json={comicBookDetailData.sourcedMetadata.comicInfo}
-                />
-              )}
+            {!isNil(comicInfo) && <ComicInfoXML json={comicInfo} />}
           </div>
         </div>
       ),
-      shouldShow:
-        !isUndefined(comicBookDetailData.sourcedMetadata) &&
-        !isEmpty(comicBookDetailData.sourcedMetadata.comicInfo),
+      shouldShow: !isEmpty(comicInfo),
     },
     {
       id: 3,
       icon: <i className="fa-regular fa-file-archive"></i>,
       name: "Archive Operations",
-      content: <ArchiveOperations data={comicBookDetailData} key={3} />,
+      content: <ArchiveOperations data={data.data} key={3} />,
       shouldShow: areRawFileDetailsAvailable,
     },
     {
@@ -222,26 +207,21 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
       icon: <i className="fa-solid fa-floppy-disk"></i>,
       name: "Acquisition",
       content: (
-        <AcquisitionPanel
-          query={airDCPPQuery}
-          comicObjectid={comicBookDetailData._id}
-          key={4}
-        />
+        <AcquisitionPanel query={airDCPPQuery} comicObjectid={_id} key={4} />
       ),
       shouldShow: true,
     },
     {
       id: 5,
       icon: null,
-      name:
-        !isNil(comicBookDetailData) && !isEmpty(comicBookDetailData) ? (
-          <span className="download-tab-name">Downloads</span>
-        ) : (
-          "Downloads"
-        ),
-      content: !isNil(comicBookDetailData) && !isEmpty(comicBookDetailData) && (
+      name: !isEmpty(data.data) ? (
+        <span className="download-tab-name">Downloads</span>
+      ) : (
+        "Downloads"
+      ),
+      content: !isNil(data.data) && !isEmpty(data.data) && (
         <DownloadsPanel
-          data={comicBookDetailData.acquisition.directconnect}
+          data={data.data.acquisition.directconnect}
           comicObjectId={comicObjectId}
           key={5}
         />
@@ -255,29 +235,17 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
   // Determine which cover image to use:
   // 1. from the locally imported or
   // 2. from the CV-scraped version
-  let imagePath = "";
-  let comicBookTitle = "";
-  if (areRawFileDetailsAvailable) {
-    const encodedFilePath = encodeURI(
-      `${LIBRARY_SERVICE_HOST}/${comicBookDetailData.rawFileDetails.cover.filePath}`,
-    );
-    imagePath = escapePoundSymbol(encodedFilePath);
-    comicBookTitle = comicBookDetailData.rawFileDetails.name;
-  } else if (isComicBookMetadataAvailable) {
-    imagePath = comicBookDetailData.sourcedMetadata.comicvine.image.small_url;
-    comicBookTitle = comicBookDetailData.sourcedMetadata.comicvine.name;
-  }
 
   return (
     <section className="container">
       <div className="section">
-        {!isNil(comicBookDetailData) && !isEmpty(comicBookDetailData) && (
+        {!isNil(data) && !isEmpty(data) && (
           <>
-            <h1 className="title">{comicBookTitle}</h1>
+            <h1 className="title">{issueName}</h1>
             <div className="columns is-multiline">
               <div className="column is-narrow">
                 <Card
-                  imageUrl={imagePath}
+                  imageUrl={url}
                   orientation={"vertical"}
                   hasDetails={false}
                   cardContainerStyle={{ maxWidth: 275 }}
@@ -285,29 +253,26 @@ export const ComicDetail = ({}: ComicDetailProps): ReactElement => {
                 {/* action dropdown */}
                 <div className="mt-4 is-size-7">
                   <Menu
-                    data={comicBookDetailData}
+                    data={data.data}
                     handlers={{ setSlidingPanelContentId, setVisible }}
                   />
                 </div>
               </div>
               {/* raw file details */}
               <div className="column is-three-fifths">
-                {!isUndefined(comicBookDetailData.rawFileDetails) &&
-                  !isEmpty(comicBookDetailData.rawFileDetails.cover) && (
+                {!isUndefined(rawFileDetails) &&
+                  !isEmpty(rawFileDetails.cover) && (
                     <>
                       <RawFileDetails
                         data={{
-                          rawFileDetails: comicBookDetailData.rawFileDetails,
-                          inferredMetadata:
-                            comicBookDetailData.inferredMetadata,
+                          rawFileDetails: rawFileDetails,
+                          inferredMetadata: inferredMetadata,
                         }}
                       />
                       {/* Read comic button */}
                       <button
                         className="button is-success is-light"
-                        onClick={() =>
-                          openModal(comicBookDetailData.rawFileDetails.filePath)
-                        }
+                        onClick={() => openModal(rawFileDetails.filePath)}
                       >
                         <i className="fa-solid fa-book-open mr-2"></i>
                         Read

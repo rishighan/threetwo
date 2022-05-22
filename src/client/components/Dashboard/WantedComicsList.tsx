@@ -5,6 +5,7 @@ import ellipsize from "ellipsize";
 import { isEmpty, isNil, isUndefined, map } from "lodash";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
 import Masonry from "react-masonry-css";
+import { determineCoverFile } from "../../shared/utils/metadata.utils";
 
 type WantedComicsListProps = {
   comics: any;
@@ -44,60 +45,69 @@ export const WantedComicsList = ({
         className="recent-comics-container"
         columnClassName="recent-comics-column"
       >
-        {map(comics, ({ _id, rawFileDetails, sourcedMetadata }) => {
-          const isComicBookMetadataAvailable =
-            sourcedMetadata &&
-            !isUndefined(sourcedMetadata.comicvine) &&
-            !isUndefined(sourcedMetadata.comicvine.volumeInformation) &&
-            !isEmpty(sourcedMetadata);
-          let imagePath = "";
-          let comicName = "";
-          if (isComicBookMetadataAvailable) {
-            imagePath = sourcedMetadata.comicvine.image.small_url;
-            comicName = sourcedMetadata.comicvine.name;
-          }
-          const titleElement = (
-            <Link to={"/comic/details/" + _id}>{ellipsize(comicName, 20)}</Link>
-          );
-          return (
-            <Card
-              key={_id}
-              orientation={"vertical"}
-              imageUrl={imagePath}
-              hasDetails
-              title={comicName ? titleElement : <span>No Name</span>}
-            >
-              <div className="content is-flex is-flex-direction-row">
-                {isComicBookMetadataAvailable && (
-                  <span className="icon custom-icon is-small">
-                    <img src="/img/cvlogo.svg" />
-                  </span>
-                )}
-                {/* Raw file presence  */}
-                {isEmpty(rawFileDetails.cover) && (
-                  <span className="icon custom-icon is-small has-text-danger mr-2">
-                    <img src="/img/missing-file.svg" />
-                  </span>
-                )}
-                {/* Issue type */}
-                {isComicBookMetadataAvailable &&
-                !isNil(
-                  detectIssueTypes(
-                    sourcedMetadata.comicvine.volumeInformation.description,
-                  ),
-                ) ? (
-                  <span className="tag is-warning">
-                    {
-                      detectIssueTypes(
-                        sourcedMetadata.comicvine.volumeInformation.description,
-                      ).displayName
-                    }
-                  </span>
-                ) : null}
-              </div>
-            </Card>
-          );
-        })}
+        {map(
+          comics,
+          ({
+            _id,
+            rawFileDetails,
+            sourcedMetadata: { comicvine, comicInfo, locg },
+          }) => {
+            const isComicBookMetadataAvailable =
+              !isUndefined(comicvine) &&
+              !isUndefined(comicvine.volumeInformation);
+            const consolidatedComicMetadata = {
+              rawFileDetails,
+              comicvine,
+              comicInfo,
+              locg,
+            };
+
+            const { issueName, url } = determineCoverFile(
+              consolidatedComicMetadata,
+            );
+            const titleElement = (
+              <Link to={"/comic/details/" + _id}>
+                {ellipsize(issueName, 20)}
+              </Link>
+            );
+            return (
+              <Card
+                key={_id}
+                orientation={"vertical"}
+                imageUrl={url}
+                hasDetails
+                title={issueName ? titleElement : <span>No Name</span>}
+              >
+                <div className="content is-flex is-flex-direction-row">
+                  {/* comicVine metadata presence */}
+                  {isComicBookMetadataAvailable && (
+                    <span className="icon custom-icon is-small">
+                      <img src="/img/cvlogo.svg" />
+                    </span>
+                  )}
+                  {!isEmpty(locg) && (
+                    <span className="icon custom-icon">
+                      <img src="/img/locglogo.svg" />
+                    </span>
+                  )}
+                  {/* Issue type */}
+                  {isComicBookMetadataAvailable &&
+                  !isNil(
+                    detectIssueTypes(comicvine.volumeInformation.description),
+                  ) ? (
+                    <span className="tag is-warning">
+                      {
+                        detectIssueTypes(
+                          comicvine.volumeInformation.description,
+                        ).displayName
+                      }
+                    </span>
+                  ) : null}
+                </div>
+              </Card>
+            );
+          },
+        )}
       </Masonry>
     </>
   );
