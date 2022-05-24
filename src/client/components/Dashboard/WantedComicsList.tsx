@@ -81,7 +81,7 @@ export const WantedComicsList = ({
                 <div className="content is-flex is-flex-direction-row">
                   {/* comicVine metadata presence */}
                   {isComicBookMetadataAvailable && (
-                    <span className="icon custom-icon is-small">
+                    <span className="icon custom-icon">
                       <img src="/img/cvlogo.svg" />
                     </span>
                   )}

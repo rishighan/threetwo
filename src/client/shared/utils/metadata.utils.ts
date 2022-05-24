@@ -13,19 +13,24 @@ export const determineCoverFile = (data) => {
   */
   const coverFile = {
     rawFile: {
+      objectReference: "rawFileDetails",
       priority: 1,
       url: "",
       issueName: "",
     },
     comicvine: {
+      objectReference: "comicvine",
       priority: 2,
       url: "",
       issueName: "",
+      publisher: "",
     },
     locg: {
+      objectReference: "locg",
       priority: 3,
       url: "",
       issueName: "",
+      publisher: "",
     },
   };
   if (
@@ -34,6 +39,7 @@ export const determineCoverFile = (data) => {
   ) {
     coverFile.comicvine.url = data.comicvine.image.small_url;
     coverFile.comicvine.issueName = data.comicvine.name;
+    coverFile.comicvine.publisher = data.comicvine.volumeInformation.publisher;
   }
   if (!isEmpty(data.rawFileDetails.cover)) {
     const encodedFilePath = encodeURI(
@@ -45,6 +51,7 @@ export const determineCoverFile = (data) => {
   if (!isUndefined(data.locg)) {
     coverFile.locg.url = data.locg.cover;
     coverFile.locg.issueName = data.locg.name;
+    coverFile.locg.publisher = data.locg.publisher;
   }
 
   const result = filter(coverFile, (item) => item.url !== "");
