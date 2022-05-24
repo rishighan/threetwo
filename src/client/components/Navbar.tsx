@@ -25,7 +25,8 @@ const Navbar: React.FunctionComponent = (props) => {
 
   const searchPlaceholder = (): ReactElement => (
     <>
-      Search Library... <i className="fa-solid fa-magnifying-glass is-pulled-right mt-1"></i>
+      Search Library...{" "}
+      <i className="fa-solid fa-magnifying-glass is-pulled-right mt-1"></i>
     </>
   );
 
@@ -107,6 +108,11 @@ const Navbar: React.FunctionComponent = (props) => {
           <Link to="/search" className="navbar-item">
             Search ComicVine
           </Link>
+        </div>
+
+        <div className="navbar-end">
+          <a className="navbar-item is-hidden-desktop-only"></a>
+
           <div className="navbar-item has-dropdown is-hoverable">
             <a
               className="navbar-link  is-active"
@@ -243,10 +249,6 @@ const Navbar: React.FunctionComponent = (props) => {
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="navbar-end">
-          <a className="navbar-item is-hidden-desktop-only"></a>
           <div className="navbar-item">
             <div className="field is-grouped">
               <p className="control">
