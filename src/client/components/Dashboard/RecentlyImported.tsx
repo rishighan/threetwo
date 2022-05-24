@@ -49,15 +49,12 @@ export const RecentlyImported = ({
               source: { name },
             },
           }) => {
-            const consolidatedComicMetadata = {
+            const { issueName, url } = determineCoverFile({
               rawFileDetails,
               comicvine,
               comicInfo,
               locg,
-            };
-            const { issueName, url } = determineCoverFile(
-              consolidatedComicMetadata,
-            );
+            });
             const { issue, coverURL, icon } = determineExternalMetadata(name, {
               comicvine,
               comicInfo,
