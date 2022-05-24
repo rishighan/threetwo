@@ -11,10 +11,12 @@ import T2Table from "../shared/T2Table";
 import { isEmpty, isNil, isUndefined } from "lodash";
 import RawFileDetails from "./RawFileDetails";
 import ComicVineDetails from "./ComicVineDetails";
+import MetadataPanel from "../shared/MetadataPanel";
 import SearchBar from "./SearchBar";
 import { useDispatch } from "react-redux";
 import { searchIssue } from "../../actions/fileops.actions";
 import ellipsize from "ellipsize";
+import { determineCoverFile } from "../../shared/utils/metadata.utils";
 
 interface IComicBookLibraryProps {
   data: {
@@ -82,26 +84,61 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
             Header: "File Details",
             id: "fileDetails",
             minWidth: 400,
-            accessor: (row) =>
-              !isEmpty(row._source.rawFileDetails)
-                ? {
-                    rawFileDetails: row._source.rawFileDetails,
-                    inferredMetadata: row._source.inferredMetadata,
-                  }
-                : row._source.sourcedMetadata,
+            accessor: "_source",
             Cell: ({ value }) => {
-              // If no CV info available, use raw file metadata
-              if (
-                !isUndefined(value.rawFileDetails) &&
-                !isEmpty(value.rawFileDetails.cover)
-              ) {
-                return <RawFileDetails data={value} />;
-              }
-              // If CV metadata available, show it
-              if (!isNil(value.comicvine)) {
-                return <ComicVineDetails data={value} />;
-              }
-              return <div>null</div>;
+              const {
+                rawFileDetails,
+                sourcedMetadata: { comicvine, locg },
+              } = value;
+              const { issueName, url } = determineCoverFile({
+                comicvine,
+                locg,
+                rawFileDetails,
+              });
+
+              return (
+                <MetadataPanel props={value}>
+                  <div></div>
+                  {/* <dl>
+                  <dt>
+                    <h6 className="name has-text-weight-medium mb-1">
+                      {rawFileDetails.name}
+                    </h6>
+                  </dt>
+                  <dd className="is-size-7">
+                    Is a part of{" "}
+                    <span className="has-text-weight-semibold">
+                      {inferredMetadata.issue.name}
+                    </span>
+                  </dd>
+
+                  <dd className="is-size-7 mt-2">
+                    <div className="field is-grouped is-grouped-multiline">
+                      <div className="control">
+                        <span className="tags">
+                          <span className="tag is-success is-light has-text-weight-semibold">
+                            {rawFileDetails.extension}
+                          </span>
+                          <span className="tag is-success is-light">
+                            {prettyBytes(rawFileDetails.fileSize)}
+                          </span>
+                        </span>
+                      </div>
+                      <div className="control">
+                        {inferredMetadata.issue.number && (
+                          <div className="tags has-addons">
+                            <span className="tag is-light">Issue #</span>
+                            <span className="tag is-warning">
+                              {inferredMetadata.issue.number}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </dd>
+                </dl> */}
+                </MetadataPanel>
+              );
             },
           },
           {
