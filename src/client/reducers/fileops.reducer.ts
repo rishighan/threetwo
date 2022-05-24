@@ -77,7 +77,6 @@ function fileOpsReducer(state = initialState, action) {
         recentComics: action.data,
       };
     case IMS_WANTED_COMICS_FETCHED:
-      console.log(action.data);
       return {
         ...state,
         wantedComics: action.data,

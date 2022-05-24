@@ -54,7 +54,6 @@ function comicinfoReducer(state = initialState, action) {
         IMS_inProgress: false,
       };
     case IMS_COMIC_BOOKS_DB_OBJECTS_FETCHED:
-      console.log(action);
       return {
         ...state,
         comicBooksDetails: action.comicBooks,
@@ -110,7 +109,6 @@ function comicinfoReducer(state = initialState, action) {
         ...state,
       };
     case CV_WEEKLY_PULLLIST_FETCHED: {
-      console.log(action.data);
       return {
         ...state,
         inProgress: false,
@@ -123,7 +121,6 @@ function comicinfoReducer(state = initialState, action) {
         ...state,
       };
     case LIBRARY_STATISTICS_FETCHED:
-      console.log(action);
       return {
         ...state,
         inProgress: false,

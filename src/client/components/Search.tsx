@@ -37,7 +37,8 @@ export const Search = ({}: ISearchProps): ReactElement => {
   );
 
   const addToLibrary = useCallback(
-    (comicData) => dispatch(importToDB({ comicvine: comicData })),
+    (sourceName: string, comicData) =>
+      dispatch(importToDB(sourceName, { comicvine: comicData })),
     [],
   );
 
@@ -108,7 +109,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
                       ></p>
                       <button
                         className="button is-success is-light is-outlined"
-                        onClick={() => addToLibrary(result)}
+                        onClick={() => addToLibrary("comicvine", result)}
                       >
                         Add to Library
                       </button>

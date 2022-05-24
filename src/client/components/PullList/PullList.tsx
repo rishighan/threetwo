@@ -14,7 +14,7 @@ export const PullList = (): ReactElement => {
   useEffect(() => {
     dispatch(
       getWeeklyPullList({
-        startDate: "2022-5-15",
+        startDate: "2022-6-1",
         pageSize: "100",
         currentPage: "1",
       }),

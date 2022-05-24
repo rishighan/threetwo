@@ -91,7 +91,10 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
                 : row._source.sourcedMetadata,
             Cell: ({ value }) => {
               // If no CV info available, use raw file metadata
-              if (!isUndefined(value.rawFileDetails)) {
+              if (
+                !isUndefined(value.rawFileDetails) &&
+                !isEmpty(value.rawFileDetails.cover)
+              ) {
                 return <RawFileDetails data={value} />;
               }
               // If CV metadata available, show it
@@ -134,7 +137,7 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
           },
           {
             Header: "Something",
-            accessor: "_source.acquisition.wanted",
+            accessor: "_source.acquisition.source.wanted",
             Cell: (props) => {
               return <WantedStatus value={props.cell.value.toString()} />;
             },

@@ -117,6 +117,7 @@ export const downloadAirDCPPItem =
     instanceId: string,
     resultId: string,
     comicObjectId: string,
+    comicObject: any,
     ADCPPSocket: any,
     credentials: any,
   ): void =>
@@ -129,6 +130,7 @@ export const downloadAirDCPPItem =
           true,
         );
       }
+      console.log(comicObject)
       let bundleDBImportResult = {};
       const downloadResult = await ADCPPSocket.post(
         `search/${instanceId}/results/${resultId}/download`,
@@ -143,7 +145,7 @@ export const downloadAirDCPPItem =
             dispatch({
               type: LS_SINGLE_IMPORT,
               meta: { remote: true },
-              data: { downloadStatus, comicObjectId },
+              data: { downloadStatus, comicObjectId, comicObject },
             });
           }
           count += 1;
@@ -160,7 +162,7 @@ export const downloadAirDCPPItem =
           (item) => item.id,
         );
       }
-
+      console.log(comicObjectId)
       if (!isNil(downloadResult)) {
         bundleDBImportResult = await axios({
           method: "POST",

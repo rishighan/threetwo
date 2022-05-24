@@ -19,12 +19,15 @@ import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
 interface IAcquisitionPanelProps {
   query: any;
   comicObjectid: any;
+  comicObject: any;
+  userSettings: any;
 }
 
 export const AcquisitionPanel = (
   props: IAcquisitionPanelProps,
 ): ReactElement => {
-  const issueName = props.query.issue.name;
+  const issueName = props.query.issue.name || "";
+  const { userSettings } = props;
   const sanitizedIssueName = issueName.replace(/[^a-zA-Z0-9 ]/g, " ");
 
   // Selectors for picking state
@@ -41,11 +44,11 @@ export const AcquisitionPanel = (
     (state: RootState) => state.airdcpp.searchInstance,
   );
 
-  const userSettings = useSelector((state: RootState) => state.settings.data);
+  // const userSettings = useSelector((state: RootState) => state.settings.data);
   const { ADCPPSocket } = useContext(AirDCPPSocketContext);
   const dispatch = useDispatch();
   const [dcppQuery, setDcppQuery] = useState({});
-
+  console.log(ADCPPSocket);
   useEffect(() => {
     if (!isNil(userSettings.directConnect)) {
       // AirDC++ search query
@@ -89,12 +92,13 @@ export const AcquisitionPanel = (
 
   // download via AirDC++
   const downloadDCPPResult = useCallback(
-    (searchInstanceId, resultId, comicBookObjectId) => {
+    (searchInstanceId, resultId, comicBookObjectId, comicObject) => {
       dispatch(
         downloadAirDCPPItem(
           searchInstanceId,
           resultId,
           comicBookObjectId,
+          comicObject,
           ADCPPSocket,
           {
             username: `${userSettings.directConnect.client.host.username}`,
@@ -293,6 +297,7 @@ export const AcquisitionPanel = (
                               searchInstance.id,
                               result.id,
                               props.comicObjectid,
+                              props.comicObject,
                             )
                           }
                         >

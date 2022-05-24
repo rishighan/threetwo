@@ -58,3 +58,25 @@ export const determineCoverFile = (data) => {
     return result[0];
   }
 };
+
+export const determineExternalMetadata = (metadataSource, source) => {
+  switch (metadataSource) {
+    case "comicvine":
+      return {
+        coverURL: source.comicvine.image.small_url,
+        issue: source.comicvine.name,
+        icon: "cvlogo.svg",
+      };
+    case "locg":
+      return {
+        coverURL: source.locg.cover,
+        issue: source.locg.name,
+        icon: "locglogo.svg",
+      };
+    case undefined:
+      return {};
+
+    default:
+      break;
+  }
+};

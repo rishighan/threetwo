@@ -31,9 +31,6 @@ import SlidingPane from "react-sliding-pane";
 import Modal from "react-modal";
 import ComicViewer from "react-comic-viewer";
 
-import { getSettings } from "../../actions/settings.actions";
-import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
-import AirDCPPSocket from "../../services/DcppSearchService";
 import { extractComicArchive } from "../../actions/fileops.actions";
 import { determineCoverFile } from "../../shared/utils/metadata.utils";
 
@@ -68,8 +65,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     (state: RootState) => state.fileOps.extractedComicBookArchive,
   );
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
-  const userSettings = useSelector((state: RootState) => state.settings.data);
-  const { ADCPPSocket, setADCPPSocket } = useContext(AirDCPPSocketContext);
+
   const dispatch = useDispatch();
 
   const openModal = useCallback((filePath) => {
@@ -85,24 +81,6 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   const closeModal = useCallback(() => {
     setIsOpen(false);
   }, []);
-
-  useEffect(() => {
-    dispatch(getSettings());
-  }, [page, dispatch]);
-
-  useEffect(() => {
-    if (isEmpty(ADCPPSocket) && !isNil(userSettings.directConnect)) {
-      setADCPPSocket(
-        new AirDCPPSocket({
-          protocol: `${userSettings.directConnect.client.host.protocol}`,
-          hostname: `${userSettings.directConnect.client.host.hostname}`,
-        }),
-      );
-    }
-  }, [userSettings]);
-
-  // destructure props
-  console.log(ADCPPSocket)
 
   // sliding panel init
   const contentForSlidingPanel = {
@@ -147,7 +125,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
       rawFileDetails,
       inferredMetadata,
       sourcedMetadata: { comicvine, locg, comicInfo },
-    },
+    }, userSettings,
   } = data;
 
   // check for the availability of CV metadata
@@ -207,7 +185,13 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
       icon: <i className="fa-solid fa-floppy-disk"></i>,
       name: "Acquisition",
       content: (
-        <AcquisitionPanel query={airDCPPQuery} comicObjectid={_id} key={4} />
+        <AcquisitionPanel
+          query={airDCPPQuery}
+          comicObjectid={_id}
+          comicObject={data.data}
+          userSettings={userSettings}
+          key={4}
+        />
       ),
       shouldShow: true,
     },

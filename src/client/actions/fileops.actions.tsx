@@ -132,9 +132,12 @@ export const getComicBooks = (options) => async (dispatch) => {
  * @returns Nothing.
  * @param payload
  */
-export const importToDB = (payload?: any) => (dispatch) => {
+export const importToDB = (sourceName: string, payload?: any) => (dispatch) => {
   try {
     const comicBookMetadata = {
+      rawFileDetails: {
+        name: "",
+      },
       importStatus: {
         isImported: true,
         tagged: false,
@@ -143,7 +146,7 @@ export const importToDB = (payload?: any) => (dispatch) => {
         },
       },
       sourcedMetadata: payload || null,
-      acquisition: { wanted: true },
+      acquisition: { source: { wanted: true, name: sourceName } },
     };
     dispatch({
       type: IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
@@ -153,7 +156,7 @@ export const importToDB = (payload?: any) => (dispatch) => {
         url: `${LIBRARY_SERVICE_BASE_URI}/rawImportToDb`,
         method: "POST",
         data: comicBookMetadata,
-        transformResponse: (r: string) => JSON.parse(r),
+        // transformResponse: (r: string) => JSON.parse(r),
       })
       .then((response) => {
         const { data } = response;

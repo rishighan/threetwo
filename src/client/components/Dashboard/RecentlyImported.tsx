@@ -7,7 +7,10 @@ import { isEmpty, isNil, isUndefined, map } from "lodash";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
 import Masonry from "react-masonry-css";
 import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
-import { determineCoverFile } from "../../shared/utils/metadata.utils";
+import {
+  determineCoverFile,
+  determineExternalMetadata,
+} from "../../shared/utils/metadata.utils";
 
 type RecentlyImportedProps = {
   comicBookCovers: any;
@@ -42,6 +45,9 @@ export const RecentlyImported = ({
             _id,
             rawFileDetails,
             sourcedMetadata: { comicvine, comicInfo, locg },
+            acquisition: {
+              source: { name },
+            },
           }) => {
             const consolidatedComicMetadata = {
               rawFileDetails,
@@ -49,10 +55,14 @@ export const RecentlyImported = ({
               comicInfo,
               locg,
             };
-
             const { issueName, url } = determineCoverFile(
               consolidatedComicMetadata,
             );
+            const { issue, coverURL, icon } = determineExternalMetadata(name, {
+              comicvine,
+              comicInfo,
+              locg,
+            });
 
             const isComicBookMetadataAvailable =
               !isUndefined(comicvine) &&
@@ -73,11 +83,6 @@ export const RecentlyImported = ({
                   title={issueName ? titleElement : null}
                 >
                   <div className="content is-flex is-flex-direction-row">
-                    {isComicBookMetadataAvailable && (
-                      <span className="icon custom-icon is-small">
-                        <img src="/img/cvlogo.svg" />
-                      </span>
-                    )}
                     {/* Raw file presence  */}
                     {isNil(rawFileDetails) && (
                       <span className="icon custom-icon is-small has-text-danger mr-2">
@@ -108,17 +113,19 @@ export const RecentlyImported = ({
                     ) : null}
                   </div>
                 </Card>
-                {/* original reference */}
-                {!isUndefined(comicvine.image) ? (
-                  <Card
-                    orientation="horizontal"
-                    hasDetails
-                    imageUrl={comicvine.image.icon_url}
-                  >
+                {/* metadata card */}
+                {!isNil(name) ? (
+                  <Card orientation="horizontal" hasDetails imageUrl={coverURL}>
                     <dd className="is-size-9">
-                      <dl>{ellipsize(comicvine.volumeInformation.name, 22)}</dl>
                       <dl>
-                        <span className="small-tag mt-1">{comicvine.id}</span>
+                        <span className="icon custom-icon">
+                          <img src={`/img/${icon}`} />
+                        </span>
+                      </dl>
+                      <dl>
+                        <span className="small-tag">
+                          {ellipsize(issue, 15)}
+                        </span>
                       </dl>
                     </dd>
                   </Card>

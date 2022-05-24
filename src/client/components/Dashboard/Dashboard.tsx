@@ -24,7 +24,7 @@ export const Dashboard = (): ReactElement => {
           limit: 5,
           sort: { updatedAt: "-1" },
         },
-        predicate: { "acquisition.wanted": false },
+        predicate: { "acquisition.source.wanted": false },
         comicStatus: "recent",
       }),
     );
@@ -35,7 +35,7 @@ export const Dashboard = (): ReactElement => {
           limit: 5,
           sort: { updatedAt: "-1" },
         },
-        predicate: { "acquisition.wanted": true },
+        predicate: { "acquisition.source.wanted": true },
         comicStatus: "wanted",
       }),
     );

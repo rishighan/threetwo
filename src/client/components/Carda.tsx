@@ -25,7 +25,7 @@ const renderCard = (props): ReactElement => {
                 <img
                   src={props.imageUrl}
                   alt="Placeholder image"
-                  className="image"
+                  className="cropped-image"
                 />
               </div>
               {props.hasDetails && (
@@ -34,9 +34,6 @@ const renderCard = (props): ReactElement => {
             </div>
           </div>
         </div>
-
-
-
       );
     case "vertical":
       return (

@@ -245,6 +245,7 @@ pre {
       flex: 1 1 auto;
       display: flex;
       .card-image {
+        // leaving this here... for posterity
         img.image {
           border-top-left-radius: 8px;
           border-bottom-left-radius: 8px;
@@ -254,6 +255,18 @@ pre {
           max-width: $flexSize * 1.3;
           object-fit: cover;
           flex: 1 1 auto;
+        }
+        img.cropped-image {
+          width: 70px;
+          border-top-left-radius: 8px;
+          border-bottom-left-radius: 8px;
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+           height: 64px; 
+           object-fit: cover;
+           object-position: 100% 0;
+          //  flex: 1 1 auto;
+
         }
       }
     }

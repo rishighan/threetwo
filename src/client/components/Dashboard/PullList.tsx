@@ -20,14 +20,15 @@ export const PullList = ({ issues }: PullListProps): ReactElement => {
   useEffect(() => {
     dispatch(
       getWeeklyPullList({
-        startDate: "2022-5-1",
+        startDate: "2022-2-11",
         pageSize: "15",
         currentPage: "1",
       }),
     );
   }, []);
   const addToLibrary = useCallback(
-    (locgMetadata) => dispatch(importToDB({ locg: locgMetadata })),
+    (sourceName: string, locgMetadata) =>
+      dispatch(importToDB(sourceName, { locg: locgMetadata })),
     [],
   );
   /*
@@ -144,7 +145,7 @@ export const PullList = ({ issues }: PullListProps): ReactElement => {
                   <div className="mt-2">
                     <button
                       className="button is-small is-warning is-light"
-                      onClick={() => addToLibrary(issue)}
+                      onClick={() => addToLibrary("locg", issue)}
                     >
                       <i className="fa-solid fa-plus"></i> Want
                     </button>
