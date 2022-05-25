@@ -1,6 +1,6 @@
-import express, { Request, Response, Router, Express } from "express";
+import express, { Router, Express } from "express";
 import bodyParser from "body-parser";
-import path from "path";
+import router from "./route";
 
 // call express
 const app: Express = express(); // define our app using express
