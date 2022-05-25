@@ -30,6 +30,10 @@ const Navbar: React.FunctionComponent = (props) => {
     </>
   );
 
+  const performSearch = (searchQuery) => {
+    
+  }
+
   const customStyles = {
     control: () => ({
       width: 250,

@@ -1,6 +1,5 @@
 import express, { Request, Response, Router, Express } from "express";
 import bodyParser from "body-parser";
-import router from "./route";
 import path from "path";
 
 // call express
