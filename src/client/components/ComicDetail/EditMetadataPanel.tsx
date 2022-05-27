@@ -36,7 +36,6 @@ export const EditMetadataPanel = (props): ReactElement => {
     (state: RootState) => state.comicInfo.comicBookDetail.rawFileDetails.name,
   );
   const dispatch = useDispatch();
-  console.log(rawFileDetails);
 
   return (
     <>

@@ -1,49 +1,11 @@
-import React, { ReactElement } from "react";
+import { debounce } from "lodash";
+import React, { ReactElement, useCallback } from "react";
+import { SearchBar } from "./GlobalSearchBar/SearchBar";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import Select, {
-  components,
-  DropdownIndicatorProps,
-  IndicatorSeparatorProps,
-} from "react-select";
 
 const Navbar: React.FunctionComponent = (props) => {
-  const DropdownIndicator = (
-    props: DropdownIndicatorProps<ColourOption, true>,
-  ) => {
-    return (
-      <components.DropdownIndicator {...props}>
-        <></>
-      </components.DropdownIndicator>
-    );
-  };
-
-  const IndicatorSeparator = ({
-    innerProps,
-  }: IndicatorSeparatorProps<ColourOption, true>) => {
-    return <></>;
-  };
-
-  const searchPlaceholder = (): ReactElement => (
-    <>
-      Search Library...{" "}
-      <i className="fa-solid fa-magnifying-glass is-pulled-right mt-1"></i>
-    </>
-  );
-
-  const performSearch = (searchQuery) => {
-    
-  }
-
-  const customStyles = {
-    control: () => ({
-      width: 250,
-      marginTop: 0,
-      border: "1px solid #CCC",
-      height: 40,
-      borderRadius: 8,
-    }),
-  };
-
+  
   return (
     <nav className="navbar is-fixed-top">
       <div className="navbar-brand">
@@ -93,22 +55,7 @@ const Navbar: React.FunctionComponent = (props) => {
             Downloads
           </Link>
 
-          <Select
-            className="basic-single mt-2"
-            classNamePrefix="select"
-            styles={customStyles}
-            components={{ DropdownIndicator, IndicatorSeparator }}
-            placeholder={searchPlaceholder()}
-            // defaultValue={colourOptions[0]}
-            // isDisabled={isDisabled}
-            // isLoading={isLoading}
-            isClearable={true}
-            // isRtl={isRtl}
-            // isSearchable={isSearchable}
-            name="color"
-            // options={colourOptions}
-          />
-
+          <SearchBar/>
           <Link to="/search" className="navbar-item">
             Search ComicVine
           </Link>

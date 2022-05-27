@@ -6,7 +6,6 @@ import { withAsyncPaginate } from "react-select-async-paginate";
 const CreatableAsyncPaginate = withAsyncPaginate(Creatable);
 
 export const AsyncSelectPaginate = (props): ReactElement => {
-//   console.log(props);
   const [value, setValue] = useState(null);
   const [isAddingInProgress, setIsAddingInProgress] = useState(false);
 

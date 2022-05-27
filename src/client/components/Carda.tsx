@@ -12,6 +12,7 @@ interface ICardProps {
   backgroundColor?: string;
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
   cardContainerStyle?: PropTypes.object;
+  imageStyle?: PropTypes.object;
 }
 
 const renderCard = (props): ReactElement => {
@@ -23,6 +24,7 @@ const renderCard = (props): ReactElement => {
             <div className="is-horizontal">
               <div className="card-image">
                 <img
+                  style={props.imageStyle}
                   src={props.imageUrl}
                   alt="Placeholder image"
                   className="cropped-image"
@@ -54,7 +56,11 @@ const renderCard = (props): ReactElement => {
                 }
               >
                 <figure>
-                  <img src={props.imageUrl} alt="Placeholder image" />
+                  <img
+                    src={props.imageUrl}
+                    style={props.imageStyle}
+                    alt="Placeholder image"
+                  />
                 </figure>
               </div>
               {props.hasDetails && (

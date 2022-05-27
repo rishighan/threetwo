@@ -17,6 +17,7 @@ export const determineCoverFile = (data) => {
       priority: 1,
       url: "",
       issueName: "",
+      publisher: "",
     },
     comicvine: {
       objectReference: "comicvine",

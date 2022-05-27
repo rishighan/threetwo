@@ -1,4 +1,6 @@
+import { isUndefined, map } from "lodash";
 import { LOCATION_CHANGE } from "redux-first-history";
+import { determineCoverFile } from "../shared/utils/metadata.utils";
 import {
   IMS_COMICBOOK_METADATA_FETCHED,
   IMS_RAW_IMPORT_SUCCESSFUL,
@@ -24,6 +26,7 @@ import {
   FILEOPS_STATE_RESET,
   LS_IMPORT_CALL_IN_PROGRESS,
   SS_SEARCH_FAILED,
+  SS_SEARCH_RESULTS_FETCHED_SPECIAL,
 } from "../constants/action-types";
 const initialState = {
   IMSCallInProgress: false,
@@ -41,6 +44,7 @@ const initialState = {
   recentComics: [],
   wantedComics: [],
   librarySearchResults: [],
+  librarySearchResultsFormatted: [],
   librarySearchResultCount: 0,
   libraryQueueResults: [],
   librarySearchError: {},
@@ -169,7 +173,6 @@ function fileOpsReducer(state = initialState, action) {
       };
     }
     case IMG_ANALYSIS_DATA_FETCH_SUCCESS: {
-      console.log(action)
       return {
         ...state,
         imageAnalysisResults: action.result,
@@ -184,15 +187,26 @@ function fileOpsReducer(state = initialState, action) {
     }
 
     case SS_SEARCH_RESULTS_FETCHED: {
-      console.log(action.data);
       return {
         ...state,
         librarySearchResults: action.data,
         SSCallInProgress: false,
       };
     }
+    case SS_SEARCH_RESULTS_FETCHED_SPECIAL: {
+      const foo = [];
+      if (!isUndefined(action.data.hits)) {
+        map(action.data.hits.hits, ({ _source }) => {
+          foo.push(_source);
+        });
+      }
+      return {
+        ...state,
+        librarySearchResultsFormatted: foo,
+        SSCallInProgress: false,
+      };
+    }
     case SS_SEARCH_FAILED: {
-      console.log(action.data);
       return {
         ...state,
         librarySearchError: action.data,
