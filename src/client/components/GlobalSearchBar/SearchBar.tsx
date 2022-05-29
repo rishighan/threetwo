@@ -62,7 +62,13 @@ export const SearchBar = (data: ISearchBarProps): ReactElement => {
           }}
         >
           {map(searchResults, (result) => (
-            <MetadataPanel data={result} />
+            <MetadataPanel
+              data={result}
+              imageStyle={{ maxWidth: 70 }}
+              titleStyle={{ fontSize: "0.8rem" }}
+              tagsStyle={{ fontSize: "0.7rem" }}
+              containerStyle={{ width: "100vw", padding: 0, margin: "0 0 8px 0" }}
+            />
           ))}
         </div>
       ) : null}

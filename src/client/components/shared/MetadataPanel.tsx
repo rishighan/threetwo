@@ -10,6 +10,10 @@ import { find, isUndefined } from "lodash";
 interface IMetadatPanelProps {
   value: any;
   children: any;
+  imageStyle: any;
+  titleStyle: any;
+  tagsStyle: any;
+  containerStyle: any;
 }
 export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
   const {
@@ -29,7 +33,12 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
       content: () => (
         <dl>
           <dt>
-            <h6 className="name has-text-weight-medium mb-1">{issueName}</h6>
+            <h6
+              className="name has-text-weight-medium mb-1"
+              style={props.titleStyle}
+            >
+              {issueName}
+            </h6>
           </dt>
           <dd className="is-size-7">
             Is a part of{" "}
@@ -42,10 +51,16 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
             <div className="field is-grouped is-grouped-multiline">
               <div className="control">
                 <span className="tags">
-                  <span className="tag is-success is-light has-text-weight-semibold">
+                  <span
+                    className="tag is-success is-light has-text-weight-semibold"
+                    style={props.tagsStyle}
+                  >
                     {rawFileDetails.extension}
                   </span>
-                  <span className="tag is-success is-light">
+                  <span
+                    className="tag is-success is-light"
+                    style={props.tagsStyle}
+                  >
                     {prettyBytes(rawFileDetails.fileSize)}
                   </span>
                 </span>
@@ -53,8 +68,10 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
               <div className="control">
                 {inferredMetadata.issue.number && (
                   <div className="tags has-addons">
-                    <span className="tag is-light">Issue #</span>
-                    <span className="tag is-warning">
+                    <span className="tag is-light" style={props.tagsStyle}>
+                      Issue #
+                    </span>
+                    <span className="tag is-warning" style={props.tagsStyle}>
                       {inferredMetadata.issue.number}
                     </span>
                   </div>
@@ -73,7 +90,10 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
         !isUndefined(comicvine.volumeInformation) && (
           <dl>
             <dt>
-              <h6 className="name has-text-weight-medium mb-1">
+              <h6
+                className="name has-text-weight-medium mb-1"
+                style={props.titleStyle}
+              >
                 {ellipsize(issueName, 18)}
               </h6>
             </dt>
@@ -103,20 +123,34 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
               <div className="field is-grouped is-grouped-multiline">
                 <div className="control">
                   <span className="tags">
-                    <span className="tag is-success is-light has-text-weight-semibold">
+                    <span
+                      className="tag is-success is-light has-text-weight-semibold"
+                      style={props.tagsStyle}
+                    >
                       {comicvine.volumeInformation.start_year}
                     </span>
-                    <span className="tag is-success is-light">
+                    <span
+                      className="tag is-success is-light"
+                      style={props.tagsStyle}
+                    >
                       {comicvine.volumeInformation.count_of_issues}
                     </span>
                   </span>
                 </div>
                 <div className="control">
                   <div className="tags has-addons">
-                    <span className="tag is-primary is-light">
+                    <span
+                      className="tag is-primary is-light"
+                      style={props.tagsStyle}
+                    >
                       ComicVine ID
                     </span>
-                    <span className="tag is-info is-light">{comicvine.id}</span>
+                    <span
+                      className="tag is-info is-light"
+                      style={props.tagsStyle}
+                    >
+                      {comicvine.id}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -166,25 +200,24 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
   });
 
   return (
-    <div className="columns">
-      <div className="column">
-        <div className="comic-detail issue-metadata">
-          <dl>
-            <dd>
-              <div className="columns mt-2">
-                <div className="column is-3">
-                  <Card
-                    imageUrl={url}
-                    orientation={"vertical"}
-                    hasDetails={false}
-                    // cardContainerStyle={{ maxWidth: 200 }}
-                  />
-                </div>
-                <div className="column">{metadataPanel.content()}</div>
+    <div className="column" style={props.containerStyle}>
+      <div className="comic-detail issue-metadata">
+        <dl>
+          <dd>
+            <div className="columns mt-2">
+              <div className="column is-3">
+                <Card
+                  imageUrl={url}
+                  orientation={"vertical"}
+                  hasDetails={false}
+                  imageStyle={props.imageStyle}
+                  // cardContainerStyle={{ maxWidth: 200 }}
+                />
               </div>
-            </dd>
-          </dl>
-        </div>
+              <div className="column">{metadataPanel.content()}</div>
+            </div>
+          </dd>
+        </dl>
       </div>
     </div>
   );
