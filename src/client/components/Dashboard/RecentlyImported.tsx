@@ -28,8 +28,10 @@ export const RecentlyImported = ({
 
   return (
     <>
-      <div className="content">
-        <h4 className="title is-4">Recently Imported</h4>
+      <div className="content mt-5">
+        <h4 className="title is-4">
+          <i className="fa-solid fa-file-arrow-down"></i> Recently Imported
+        </h4>
         <p className="subtitle is-7">
           Recent Library activity such as imports, tagging, etc.
         </p>

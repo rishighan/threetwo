@@ -88,7 +88,9 @@ export const PullList = ({ issues }: PullListProps): ReactElement => {
   return (
     <>
       <div className="content">
-        <h4 className="title is-4">Discover</h4>
+        <h4 className="title is-4">
+          <i className="fa-solid fa-splotch"></i> Discover
+        </h4>
         <p className="subtitle is-7">
           Pull List aggregated for the week from League Of Comic Geeks
         </p>

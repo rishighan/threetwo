@@ -22,7 +22,9 @@ export const VolumeGroups = (props): ReactElement => {
     <section className="volumes-container mt-4">
       <div className="content">
         <a className="mb-1" onClick={navigateToVolumes}>
-          <span className="is-size-4 has-text-weight-semibold">Volumes</span>
+          <span className="is-size-4 has-text-weight-semibold">
+            <i className="fa-solid fa-layer-group"></i> Volumes
+          </span>
           <span className="icon mt-1">
             <i className="fa-solid fa-angle-right"></i>
           </span>
