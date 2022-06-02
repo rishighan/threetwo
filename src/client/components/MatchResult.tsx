@@ -34,7 +34,7 @@ export const MatchResult = (props: MatchResultProps) => {
           });
         }
         return (
-          <div className="search-result mb-4">
+          <div className="search-result mb-4" key={idx}>
             <div className="columns">
               <div className="column is-one-fifth">
                 <img

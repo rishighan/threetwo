@@ -7,6 +7,9 @@ import { comicinfoAPICall } from "../actions/comicinfo.actions";
 import { search } from "../services/api/SearchApi";
 import { Form, Field } from "react-final-form";
 import Card from "./Carda";
+import ellipsize from "ellipsize";
+import { convert } from "html-to-text";
+import dayjs from "dayjs";
 
 interface ISearchProps {}
 
@@ -27,7 +30,8 @@ export const Search = ({}: ISearchProps): ReactElement => {
             format: "json",
             limit: "10",
             offset: "0",
-            field_list: "id,name,deck,api_detail_url,image,description,volume",
+            field_list:
+              "id,name,deck,api_detail_url,image,description,volume,cover_date",
             resources: "issue",
           },
         }),
@@ -85,34 +89,70 @@ export const Search = ({}: ISearchProps): ReactElement => {
           />
           {!isNil(comicVineSearchResults.results) &&
           !isEmpty(comicVineSearchResults.results) ? (
-            <div>
+            <div className="columns is-multiline">
               {comicVineSearchResults.results.map((result) => {
                 return (
-                  <div key={result.id} className="columns is-full">
-                    <div className="column is-one-quarter">
-                      <Card
-                        key={result.id}
-                        orientation={"vertical"}
-                        imageUrl={result.image.small_url}
-                        title={result.name}
-                        hasDetails={false}
-                      ></Card>
-                    </div>
-                    <div className="column is-half">
-                      <div className="is-size-4">{result.name}</div>
-                      <span className="tag is-warning">{result.id}</span>
-                      <p>{result.api_detail_url}</p>
-                      <p
-                        dangerouslySetInnerHTML={createDescriptionMarkup(
-                          result.description,
-                        )}
-                      ></p>
-                      <button
-                        className="button is-success is-light is-outlined"
-                        onClick={() => addToLibrary("comicvine", result)}
-                      >
-                        Add to Library
-                      </button>
+                  <div
+                    key={result.id}
+                    className="comicvine-metadata column is-10 mb-3"
+                  >
+                    <div className="columns">
+                      <div className="column is-one-quarter">
+                        <Card
+                          key={result.id}
+                          orientation={"vertical"}
+                          imageUrl={result.image.small_url}
+                          title={result.name}
+                          hasDetails={false}
+                        ></Card>
+                      </div>
+                      <div className="column">
+                        <div className="is-size-3">
+                          {!isEmpty(result.name) ? (
+                            result.name
+                          ) : (
+                            <span className="is-size-3">No Name</span>
+                          )}
+                        </div>
+                        <div className="field is-grouped mt-1">
+                          <div className="control">
+                            <div className="tags has-addons">
+                              <span className="tag is-light">Cover date</span>
+                              <span className="tag is-info is-light">
+                                {dayjs(result.cover_date).format("MMM D, YYYY")}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="control">
+                            <div className="tags has-addons">
+                              <span className="tag is-warning">
+                                {result.id}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <a href={result.api_detail_url}>
+                          {result.api_detail_url}
+                        </a>
+                        <p>
+                          {ellipsize(
+                            convert(result.description, {
+                              baseElements: {
+                                selectors: ["p"],
+                              },
+                            }),
+                            320,
+                          )}
+                        </p>
+                        <button
+                          className="button is-success is-light is-outlined mt-2"
+                          onClick={() => addToLibrary("comicvine", result)}
+                        >
+                          <i className="fa-solid fa-plus mr-2"></i> Add to Library
+                        </button>
+                      </div>
                     </div>
                   </div>
                 );

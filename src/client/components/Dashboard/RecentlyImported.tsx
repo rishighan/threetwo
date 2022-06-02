@@ -95,6 +95,15 @@ export const RecentlyImported = ({
                         />
                       </span>
                     )}
+                    {/* ComicVine metadata presence */}
+                    {isComicBookMetadataAvailable && (
+                      <span className="icon custom-icon">
+                        <img
+                          src="/img/cvlogo.svg"
+                          alt={"ComicInfo.xml file detected."}
+                        />
+                      </span>
+                    )}
                     {/* Issue type */}
                     {isComicBookMetadataAvailable &&
                     !isNil(
