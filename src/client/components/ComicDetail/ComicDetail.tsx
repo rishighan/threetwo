@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  ReactElement,
-  useContext,
-  useCallback,
-} from "react";
+import React, { useState, ReactElement, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import Card from "../Carda";
@@ -125,7 +119,8 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
       rawFileDetails,
       inferredMetadata,
       sourcedMetadata: { comicvine, locg, comicInfo },
-    }, userSettings,
+    },
+    userSettings,
   } = data;
 
   // check for the availability of CV metadata

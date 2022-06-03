@@ -130,7 +130,7 @@ export const downloadAirDCPPItem =
           true,
         );
       }
-      console.log(comicObject)
+      console.log(comicObject);
       let bundleDBImportResult = {};
       const downloadResult = await ADCPPSocket.post(
         `search/${instanceId}/results/${resultId}/download`,
@@ -162,7 +162,6 @@ export const downloadAirDCPPItem =
           (item) => item.id,
         );
       }
-      console.log(comicObjectId)
       if (!isNil(downloadResult)) {
         bundleDBImportResult = await axios({
           method: "POST",
@@ -253,5 +252,23 @@ export const getBundlesForComic =
       });
     } catch (error) {
       throw error;
+    }
+  };
+
+export const getTransfers =
+  (ADCPPSocket: any, credentials: any) => async (dispatch) => {
+    try {
+      if (!ADCPPSocket.isConnected()) {
+        await ADCPPSocket.connect(
+          `${credentials.username}`,
+          `${credentials.password}`,
+          true,
+        );
+      }
+      console.log(ADCPPSocket);
+    const foo =  await ADCPPSocket.get('queue/bundles/1/50', {});
+    console.log(foo);
+    } catch (err) {
+      throw err;
     }
   };

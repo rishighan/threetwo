@@ -12,6 +12,7 @@ import VolumeDetail from "./VolumeDetail/VolumeDetail";
 import PullList from "./PullList/PullList";
 import WantedComics from "./WantedComics/WantedComics";
 import Volumes from "./Volumes/Volumes";
+import Downloads from "./Downloads/Downloads";
 
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./Navbar";
@@ -82,6 +83,7 @@ export const App = (): ReactElement => {
           <Route path="/import" element={<Import path={"./comics"} />} />
           <Route path="/library" element={<LibraryContainer />} />
           <Route path="/library-grid" element={<LibraryGrid />} />
+          <Route path="/downloads" element={<Downloads />} />
           <Route path="/search" element={<Search />} />
           <Route
             path={"/comic/details/:comicObjectId"}

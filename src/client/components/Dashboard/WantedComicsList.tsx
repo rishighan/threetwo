@@ -27,10 +27,10 @@ export const WantedComicsList = ({
   };
   return (
     <>
-      <div className="content">
+      <div className="content mt-6">
         <a className="mb-1" onClick={navigateToWantedComics}>
           <span className="is-size-4 has-text-weight-semibold">
-          <i className="fa-solid fa-asterisk"></i> Wanted Comics
+            <i className="fa-solid fa-asterisk"></i> Wanted Comics
           </span>
           <span className="icon mt-1">
             <i className="fa-solid fa-angle-right"></i>

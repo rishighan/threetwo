@@ -7,8 +7,8 @@ export const LibraryStatistics = (
 ): ReactElement => {
   // const { stats } = props;
   return (
-    <>
-      <h4 className="title is-4 mt-2">
+    <div className="mt-5">
+      <h4 className="title is-4">
         <i className="fa-solid fa-chart-simple"></i> Statistics
       </h4>
       <p className="subtitle is-7">A brief snapshot of your library.</p>
@@ -110,7 +110,7 @@ export const LibraryStatistics = (
           </dl>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

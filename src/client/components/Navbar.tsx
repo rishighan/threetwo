@@ -1,11 +1,8 @@
-import { debounce } from "lodash";
-import React, { ReactElement, useCallback } from "react";
+import React from "react";
 import { SearchBar } from "./GlobalSearchBar/SearchBar";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const Navbar: React.FunctionComponent = (props) => {
-  
   return (
     <nav className="navbar is-fixed-top">
       <div className="navbar-brand">
@@ -51,11 +48,12 @@ const Navbar: React.FunctionComponent = (props) => {
             Library
           </Link>
 
-          <Link to="/library" className="navbar-item">
+          <Link to="/downloads" className="navbar-item">
             Downloads
           </Link>
 
-          <SearchBar/>
+          <SearchBar />
+
           <Link to="/search" className="navbar-item">
             Search ComicVine
           </Link>
