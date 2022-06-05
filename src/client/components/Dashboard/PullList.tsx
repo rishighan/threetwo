@@ -146,7 +146,7 @@ export const PullList = ({ issues }: PullListProps): ReactElement => {
                   </div>
                   <div className="mt-2">
                     <button
-                      className="button is-small is-warning is-light"
+                      className="button is-small is-success is-outlined is-light"
                       onClick={() => addToLibrary("locg", issue)}
                     >
                       <i className="fa-solid fa-plus"></i> Want

@@ -150,7 +150,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
                           className="button is-success is-light is-outlined mt-2"
                           onClick={() => addToLibrary("comicvine", result)}
                         >
-                          <i className="fa-solid fa-plus mr-2"></i> Add to Library
+                          <i className="fa-solid fa-plus mr-2"></i> Want 
                         </button>
                       </div>
                     </div>

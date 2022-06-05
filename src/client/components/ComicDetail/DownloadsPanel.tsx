@@ -54,7 +54,6 @@ export const DownloadsPanel = (
   }, [dispatch]);
 
   const ProgressTick = (props) => {
-    console.log("tick", props);
     return (
       <div className="column is-half">
         {JSON.stringify(props.data.downloadProgressTick)}

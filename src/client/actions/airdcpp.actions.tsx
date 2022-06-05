@@ -266,8 +266,8 @@ export const getTransfers =
         );
       }
       console.log(ADCPPSocket);
-    const foo =  await ADCPPSocket.get('queue/bundles/1/50', {});
-    console.log(foo);
+      const foo = await ADCPPSocket.get("queue/bundles/1/50", {});
+      console.log(foo);
     } catch (err) {
       throw err;
     }

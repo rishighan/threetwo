@@ -67,35 +67,9 @@ const Navbar: React.FunctionComponent = (props) => {
               className="navbar-link  is-active"
               href="/documentation/overview/start/"
             >
-              Docs
+              <i className="fa-solid fa-download"></i>
             </a>
-            <div className="navbar-dropdown ">
-              <a className="navbar-item " href="/documentation/overview/start/">
-                Overview
-              </a>
-
-              <a
-                className="navbar-item is-active"
-                href="http://bulma.io/documentation/components/breadcrumb/"
-              >
-                Components
-              </a>
-
-              <hr className="navbar-divider" />
-              <div className="navbar-item">
-                <div>
-                  <p className="is-size-6-desktop">
-                    <strong className="has-text-info">0.5.1</strong>
-                  </p>
-
-                  <small>
-                    <a className="bd-view-all-versions" href="/versions">
-                      View all versions
-                    </a>
-                  </small>
-                </div>
-              </div>
-            </div>
+            <div className="navbar-dropdown">asdas</div>
           </div>
           <div className="navbar-item has-dropdown is-hoverable is-mega">
             <div className="navbar-link flex">Blog</div>
