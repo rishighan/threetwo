@@ -58,6 +58,11 @@ pre {
 
 .navbar {
   border-bottom: 1px solid #f2f1f9;
+  .download-progress-meter {
+    margin-left: -300px;
+    min-width: 500px;
+    
+  }
 }
 
 .navbar-item.is-mega {

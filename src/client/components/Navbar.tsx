@@ -1,5 +1,6 @@
 import React from "react";
 import { SearchBar } from "./GlobalSearchBar/SearchBar";
+import { DownloadProgressTick } from "./ComicDetail/DownloadProgressTick";
 import { Link } from "react-router-dom";
 
 const Navbar: React.FunctionComponent = (props) => {
@@ -62,15 +63,23 @@ const Navbar: React.FunctionComponent = (props) => {
         <div className="navbar-end">
           <a className="navbar-item is-hidden-desktop-only"></a>
 
-          <div className="navbar-item has-dropdown is-hoverable">
-            <a
-              className="navbar-link  is-active"
-              href="/documentation/overview/start/"
-            >
+          {/* <div className="navbar-item has-dropdown is-hoverable">
+            <a className="navbar-link is-arrowless">
               <i className="fa-solid fa-download"></i>
+              {!isUndefined(downloadProgressTick) ? (
+                <>
+                  <i className="fa-solid fa-circle-dashed"></i>
+                </>
+              ) : null}
             </a>
-            <div className="navbar-dropdown">asdas</div>
-          </div>
+            {!isUndefined(downloadProgressTick) ? (
+              <div className="navbar-dropdown download-progress-meter">
+                <a className="navbar-item">
+                  <DownloadProgressTick data={downloadProgressTick} />
+                </a>
+              </div>
+            ) : null}
+          </div> */}
           <div className="navbar-item has-dropdown is-hoverable is-mega">
             <div className="navbar-link flex">Blog</div>
             <div id="blogDropdown" className="navbar-dropdown">

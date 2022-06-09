@@ -1,5 +1,5 @@
-import React, { ReactElement, useState } from "react";
-import { useSelector } from "react-redux";
+import React, { ReactElement, useContext, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Dashboard from "./Dashboard/Dashboard";
 
 import Import from "./Import";
@@ -18,7 +18,11 @@ import { Routes, Route } from "react-router-dom";
 import Navbar from "./Navbar";
 import "../assets/scss/App.scss";
 import Notifications from "react-notification-system-redux";
-import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
+import {
+  AirDCPPSocketContextProvider,
+  AirDCPPSocketContext,
+} from "../context/AirDCPPSocket";
+import { isNil } from "lodash";
 
 //Optional styling
 const style = {
@@ -66,10 +70,26 @@ const style = {
 
 export const App = (): ReactElement => {
   const notifications = useSelector((state: RootState) => state.notifications);
-  const [ADCPPSocket, setADCPPSocket] = useState({});
 
+  const airDCPPConfiguration = useContext(AirDCPPSocketContext);
+  const { AirDCPPSocket } = airDCPPConfiguration;
+  useEffect(() => {
+    const addQueueListener = async () => {
+      if (!isNil(AirDCPPSocket)) {
+        await AirDCPPSocket.addListener(
+          "queue",
+          "queue_bundle_added",
+          async (data) => console.log("JEMEN:", data),
+        );
+        console.log(
+          "[AirDCPP]: Listener registered - listening to queue bundle changes",
+        );
+      }
+    };
+    addQueueListener();
+  }, [AirDCPPSocket]);
   return (
-    <AirDCPPSocketContext.Provider value={{ ADCPPSocket, setADCPPSocket }}>
+    <AirDCPPSocketContextProvider>
       <div>
         <Navbar />
         <Notifications
@@ -83,7 +103,7 @@ export const App = (): ReactElement => {
           <Route path="/import" element={<Import path={"./comics"} />} />
           <Route path="/library" element={<LibraryContainer />} />
           <Route path="/library-grid" element={<LibraryGrid />} />
-          <Route path="/downloads" element={<Downloads />} />
+          <Route path="/downloads" element={<Downloads data={{}} />} />
           <Route path="/search" element={<Search />} />
           <Route
             path={"/comic/details/:comicObjectId"}
@@ -99,7 +119,7 @@ export const App = (): ReactElement => {
           <Route path="/volumes/all" element={<Volumes />} />
         </Routes>
       </div>
-    </AirDCPPSocketContext.Provider>
+    </AirDCPPSocketContextProvider>
   );
 };
 

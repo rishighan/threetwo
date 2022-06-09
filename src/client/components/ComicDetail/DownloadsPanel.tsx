@@ -19,9 +19,6 @@ interface IDownloadsPanelProps {
 export const DownloadsPanel = (
   props: IDownloadsPanelProps,
 ): ReactElement | null => {
-  const downloadProgressTick = useSelector(
-    (state: RootState) => state.airdcpp.downloadProgressData,
-  );
   const bundles = useSelector((state: RootState) => {
     return state.airdcpp.bundles;
   });
@@ -41,57 +38,11 @@ export const DownloadsPanel = (
             password: `${userSettings.directConnect.client.host.password}`,
           }),
         );
-        dispatch(
-          getDownloadProgress(props.comicObjectId, ADCPPSocket, {
-            username: `${userSettings.directConnect.client.host.username}`,
-            password: `${userSettings.directConnect.client.host.password}`,
-          }),
-        );
       }
     } catch (error) {
       throw new Error(error);
     }
   }, [dispatch]);
-
-  const ProgressTick = (props) => {
-    return (
-      <div className="column is-half">
-        {JSON.stringify(props.data.downloadProgressTick)}
-
-        <div className="card">
-          <div className="card-content is-size-7">
-            <dl>
-              <dt className="is-size-6">{props.data.name}</dt>
-              <dd>
-                <span className="is-size-3 has-text-weight-semibold">
-                  {prettyBytes(props.data.downloaded_bytes)} of{" "}
-                  {prettyBytes(props.data.size)}{" "}
-                </span>
-                <progress
-                  className="progress is-small is-success"
-                  value={props.data.downloaded_bytes}
-                  max={props.data.size}
-                >
-                  {(parseInt(props.data.downloaded_bytes) /
-                    parseInt(props.data.size)) *
-                    100}
-                  %
-                </progress>
-              </dd>
-              <dd className="is-size-5">
-                {prettyBytes(props.data.speed)} per second.
-              </dd>
-              <dd className="is-size-5">
-                Time left:
-                {Math.round(parseInt(props.data.seconds_left) / 60)}
-              </dd>
-              <dd>{props.data.target}</dd>
-            </dl>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   const Bundles = (props) => {
     return !isEmpty(props.data) ? (
@@ -130,9 +81,6 @@ export const DownloadsPanel = (
   return !isNil(props.data) ? (
     <>
       <div className="columns is-multiline">
-        {!isNil(downloadProgressTick) ? (
-          <ProgressTick data={downloadProgressTick} />
-        ) : null}
         {!isEmpty(ADCPPSocket) ? (
           <Bundles data={bundles} />
         ) : (

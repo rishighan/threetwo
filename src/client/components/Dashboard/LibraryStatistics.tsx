@@ -9,7 +9,7 @@ export const LibraryStatistics = (
   return (
     <div className="mt-5">
       <h4 className="title is-4">
-        <i className="fa-solid fa-chart-simple"></i> Statistics
+        <i className="fa-solid fa-chart-simple"></i> Your Library In Numbers 
       </h4>
       <p className="subtitle is-7">A brief snapshot of your library.</p>
       <div className="columns is-multiline">

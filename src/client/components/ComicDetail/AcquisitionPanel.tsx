@@ -20,14 +20,14 @@ interface IAcquisitionPanelProps {
   query: any;
   comicObjectid: any;
   comicObject: any;
-  userSettings: any;
+  settings: any;
 }
 
 export const AcquisitionPanel = (
   props: IAcquisitionPanelProps,
 ): ReactElement => {
   const issueName = props.query.issue.name || "";
-  const { userSettings } = props;
+  // const { settings } = props;
   const sanitizedIssueName = issueName.replace(/[^a-zA-Z0-9 ]/g, " ");
 
   // Selectors for picking state
@@ -44,23 +44,21 @@ export const AcquisitionPanel = (
     (state: RootState) => state.airdcpp.searchInstance,
   );
 
-  // const userSettings = useSelector((state: RootState) => state.settings.data);
-  const { ADCPPSocket } = useContext(AirDCPPSocketContext);
+  // const settings = useSelector((state: RootState) => state.settings.data);
+  const airDCPPConfiguration = useContext(AirDCPPSocketContext);
+  const { AirDCPPSocket, settings } = airDCPPConfiguration;
   const dispatch = useDispatch();
   const [dcppQuery, setDcppQuery] = useState({});
-  console.log(ADCPPSocket);
+  console.log(airDCPPConfiguration)
   useEffect(() => {
-    if (!isNil(userSettings.directConnect)) {
+    if (!isNil(settings)) {
       // AirDC++ search query
       const dcppSearchQuery = {
         query: {
           pattern: `${sanitizedIssueName.replace(/#/g, "")}`,
           extensions: ["cbz", "cbr", "cb7"],
         },
-        hub_urls: map(
-          userSettings.directConnect.client.hubs,
-          (item) => item.value,
-        ),
+        hub_urls: map(settings.directConnect.client.hubs, (item) => item.value),
         priority: 5,
       };
       setDcppQuery(dcppSearchQuery);
@@ -74,20 +72,17 @@ export const AcquisitionPanel = (
           pattern: `${searchQuery.issueName}`,
           extensions: ["cbz", "cbr", "cb7"],
         },
-        hub_urls: map(
-          userSettings.directConnect.client.hubs,
-          (item) => item.value,
-        ),
+        hub_urls: map(settings.directConnect.client.hubs, (item) => item.value),
         priority: 5,
       };
       dispatch(
-        search(manualQuery, ADCPPSocket, {
-          username: `${userSettings.directConnect.client.host.username}`,
-          password: `${userSettings.directConnect.client.host.password}`,
+        search(manualQuery, AirDCPPSocket, {
+          username: `${settings.directConnect.client.host.username}`,
+          password: `${settings.directConnect.client.host.password}`,
         }),
       );
     },
-    [dispatch, ADCPPSocket],
+    [dispatch, AirDCPPSocket],
   );
 
   // download via AirDC++
@@ -99,18 +94,18 @@ export const AcquisitionPanel = (
           resultId,
           comicBookObjectId,
           comicObject,
-          ADCPPSocket,
+          AirDCPPSocket,
           {
-            username: `${userSettings.directConnect.client.host.username}`,
-            password: `${userSettings.directConnect.client.host.password}`,
+            username: `${settings.directConnect.client.host.username}`,
+            password: `${settings.directConnect.client.host.password}`,
           },
         ),
       );
       // this is to update the download count badge on the downloads tab
       dispatch(
-        getBundlesForComic(comicBookObjectId, ADCPPSocket, {
-          username: `${userSettings.directConnect.client.host.username}`,
-          password: `${userSettings.directConnect.client.host.password}`,
+        getBundlesForComic(comicBookObjectId, AirDCPPSocket, {
+          username: `${settings.directConnect.client.host.username}`,
+          password: `${settings.directConnect.client.host.password}`,
         }),
       );
     },
@@ -119,7 +114,7 @@ export const AcquisitionPanel = (
   return (
     <>
       <div className="comic-detail columns">
-        {!isEmpty(ADCPPSocket) ? (
+        {!isEmpty(AirDCPPSocket) ? (
           <Form
             onSubmit={getDCPPSearchResults}
             initialValues={{
@@ -190,13 +185,11 @@ export const AcquisitionPanel = (
                 <dl>
                   <dt>
                     <div className="tags mb-1">
-                      {userSettings.directConnect.client.hubs.map(
-                        ({ value }) => (
-                          <span className="tag is-warning" key={value}>
-                            {value}
-                          </span>
-                        ),
-                      )}
+                      {settings.directConnect.client.hubs.map(({ value }) => (
+                        <span className="tag is-warning" key={value}>
+                          {value}
+                        </span>
+                      ))}
                     </div>
                   </dt>
                   <dt>
