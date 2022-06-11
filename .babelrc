@@ -5,7 +5,6 @@
     "@babel/preset-typescript"
   ],
   "plugins": [
-    "react-hot-loader/babel",
     "@babel/transform-runtime",
     "@babel/plugin-proposal-class-properties",
     "@babel/plugin-syntax-top-level-await"

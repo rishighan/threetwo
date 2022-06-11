@@ -49,7 +49,7 @@ export const AcquisitionPanel = (
   const { AirDCPPSocket, settings } = airDCPPConfiguration;
   const dispatch = useDispatch();
   const [dcppQuery, setDcppQuery] = useState({});
-  console.log(airDCPPConfiguration)
+
   useEffect(() => {
     if (!isNil(settings)) {
       // AirDC++ search query

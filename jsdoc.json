@@ -1,7 +1,15 @@
 {
-  "tags": { "allowUnknownTags": true },
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": [
+      "jsdoc",
+      "closure"
+    ]
+  },
   "source": {
-    "include": ["./src/"],
+    "include": [
+      "./src/"
+    ],
     "includePattern": "\\.(jsx|js|ts|tsx)$"
   },
   "plugins": [
@@ -10,7 +18,11 @@
     "plugins/markdown",
     "node_modules/better-docs/typescript"
   ],
-  "templates": { "better-docs": { "name": "My React components" } },
+  "templates": {
+    "better-docs": {
+      "name": "ThreeTwo UI components"
+    }
+  },
   "opts": {
     "destination": "docs/",
     "readme": "README.md",

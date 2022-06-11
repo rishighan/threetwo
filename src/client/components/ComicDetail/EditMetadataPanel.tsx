@@ -3,17 +3,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { Form, Field } from "react-final-form";
 import arrayMutators from "final-form-arrays";
 import { FieldArray } from "react-final-form-arrays";
-import DatePicker from "react-datepicker";
 import AsyncSelectPaginate from "./AsyncSelectPaginate/AsyncSelectPaginate";
 import TextareaAutosize from "react-textarea-autosize";
 
-import "react-datepicker/dist/react-datepicker.css";
 export const EditMetadataPanel = (props): ReactElement => {
   const validate = async () => {};
   const onSubmit = async () => {};
-  const DayPickerAdapter = ({ input, ...rest }) => {
-    return <DatePicker {...input} {...rest} placeholderText={"Cover Date"} />;
-  };
+ 
   const AsyncSelectPaginateAdapter = ({ input, ...rest }) => {
     return (
       <AsyncSelectPaginate
@@ -101,7 +97,7 @@ export const EditMetadataPanel = (props): ReactElement => {
                   <p className="control">
                     <Field
                       name="issue_year"
-                      component={DayPickerAdapter}
+                      component="input"
                       className="input"
                     />
                   </p>

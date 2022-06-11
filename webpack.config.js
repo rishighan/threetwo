@@ -5,8 +5,10 @@ const webpack = require("webpack");
 const outputDirectory = "dist";
 const BundleAnalyzerPlugin =
   require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
-
+const isDevelopment = process.env.NODE_ENV !== "production";
+const HMRPlugin = isDevelopment ? new ReactRefreshWebpackPlugin() : [];
 module.exports = () => {
   return {
     entry: ["babel-polyfill", "./src/client/index.tsx"],
@@ -36,7 +38,16 @@ module.exports = () => {
         },
         {
           test: [/\.js?$/, /\.jsx?$/, /\.tsx?$/],
-          use: ["babel-loader"],
+          use: [
+            {
+              loader: "babel-loader",
+              options: {
+                plugins: [
+                  isDevelopment && require.resolve("react-refresh/babel"),
+                ].filter(Boolean),
+              },
+            },
+          ],
           exclude: /node_modules/,
         },
         {
@@ -72,6 +83,7 @@ module.exports = () => {
       extensions: ["*", ".ts", ".tsx", ".js", ".jsx", ".json"],
       aliasFields: ["browser", "browser.esm"],
     },
+    mode: isDevelopment ? "development" : "production",
     devServer: {
       hot: true,
       port: 3050,
@@ -88,6 +100,7 @@ module.exports = () => {
       usedExports: false,
     },
     plugins: [
+      HMRPlugin,
       // new BundleAnalyzerPlugin(),
       new CopyPlugin({
         patterns: [{ from: "./src/client/assets/img/", to: "img/" }],

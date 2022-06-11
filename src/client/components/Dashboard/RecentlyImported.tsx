@@ -6,7 +6,6 @@ import { escapePoundSymbol } from "../../shared/utils/formatting.utils";
 import { isEmpty, isNil, isUndefined, map } from "lodash";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
 import Masonry from "react-masonry-css";
-import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
 import {
   determineCoverFile,
   determineExternalMetadata,
@@ -43,14 +42,17 @@ export const RecentlyImported = ({
       >
         {map(
           comicBookCovers.docs,
-          ({
-            _id,
-            rawFileDetails,
-            sourcedMetadata: { comicvine, comicInfo, locg },
-            acquisition: {
-              source: { name },
+          (
+            {
+              _id,
+              rawFileDetails,
+              sourcedMetadata: { comicvine, comicInfo, locg },
+              acquisition: {
+                source: { name },
+              },
             },
-          }) => {
+            idx,
+          ) => {
             const { issueName, url } = determineCoverFile({
               rawFileDetails,
               comicvine,
@@ -73,9 +75,8 @@ export const RecentlyImported = ({
               </Link>
             );
             return (
-              <>
+              <React.Fragment key={_id}>
                 <Card
-                  key={_id}
                   orientation={"vertical"}
                   imageUrl={url}
                   hasDetails
@@ -138,7 +139,7 @@ export const RecentlyImported = ({
                     </dd>
                   </Card>
                 ) : null}
-              </>
+              </React.Fragment>
             );
           },
         )}
