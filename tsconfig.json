@@ -11,7 +11,10 @@
     "outDir": "./dist/",
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "lib": ["dom", "dom.iterable", "esnext", "webworker"]
+    "lib": ["dom", "dom.iterable", "esnext", "webworker"],
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "strict": true
   },
   "settings": {
     "eslint.workingDirectories": [

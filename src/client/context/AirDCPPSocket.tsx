@@ -3,18 +3,6 @@ import React, { createContext, useEffect, useMemo, useState } from "react";
 import { SETTINGS_SERVICE_BASE_URI } from "../constants/endpoints";
 import AirDCPPSocket from "../services/DcppSearchService";
 
-/**
- * Component for setting up and sharing the AirDC++ socket context.
- *
- * @component
- * @example
- * const age = 21
- * const name = 'Jitendra Nirnejak'
- * return (
- *   <User age={age} name={name} />
- * )
- */
-
 const AirDCPPSocketContext = createContext({});
 const AirDCPPSocketContextProvider = ({ children }) => {
   const [airDCPPConfiguration, setValue] = useState({});

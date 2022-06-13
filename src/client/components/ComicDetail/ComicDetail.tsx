@@ -294,3 +294,5 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     </section>
   );
 };
+
+export default ComicDetail;
