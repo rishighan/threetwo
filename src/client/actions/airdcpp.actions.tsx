@@ -17,6 +17,7 @@ import {
   AIRDCPP_FILE_DOWNLOAD_COMPLETED,
   LS_SINGLE_IMPORT,
   IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
+  AIRDCPP_TRANSFERS_FETCHED,
 } from "../constants/action-types";
 import { isNil } from "lodash";
 import axios from "axios";
@@ -265,8 +266,13 @@ export const getTransfers =
           true,
         );
       }
-      const foo = await ADCPPSocket.get("queue/bundles/1/50", {});
-      console.log(foo);
+      const transfers = await ADCPPSocket.get("queue/bundles/1/50", {});
+      if (!isNil(transfers)) {
+        dispatch({
+          type: AIRDCPP_TRANSFERS_FETCHED,
+          transfers,
+        });
+      }
     } catch (err) {
       throw err;
     }

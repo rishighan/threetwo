@@ -7,6 +7,7 @@ import {
   AIRDCPP_DOWNLOAD_PROGRESS_TICK,
   AIRDCPP_FILE_DOWNLOAD_COMPLETED,
   AIRDCPP_BUNDLES_FETCHED,
+  AIRDCPP_TRANSFERS_FETCHED,
 } from "../constants/action-types";
 import { LOCATION_CHANGE } from "redux-first-history";
 import { isUndefined } from "lodash";
@@ -21,6 +22,7 @@ const initialState = {
   bundleDBImportResult: null,
   downloadFileStatus: {},
   bundles: [],
+  transfers: [],
 };
 
 function airdcppReducer(state = initialState, action) {
@@ -80,6 +82,11 @@ function airdcppReducer(state = initialState, action) {
       console.log("COMPLETED", action);
       return {
         ...state,
+      };
+    case AIRDCPP_TRANSFERS_FETCHED:
+      return {
+        ...state,
+        transfers: action.transfers,
       };
     case LOCATION_CHANGE:
       return {
