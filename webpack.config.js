@@ -7,8 +7,13 @@ const BundleAnalyzerPlugin =
   require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
+
 const isDevelopment = process.env.NODE_ENV !== "production";
-const HMRPlugin = isDevelopment ? new ReactRefreshWebpackPlugin() : [];
+const HMRPlugin = () => (isDevelopment ? new ReactRefreshWebpackPlugin() : {});
+const reactRefreshBabelPlugin = isDevelopment
+  ? require.resolve("react-refresh/babel")
+  : {};
+
 module.exports = () => {
   return {
     entry: ["babel-polyfill", "./src/client/index.tsx"],
@@ -42,9 +47,7 @@ module.exports = () => {
             {
               loader: "babel-loader",
               options: {
-                plugins: [
-                  isDevelopment && require.resolve("react-refresh/babel"),
-                ].filter(Boolean),
+                plugins: [reactRefreshBabelPlugin],
               },
             },
           ],
@@ -83,7 +86,7 @@ module.exports = () => {
       extensions: ["*", ".ts", ".tsx", ".js", ".jsx", ".json"],
       aliasFields: ["browser", "browser.esm"],
     },
-    mode: isDevelopment ? "development" : "production",
+    mode: process.env.NODE_ENV,
     devServer: {
       hot: true,
       port: 3050,

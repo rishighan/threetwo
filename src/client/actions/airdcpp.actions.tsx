@@ -266,11 +266,11 @@ export const getTransfers =
           true,
         );
       }
-      const transfers = await ADCPPSocket.get("queue/bundles/1/50", {});
-      if (!isNil(transfers)) {
+      const bundles = await ADCPPSocket.get("queue/bundles/1/50", {});
+      if (!isNil(bundles)) {
         dispatch({
           type: AIRDCPP_TRANSFERS_FETCHED,
-          transfers,
+          bundles,
         });
       }
     } catch (err) {

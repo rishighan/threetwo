@@ -86,7 +86,7 @@ function airdcppReducer(state = initialState, action) {
     case AIRDCPP_TRANSFERS_FETCHED:
       return {
         ...state,
-        transfers: action.transfers,
+        transfers: action.bundles,
       };
     case LOCATION_CHANGE:
       return {
