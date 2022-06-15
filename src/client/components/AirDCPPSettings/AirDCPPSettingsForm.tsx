@@ -4,36 +4,20 @@ import { useDispatch } from "react-redux";
 import { saveSettings, deleteSettings } from "../../actions/settings.actions";
 import { AirDCPPSettingsConfirmation } from "./AirDCPPSettingsConfirmation";
 import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
-import AirDCPPSocket from "../../services/DcppSearchService";
 import { isUndefined, isEmpty, isNil } from "lodash";
 
-export const AirDCPPSettingsForm = (airDCPPClientSettings): ReactElement => {
-  const { settings } = airDCPPClientSettings;
+export const AirDCPPSettingsForm = (): ReactElement => {
   const dispatch = useDispatch();
-  const { setADCPPSocket } = useContext(AirDCPPSocketContext);
+  const airDCPPConfiguration = useContext(AirDCPPSocketContext);
+  const { AirDCPPSocket, settings } = airDCPPConfiguration;
 
   const onSubmit = async (values) => {
     try {
-      const socket = new AirDCPPSocket({
-        hostname: `${values.hostname}`,
-        protocol: `${values.protocol}`,
-      });
-      const socketConnectionResponse = await socket.connect(
-        values.username,
-        values.password,
-        true,
-      );
-      if (!isNil(socketConnectionResponse.session_id)) {
+      if (!isNil(AirDCPPSocket.session_id)) {
         dispatch(
           saveSettings({
             host: values,
-            airDCPPUserSettings: socketConnectionResponse,
-          }),
-        );
-        setADCPPSocket(
-          new AirDCPPSocket({
-            hostname: `${values.hostname}`,
-            protocol: `${values.protocol}`,
+            airDCPPUserSettings: settings,
           }),
         );
       }
@@ -44,7 +28,6 @@ export const AirDCPPSettingsForm = (airDCPPClientSettings): ReactElement => {
 
   const removeSettings = useCallback(async () => {
     dispatch(deleteSettings());
-    setADCPPSocket({});
   }, []);
 
   const validate = async () => {};

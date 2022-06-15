@@ -7,21 +7,15 @@ import { saveSettings } from "../../actions/settings.actions";
 import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
 
 export const AirDCPPHubsForm = (airDCPPClientUserSettings): ReactElement => {
-  const { settings } = airDCPPClientUserSettings;
   const dispatch = useDispatch();
   const [hubList, setHubList] = useState([]);
-  const { ADCPPSocket } = useContext(AirDCPPSocketContext);
+  const airDCPPConfiguration = useContext(AirDCPPSocketContext);
+  const { AirDCPPSocket, settings } = airDCPPConfiguration;
 
   useEffect(() => {
     (async () => {
       if (!isEmpty(settings)) {
-        console.log(ADCPPSocket);
-        await ADCPPSocket.connect(
-          settings.directConnect.client.host.username,
-          settings.directConnect.client.host.password,
-          true,
-        );
-        const hubs = await ADCPPSocket.get(`hubs`);
+        const hubs = await AirDCPPSocket.get(`hubs`);
         const hubSelectionOptions = hubs.map(({ hub_url, identity }) => ({
           value: hub_url,
           label: identity.name,

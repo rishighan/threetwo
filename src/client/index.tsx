@@ -8,7 +8,6 @@ import App from "./components/App";
 
 const rootEl = document.getElementById("root");
 const root = createRoot(rootEl);
-//In the entry of your indirect code path (e.g. some index.js), add the following two lines:
 
 root.render(
   <Provider store={store}>

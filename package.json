@@ -5,11 +5,11 @@
   "main": "server/index.js",
   "typings": "server/index.js",
   "scripts": {
-    "build": "NODE_ENV=production webpack --mode production",
+    "build": "webpack --mode production",
     "start": "npm run build && npm run server",
     "client": "webpack serve --mode development --devtool inline-source-map --hot",
     "server": "tsc -p tsconfig.server.json && node server/",
-    "dev": "NODE_ENV=development concurrently \"nodemon\" \"npm run client\"",
+    "dev": "concurrently \"nodemon\" \"npm run client\"",
     "server-dev": "nodemon",
     "docs": "jsdoc -c jsdoc.json"
   },
@@ -151,7 +151,7 @@
     "nodemon": "^1.17.3",
     "npm": "^8.11.0",
     "prettier": "^2.2.1",
-    "react-refresh": "^0.13.0",
+    "react-refresh": "^0.14.0",
     "rimraf": "^3.0.2",
     "sass-loader": "^11.0.1",
     "source-map-loader": "^0.2.4",

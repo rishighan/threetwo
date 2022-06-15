@@ -4,52 +4,21 @@ import { AirDCPPHubsForm } from "./AirDCPPSettings/AirDCPPHubsForm";
 import { SystemSettingsForm } from "./SystemSettings/SystemSettingsForm";
 import settingsObject from "../constants/settings/settingsMenu.json";
 import { isEmpty, isUndefined, map } from "lodash";
-import { useDispatch, useSelector } from "react-redux";
-import { getSettings } from "../actions/settings.actions";
-import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
-import AirDCPPSocket from "../services/DcppSearchService";
 
 interface ISettingsProps {}
 
 export const Settings = (props: ISettingsProps): ReactElement => {
-  // fetch saved AirDC++ settings, if any
-  const airDCPPClientSettings = useSelector(
-    (state: RootState) => state.settings.data,
-  );
-  const dispatch = useDispatch();
-  const { ADCPPSocket, setADCPPSocket } = useContext(AirDCPPSocketContext);
-  useEffect(() => {
-    dispatch(getSettings());
-  }, []);
-
-  useEffect(() => {
-    if (!isEmpty(airDCPPClientSettings)) {
-      setADCPPSocket(
-        new AirDCPPSocket({
-          hostname: `${airDCPPClientSettings.directConnect.client.host.hostname}`,
-          protocol: `${airDCPPClientSettings.directConnect.client.host.protocol}`,
-        }),
-      );
-    }
-  }, [airDCPPClientSettings]);
   const [active, setActive] = useState("gen-db");
-
   const settingsContent = [
     {
       id: "adc-hubs",
-      content: (
-        <>
-          {!isEmpty(airDCPPClientSettings) ? (
-            <AirDCPPHubsForm settings={airDCPPClientSettings} />
-          ) : null}
-        </>
-      ),
+      content: <>{<AirDCPPHubsForm />}</>,
     },
     {
       id: "adc-connection",
       content: (
         <>
-          <AirDCPPSettingsForm settings={airDCPPClientSettings} />
+          <AirDCPPSettingsForm />
         </>
       ),
     },
@@ -57,7 +26,7 @@ export const Settings = (props: ISettingsProps): ReactElement => {
       id: "flushdb",
       content: (
         <>
-          <SystemSettingsForm settings={airDCPPClientSettings} />
+          <SystemSettingsForm />
         </>
       ),
     },

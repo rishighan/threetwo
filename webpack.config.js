@@ -8,13 +8,9 @@ const BundleAnalyzerPlugin =
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
-const isDevelopment = process.env.NODE_ENV !== "production";
-const HMRPlugin = () => (isDevelopment ? new ReactRefreshWebpackPlugin() : {});
-const reactRefreshBabelPlugin = isDevelopment
-  ? require.resolve("react-refresh/babel")
-  : {};
-
-module.exports = () => {
+module.exports = (_, argv) => {
+  const mode = argv.mode;
+  const isDevelopment = mode === "development";
   return {
     entry: ["babel-polyfill", "./src/client/index.tsx"],
     output: {
@@ -47,7 +43,9 @@ module.exports = () => {
             {
               loader: "babel-loader",
               options: {
-                plugins: [reactRefreshBabelPlugin],
+                plugins: [
+                  isDevelopment && require("react-refresh/babel"),
+                ].filter(Boolean),
               },
             },
           ],
@@ -103,7 +101,6 @@ module.exports = () => {
       usedExports: false,
     },
     plugins: [
-      HMRPlugin,
       // new BundleAnalyzerPlugin(),
       new CopyPlugin({
         patterns: [{ from: "./src/client/assets/img/", to: "img/" }],
@@ -111,6 +108,7 @@ module.exports = () => {
           concurrency: 100,
         },
       }),
+      isDevelopment && new ReactRefreshWebpackPlugin(),
       new HtmlWebpackPlugin({
         template: "./public/index.html",
         favicon: "./public/favicon.ico",
@@ -125,6 +123,6 @@ module.exports = () => {
         filename: "./css/[name].css",
         chunkFilename: "./css/[id].css",
       }),
-    ],
+    ].filter(Boolean),
   };
 };

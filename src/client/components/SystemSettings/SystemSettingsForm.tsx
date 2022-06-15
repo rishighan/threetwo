@@ -3,7 +3,6 @@ import { flushDb } from "../../actions/settings.actions";
 import { useDispatch, useSelector } from "react-redux";
 
 export const SystemSettingsForm = (settingsObject): ReactElement => {
-  const { settings } = settingsObject;
 
   const dispatch = useDispatch();
   const isSettingsCallInProgress = useSelector(
