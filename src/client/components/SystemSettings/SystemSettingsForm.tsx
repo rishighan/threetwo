@@ -2,8 +2,7 @@ import React, { ReactElement, useCallback } from "react";
 import { flushDb } from "../../actions/settings.actions";
 import { useDispatch, useSelector } from "react-redux";
 
-export const SystemSettingsForm = (settingsObject): ReactElement => {
-
+export const SystemSettingsForm = (): ReactElement => {
   const dispatch = useDispatch();
   const isSettingsCallInProgress = useSelector(
     (state: RootState) => state.settings.inProgress,

@@ -10,19 +10,18 @@ import {
   SETTINGS_SERVICE_BASE_URI,
 } from "../constants/endpoints";
 
-export const saveSettings =
-  (settingsPayload, settingsObjectId?) => async (dispatch) => {
-    const result = await axios({
-      url: `${SETTINGS_SERVICE_BASE_URI}/saveSettings`,
-      method: "POST",
-      data: { settingsPayload, settingsObjectId },
-    });
-    console.log(result.data);
-    dispatch({
-      type: SETTINGS_OBJECT_FETCHED,
-      data: result.data,
-    });
-  };
+export const saveSettings = (settingsPayload) => async (dispatch) => {
+  const result = await axios({
+    url: `${SETTINGS_SERVICE_BASE_URI}/saveSettings`,
+    method: "POST",
+    data: { settingsPayload },
+  });
+  console.log(result.data);
+  dispatch({
+    type: SETTINGS_OBJECT_FETCHED,
+    data: result.data,
+  });
+};
 
 export const getSettings = (settingsKey?) => async (dispatch) => {
   const result = await axios({

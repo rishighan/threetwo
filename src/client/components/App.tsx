@@ -25,10 +25,14 @@ import { isEmpty, isNil, isUndefined } from "lodash";
 
 const AirDCPPSocketComponent = (): ReactElement => {
   const airDCPPConfiguration = useContext(AirDCPPSocketContext);
-  const { AirDCPPSocket, settings } = airDCPPConfiguration;
+  console.log(airDCPPConfiguration);
+
   useEffect(() => {
     const foo = async () => {
-      if (!isUndefined(AirDCPPSocket)) {
+      if (
+        !isUndefined(airDCPPConfiguration.airDCPPState) &&
+        !isEmpty(airDCPPConfiguration.airDCPPState.settings)
+      ) {
         await AirDCPPSocket.addListener(
           "queue",
           "queue_bundle_added",
@@ -40,7 +44,7 @@ const AirDCPPSocketComponent = (): ReactElement => {
       }
     };
     foo();
-  }, [settings]);
+  }, []);
   return <></>;
 };
 export const App = (): ReactElement => {
