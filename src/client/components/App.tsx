@@ -1,5 +1,4 @@
-import React, { ReactElement, useContext, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { ReactElement, useContext, useEffect } from "react";
 import Dashboard from "./Dashboard/Dashboard";
 
 import Import from "./Import";
@@ -21,7 +20,7 @@ import {
   AirDCPPSocketContextProvider,
   AirDCPPSocketContext,
 } from "../context/AirDCPPSocket";
-import { isEmpty, isNil, isUndefined } from "lodash";
+import { isEmpty, isUndefined } from "lodash";
 
 const AirDCPPSocketComponent = (): ReactElement => {
   const airDCPPConfiguration = useContext(AirDCPPSocketContext);
@@ -33,7 +32,7 @@ const AirDCPPSocketComponent = (): ReactElement => {
         !isUndefined(airDCPPConfiguration.airDCPPState) &&
         !isEmpty(airDCPPConfiguration.airDCPPState.settings)
       ) {
-        await AirDCPPSocket.addListener(
+        await airDCPPConfiguration.airDCPPState.socket.addListener(
           "queue",
           "queue_bundle_added",
           async (data) => console.log("JEMEN:", data),
@@ -44,7 +43,7 @@ const AirDCPPSocketComponent = (): ReactElement => {
       }
     };
     foo();
-  }, []);
+  }, [airDCPPConfiguration]);
   return <></>;
 };
 export const App = (): ReactElement => {

@@ -1,10 +1,10 @@
-import React, { ReactElement, useCallback, useContext, useEffect } from "react";
+import React, { ReactElement, useCallback, useContext } from "react";
 import { Form, Field } from "react-final-form";
 import { useDispatch } from "react-redux";
 import { saveSettings, deleteSettings } from "../../actions/settings.actions";
 import { AirDCPPSettingsConfirmation } from "./AirDCPPSettingsConfirmation";
 import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
-import { isUndefined, isEmpty, isNil } from "lodash";
+import { isUndefined, isEmpty } from "lodash";
 
 export const AirDCPPSettingsForm = (): ReactElement => {
   const dispatch = useDispatch();
@@ -22,14 +22,14 @@ export const AirDCPPSettingsForm = (): ReactElement => {
     }
   }, []);
   const removeSettings = useCallback(async () => {
+    airDCPPSettings.setSettings({});
     dispatch(deleteSettings());
   }, []);
   const validate = async () => {};
-
-  // const initFormData = !isUndefined(airDCPPSettings)
-  //   ? airDCPPSettings.airDCPPState.settings.directConnect.client.host
-  //   : {};
-  const initFormData = {};
+  console.log(airDCPPSettings.airDCPPState);
+  const initFormData = !isUndefined(airDCPPSettings.airDCPPState.settings.directConnect)
+    ? airDCPPSettings.airDCPPState.settings.directConnect.client.host
+    : {};
 
   return (
     <>
@@ -107,20 +107,19 @@ export const AirDCPPSettingsForm = (): ReactElement => {
           </form>
         )}
       />
-      {!isUndefined(airDCPPSettings.airDCPPState.socketConnectionInformation) ? (
+      {!isEmpty(airDCPPSettings.airDCPPState.socketConnectionInformation) ? (
         <AirDCPPSettingsConfirmation
           settings={airDCPPSettings.airDCPPState.socketConnectionInformation}
         />
       ) : null}
 
-      {/* {!isUndefined(settings) &&
-      !isEmpty(settings.directConnect.client.airDCPPUserSettings) ? (
+      {!isEmpty(airDCPPSettings.airDCPPState.socketConnectionInformation) ? (
         <p className="control mt-4">
           <button className="button is-danger" onClick={removeSettings}>
             Delete
           </button>
         </p>
-      ) : null} */}
+      ) : null}
     </>
   );
 };

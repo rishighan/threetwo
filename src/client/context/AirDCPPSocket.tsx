@@ -1,5 +1,5 @@
-import { isEmpty, isUndefined } from "lodash";
-import React, { createContext, useEffect, useMemo, useState } from "react";
+import { isEmpty } from "lodash";
+import React, { createContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getSettings } from "../actions/settings.actions";
 import AirDCPPSocket from "../services/DcppSearchService";
