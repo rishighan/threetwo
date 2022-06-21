@@ -30,7 +30,7 @@ export const AirDCPPHubsForm = (airDCPPClientUserSettings): ReactElement => {
 
   const onSubmit = (values) => {
     if (!isUndefined(values.hubs)) {
-      dispatch(saveSettings({ hubs: values.hubs }, settings._id));
+      dispatch(saveSettings({ ...settings, hubs: values.hubs }, settings._id));
     }
   };
 

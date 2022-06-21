@@ -12,22 +12,22 @@ export const Settings = (props: ISettingsProps): ReactElement => {
   const settingsContent = [
     {
       id: "adc-hubs",
-      content: <>{<AirDCPPHubsForm />}</>,
+      content: <div key="adc-hubs">{<AirDCPPHubsForm />}</div>,
     },
     {
       id: "adc-connection",
       content: (
-        <>
+        <div key="adc-connection">
           <AirDCPPSettingsForm />
-        </>
+        </div>
       ),
     },
     {
       id: "flushdb",
       content: (
-        <>
+        <div key="flushdb">
           <SystemSettingsForm />
-        </>
+        </div>
       ),
     },
   ];
@@ -46,7 +46,7 @@ export const Settings = (props: ISettingsProps): ReactElement => {
                     <ul className="menu-list" key={settingObject.id}>
                       {map(settingObject.children, (item, idx) => {
                         return (
-                          <li key={item.id}>
+                          <li key={idx}>
                             <a
                               className={
                                 item.id.toString() === active ? "is-active" : ""

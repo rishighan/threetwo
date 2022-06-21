@@ -1,4 +1,4 @@
-import { isEmpty } from "lodash";
+import { isEmpty, isUndefined } from "lodash";
 import React, { createContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getSettings } from "../actions/settings.actions";
@@ -18,7 +18,11 @@ const AirDCPPSocketContextProvider = ({ children }) => {
   };
   // 1. default zero-state for AirDC++ configuration
   const initState = {
-    airDCPPState: { settings: {}, socket: {}, socketConnectionInformation: {} },
+    airDCPPState: {
+      settings: {},
+      socket: {},
+      socketConnectionInformation: {},
+    },
     setSettings: setSettings,
   };
   const dispatch = useDispatch();
@@ -41,6 +45,7 @@ const AirDCPPSocketContextProvider = ({ children }) => {
 
   // Method to init AirDC++ Socket with supplied settings
   const initializeAirDCPPSocket = async (configuration) => {
+    console.log("[AirDCPP]: Initializing socket...");
     const {
       directConnect: {
         client: { host },

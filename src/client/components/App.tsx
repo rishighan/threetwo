@@ -30,7 +30,8 @@ const AirDCPPSocketComponent = (): ReactElement => {
     const foo = async () => {
       if (
         !isUndefined(airDCPPConfiguration.airDCPPState) &&
-        !isEmpty(airDCPPConfiguration.airDCPPState.settings)
+        !isEmpty(airDCPPConfiguration.airDCPPState.settings) &&
+        !isEmpty(airDCPPConfiguration.airDCPPState.socket)
       ) {
         await airDCPPConfiguration.airDCPPState.socket.addListener(
           "queue",

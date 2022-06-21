@@ -25,7 +25,11 @@ export const DownloadsPanel = (
 
   // AirDCPP Socket initialization
   const userSettings = useSelector((state: RootState) => state.settings.data);
-  const { ADCPPSocket } = useContext(AirDCPPSocketContext);
+  const airDCPPConfiguration = useContext(AirDCPPSocketContext);
+
+  const {
+    airDCPPState: { socket, settings },
+  } = airDCPPConfiguration;
 
   const dispatch = useDispatch();
   // Fetch the downloaded files and currently-downloading file(s) from AirDC++
@@ -33,16 +37,16 @@ export const DownloadsPanel = (
     try {
       if (!isEmpty(userSettings)) {
         dispatch(
-          getBundlesForComic(props.comicObjectId, ADCPPSocket, {
-            username: `${userSettings.directConnect.client.host.username}`,
-            password: `${userSettings.directConnect.client.host.password}`,
+          getBundlesForComic(props.comicObjectId, socket, {
+            username: `${settings.directConnect.client.host.username}`,
+            password: `${settings.directConnect.client.host.password}`,
           }),
         );
       }
     } catch (error) {
       throw new Error(error);
     }
-  }, [dispatch]);
+  }, [dispatch, airDCPPConfiguration]);
 
   const Bundles = (props) => {
     return !isEmpty(props.data) ? (
@@ -81,7 +85,7 @@ export const DownloadsPanel = (
   return !isNil(props.data) ? (
     <>
       <div className="columns is-multiline">
-        {!isEmpty(ADCPPSocket) ? (
+        {!isEmpty(socket) ? (
           <Bundles data={bundles} />
         ) : (
           <div className="column is-three-fifths">

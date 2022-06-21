@@ -26,7 +26,6 @@ export const AirDCPPSettingsForm = (): ReactElement => {
     dispatch(deleteSettings());
   }, []);
   const validate = async () => {};
-  console.log(airDCPPSettings.airDCPPState);
   const initFormData = !isUndefined(
     airDCPPSettings.airDCPPState.settings.directConnect,
   )

@@ -1,7 +1,6 @@
 import axios from "axios";
 import {
   SETTINGS_OBJECT_FETCHED,
-  SETTINGS_OBJECT_DELETED,
   SETTINGS_CALL_IN_PROGRESS,
   SETTINGS_DB_FLUSH_SUCCESS,
 } from "../constants/action-types";
@@ -10,18 +9,19 @@ import {
   SETTINGS_SERVICE_BASE_URI,
 } from "../constants/endpoints";
 
-export const saveSettings = (settingsPayload) => async (dispatch) => {
-  const result = await axios({
-    url: `${SETTINGS_SERVICE_BASE_URI}/saveSettings`,
-    method: "POST",
-    data: { settingsPayload },
-  });
-  console.log(result.data);
-  dispatch({
-    type: SETTINGS_OBJECT_FETCHED,
-    data: result.data,
-  });
-};
+export const saveSettings =
+  (settingsPayload, settingsObjectId?: string) => async (dispatch) => {
+    const result = await axios({
+      url: `${SETTINGS_SERVICE_BASE_URI}/saveSettings`,
+      method: "POST",
+      data: { settingsPayload, settingsObjectId },
+    });
+    console.log(result.data);
+    dispatch({
+      type: SETTINGS_OBJECT_FETCHED,
+      data: result.data,
+    });
+  };
 
 export const getSettings = (settingsKey?) => async (dispatch) => {
   const result = await axios({
