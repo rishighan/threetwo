@@ -46,24 +46,27 @@ export const AcquisitionPanel = (
 
   // const settings = useSelector((state: RootState) => state.settings.data);
   const airDCPPConfiguration = useContext(AirDCPPSocketContext);
-  const { AirDCPPSocket, settings } = airDCPPConfiguration;
+
   const dispatch = useDispatch();
   const [dcppQuery, setDcppQuery] = useState({});
 
   useEffect(() => {
-    if (!isNil(settings)) {
+    if (!isEmpty(airDCPPConfiguration.airDCPPState.settings)) {
       // AirDC++ search query
       const dcppSearchQuery = {
         query: {
           pattern: `${sanitizedIssueName.replace(/#/g, "")}`,
           extensions: ["cbz", "cbr", "cb7"],
         },
-        hub_urls: map(settings.directConnect.client.hubs, (item) => item.value),
+        hub_urls: map(
+          airDCPPConfiguration.airDCPPState.settings.directConnect.client.hubs,
+          (item) => item.value,
+        ),
         priority: 5,
       };
       setDcppQuery(dcppSearchQuery);
     }
-  }, []);
+  }, [airDCPPConfiguration]);
 
   const getDCPPSearchResults = useCallback(
     async (searchQuery) => {
@@ -72,17 +75,20 @@ export const AcquisitionPanel = (
           pattern: `${searchQuery.issueName}`,
           extensions: ["cbz", "cbr", "cb7"],
         },
-        hub_urls: map(settings.directConnect.client.hubs, (item) => item.value),
+        hub_urls: map(
+          airDCPPConfiguration.airDCPPState.settings.directConnect.client.hubs,
+          (item) => item.value,
+        ),
         priority: 5,
       };
       dispatch(
-        search(manualQuery, AirDCPPSocket, {
-          username: `${settings.directConnect.client.host.username}`,
-          password: `${settings.directConnect.client.host.password}`,
+        search(manualQuery, airDCPPConfiguration.airDCPPState.socket, {
+          username: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.username}`,
+          password: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.password}`,
         }),
       );
     },
-    [dispatch, AirDCPPSocket],
+    [dispatch, airDCPPConfiguration],
   );
 
   // download via AirDC++
@@ -94,19 +100,23 @@ export const AcquisitionPanel = (
           resultId,
           comicBookObjectId,
           comicObject,
-          AirDCPPSocket,
+          airDCPPConfiguration.airDCPPState.socket,
           {
-            username: `${settings.directConnect.client.host.username}`,
-            password: `${settings.directConnect.client.host.password}`,
+            username: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.username}`,
+            password: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.password}`,
           },
         ),
       );
       // this is to update the download count badge on the downloads tab
       dispatch(
-        getBundlesForComic(comicBookObjectId, AirDCPPSocket, {
-          username: `${settings.directConnect.client.host.username}`,
-          password: `${settings.directConnect.client.host.password}`,
-        }),
+        getBundlesForComic(
+          comicBookObjectId,
+          airDCPPConfiguration.airDCPPState.socket,
+          {
+            username: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.username}`,
+            password: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.password}`,
+          },
+        ),
       );
     },
     [],
@@ -114,7 +124,7 @@ export const AcquisitionPanel = (
   return (
     <>
       <div className="comic-detail columns">
-        {!isEmpty(AirDCPPSocket) ? (
+        {!isEmpty(airDCPPConfiguration.airDCPPState.socket) ? (
           <Form
             onSubmit={getDCPPSearchResults}
             initialValues={{
@@ -185,11 +195,13 @@ export const AcquisitionPanel = (
                 <dl>
                   <dt>
                     <div className="tags mb-1">
-                      {settings.directConnect.client.hubs.map(({ value }) => (
-                        <span className="tag is-warning" key={value}>
-                          {value}
-                        </span>
-                      ))}
+                      {airDCPPConfiguration.airDCPPState.settings.directConnect.client.hubs.map(
+                        ({ value }) => (
+                          <span className="tag is-warning" key={value}>
+                            {value}
+                          </span>
+                        ),
+                      )}
                     </div>
                   </dt>
                   <dt>

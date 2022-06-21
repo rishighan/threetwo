@@ -10,12 +10,14 @@ export const AirDCPPHubsForm = (airDCPPClientUserSettings): ReactElement => {
   const dispatch = useDispatch();
   const [hubList, setHubList] = useState([]);
   const airDCPPConfiguration = useContext(AirDCPPSocketContext);
-  const { AirDCPPSocket, settings } = airDCPPConfiguration;
+  const {
+    airDCPPState: { settings, socket },
+  } = airDCPPConfiguration;
 
   useEffect(() => {
     (async () => {
       if (!isEmpty(settings)) {
-        const hubs = await AirDCPPSocket.get(`hubs`);
+        const hubs = await socket.get(`hubs`);
         const hubSelectionOptions = hubs.map(({ hub_url, identity }) => ({
           value: hub_url,
           label: identity.name,
