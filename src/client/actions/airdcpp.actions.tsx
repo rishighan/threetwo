@@ -194,32 +194,6 @@ export const downloadAirDCPPItem =
     }
   };
 
-export const getDownloadProgress =
-  (comicObjectId: string, ADCPPSocket: any, credentials: any): void =>
-  async (dispatch) => {
-    try {
-      if (!ADCPPSocket.isConnected()) {
-        await ADCPPSocket.connect(
-          `${credentials.username}`,
-          `${credentials.password}`,
-          true,
-        );
-      }
-      await ADCPPSocket.addListener(
-        `queue`,
-        "queue_bundle_tick",
-        async (downloadProgressData) => {
-          dispatch({
-            type: AIRDCPP_DOWNLOAD_PROGRESS_TICK,
-            downloadProgressData,
-          });
-        },
-      );
-    } catch (error) {
-      throw error;
-    }
-  };
-
 export const getBundlesForComic =
   (comicObjectId: string, ADCPPSocket: any, credentials: any) =>
   async (dispatch) => {

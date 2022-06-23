@@ -2,8 +2,14 @@ import React from "react";
 import { SearchBar } from "./GlobalSearchBar/SearchBar";
 import { DownloadProgressTick } from "./ComicDetail/DownloadProgressTick";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { isEmpty, isUndefined } from "lodash";
 
 const Navbar: React.FunctionComponent = (props) => {
+  const downloadProgressTick = useSelector(
+    (state: RootState) => state.airdcpp.downloadProgressData,
+  );
+  console.log(downloadProgressTick)
   return (
     <nav className="navbar is-fixed-top">
       <div className="navbar-brand">
@@ -63,14 +69,12 @@ const Navbar: React.FunctionComponent = (props) => {
         <div className="navbar-end">
           <a className="navbar-item is-hidden-desktop-only"></a>
 
-          {/* <div className="navbar-item has-dropdown is-hoverable">
+          <div className="navbar-item has-dropdown is-hoverable">
             <a className="navbar-link is-arrowless">
               <i className="fa-solid fa-download"></i>
-              {!isUndefined(downloadProgressTick) ? (
-                <>
+              {downloadProgressTick && (
                   <i className="fa-solid fa-circle-dashed"></i>
-                </>
-              ) : null}
+              )}
             </a>
             {!isUndefined(downloadProgressTick) ? (
               <div className="navbar-dropdown download-progress-meter">
@@ -79,7 +83,7 @@ const Navbar: React.FunctionComponent = (props) => {
                 </a>
               </div>
             ) : null}
-          </div> */}
+          </div>
           <div className="navbar-item has-dropdown is-hoverable is-mega">
             <div className="navbar-link flex">Blog</div>
             <div id="blogDropdown" className="navbar-dropdown">

@@ -3,7 +3,7 @@ import React, { ReactElement } from "react";
 
 export const DownloadProgressTick = (props): ReactElement => {
   return (
-    <div className="box">
+    <div >
       <h4 className="is-size-6">{props.data.name}</h4>
       <div>
         <span className="is-size-3 has-text-weight-semibold">

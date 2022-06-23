@@ -1,9 +1,9 @@
-import React, { useState, useEffect, ReactElement, useContext } from "react";
+import React, { useState, ReactElement } from "react";
 import { AirDCPPSettingsForm } from "./AirDCPPSettings/AirDCPPSettingsForm";
 import { AirDCPPHubsForm } from "./AirDCPPSettings/AirDCPPHubsForm";
 import { SystemSettingsForm } from "./SystemSettings/SystemSettingsForm";
 import settingsObject from "../constants/settings/settingsMenu.json";
-import { isEmpty, isUndefined, map } from "lodash";
+import { isUndefined, map } from "lodash";
 
 interface ISettingsProps {}
 

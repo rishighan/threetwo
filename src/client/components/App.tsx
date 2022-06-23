@@ -21,11 +21,13 @@ import {
   AirDCPPSocketContext,
 } from "../context/AirDCPPSocket";
 import { isEmpty, isUndefined } from "lodash";
+import { AIRDCPP_DOWNLOAD_PROGRESS_TICK } from "../constants/action-types";
+import { useDispatch } from "react-redux";
 
 const AirDCPPSocketComponent = (): ReactElement => {
   const airDCPPConfiguration = useContext(AirDCPPSocketContext);
   console.log(airDCPPConfiguration);
-
+  const dispatch = useDispatch();
   useEffect(() => {
     const foo = async () => {
       if (
@@ -37,6 +39,20 @@ const AirDCPPSocketComponent = (): ReactElement => {
           "queue",
           "queue_bundle_added",
           async (data) => console.log("JEMEN:", data),
+        );
+        // download tick listener
+        await airDCPPConfiguration.airDCPPState.socket.addListener(
+          `queue`,
+          "queue_bundle_tick",
+          async (downloadProgressData) => {
+            dispatch({
+              type: AIRDCPP_DOWNLOAD_PROGRESS_TICK,
+              downloadProgressData,
+            });
+          },
+        );
+        console.log(
+          "[AirDCPP]: Listener registered - listening to queue bundle download ticks",
         );
         console.log(
           "[AirDCPP]: Listener registered - listening to queue bundle changes",

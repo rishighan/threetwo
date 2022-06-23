@@ -11,7 +11,9 @@ interface IDownloadsProps {
 
 export const Downloads = (props: IDownloadsProps): ReactElement => {
   const airDCPPConfiguration = useContext(AirDCPPSocketContext);
-  const { AirDCPPSocket, settings } = airDCPPConfiguration;
+  const {
+    airDCPPState: { settings, socket },
+  } = airDCPPConfiguration;
   const dispatch = useDispatch();
 
   const AirDCPPTransfers = useSelector(
@@ -35,15 +37,15 @@ export const Downloads = (props: IDownloadsProps): ReactElement => {
   }, []);
   // Make the call to get all transfers from AirDC++
   useEffect(() => {
-    if (!isUndefined(AirDCPPSocket) && !isEmpty(airDCPPConfiguration)) {
+    if (!isUndefined(socket) && !isEmpty(settings)) {
       dispatch(
-        getTransfers(AirDCPPSocket, {
+        getTransfers(socket, {
           username: `${settings.directConnect.client.host.username}`,
           password: `${settings.directConnect.client.host.password}`,
         }),
       );
     }
-  }, [AirDCPPSocket]);
+  }, [socket]);
   //   const getAllDownloads = useCallback(() => {});
   return <pre>{JSON.stringify(AirDCPPTransfers, null, 2)}</pre>;
 };
