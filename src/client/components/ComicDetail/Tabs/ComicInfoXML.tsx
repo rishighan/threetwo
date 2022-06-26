@@ -33,12 +33,16 @@ export const ComicInfoXML = (data): ReactElement => {
                 </span>
               </span>
             </div>
-            <div className="control">
-              <span className="tags has-addons">
-                <span className="tag">Genre</span>
-                <span className="tag is-success is-light">{json.genre[0]}</span>
-              </span>
-            </div>
+            {!isUndefined(json.genre) && (
+              <div className="control">
+                <span className="tags has-addons">
+                  <span className="tag">Genre</span>
+                  <span className="tag is-success is-light">
+                    {json.genre[0]}
+                  </span>
+                </span>
+              </div>
+            )}
           </div>
         </dd>
         <dd>

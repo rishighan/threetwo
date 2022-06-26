@@ -3,13 +3,14 @@ import { SearchBar } from "./GlobalSearchBar/SearchBar";
 import { DownloadProgressTick } from "./ComicDetail/DownloadProgressTick";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { isEmpty, isUndefined } from "lodash";
+import { isUndefined } from "lodash";
 
 const Navbar: React.FunctionComponent = (props) => {
   const downloadProgressTick = useSelector(
     (state: RootState) => state.airdcpp.downloadProgressData,
   );
-  console.log(downloadProgressTick)
+  console.log(downloadProgressTick);
+
   return (
     <nav className="navbar is-fixed-top">
       <div className="navbar-brand">
@@ -73,7 +74,7 @@ const Navbar: React.FunctionComponent = (props) => {
             <a className="navbar-link is-arrowless">
               <i className="fa-solid fa-download"></i>
               {downloadProgressTick && (
-                  <i className="fa-solid fa-circle-dashed"></i>
+                <i className="fa-regular fa-circle-dot ml-2 "></i>
               )}
             </a>
             {!isUndefined(downloadProgressTick) ? (
