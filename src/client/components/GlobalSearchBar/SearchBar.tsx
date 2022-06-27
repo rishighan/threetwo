@@ -1,4 +1,4 @@
-import { debounce, isEmpty, isUndefined, map } from "lodash";
+import { debounce, isEmpty, map } from "lodash";
 import React, { ReactElement, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Card from "../Carda";
@@ -17,7 +17,7 @@ export const SearchBar = (data: ISearchBarProps): ReactElement => {
   );
 
   const performSearch = useCallback(
-    (e) => {
+    debounce((e) => {
       dispatch(
         searchIssue(
           {
@@ -34,7 +34,7 @@ export const SearchBar = (data: ISearchBarProps): ReactElement => {
           },
         ),
       );
-    },
+    }, 500),
     [data],
   );
   return (
@@ -67,7 +67,11 @@ export const SearchBar = (data: ISearchBarProps): ReactElement => {
               imageStyle={{ maxWidth: 70 }}
               titleStyle={{ fontSize: "0.8rem" }}
               tagsStyle={{ fontSize: "0.7rem" }}
-              containerStyle={{ width: "100vw", padding: 0, margin: "0 0 8px 0" }}
+              containerStyle={{
+                width: "100vw",
+                padding: 0,
+                margin: "0 0 8px 0",
+              }}
             />
           ))}
         </div>
