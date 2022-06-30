@@ -16,9 +16,9 @@ export const WantedComicsList = ({
 }: WantedComicsListProps): ReactElement => {
   const breakpointColumnsObj = {
     default: 5,
-    1100: 5,
-    700: 5,
-    600: 4,
+    1100: 4,
+    700: 2,
+    500: 1,
   };
 
   const navigate = useNavigate();
