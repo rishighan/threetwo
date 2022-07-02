@@ -2494,6 +2494,18 @@
   dependencies:
     tslib "^2.4.0"
 
+"@tanstack/react-table@^8.1.1":
+  version "8.1.1"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-table/-/react-table-8.1.1.tgz#774b2f38ca7e3a696f342c2b717c887959651113"
+  integrity sha512-a6HbrapPae/DgNOyGsFH47xK3v5zYVbxQDGH7ab1+kdSfNwbL23P1fgOCTn8CgmnXO+KI9oEdkZUJ47r9h03Cg==
+  dependencies:
+    "@tanstack/table-core" "8.1.1"
+
+"@tanstack/table-core@8.1.1":
+  version "8.1.1"
+  resolved "https://registry.yarnpkg.com/@tanstack/table-core/-/table-core-8.1.1.tgz#61ebb779292b7d427b3ec8404f5a962d4796b87a"
+  integrity sha512-LvhrGH3Q3HPwah4b3ZNe1qatiS2BXjiBSQDrlQ4CkQBL8rdlrjzdXzyDL1OTJRIkYPxX2kqMgluwvgGEfw9kfg==
+
 "@teamsupercell/typings-for-css-modules-loader@^2.5.1":
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/@teamsupercell/typings-for-css-modules-loader/-/typings-for-css-modules-loader-2.5.1.tgz#9a8c5f9667de5edbc18a5e5d4c1a5c38a09ca004"
@@ -12302,11 +12314,6 @@ react-swipeable@6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/react-swipeable/-/react-swipeable-6.2.0.tgz#057271cb7a6fb4af9d2a3f6d80ccdf33e2f64d47"
   integrity sha512-nWQ8dEM8e/uswZLSIkXUsAnQmnX4MTcryOHBQIQYRMJFDpgDBSiVbKsz/BZVCIScF4NtJh16oyxwaNOepR6xSw==
-
-react-table@^7.8.0:
-  version "7.8.0"
-  resolved "https://registry.yarnpkg.com/react-table/-/react-table-7.8.0.tgz#07858c01c1718c09f7f1aed7034fcfd7bda907d2"
-  integrity sha512-hNaz4ygkZO4bESeFfnfOft73iBUj8K5oKi1EcSHPAibEydfsX2MyU6Z8KCr3mv3C9Kqqh71U+DhZkFvibbnPbA==
 
 react-textarea-autosize@^8.3.4:
   version "8.3.4"
