@@ -66,28 +66,28 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
     return !value ? <span className="tag is-info is-light">Wanted</span> : null;
   };
 
-  const columns = useMemo(
-    () => [
+  const columns =  [
       {
-        Header: "Comic Metadata",
+        header: "Comic Metadata",
+        footer: 1,
         columns: [
           {
-            Header: "File Details",
+            header: "File Details",
             id: "fileDetails",
             minWidth: 400,
-            accessor: "_source",
-            Cell: ({ value }) => {
-              return <MetadataPanel data={value} />;
+            accessorKey: "_source",
+            cell: info => {
+              return <MetadataPanel data={info.getValue()} />;
             },
           },
           {
-            Header: "ComicInfo.xml",
-            accessor: "_source.sourcedMetadata.comicInfo",
+            header: "ComicInfo.xml",
+            accessorKey: "_source.sourcedMetadata.comicInfo",
             align: "center",
             minWidth: 250,
-            Cell: ({ value }) =>
-              !isEmpty(value) ? (
-                <ComicInfoXML data={value} />
+            cell: info =>
+              !isEmpty(info.getValue()) ? (
+                <ComicInfoXML data={info.getValue()} />
               ) : (
                 <span className="tag">No ComicInfo.xml</span>
               ),
@@ -95,34 +95,33 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
         ],
       },
       {
-        Header: "Additional Metadata",
+        header: "Additional Metadata",
         columns: [
           {
-            Header: "Publisher",
-            accessor:
+            header: "Publisher",
+            accessorKey:
               "_source.sourcedMetadata.comicvine.volumeInformation.publisher",
-            Cell(props) {
+            cell: info => {
               return (
-                !isNil(props.cell.value) && (
+                !isNil(info.getValue()) && (
                   <h6 className="is-size-7 has-text-weight-bold">
-                    {props.cell.value.name}
+                    {info.getValue().rawFileDetails.name}
                   </h6>
                 )
               );
             },
           },
           {
-            Header: "Something",
-            accessor: "_source.acquisition.source.wanted",
-            Cell: (props) => {
-              return <WantedStatus value={props.cell.value.toString()} />;
+            header: "Something",
+            accessorKey: "_source.acquisition.source.wanted",
+            cell: info => {
+              !isUndefined(info.getValue()) ?
+              <WantedStatus value={info.getValue().toString()} /> : "Nothing";
             },
           },
         ],
-      },
-    ],
-    [],
-  );
+      }
+    ]
 
   // ImportStatus.propTypes = {
   //   value: PropTypes.bool.isRequired,
