@@ -5,11 +5,13 @@
 
 This folder houses all the components, utils and libraries that make up ThreeTwo's UI
 
-It is based on React 17, and uses:
+It is based on React 18, and uses:
 
 1. _Redux_ for state management
 2. _socket.io_ for transferring data in real-time
 3. _React Router_ for routing
+4. React DnD for drag-and-drop
+5. @tanstack/react-table for all tables
 
 
 
