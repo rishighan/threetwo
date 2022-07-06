@@ -1,8 +1,19 @@
 module.exports = {
-  "stories": ["../src/**/*.stories.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
-  "addons": ["@storybook/addon-links", "@storybook/addon-essentials", "@storybook/addon-interactions"],
-  "framework": "@storybook/react",
+  stories: [
+    "../src/client/stories/*.stories.mdx",
+    "../src/client/stories/*.stories.@(js|jsx|ts|tsx)",
+  ],
+  staticDirs: [
+    "../src/client/stories/assets"
+  ],
+  addons: [
+    "@storybook/addon-links",
+    "@storybook/preset-scss",
+    "@storybook/addon-essentials",
+    "@storybook/addon-interactions",
+  ],
+  framework: "@storybook/react",
   core: {
-    builder: "webpack5"
-  }
+    builder: "webpack5",
+  },
 };

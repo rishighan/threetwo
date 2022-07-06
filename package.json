@@ -115,6 +115,7 @@
     "@storybook/builder-webpack5": "^6.5.9",
     "@storybook/manager-webpack4": "^6.5.9",
     "@storybook/manager-webpack5": "^6.5.9",
+    "@storybook/preset-scss": "^1.0.3",
     "@storybook/react": "^6.5.9",
     "@storybook/testing-library": "^0.0.13",
     "@teamsupercell/typings-for-css-modules-loader": "^2.5.1",
