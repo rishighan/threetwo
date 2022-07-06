@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ["plugin:react/recommended", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended", "plugin:css-modules/recommended", "plugin:storybook/recommended", "plugin:storybook/recommended"],
+  extends: ["plugin:react/recommended", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended", "plugin:css-modules/recommended", "plugin:storybook/recommended", "plugin:storybook/recommended", "plugin:storybook/recommended"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     sourceType: "module",
