@@ -51,11 +51,22 @@ const AirDCPPSocketComponent = (): ReactElement => {
             });
           },
         );
+        // download complete listener
+        await airDCPPConfiguration.airDCPPState.socket.addListener(
+          `transfers`,
+          "transfer_completed",
+          async (transferData) => {
+            console.log(transferData)
+          },
+        );
         console.log(
           "[AirDCPP]: Listener registered - listening to queue bundle download ticks",
         );
         console.log(
           "[AirDCPP]: Listener registered - listening to queue bundle changes",
+        );
+        console.log(
+          "[AirDCPP]: Listener registered - listening to transfer completion",
         );
       }
     };

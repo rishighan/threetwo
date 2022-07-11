@@ -16,7 +16,7 @@ export const Downloads = (props: IDownloadsProps): ReactElement => {
   } = airDCPPConfiguration;
   const dispatch = useDispatch();
 
-  const AirDCPPTransfers = useSelector(
+  const airDCPPTransfers = useSelector(
     (state: RootState) => state.airdcpp.transfers,
   );
   useEffect(() => {
@@ -46,8 +46,10 @@ export const Downloads = (props: IDownloadsProps): ReactElement => {
       );
     }
   }, [socket]);
+
+ 
   //   const getAllDownloads = useCallback(() => {});
-  return <pre>{JSON.stringify(AirDCPPTransfers, null, 2)}</pre>;
+  return <pre>{JSON.stringify(airDCPPTransfers, null, 2)}</pre>;
 };
 
 export default Downloads;

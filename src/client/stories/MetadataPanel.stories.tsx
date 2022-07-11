@@ -16,8 +16,8 @@ export default {
 //👇 We create a “template” of how args map to rendering
 const Template = (args) => <MetadataPanel {...args} />;
 //👇 Each story then reuses that template
-export const ComicVine = Template.bind({});
-ComicVine.args = {
+export const RawFileDetails = Template.bind({});
+RawFileDetails.args = {
     data: {
         "_id": { "$oid": "62bb40c82089f1ea67997e0d" },
         "__v": 0,
