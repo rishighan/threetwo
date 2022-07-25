@@ -4,7 +4,7 @@ import {
   PriorityEnum,
   SearchResponse,
 } from "threetwo-ui-typings";
-import { LIBRARY_SERVICE_BASE_URI } from "../constants/endpoints";
+import { LIBRARY_SERVICE_BASE_URI, SEARCH_SERVICE_BASE_URI } from "../constants/endpoints";
 import {
   AIRDCPP_SEARCH_RESULTS_ADDED,
   AIRDCPP_SEARCH_RESULTS_UPDATED,
@@ -130,7 +130,6 @@ export const downloadAirDCPPItem =
             true,
           );
         }
-        console.log(comicObject);
         let bundleDBImportResult = {};
         const downloadResult = await ADCPPSocket.post(
           `search/${instanceId}/results/${resultId}/download`,
@@ -200,15 +199,17 @@ export const getBundlesForComic =
           },
         });
         // get only the bundles applicable for the comic
-        const filteredBundles = comicObject.data.acquisition.directconnect.map(
-          async ({ bundleId }) => {
-            return await ADCPPSocket.get(`queue/bundles/${bundleId}`);
-          },
-        );
-        dispatch({
-          type: AIRDCPP_BUNDLES_FETCHED,
-          bundles: await Promise.all(filteredBundles),
-        });
+        if (comicObject.data.acquisition.directconnect) {
+          const filteredBundles = comicObject.data.acquisition.directconnect.downloads.map(
+            async ({ bundleId }) => {
+              return await ADCPPSocket.get(`queue/bundles/${bundleId}`);
+            },
+          );
+          dispatch({
+            type: AIRDCPP_BUNDLES_FETCHED,
+            bundles: await Promise.all(filteredBundles),
+          });
+        }
       } catch (error) {
         throw error;
       }
@@ -224,20 +225,18 @@ export const getTransfers =
           true,
         );
       }
-      const bundles = await ADCPPSocket.get("queue/bundles/1/50", {});
+      const bundles = await ADCPPSocket.get("queue/bundles/1/85", {});
       if (!isNil(bundles)) {
-        
         dispatch({
           type: AIRDCPP_TRANSFERS_FETCHED,
           bundles,
         });
         const bundleIds = bundles.map((bundle) => bundle.id);
-        console.log(bundleIds);
         // get issues with matching bundleIds
         const issues = await axios({
-          url: `${LIBRARY_SERVICE_BASE_URI}/groupIssuesByBundles`,
+          url: `${SEARCH_SERVICE_BASE_URI}/groupIssuesByBundles`,
           method: "POST",
-          data: bundleIds,
+          data: { bundleIds },
         });
 
       }

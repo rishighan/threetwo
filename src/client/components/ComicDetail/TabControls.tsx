@@ -10,7 +10,7 @@ export const TabControls = (props): ReactElement => {
 
   const [active, setActive] = useState(filteredTabs[0].id);
   useEffect(() => {
-    console.log("changed");
+    console.log(comicBookDetailData);
     setActive(filteredTabs[0].id);
   }, [comicBookDetailData]);
 
@@ -27,12 +27,11 @@ export const TabControls = (props): ReactElement => {
               {/* Downloads tab and count badge */}
               <a>
                 {id === 5 &&
-                !isNil(comicBookDetailData) &&
-                !isEmpty(comicBookDetailData) ? (
+                !isNil(comicBookDetailData.acquisition.directconnect) ? (
                   <span className="download-icon-labels">
                     <i className="fa-solid fa-download"></i>
                     <span className="tag downloads-count is-info is-light">
-                      {comicBookDetailData.acquisition.directconnect.length}
+                      {comicBookDetailData.acquisition.directconnect.downloads.length}
                     </span>
                   </span>
                 ) : (

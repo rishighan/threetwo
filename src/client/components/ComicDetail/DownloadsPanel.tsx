@@ -57,6 +57,7 @@ export const DownloadsPanel = (
               <th>Filename</th>
               <th>Size</th>
               <th>Download Time</th>
+              <th>Bundle ID</th>
             </tr>
           </thead>
           <tbody>
@@ -71,6 +72,9 @@ export const DownloadsPanel = (
                   {dayjs
                     .unix(bundle.time_finished)
                     .format("h:mm on ddd, D MMM, YYYY")}
+                </td>
+                <td>
+                  <span className="tag is-warning">{bundle.id}</span>
                 </td>
               </tr>
             ))}

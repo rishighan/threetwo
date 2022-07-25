@@ -119,7 +119,7 @@ export const AcquisitionPanel = (
         ),
       );
     },
-    [],
+    [airDCPPConfiguration],
   );
   return (
     <>
