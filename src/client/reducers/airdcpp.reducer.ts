@@ -8,9 +8,10 @@ import {
   AIRDCPP_FILE_DOWNLOAD_COMPLETED,
   AIRDCPP_BUNDLES_FETCHED,
   AIRDCPP_TRANSFERS_FETCHED,
+  LIBRARY_ISSUE_BUNDLES,
 } from "../constants/action-types";
 import { LOCATION_CHANGE } from "redux-first-history";
-import { isUndefined } from "lodash";
+import { isNil, isUndefined } from "lodash";
 import { difference } from "../shared/utils/object.utils";
 
 const initialState = {
@@ -40,8 +41,9 @@ function airdcppReducer(state = initialState, action) {
       const updatedState = [...state.searchResults];
 
       if (
-        difference(updatedState[bundleToUpdateIndex], action.groupedResult) !==
-        {}
+        !isNil(
+          difference(updatedState[bundleToUpdateIndex], action.groupedResult),
+        )
       ) {
         updatedState[bundleToUpdateIndex] = action.groupedResult;
       }
@@ -77,6 +79,11 @@ function airdcppReducer(state = initialState, action) {
       return {
         ...state,
         bundles: action.bundles,
+      };
+    case LIBRARY_ISSUE_BUNDLES:
+      return {
+        ...state,
+        issue_bundles: action.issue_bundles,
       };
     case AIRDCPP_FILE_DOWNLOAD_COMPLETED:
       console.log("COMPLETED", action);

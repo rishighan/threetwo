@@ -1,6 +1,5 @@
 import React, { useEffect, useContext, ReactElement } from "react";
 import {
-  getDownloadProgress,
   getBundlesForComic,
 } from "../../actions/airdcpp.actions";
 import { useDispatch, useSelector } from "react-redux";

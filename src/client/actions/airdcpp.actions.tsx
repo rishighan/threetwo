@@ -17,6 +17,7 @@ import {
   LS_SINGLE_IMPORT,
   IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
   AIRDCPP_TRANSFERS_FETCHED,
+  LIBRARY_ISSUE_BUNDLES,
 } from "../constants/action-types";
 import { isNil } from "lodash";
 import axios from "axios";
@@ -233,10 +234,14 @@ export const getTransfers =
         });
         const bundleIds = bundles.map((bundle) => bundle.id);
         // get issues with matching bundleIds
-        const issues = await axios({
+        const issue_bundles = await axios({
           url: `${SEARCH_SERVICE_BASE_URI}/groupIssuesByBundles`,
           method: "POST",
           data: { bundleIds },
+        });
+        dispatch({
+          type: LIBRARY_ISSUE_BUNDLES,
+          issue_bundles,
         });
 
       }
