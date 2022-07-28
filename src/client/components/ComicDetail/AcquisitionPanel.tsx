@@ -245,6 +245,7 @@ export const AcquisitionPanel = (
               </thead>
               <tbody>
                 {map(airDCPPSearchResults, ({ result }, idx) => {
+                  console.log(result);
                   return (
                     <tr
                       key={idx}

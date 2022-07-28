@@ -23,10 +23,12 @@ import {
 import { isEmpty, isUndefined } from "lodash";
 import { AIRDCPP_DOWNLOAD_PROGRESS_TICK } from "../constants/action-types";
 import { useDispatch } from "react-redux";
+import axios from "axios";
+import { LIBRARY_SERVICE_BASE_URI } from "../constants/endpoints";
+import { useParams } from "react-router";
 
 const AirDCPPSocketComponent = (): ReactElement => {
   const airDCPPConfiguration = useContext(AirDCPPSocketContext);
-  console.log(airDCPPConfiguration);
   const dispatch = useDispatch();
   useEffect(() => {
     const foo = async () => {
@@ -38,7 +40,36 @@ const AirDCPPSocketComponent = (): ReactElement => {
         await airDCPPConfiguration.airDCPPState.socket.addListener(
           "queue",
           "queue_bundle_added",
-          async (data) => console.log("JEMEN:", data),
+          async (data) => {
+            console.log("JEMEN:", data);
+            const { id, name, size, target, time_added, type } = data;
+            const downloadResultMetadata = await axios({
+              method: "POST",
+              url: `${LIBRARY_SERVICE_BASE_URI}/applyAirDCPPDownloadMetadata`,
+              headers: {
+                "Content-Type": "application/json; charset=utf-8",
+              },
+              data: {
+                bundleId: id,
+                name, 
+                size,
+                target,
+                time_added,
+                type
+              },
+            });
+            // dispatch({
+            //   type: AIRDCPP_RESULT_DOWNLOAD_INITIATED,
+            //   downloadResult: downloadResult,
+            //   bundleDBImportResult,
+            // });
+            // dispatch({
+            //   type: IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
+            //   comicBookDetail: bundleDBImportResult.data,
+            //   IMS_inProgress: false,
+            // });
+
+          }
         );
         // download tick listener
         await airDCPPConfiguration.airDCPPState.socket.addListener(

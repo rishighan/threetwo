@@ -10,7 +10,6 @@ export const TabControls = (props): ReactElement => {
 
   const [active, setActive] = useState(filteredTabs[0].id);
   useEffect(() => {
-    console.log(comicBookDetailData);
     setActive(filteredTabs[0].id);
   }, [comicBookDetailData]);
 

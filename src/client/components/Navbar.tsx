@@ -9,7 +9,6 @@ const Navbar: React.FunctionComponent = (props) => {
   const downloadProgressTick = useSelector(
     (state: RootState) => state.airdcpp.downloadProgressData,
   );
-  console.log(downloadProgressTick);
 
   return (
     <nav className="navbar is-fixed-top">
