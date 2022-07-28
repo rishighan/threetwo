@@ -182,7 +182,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
       content: (
         <AcquisitionPanel
           query={airDCPPQuery}
-          comicObjectid={_id}
+          comicObjectId={_id}
           comicObject={data.data}
           userSettings={userSettings}
           key={4}

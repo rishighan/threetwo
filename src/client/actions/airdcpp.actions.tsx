@@ -114,11 +114,10 @@ export const search =
     };
 
 export const downloadAirDCPPItem =
-  (
-    instanceId: string,
-    resultId: string,
-    comicObjectId: string,
-    comicObject: any,
+  (searchInstanceId: Number,
+    resultId: String,
+    comicObjectId: String,
+    name: String, size: Number, type: any,
     ADCPPSocket: any,
     credentials: any,
   ): void =>
@@ -133,22 +132,37 @@ export const downloadAirDCPPItem =
         }
         let bundleDBImportResult = {};
         const downloadResult = await ADCPPSocket.post(
-          `search/${instanceId}/results/${resultId}/download`,
+          `search/${searchInstanceId}/results/${resultId}/download`,
         );
 
-
-        let bundleId;
-        let directoryIds;
-        if (!isNil(downloadResult.bundle_info)) {
-          bundleId = downloadResult.bundle_info.id;
-        }
-        if (!isNil(downloadResult.directory_download_ids)) {
-          directoryIds = downloadResult.directory_download_ids.map(
-            (item) => item.id,
-          );
-        }
         if (!isNil(downloadResult)) {
+          bundleDBImportResult = await axios({
+            method: "POST",
+            url: `${LIBRARY_SERVICE_BASE_URI}/applyAirDCPPDownloadMetadata`,
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+            },
+            data: {
+              bundleId: downloadResult.bundle_info.id,
+              comicObjectId,
+              name,
+              size,
+              type,
+            },
+          });
+
+          dispatch({
+            type: AIRDCPP_RESULT_DOWNLOAD_INITIATED,
+            downloadResult,
+            bundleDBImportResult,
+          });
           
+          dispatch({
+            type: IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
+            comicBookDetail: bundleDBImportResult.data,
+            IMS_inProgress: false,
+          });
+
         }
       } catch (error) {
         throw error;

@@ -69,7 +69,24 @@ export const Downloads = (props: IDownloadsProps): ReactElement => {
                     margin: "0 0 8px 0",
                   }} />
 
-                <pre>{JSON.stringify(bundle.acquisition.directconnect.downloads, null, 2)}</pre>
+                  <table className="table is-size-7">
+                    <tr>
+                      <th>Name</th>
+                      <th>Size</th>
+                      <th>Type</th>
+                      <th>Bundle ID</th>
+                    </tr>
+
+                    {bundle.acquisition.directconnect.downloads.map((bundle) => {
+                      return(<tr>
+                        <td>{bundle.name}</td>
+                        <td>{bundle.size}</td>
+                        <td>{bundle.type.str}</td>
+                        <td>{bundle.bundleId}</td>
+                      </tr>)
+                    })}
+                  </table>
+                {/* <pre>{JSON.stringify(bundle.acquisition.directconnect.downloads, null, 2)}</pre> */}
               </>
             })}
           </div>

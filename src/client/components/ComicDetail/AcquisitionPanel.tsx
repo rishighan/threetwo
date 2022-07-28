@@ -18,7 +18,7 @@ import { isEmpty, isNil, map } from "lodash";
 import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
 interface IAcquisitionPanelProps {
   query: any;
-  comicObjectid: any;
+  comicObjectId: any;
   comicObject: any;
   settings: any;
 }
@@ -93,13 +93,12 @@ export const AcquisitionPanel = (
 
   // download via AirDC++
   const downloadDCPPResult = useCallback(
-    (searchInstanceId, resultId, comicBookObjectId, comicObject) => {
+    (searchInstanceId, resultId, name, size, type) => {
       dispatch(
         downloadAirDCPPItem(
-          searchInstanceId,
-          resultId,
-          comicBookObjectId,
-          comicObject,
+          searchInstanceId, resultId,
+          props.comicObjectId,
+          name, size, type,
           airDCPPConfiguration.airDCPPState.socket,
           {
             username: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.username}`,
@@ -110,7 +109,7 @@ export const AcquisitionPanel = (
       // this is to update the download count badge on the downloads tab
       dispatch(
         getBundlesForComic(
-          comicBookObjectId,
+          props.comicObjectId,
           airDCPPConfiguration.airDCPPState.socket,
           {
             username: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.username}`,
@@ -245,7 +244,6 @@ export const AcquisitionPanel = (
               </thead>
               <tbody>
                 {map(airDCPPSearchResults, ({ result }, idx) => {
-                  console.log(result);
                   return (
                     <tr
                       key={idx}
@@ -302,8 +300,9 @@ export const AcquisitionPanel = (
                             downloadDCPPResult(
                               searchInstance.id,
                               result.id,
-                              props.comicObjectid,
-                              props.comicObject,
+                              result.name,
+                              result.size,
+                              result.type,
                             )
                           }
                         >
