@@ -73,7 +73,7 @@ const Navbar: React.FunctionComponent = (props) => {
             <a className="navbar-link is-arrowless">
               <i className="fa-solid fa-download"></i>
               {downloadProgressTick && (
-                <i className="fa-regular fa-circle-dot ml-2 "></i>
+                <div className="pulsating-circle"></div>
               )}
             </a>
             {!isUndefined(downloadProgressTick) ? (

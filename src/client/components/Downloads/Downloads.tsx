@@ -61,10 +61,11 @@ export const Downloads = (props: IDownloadsProps): ReactElement => {
               return <>
                 <MetadataPanel
                   data={bundle}
-                  imageStyle={{ maxWidth: 100 }}
+                  imageStyle={{ maxWidth: 80 }}
                   titleStyle={{ fontSize: "0.8rem" }}
                   tagsStyle={{ fontSize: "0.7rem" }}
                   containerStyle={{
+                    maxWidth: 400,
                     padding: 0,
                     margin: "0 0 8px 0",
                   }} />

@@ -42,7 +42,7 @@ const AirDCPPSocketComponent = (): ReactElement => {
           "queue_bundle_added",
           async (data) => {
             console.log("JEMEN:", data);
-            
+
 
           }
         );
@@ -59,10 +59,12 @@ const AirDCPPSocketComponent = (): ReactElement => {
         );
         // download complete listener
         await airDCPPConfiguration.airDCPPState.socket.addListener(
-          `transfers`,
-          "transfer_completed",
-          async (transferData) => {
-            console.log(transferData)
+          `queue`,
+          "queue_bundle_status",
+          async (bundleData) => {
+            if (bundleData.status.completed && bundleData.status.downloaded) {
+              console.log("IM THE MAN UP IN THIS")
+            }
           },
         );
         console.log(
