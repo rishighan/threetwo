@@ -63,6 +63,7 @@ const AirDCPPSocketComponent = (): ReactElement => {
           "queue_bundle_status",
           async (bundleData) => {
             if (bundleData.status.completed && bundleData.status.downloaded) {
+              // dispatch the action for raw import, with the metadata
               console.log("IM THE MAN UP IN THIS")
             }
           },
