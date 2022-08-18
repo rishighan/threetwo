@@ -7,6 +7,7 @@ import {
   IMS_RAW_IMPORT_FAILED,
   IMS_RECENT_COMICS_FETCHED,
   IMS_WANTED_COMICS_FETCHED,
+  WANTED_COMICS_FETCHED,
   IMS_CV_METADATA_IMPORT_SUCCESSFUL,
   IMS_CV_METADATA_IMPORT_FAILED,
   IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
@@ -206,6 +207,7 @@ function fileOpsReducer(state = initialState, action) {
         SSCallInProgress: false,
       };
     }
+    
     case SS_SEARCH_FAILED: {
       return {
         ...state,

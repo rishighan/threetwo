@@ -288,7 +288,7 @@ export const searchIssue = (query, options) => async (dispatch) => {
     method: "POST",
     data: { ...query, ...options },
   });
-
+ console.log("options", options);
   if (response.data.code === 404) {
     dispatch({
       type: SS_SEARCH_FAILED,

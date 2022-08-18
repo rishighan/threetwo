@@ -16,6 +16,7 @@ interface IMetadatPanelProps {
   containerStyle: any;
 }
 export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
+  console.log(props)
   const {
     rawFileDetails,
     inferredMetadata,

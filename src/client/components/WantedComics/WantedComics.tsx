@@ -8,7 +8,7 @@ import MetadataPanel from "../shared/MetadataPanel";
 
 export const WantedComics = (props): ReactElement => {
   const wantedComics = useSelector(
-    (state: RootState) => state.fileOps.librarySearchResults,
+    (state: RootState) => state.fileOps.librarySearchResultsFormatted,
   );
   const dispatch = useDispatch();
   useEffect(() => {
@@ -27,70 +27,70 @@ export const WantedComics = (props): ReactElement => {
       ),
     );
   }, []);
-  const columnData = useMemo(
-    () => [
-      {
-        Header: "Comic Information",
-        columns: [
-          {
-            Header: "Details",
-            id: "comicDetails",
-            minWidth: 350,
-            accessor: "_source",
-            Cell: ({ value }) => <MetadataPanel data={value} />,
+
+  const columnData = [
+    {
+      header: "Comic Information",
+      columns: [
+        {
+          header: "Details",
+          id: "comicDetails",
+          minWidth: 350,
+          accessorFn: data => data,
+          cell: (value) => <MetadataPanel data={value.getValue()} />,
+        },
+      ],
+    },
+    {
+      header: "Download Status",
+      columns: [
+        {
+          header: "Files",
+          accessorKey: "acquisition",
+          align: "right",
+          cell: props => {
+            const { directconnect: { downloads } } = props.getValue();
+            return (
+              <div
+                style={{
+                  display: "flex",
+                  // flexDirection: "column",
+                  justifyContent: "center",
+                }}
+              >
+                {downloads.length > 0 ? (
+                  <span className="tag is-warning">
+                    {downloads.length}
+                  </span>
+                ) : null}
+              </div>
+            );
           },
-        ],
-      },
-      {
-        Header: "Download Status",
-        columns: [
-          {
-            Header: "Files",
-            accessor: "_source.acquisition.directconnect",
-            align: "right",
-            Cell: (props) => {
-              return (
-                <div
-                  style={{
-                    display: "flex",
-                    // flexDirection: "column",
-                    justifyContent: "center",
-                  }}
-                >
-                  {props.cell.value.length > 0 ? (
-                    <span className="tag is-warning">
-                      {props.cell.value.length}
-                    </span>
-                  ) : null}
-                </div>
-              );
-            },
-          },
-          {
-            Header: "Type",
-            id: "Air",
-          },
-          {
-            Header: "Type",
-            id: "dcc",
-          },
-        ],
-      },
-    ],
-    [],
-  );
+        },
+        {
+          header: "Type",
+          id: "Air",
+        },
+        {
+          header: "Type",
+          id: "dcc",
+        },
+      ],
+    },
+  ];
+
   return (
     <section className="container">
       <div className="section">
         <h1 className="title">Wanted Comics</h1>
         {/* Search bar */}
         <SearchBar />
-        {!isUndefined(wantedComics.hits) && (
+        {!isEmpty(wantedComics) && (
           <div>
             <div className="library">
               <T2Table
-                rowData={wantedComics.hits.hits}
-                totalPages={wantedComics.hits.total.value}
+                rowData={wantedComics}
+                totalPages={wantedComics.length}
                 columns={columnData}
               // paginationHandlers={{
               //   nextPage: goToNextPage,

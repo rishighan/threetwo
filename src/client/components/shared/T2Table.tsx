@@ -14,13 +14,12 @@ export const T2Table = (tableOptions): ReactElement => {
     useState(false);
   const togglePageSizeDropdown = () =>
     collapsePageSizeDropdown(!isPageSizeDropdownCollapsed);
-  console.log(rowData);
-    const table = useReactTable({
-      data: rowData,
-      columns,
-      getCoreRowModel: getCoreRowModel(),
-    })
-  
+  const table = useReactTable({
+    data: rowData,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
   return (
     <>
       <table className="table is-hoverable">
@@ -35,9 +34,9 @@ export const T2Table = (tableOptions): ReactElement => {
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
                 </th>
               ))}
             </tr>
@@ -51,11 +50,11 @@ export const T2Table = (tableOptions): ReactElement => {
                 key={row.id}
                 onClick={() => rowClickHandler(row)}
               >
-                 {row.getVisibleCells().map(cell => (
-                <td key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
+                {row.getVisibleCells().map(cell => (
+                  <td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
               </tr>
             );
           })}
@@ -63,7 +62,7 @@ export const T2Table = (tableOptions): ReactElement => {
       </table>
 
       {/* pagination control */}
-      
+
     </>
   );
 };

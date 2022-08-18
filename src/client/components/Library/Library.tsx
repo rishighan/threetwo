@@ -65,7 +65,6 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
   const WantedStatus = ({ value }) => {
     return !value ? <span className="tag is-info is-light">Wanted</span> : null;
   };
-
   const columns =  [
       {
         header: "Comic Metadata",
