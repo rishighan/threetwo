@@ -31,6 +31,7 @@ export const SearchBar = (data: ISearchBarProps): ReactElement => {
               from: 0,
             },
             type: "volumeName",
+            trigger: "globalSearchBar"
           },
         ),
       );

@@ -44,7 +44,7 @@ const initialState = {
   extractedComicBookArchive: [],
   recentComics: [],
   wantedComics: [],
-  librarySearchResults: [],
+  libraryComics: [],
   librarySearchResultsFormatted: [],
   librarySearchResultCount: 0,
   libraryQueueResults: [],
@@ -190,12 +190,13 @@ function fileOpsReducer(state = initialState, action) {
     case SS_SEARCH_RESULTS_FETCHED: {
       return {
         ...state,
-        librarySearchResults: action.data,
+        libraryComics: action.data,
         SSCallInProgress: false,
       };
     }
     case SS_SEARCH_RESULTS_FETCHED_SPECIAL: {
       const foo = [];
+      console.log(action.data.hits)
       if (!isUndefined(action.data.hits)) {
         map(action.data.hits.hits, ({ _source }) => {
           foo.push(_source);
@@ -204,6 +205,19 @@ function fileOpsReducer(state = initialState, action) {
       return {
         ...state,
         librarySearchResultsFormatted: foo,
+        SSCallInProgress: false,
+      };
+    }
+    case WANTED_COMICS_FETCHED: {
+      const foo = [];
+      if (!isUndefined(action.data.hits)) {
+        map(action.data.hits.hits, ({ _source }) => {
+          foo.push(_source);
+        });
+      }
+      return {
+        ...state,
+        wantedComics: foo,
         SSCallInProgress: false,
       };
     }

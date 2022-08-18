@@ -31,6 +31,7 @@ import {
   LS_TOGGLE_IMPORT_QUEUE,
   SS_SEARCH_FAILED,
   SS_SEARCH_RESULTS_FETCHED_SPECIAL,
+  WANTED_COMICS_FETCHED,
 } from "../constants/action-types";
 import { success } from "react-notification-system-redux";
 import { removeLeadingPeriod } from "../shared/utils/formatting.utils";
@@ -288,21 +289,40 @@ export const searchIssue = (query, options) => async (dispatch) => {
     method: "POST",
     data: { ...query, ...options },
   });
- console.log("options", options);
+
   if (response.data.code === 404) {
     dispatch({
       type: SS_SEARCH_FAILED,
       data: response.data,
     });
   }
-  dispatch({
-    type: SS_SEARCH_RESULTS_FETCHED,
-    data: response.data.body,
-  });
-  dispatch({
-    type: SS_SEARCH_RESULTS_FETCHED_SPECIAL,
-    data: response.data.body,
-  });
+
+  switch (options.trigger) {
+    case "wantedComicsPage":
+      dispatch({
+        type: WANTED_COMICS_FETCHED,
+        data: response.data.body,
+      });
+      break;
+    case "globalSearchBar":
+      dispatch({
+        type: SS_SEARCH_RESULTS_FETCHED_SPECIAL,
+        data: response.data.body,
+      });
+      break;
+
+    case "libraryPage":
+      dispatch({
+        type: SS_SEARCH_RESULTS_FETCHED,
+        data: response.data.body,
+      });
+      break;
+
+    default:
+      break;
+  }
+
+
 };
 export const analyzeImage =
   (imageFilePath: string | Buffer) => async (dispatch) => {

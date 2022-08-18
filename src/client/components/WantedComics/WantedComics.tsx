@@ -8,7 +8,7 @@ import MetadataPanel from "../shared/MetadataPanel";
 
 export const WantedComics = (props): ReactElement => {
   const wantedComics = useSelector(
-    (state: RootState) => state.fileOps.librarySearchResultsFormatted,
+    (state: RootState) => state.fileOps.wantedComics,
   );
   const dispatch = useDispatch();
   useEffect(() => {
@@ -23,6 +23,7 @@ export const WantedComics = (props): ReactElement => {
             from: 0,
           },
           type: "wanted",
+          trigger: "wantedComicsPage"
         },
       ),
     );

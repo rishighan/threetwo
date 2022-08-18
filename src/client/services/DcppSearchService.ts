@@ -2,7 +2,6 @@ import { Socket } from "airdcpp-apisocket";
 
 class AirDCPPSocket {
   constructor(configuration) {
-    console.log(configuration);
     let socketProtocol = "";
     if (configuration.protocol === "https") {
       socketProtocol = "wss";

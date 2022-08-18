@@ -18,13 +18,14 @@ const LibraryContainer = (): ReactElement => {
             from: 0,
           },
           type: "all",
+          trigger: "libraryPage"
         },
       ),
     );
   }, []);
 
   const searchResults = useSelector(
-    (state: RootState) => state.fileOps.librarySearchResults,
+    (state: RootState) => state.fileOps.libraryComics,
   );
   const searchError = useSelector(
     (state: RootState) => state.fileOps.librarySearchError,
