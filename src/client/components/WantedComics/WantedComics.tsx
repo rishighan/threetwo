@@ -68,8 +68,14 @@ export const WantedComics = (props): ReactElement => {
           },
         },
         {
-          header: "Type",
-          id: "Air",
+          header: "Download Details",
+          id: "downloadDetails",
+          accessorKey: "acquisition",
+          cell: data => <ol>
+            {data.getValue().directconnect.downloads.map(download => {
+              return <li className="is-size-7">{download.name}</li>;
+            })}
+          </ol>
         },
         {
           header: "Type",

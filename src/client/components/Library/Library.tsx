@@ -99,12 +99,12 @@ export const Library = (data: IComicBookLibraryProps): ReactElement => {
           {
             header: "Publisher",
             accessorKey:
-              "_source.sourcedMetadata.comicvine.volumeInformation.publisher",
+              "_source.sourcedMetadata.comicvine.volumeInformation",
             cell: info => {
               return (
                 !isNil(info.getValue()) && (
                   <h6 className="is-size-7 has-text-weight-bold">
-                    {info.getValue().rawFileDetails.name}
+                    { info.getValue().publisher.name }
                   </h6>
                 )
               );
