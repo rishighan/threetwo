@@ -83,7 +83,7 @@ export const Downloads = (props: IDownloadsProps): ReactElement => {
                         <td>{bundle.name}</td>
                         <td>{bundle.size}</td>
                         <td>{bundle.type.str}</td>
-                        <td>{bundle.bundleId}</td>
+                        <td><span className="tag is-warning">{bundle.bundleId}</span></td>
                       </tr>)
                     })}
                   </table>
