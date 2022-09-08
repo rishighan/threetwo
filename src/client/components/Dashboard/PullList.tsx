@@ -20,7 +20,7 @@ export const PullList = ({ issues }: PullListProps): ReactElement => {
   useEffect(() => {
     dispatch(
       getWeeklyPullList({
-        startDate: "2022-8-9",
+        startDate: "2022-9-19",
         pageSize: "15",
         currentPage: "1",
       }),

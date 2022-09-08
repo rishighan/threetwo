@@ -25,7 +25,7 @@ export const AirDCPPSettingsForm = (): ReactElement => {
     airDCPPSettings.setSettings({});
     dispatch(deleteSettings());
   }, []);
-  const validate = async () => {};
+  const validate = async () => { };
   const initFormData = !isUndefined(
     airDCPPSettings.airDCPPState.settings.directConnect,
   )
@@ -58,6 +58,14 @@ export const AirDCPPSettingsForm = (): ReactElement => {
                   component="input"
                   className="input"
                   placeholder="AirDC++ host IP / hostname"
+                />
+              </p>
+              <p className="control">
+                <Field
+                  name="port"
+                  component="input"
+                  className="input"
+                  placeholder="AirDC++ port"
                 />
               </p>
             </div>
