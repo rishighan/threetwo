@@ -16,7 +16,6 @@ export const saveSettings =
       method: "POST",
       data: { settingsPayload, settingsObjectId },
     });
-    console.log(result.data);
     dispatch({
       type: SETTINGS_OBJECT_FETCHED,
       data: result.data,

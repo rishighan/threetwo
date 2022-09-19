@@ -4,11 +4,25 @@ import { useDispatch } from "react-redux";
 import { saveSettings, deleteSettings } from "../../actions/settings.actions";
 import { AirDCPPSettingsConfirmation } from "./AirDCPPSettingsConfirmation";
 import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
-import { isUndefined, isEmpty } from "lodash";
+import { isUndefined, isEmpty, isNil } from "lodash";
 
 export const AirDCPPSettingsForm = (): ReactElement => {
   const dispatch = useDispatch();
   const airDCPPSettings = useContext(AirDCPPSocketContext);
+
+  const hostValidator = (hostname: string): string | null => {
+    const hostnameRegex = /[\W]+/gm;
+    try {
+      if (!isUndefined(hostname)) {
+        const matches = hostname.match(hostnameRegex);
+        return (isNil(matches) && matches.length !== 0) ? hostname : "Invalid hostname; it should not contain special characters";
+      }
+    }
+    catch {
+      return null;
+    }
+
+  }
   const onSubmit = useCallback(async (values) => {
     try {
       airDCPPSettings.setSettings(values);
@@ -52,14 +66,18 @@ export const AirDCPPSettingsForm = (): ReactElement => {
                   </Field>
                 </span>
               </p>
-              <p className="control is-expanded">
+              <div className="control is-expanded">
                 <Field
                   name="hostname"
-                  component="input"
-                  className="input"
-                  placeholder="AirDC++ host IP / hostname"
-                />
-              </p>
+                  validate={hostValidator}>
+                  {({ input, meta }) => (
+                    <div>
+                      <input {...input} type="text" placeholder="AirDC++ hostname" className="input" />
+                      {meta.error && meta.touched && <span className="is-size-7 has-text-danger">{meta.error}</span>}
+                    </div>
+                  )}
+                </Field>
+              </div>
               <p className="control">
                 <Field
                   name="port"
