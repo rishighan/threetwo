@@ -21,8 +21,8 @@ export const AirDCPPSettingsForm = (): ReactElement => {
     catch {
       return null;
     }
-
   }
+  
   const onSubmit = useCallback(async (values) => {
     try {
       airDCPPSettings.setSettings(values);

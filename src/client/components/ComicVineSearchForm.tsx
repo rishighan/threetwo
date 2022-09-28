@@ -1,22 +1,32 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Form, Field } from "react-final-form";
 import Collapsible from "react-collapsible";
+import { fetchComicVineMatches } from "../actions/fileops.actions";
+import { useDispatch } from "react-redux";
+import { refineQuery } from "filename-parser";
 
 /**
- * Component for accepting ComicVine search parameters
+ * Component for performing search against ComicVine
  *
  * @component
  * @example
- * const age = 21
- * const name = 'Jitendra Nirnejak'
  * return (
- *   <User age={age} name={name} />
+ *   <ComicVineSearchForm data={rawFileDetails} />
  * )
  */
-export const ComicVineSearchForm = () => {
-  const onSubmit = () => {
-    return true;
-  };
+export const ComicVineSearchForm = (data) => {
+  const dispatch = useDispatch();
+  const onSubmit = useCallback((value) => {
+    const userInititatedQuery = {
+      inferredIssueDetails: {
+        name: value.issueName,
+        number: value.issueNumber,
+        subtitle: "",
+        year: value.issueYear,
+      }
+    }
+    dispatch(fetchComicVineMatches(data, userInititatedQuery));
+  }, []);
   const validate = () => {
     return true;
   };
@@ -28,7 +38,7 @@ export const ComicVineSearchForm = () => {
       render={({ handleSubmit }) => (
         <form onSubmit={handleSubmit}>
           <span className="field is-normal">
-            <label className="label">Issue Details</label>
+            <label className="label mb-2 is-size-5">Search Manually</label>
           </span>
           <div className="field is-horizontal">
             <div className="field-body">
@@ -64,6 +74,23 @@ export const ComicVineSearchForm = () => {
                     </p>
                   )}
                 </Field>
+
+                <div className="field">
+                  <Field name="issueYear">
+                    {(props) => (
+                      <p className="control is-expanded has-icons-left">
+                        <input
+                          {...props.input}
+                          className="input is-normal"
+                          placeholder="Type the issue year"
+                        />
+                        <span className="icon is-small is-left">
+                          <i className="fas fa-hashtag"></i>
+                        </span>
+                      </p>
+                    )}
+                  </Field>
+                </div>
               </div>
             </div>
           </div>
@@ -89,16 +116,7 @@ export const ComicVineSearchForm = () => {
     />
   );
 
-  return (
-    <Collapsible
-      trigger={"Match Manually"}
-      triggerTagName="a"
-      triggerClassName={"is-size-6"}
-      triggerOpenedClassName={"is-size-6"}
-    >
-      <MyForm />
-    </Collapsible>
-  );
+  return <MyForm />;
 };
 
 export default ComicVineSearchForm;

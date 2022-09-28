@@ -5,6 +5,7 @@ import Card from "../Carda";
 import { ComicVineMatchPanel } from "./ComicVineMatchPanel";
 
 import { RawFileDetails } from "./RawFileDetails";
+import { ComicVineSearchForm } from "../ComicVineSearchForm";
 
 import TabControls from "./TabControls";
 import { EditMetadataPanel } from "./EditMetadataPanel";
@@ -40,6 +41,15 @@ type ComicDetailProps = {};
  */
 
 export const ComicDetail = (data: ComicDetailProps): ReactElement => {
+  const {
+    data: {
+      _id,
+      rawFileDetails,
+      inferredMetadata,
+      sourcedMetadata: { comicvine, locg, comicInfo },
+    },
+    userSettings,
+  } = data;
   const [page, setPage] = useState(1);
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
@@ -67,9 +77,10 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     dispatch(extractComicArchive(filePath));
   }, []);
 
-  const afterOpenModal = useCallback(() => {
+  const afterOpenModal = useCallback((things) => {
     // references are now sync'd and can be accessed.
     // subtitle.style.color = "#f00";
+    console.log(things);
   }, []);
 
   const closeModal = useCallback(() => {
@@ -79,9 +90,21 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   // sliding panel init
   const contentForSlidingPanel = {
     CVMatches: {
-      content: () => {
-        if (!comicVineAPICallProgress) {
-          return (
+      content: (props) => (
+        <>
+          <div className="card search-criteria-card">
+            <div className="card-content">
+              <ComicVineSearchForm data={rawFileDetails}/>
+            </div>
+          </div>
+          <p className="is-size-5 mt-3 mb-2 ml-3">Searching for:</p>
+          {inferredMetadata.issue ? (
+            <div className="ml-3">
+              <span className="tag mr-3">{inferredMetadata.issue.name} </span>
+              <span className="tag"> # {inferredMetadata.issue.number} </span>
+            </div>
+          ) : null}
+          {!comicVineAPICallProgress ? (
             <ComicVineMatchPanel
               props={{
                 comicVineSearchQueryObject,
@@ -89,11 +112,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                 comicVineSearchResults,
                 comicObjectId,
               }}
-            />
-          );
-        } else {
-          return (
-            <div className="progress-indicator-container">
+            />) : (<div className="progress-indicator-container" >
               <div className="indicator">
                 <Loader
                   type="MutatingDots"
@@ -104,24 +123,16 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                   visible={comicVineAPICallProgress}
                 />
               </div>
-            </div>
-          );
-        }
-      },
+            </div >)}
+        </>),
     },
+
+
     editComicBookMetadata: {
       content: () => <EditMetadataPanel />,
     },
   };
-  const {
-    data: {
-      _id,
-      rawFileDetails,
-      inferredMetadata,
-      sourcedMetadata: { comicvine, locg, comicInfo },
-    },
-    userSettings,
-  } = data;
+  
 
   // check for the availability of CV metadata
   const isComicBookMetadataAvailable =

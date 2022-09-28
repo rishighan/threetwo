@@ -18,7 +18,6 @@ export const Menu = (props): ReactElement => {
     } else if (!isEmpty(data.sourcedMetadata)) {
       issueSearchQuery = refineQuery(data.sourcedMetadata.comicvine.name);
     }
-
     dispatch(fetchComicVineMatches(data, issueSearchQuery, seriesSearchQuery));
     setSlidingPanelContentId("CVMatches");
     setVisible(true);

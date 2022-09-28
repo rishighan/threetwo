@@ -194,6 +194,7 @@ export const fetchVolumeGroups = () => async (dispatch) => {
 };
 export const fetchComicVineMatches =
   (searchPayload, issueSearchQuery, seriesSearchQuery?) => async (dispatch) => {
+    console.log(issueSearchQuery);
     try {
       dispatch({
         type: CV_API_CALL_IN_PROGRESS,
@@ -223,7 +224,6 @@ export const fetchComicVineMatches =
           },
         })
         .then((response) => {
-          console.log(response);
           let matches: any = [];
           if (
             !isNil(response.data.results) &&
@@ -233,7 +233,6 @@ export const fetchComicVineMatches =
           } else {
             matches = response.data.map((match) => match);
           }
-          console.log(matches);
           dispatch({
             type: CV_SEARCH_SUCCESS,
             searchResults: matches,
