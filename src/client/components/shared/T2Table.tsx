@@ -4,21 +4,38 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   useReactTable,
+  PaginationState,
 } from "@tanstack/react-table";
 
 export const T2Table = (tableOptions): ReactElement => {
-  const { rowData, columns, paginationHandlers, totalPages, rowClickHandler } =
+  const { rowData, columns, paginationHandlers: { nextPage, previousPage }, totalPages, rowClickHandler } =
     tableOptions;
-  const [isPageSizeDropdownCollapsed, collapsePageSizeDropdown] =
-    useState(false);
-  const togglePageSizeDropdown = () =>
-    collapsePageSizeDropdown(!isPageSizeDropdownCollapsed);
+  
   const table = useReactTable({
     data: rowData,
     columns,
+    manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    pageCount: totalPages,
+    // getPaginationRowModel: getPaginationRowModel(),
   });
+
+  const [{ pageIndex, pageSize }, setPagination] =
+    React.useState<PaginationState>({
+      pageIndex: 0,
+      pageSize: 10,
+    })
+
+  const pagination = React.useMemo(
+    () => ({
+      pageIndex,
+      pageSize,
+    }),
+    [pageIndex, pageSize]
+  )
 
   return (
     <>
@@ -62,6 +79,12 @@ export const T2Table = (tableOptions): ReactElement => {
       </table>
 
       {/* pagination control */}
+      <nav className="pagination">
+        {table.getState().pagination.pageIndex + 1}
+        
+        <div className="button" onClick={() => table.nextPage()}> Next Page </div>
+        <div className="button" onClick={previousPage}> Previous Page</div>
+      </nav>
 
     </>
   );

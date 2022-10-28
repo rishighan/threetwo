@@ -77,14 +77,9 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
                   </div>
                 )}
               </div>
-              
+
             </div>
-            <div className="control">
-              <div className="tags has-addons">
-                <span className="tag is-light is-success">Path</span>
-                <span className="tag is-warning is-light">{rawFileDetails.containedIn}</span>
-              </div>
-              </div>
+            
           </dd>
         </dl>
       ),
@@ -218,7 +213,7 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
                   orientation={"vertical"}
                   hasDetails={false}
                   imageStyle={props.imageStyle}
-                  // cardContainerStyle={{ maxWidth: 200 }}
+                // cardContainerStyle={{ maxWidth: 200 }}
                 />
               </div>
               <div className="column">{metadataPanel.content()}</div>

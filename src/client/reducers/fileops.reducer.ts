@@ -188,6 +188,7 @@ function fileOpsReducer(state = initialState, action) {
     }
 
     case SS_SEARCH_RESULTS_FETCHED: {
+      console.log(action.data);
       return {
         ...state,
         libraryComics: action.data,
@@ -196,7 +197,6 @@ function fileOpsReducer(state = initialState, action) {
     }
     case SS_SEARCH_RESULTS_FETCHED_SPECIAL: {
       const foo = [];
-      console.log(action.data.hits)
       if (!isUndefined(action.data.hits)) {
         map(action.data.hits.hits, ({ _source }) => {
           foo.push(_source);

@@ -411,10 +411,18 @@ pre {
 }
 // Library
 .sticky {
-  position: sticky;
-  top: 57px;
-  z-index: 2;
   background: #fffffc;
+  position: sticky;
+  top: 107px;
+  z-index: 5;
+
+  .title {
+    background: #fffffc;
+    position: relative;
+    top: -56px;
+    z-index: 99999;
+    padding-top: 20px;
+  }
 }
 
 .library {
@@ -423,7 +431,7 @@ pre {
     width: 100%;
     thead {
       position: sticky;
-      top: 146px;
+      top: 176px;
       z-index: 1;
       background: #fffffc;
       min-height: 130px;
