@@ -21,6 +21,7 @@ export const SearchBar = (): ReactElement => {
             from: 0,
           },
           type: "volumeName",
+          trigger: "libraryPage",
         },
       ),
     );

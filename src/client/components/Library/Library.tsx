@@ -48,10 +48,15 @@ export const Library = (): ReactElement => {
   const T2Table = (tableOptions): ReactElement => {
     const { columns, totalPages, rowClickHandler } =
       tableOptions;
-
+      const [{ pageIndex, pageSize }, setPagination] =
+      React.useState<PaginationState>({
+        pageIndex: 1,
+        pageSize: 25,
+      })
 
     // pagination methods
     const goToNextPage = useCallback((pageIndex, pageSize) => {
+      table.setPageIndex(pageSize);
       dispatch(
         searchIssue(
           {
@@ -71,6 +76,8 @@ export const Library = (): ReactElement => {
 
 
     const goToPreviousPage = useCallback((pageIndex, pageSize) => {
+      console.log("papsdas", pageIndex);
+      // table.setPageIndex(pageIndex + 1)
       let from = 0;
       if (pageIndex === 2) {
         from = (pageIndex - 1) * pageSize + 2 - 27;
@@ -109,6 +116,18 @@ export const Library = (): ReactElement => {
 
     return (
       <>
+      {/* pagination control */}
+      <nav className="pagination">
+        {pageIndex }
+          <div className="field has-addons">
+            <p className="control">
+              <div className="button" onClick={() => goToNextPage(table.getState().pagination.pageIndex + 1, 25)}> Next Page </div>
+            </p>
+            <p className="control">
+              <div className="button" onClick={() => goToPreviousPage(table.getState().pagination.pageIndex, 25)}> Previous Page</div>
+            </p>
+          </div>
+        </nav>
         <table className="table is-hoverable">
           <thead>
             {table.getHeaderGroups().map((headerGroup, idx) => (
@@ -148,18 +167,7 @@ export const Library = (): ReactElement => {
           </tbody>
         </table>
 
-        {/* pagination control */}
-        <nav className="pagination">
-          {table.getState().pagination.pageIndex + 1}
-          <div className="field has-addons">
-            <p className="control">
-              <div className="button" onClick={() => goToNextPage(table.getState().pagination.pageIndex + 1, 25)}> Next Page </div>
-            </p>
-            <p className="control">
-              <div className="button" > Previous Page</div>
-            </p>
-          </div>
-        </nav>
+        
 
       </>
     );
@@ -281,6 +289,7 @@ export const Library = (): ReactElement => {
           <h1 className="title">Library</h1>
           {/* Search bar */}
           <SearchBar />
+          
         </div>
         {!isUndefined(searchResults.hits) && (
           <div>
