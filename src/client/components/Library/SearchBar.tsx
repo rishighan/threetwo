@@ -26,14 +26,14 @@ export const SearchBar = (): ReactElement => {
     );
   }, []);
   return (
-    <div className="sticky">
+    <div className="sticky box column is-half">
       <Form
         onSubmit={handleSubmit}
         initialValues={{}}
         render={({ handleSubmit, form, submitting, pristine, values }) => (
           <form onSubmit={handleSubmit}>
             <div className="field is-grouped">
-              <div className="control search">
+              <div className="control search is-expanded">
                 <Field name="search">
                   {({ input, meta }) => {
                     return (

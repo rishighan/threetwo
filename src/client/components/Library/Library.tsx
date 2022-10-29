@@ -277,9 +277,11 @@ export const Library = (): ReactElement => {
   return (
     <section className="container">
       <div className="section">
-        <div className="sticky"><h1 className="title">Library</h1></div>
-        {/* Search bar */}
-        <SearchBar />
+        <div className="header-area sticky">
+          <h1 className="title">Library</h1>
+          {/* Search bar */}
+          <SearchBar />
+        </div>
         {!isUndefined(searchResults.hits) && (
           <div>
             <div className="library">
