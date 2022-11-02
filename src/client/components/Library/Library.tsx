@@ -35,7 +35,7 @@ export const Library = (): ReactElement => {
         },
         {
           pagination: {
-            size: 25,
+            size: 15,
             from: 0,
           },
           type: "all",
@@ -44,19 +44,33 @@ export const Library = (): ReactElement => {
       ),
     );
   }, []);
+  const [{ pageIndex, pageSize }, setPagination] =
+    React.useState<PaginationState>({
+      pageIndex: 1,
+      pageSize: 15,
+    });
+
+
+  const pagination = React.useMemo(
+    () => ({
+      pageIndex,
+      pageSize,
+    }),
+    [pageIndex, pageSize]
+  );
 
   const T2Table = (tableOptions): ReactElement => {
     const { columns, totalPages, rowClickHandler } =
       tableOptions;
-      const [{ pageIndex, pageSize }, setPagination] =
-      React.useState<PaginationState>({
-        pageIndex: 1,
-        pageSize: 25,
-      })
+
+
 
     // pagination methods
-    const goToNextPage = useCallback((pageIndex, pageSize) => {
-      table.setPageIndex(pageSize);
+    const goToNextPage = useCallback(() => {
+      setPagination({
+        pageIndex: pageIndex + 1,
+        pageSize,
+      });
       dispatch(
         searchIssue(
           {
@@ -75,14 +89,16 @@ export const Library = (): ReactElement => {
     }, []);
 
 
-    const goToPreviousPage = useCallback((pageIndex, pageSize) => {
-      console.log("papsdas", pageIndex);
-      // table.setPageIndex(pageIndex + 1)
+    const goToPreviousPage = useCallback(() => {
+      setPagination({
+        pageIndex: pageIndex - 1,
+        pageSize,
+      }); 
       let from = 0;
       if (pageIndex === 2) {
-        from = (pageIndex - 1) * pageSize + 2 - 27;
+        from = (pageIndex - 1) * pageSize + 2 - 17;
       } else {
-        from = (pageIndex - 1) * pageSize + 2 - 26;
+        from = (pageIndex - 1) * pageSize + 2 - 16;
       }
       dispatch(
         searchIssue(
@@ -101,14 +117,19 @@ export const Library = (): ReactElement => {
       );
     }, []);
 
+
+
+
     const table = useReactTable({
       data: searchResults.hits.hits,
       columns,
       manualPagination: true,
       getCoreRowModel: getCoreRowModel(),
-
-      getFilteredRowModel: getFilteredRowModel(),
-      pageCount: totalPages,
+      pageCount: searchResults?.hits?.hits?.length ?? -1,
+      state: {
+        pagination,
+      },
+      onPaginationChange: setPagination,
       // getPaginationRowModel: getPaginationRowModel(),
 
       debugTable: true,
@@ -116,15 +137,15 @@ export const Library = (): ReactElement => {
 
     return (
       <>
-      {/* pagination control */}
-      <nav className="pagination">
-        {pageIndex }
+        {/* pagination control */}
+        <nav className="pagination">
+          {JSON.stringify(pagination)}
           <div className="field has-addons">
             <p className="control">
-              <div className="button" onClick={() => goToNextPage(table.getState().pagination.pageIndex + 1, 25)}> Next Page </div>
+              <div className="button" onClick={() => goToNextPage()}> Next Page </div>
             </p>
             <p className="control">
-              <div className="button" onClick={() => goToPreviousPage(table.getState().pagination.pageIndex, 25)}> Previous Page</div>
+              <div className="button" onClick={() => goToPreviousPage()}> Previous Page</div>
             </p>
           </div>
         </nav>
@@ -166,9 +187,6 @@ export const Library = (): ReactElement => {
             })}
           </tbody>
         </table>
-
-        
-
       </>
     );
   };
@@ -220,7 +238,7 @@ export const Library = (): ReactElement => {
   const WantedStatus = ({ value }) => {
     return !value ? <span className="tag is-info is-light">Wanted</span> : null;
   };
-  const columns = [
+  const columns = React.useMemo(() => [
     {
       header: "Comic Metadata",
       footer: 1,
@@ -275,7 +293,7 @@ export const Library = (): ReactElement => {
         },
       ],
     }
-  ]
+  ], []);
 
   // ImportStatus.propTypes = {
   //   value: PropTypes.bool.isRequired,
@@ -289,7 +307,7 @@ export const Library = (): ReactElement => {
           <h1 className="title">Library</h1>
           {/* Search bar */}
           <SearchBar />
-          
+
         </div>
         {!isUndefined(searchResults.hits) && (
           <div>
