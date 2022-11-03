@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { searchIssue } from "../../actions/fileops.actions";
 import ellipsize from "ellipsize";
 
-
 import {
   ColumnDef,
   flexRender,
@@ -63,8 +62,6 @@ export const Library = (): ReactElement => {
     const { columns, totalPages, rowClickHandler } =
       tableOptions;
 
-
-
     // pagination methods
     const goToNextPage = useCallback(() => {
       setPagination({
@@ -93,7 +90,7 @@ export const Library = (): ReactElement => {
       setPagination({
         pageIndex: pageIndex - 1,
         pageSize,
-      }); 
+      });
       let from = 0;
       if (pageIndex === 2) {
         from = (pageIndex - 1) * pageSize + 2 - 17;
@@ -117,9 +114,6 @@ export const Library = (): ReactElement => {
       );
     }, []);
 
-
-
-
     const table = useReactTable({
       data: searchResults.hits.hits,
       columns,
@@ -130,25 +124,32 @@ export const Library = (): ReactElement => {
         pagination,
       },
       onPaginationChange: setPagination,
-      // getPaginationRowModel: getPaginationRowModel(),
-
-      debugTable: true,
     });
 
     return (
       <>
-        {/* pagination control */}
-        <nav className="pagination">
-          {JSON.stringify(pagination)}
-          <div className="field has-addons">
-            <p className="control">
-              <div className="button" onClick={() => goToNextPage()}> Next Page </div>
-            </p>
-            <p className="control">
-              <div className="button" onClick={() => goToPreviousPage()}> Previous Page</div>
-            </p>
+        <div className="columns table-controls">
+          {/* Search bar */}
+          <div className="column is-half">
+            <SearchBar />
           </div>
-        </nav>
+          {/* pagination control */}
+          <nav className="pagination columns">
+            <div className="box is-size-6 mr-3 mt-2 has-text-weight-semibold has-text-left">
+              <p>Page {pageIndex} of {Math.ceil(totalPages / pageSize)}</p>
+              <p>{totalPages} comics in all</p>
+            </div>
+            <div className="field has-addons">
+
+              <p className="control">
+                <div className="button" onClick={() => goToPreviousPage()}> <i className="fas fa-chevron-left"></i></div>
+              </p>
+              <p className="control">
+                <div className="button" onClick={() => goToNextPage()}> <i className="fas fa-chevron-right"></i> </div>
+              </p>
+            </div>
+          </nav>
+        </div>
         <table className="table is-hoverable">
           <thead>
             {table.getHeaderGroups().map((headerGroup, idx) => (
@@ -261,7 +262,7 @@ export const Library = (): ReactElement => {
             !isEmpty(info.getValue()) ? (
               <ComicInfoXML data={info.getValue()} />
             ) : (
-              <span className="tag">No ComicInfo.xml</span>
+              <span className="tag mt-5">No ComicInfo.xml</span>
             ),
         },
       ],
@@ -303,11 +304,8 @@ export const Library = (): ReactElement => {
   return (
     <section className="container">
       <div className="section">
-        <div className="header-area sticky">
+        <div className="header-area">
           <h1 className="title">Library</h1>
-          {/* Search bar */}
-          <SearchBar />
-
         </div>
         {!isUndefined(searchResults.hits) && (
           <div>

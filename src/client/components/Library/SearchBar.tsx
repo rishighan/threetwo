@@ -27,7 +27,7 @@ export const SearchBar = (): ReactElement => {
     );
   }, []);
   return (
-    <div className="sticky box column is-half">
+    <div className="box">
       <Form
         onSubmit={handleSubmit}
         initialValues={{}}

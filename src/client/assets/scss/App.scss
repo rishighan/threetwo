@@ -410,32 +410,33 @@ pre {
   }
 }
 // Library
-.sticky {
-  background: #fffffc;
-  position: sticky;
-  top: 40px;
-  z-index: 5;
-
-  .title {
-    background: #fffffc;
-    position: relative;
-    top: 0px;
-    z-index: 99999;
-    padding-top: 20px;
-  }
-}
 .header-area {
   width: 100%;
-  padding: 10px 0 15px 0;
+  padding: 25px 0 15px 0;
+  position: sticky;
+  background: #fffffc;
+  top: 50px;
 }
 
 .library {
+  .table-controls {
+    background: #fffffc;
+    justify-content: space-between;
+    position: sticky;
+    top: 126px;
+    padding-bottom: 10px;
+  }
+  .pagination {
+    margin: 0;
+    background: #fffffc;
+  }
+
   table {
     border-collapse: separate;
     width: 100%;
     thead {
       position: sticky;
-      top: 216px;
+      top: 250px;
       z-index: 1;
       background: #fffffc;
       min-height: 130px;
