@@ -43,6 +43,7 @@ export const Library = (): ReactElement => {
       ),
     );
   }, []);
+
   const [{ pageIndex, pageSize }, setPagination] =
     React.useState<PaginationState>({
       pageIndex: 1,
@@ -133,14 +134,13 @@ export const Library = (): ReactElement => {
           <div className="column is-half">
             <SearchBar />
           </div>
-          {/* pagination control */}
+          {/* pagination controls */}
           <nav className="pagination columns">
-            <div className="box is-size-6 mr-3 mt-2 has-text-weight-semibold has-text-left">
-              <p>Page {pageIndex} of {Math.ceil(totalPages / pageSize)}</p>
-              <p>{totalPages} comics in all</p>
+            <div className="mr-4 has-text-weight-semibold has-text-left">
+              <p className="is-size-5">Page {pageIndex} of {Math.ceil(totalPages / pageSize)}</p>
+              {/* <p>{totalPages} comics in all</p> */}
             </div>
             <div className="field has-addons">
-
               <p className="control">
                 <div className="button" onClick={() => goToPreviousPage()}> <i className="fas fa-chevron-left"></i></div>
               </p>
