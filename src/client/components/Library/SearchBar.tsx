@@ -56,26 +56,7 @@ export const SearchBar = (): ReactElement => {
           </form>
         )}
       />
-      {/* <div className="column one-fifth">
-        <div className="field has-addons">
-          <p className="control">
-            <button className="button">
-              <span className="icon is-small">
-                <i className="fa-solid fa-list"></i>
-              </span>
-            </button>
-          </p>
-          <p className="control">
-            <button className="button">
-              <Link to="/library-grid">
-                <span className="icon is-small">
-                  <i className="fa-solid fa-image"></i>
-                </span>
-              </Link>
-            </button>
-          </p>
-        </div>
-      </div> */}
+      
     </div>
   );
 };

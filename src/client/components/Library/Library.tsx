@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { isEmpty, isNil, isUndefined } from "lodash";
 import MetadataPanel from "../shared/MetadataPanel";
 import SearchBar from "./SearchBar";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { searchIssue } from "../../actions/fileops.actions";
 import ellipsize from "ellipsize";
@@ -147,6 +148,25 @@ export const Library = (): ReactElement => {
               <p className="control">
                 <div className="button" onClick={() => goToNextPage()}> <i className="fas fa-chevron-right"></i> </div>
               </p>
+
+        <div className="field has-addons ml-5">
+          <p className="control">
+            <button className="button">
+              <span className="icon is-small">
+                <i className="fa-solid fa-list"></i>
+              </span>
+            </button>
+          </p>
+          <p className="control">
+            <button className="button">
+              <Link to="/library-grid">
+                <span className="icon is-small">
+                  <i className="fa-solid fa-image"></i>
+                </span>
+              </Link>
+            </button>
+          </p>
+        </div>
             </div>
           </nav>
         </div>
