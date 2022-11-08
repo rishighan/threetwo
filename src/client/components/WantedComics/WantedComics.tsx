@@ -105,7 +105,7 @@ export const WantedComics = (props): ReactElement => {
             size: pageSize,
             from: pageSize * pageIndex + 1,
           },
-          type: "all",
+          type: "wanted",
           trigger: "wantedComicsPage",
         },
       ),
@@ -137,7 +137,7 @@ export const WantedComics = (props): ReactElement => {
             size: pageSize,
             from,
           },
-          type: "all",
+          type: "wanted",
           trigger: "wantedComicsPage"
         },
       ),
