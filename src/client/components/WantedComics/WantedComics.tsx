@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useMemo } from "react";
+import React, { ReactElement, useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { searchIssue } from "../../actions/fileops.actions";
 import SearchBar from "../Library/SearchBar";
@@ -86,23 +86,81 @@ export const WantedComics = (props): ReactElement => {
     },
   ];
 
+  /**
+   * Pagination control that fetches the next x (pageSize) items
+   * based on the y (pageIndex) offset from the Elasticsearch index
+   * @param {number} pageIndex
+   * @param {number} pageSize
+   * @returns void
+   *  
+   **/
+  const nextPage = useCallback((pageIndex: number, pageSize: number) => {
+    dispatch(
+      searchIssue(
+        {
+          query: {},
+        },
+        {
+          pagination: {
+            size: pageSize,
+            from: pageSize * pageIndex + 1,
+          },
+          type: "all",
+          trigger: "wantedComicsPage",
+        },
+      ),
+    );
+  }, []);
+
+
+  /**
+   * Pagination control that fetches the previous x (pageSize) items
+   * based on the y (pageIndex) offset from the Elasticsearch index
+   * @param {number} pageIndex
+   * @param {number} pageSize
+   * @returns void
+   **/
+  const previousPage = useCallback((pageIndex: number, pageSize: number) => {
+    let from = 0;
+    if (pageIndex === 2) {
+      from = (pageIndex - 1) * pageSize + 2 - 17;
+    } else {
+      from = (pageIndex - 1) * pageSize + 2 - 16;
+    }
+    dispatch(
+      searchIssue(
+        {
+          query: {},
+        },
+        {
+          pagination: {
+            size: pageSize,
+            from,
+          },
+          type: "all",
+          trigger: "wantedComicsPage"
+        },
+      ),
+    );
+  }, []);
+
   return (
     <section className="container">
       <div className="section">
-        <h1 className="title">Wanted Comics</h1>
-        {/* Search bar */}
-        <SearchBar />
+        <div className="header-area">
+          <h1 className="title">Wanted Comics</h1>
+        </div>
         {!isEmpty(wantedComics) && (
           <div>
             <div className="library">
               <T2Table
-                rowData={wantedComics}
+                sourceData={wantedComics}
                 totalPages={wantedComics.length}
                 columns={columnData}
-              // paginationHandlers={{
-              //   nextPage: goToNextPage,
-              //   previousPage: goToPreviousPage,
-              // }}
+                paginationHandlers={{
+                  nextPage: nextPage,
+                  previousPage: previousPage,
+                }}
               // rowClickHandler={navigateToComicDetail}
               />
               {/* pagination controls */}
