@@ -1,5 +1,7 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useMemo, useState } from "react";
 import PropTypes from "prop-types";
+import SearchBar from "../Library/SearchBar";
+import { Link } from "react-router-dom";
 import {
   ColumnDef,
   flexRender,
@@ -10,35 +12,102 @@ import {
 } from "@tanstack/react-table";
 
 export const T2Table = (tableOptions): ReactElement => {
-  const { rowData, columns, paginationHandlers: { nextPage, previousPage }, totalPages, rowClickHandler } =
+  const { sourceData, columns, paginationHandlers: { nextPage, previousPage }, totalPages, rowClickHandler } =
     tableOptions;
-  
-  const table = useReactTable({
-    data: rowData,
-    columns,
-    manualPagination: true,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    pageCount: totalPages,
-    // getPaginationRowModel: getPaginationRowModel(),
-  });
 
   const [{ pageIndex, pageSize }, setPagination] =
-    React.useState<PaginationState>({
-      pageIndex: 0,
-      pageSize: 10,
-    })
+    useState<PaginationState>({
+      pageIndex: 1,
+      pageSize: 15,
+    });
 
-  const pagination = React.useMemo(
+
+  const pagination = useMemo(
     () => ({
       pageIndex,
       pageSize,
     }),
     [pageIndex, pageSize]
-  )
+  );
+
+  /**
+   * Pagination control to move forward one page 
+   * @returns void 
+   */
+  const goToNextPage = () => {
+    setPagination({
+      pageIndex: pageIndex + 1,
+      pageSize,
+    });
+    nextPage(pageIndex, pageSize);
+  }
+
+  /**
+   * Pagination control to move backward one page 
+   * @returns void
+   **/
+  const goToPreviousPage = () => {
+    setPagination({
+      pageIndex: pageIndex - 1,
+      pageSize,
+    });
+    previousPage(pageIndex, pageSize);
+  }
+
+  const table = useReactTable({
+    data: sourceData,
+    columns,
+    manualPagination: true,
+    getCoreRowModel: getCoreRowModel(),
+    pageCount: sourceData.length ?? -1,
+    state: {
+      pagination,
+    },
+    onPaginationChange: setPagination,
+  });
 
   return (
     <>
+      <div className="columns table-controls">
+        {/* Search bar */}
+        <div className="column is-half">
+          <SearchBar />
+        </div>
+        {/* pagination controls */}
+        <nav className="pagination columns">
+          <div className="mr-4 has-text-weight-semibold has-text-left">
+            <p className="is-size-5">Page {pageIndex} of {Math.ceil(totalPages / pageSize)}</p>
+            {/* <p>{totalPages} comics in all</p> */}
+          </div>
+          <div className="field has-addons">
+            <p className="control">
+              <div className="button" onClick={() => goToPreviousPage()}> <i className="fas fa-chevron-left"></i></div>
+            </p>
+            <p className="control">
+              <div className="button" onClick={() => goToNextPage()}> <i className="fas fa-chevron-right"></i> </div>
+            </p>
+
+            <div className="field has-addons ml-5">
+              <p className="control">
+                <button className="button">
+                  <span className="icon is-small">
+                    <i className="fa-solid fa-list"></i>
+                  </span>
+                </button>
+              </p>
+              <p className="control">
+                <button className="button">
+                  <Link to="/library-grid">
+                    <span className="icon is-small">
+                      <i className="fa-solid fa-image"></i>
+                    </span>
+                  </Link>
+                </button>
+              </p>
+            </div>
+          </div>
+        </nav>
+      </div>
       <table className="table is-hoverable">
         <thead>
           {table.getHeaderGroups().map((headerGroup, idx) => (
@@ -77,21 +146,12 @@ export const T2Table = (tableOptions): ReactElement => {
           })}
         </tbody>
       </table>
-
-      {/* pagination control */}
-      <nav className="pagination">
-        {table.getState().pagination.pageIndex + 1}
-        
-        <div className="button" onClick={() => table.nextPage()}> Next Page </div>
-        <div className="button" onClick={previousPage}> Previous Page</div>
-      </nav>
-
     </>
   );
 };
 
 T2Table.propTypes = {
-  rowData: PropTypes.array,
+  sourceData: PropTypes.array,
   totalPages: PropTypes.number,
   columns: PropTypes.array,
   paginationHandlers: PropTypes.shape({

@@ -3,21 +3,10 @@ import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { isEmpty, isNil, isUndefined } from "lodash";
 import MetadataPanel from "../shared/MetadataPanel";
-import SearchBar from "./SearchBar";
-import { Link } from "react-router-dom";
+import T2Table from "../shared/T2Table";
 import { useDispatch, useSelector } from "react-redux";
 import { searchIssue } from "../../actions/fileops.actions";
 import ellipsize from "ellipsize";
-
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  useReactTable,
-  PaginationState,
-} from "@tanstack/react-table";
-
 
 export const Library = (): ReactElement => {
   const searchResults = useSelector(
@@ -44,173 +33,6 @@ export const Library = (): ReactElement => {
       ),
     );
   }, []);
-
-  const [{ pageIndex, pageSize }, setPagination] =
-    React.useState<PaginationState>({
-      pageIndex: 1,
-      pageSize: 15,
-    });
-
-
-  const pagination = React.useMemo(
-    () => ({
-      pageIndex,
-      pageSize,
-    }),
-    [pageIndex, pageSize]
-  );
-
-  const T2Table = (tableOptions): ReactElement => {
-    const { columns, totalPages, rowClickHandler } =
-      tableOptions;
-
-    // pagination methods
-    const goToNextPage = useCallback(() => {
-      setPagination({
-        pageIndex: pageIndex + 1,
-        pageSize,
-      });
-      dispatch(
-        searchIssue(
-          {
-            query: {},
-          },
-          {
-            pagination: {
-              size: pageSize,
-              from: pageSize * pageIndex + 1,
-            },
-            type: "all",
-            trigger: "libraryPage",
-          },
-        ),
-      );
-    }, []);
-
-
-    const goToPreviousPage = useCallback(() => {
-      setPagination({
-        pageIndex: pageIndex - 1,
-        pageSize,
-      });
-      let from = 0;
-      if (pageIndex === 2) {
-        from = (pageIndex - 1) * pageSize + 2 - 17;
-      } else {
-        from = (pageIndex - 1) * pageSize + 2 - 16;
-      }
-      dispatch(
-        searchIssue(
-          {
-            query: {},
-          },
-          {
-            pagination: {
-              size: pageSize,
-              from,
-            },
-            type: "all",
-            trigger: "libraryPage"
-          },
-        ),
-      );
-    }, []);
-
-    const table = useReactTable({
-      data: searchResults.hits.hits,
-      columns,
-      manualPagination: true,
-      getCoreRowModel: getCoreRowModel(),
-      pageCount: searchResults?.hits?.hits?.length ?? -1,
-      state: {
-        pagination,
-      },
-      onPaginationChange: setPagination,
-    });
-
-    return (
-      <>
-        <div className="columns table-controls">
-          {/* Search bar */}
-          <div className="column is-half">
-            <SearchBar />
-          </div>
-          {/* pagination controls */}
-          <nav className="pagination columns">
-            <div className="mr-4 has-text-weight-semibold has-text-left">
-              <p className="is-size-5">Page {pageIndex} of {Math.ceil(totalPages / pageSize)}</p>
-              {/* <p>{totalPages} comics in all</p> */}
-            </div>
-            <div className="field has-addons">
-              <p className="control">
-                <div className="button" onClick={() => goToPreviousPage()}> <i className="fas fa-chevron-left"></i></div>
-              </p>
-              <p className="control">
-                <div className="button" onClick={() => goToNextPage()}> <i className="fas fa-chevron-right"></i> </div>
-              </p>
-
-        <div className="field has-addons ml-5">
-          <p className="control">
-            <button className="button">
-              <span className="icon is-small">
-                <i className="fa-solid fa-list"></i>
-              </span>
-            </button>
-          </p>
-          <p className="control">
-            <button className="button">
-              <Link to="/library-grid">
-                <span className="icon is-small">
-                  <i className="fa-solid fa-image"></i>
-                </span>
-              </Link>
-            </button>
-          </p>
-        </div>
-            </div>
-          </nav>
-        </div>
-        <table className="table is-hoverable">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup, idx) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header, idx) => (
-                  <th
-                    key={header.id}
-                    colSpan={header.colSpan}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-
-          <tbody>
-            {table.getRowModel().rows.map((row, idx) => {
-              return (
-                <tr
-                  key={row.id}
-                  onClick={() => rowClickHandler(row)}
-                >
-                  {row.getVisibleCells().map(cell => (
-                    <td key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </>
-    );
-  };
 
   // programatically navigate to comic detail
   const navigate = useNavigate();
@@ -316,10 +138,68 @@ export const Library = (): ReactElement => {
     }
   ], []);
 
+
+  /**
+   * Pagination control that fetches the next x (pageSize) items
+   * based on the y (pageIndex) offset from the Elasticsearch index
+   * @param {number} pageIndex
+   * @param {number} pageSize
+   * @returns void
+   *  
+   **/
+  const nextPage = useCallback((pageIndex: number, pageSize: number) => {
+    dispatch(
+      searchIssue(
+        {
+          query: {},
+        },
+        {
+          pagination: {
+            size: pageSize,
+            from: pageSize * pageIndex + 1,
+          },
+          type: "all",
+          trigger: "libraryPage",
+        },
+      ),
+    );
+  }, []);
+
+
+  /**
+   * Pagination control that fetches the previous x (pageSize) items
+   * based on the y (pageIndex) offset from the Elasticsearch index
+   * @param {number} pageIndex
+   * @param {number} pageSize
+   * @returns void
+   **/
+  const previousPage = useCallback((pageIndex: number, pageSize: number) => {
+    let from = 0;
+    if (pageIndex === 2) {
+      from = (pageIndex - 1) * pageSize + 2 - 17;
+    } else {
+      from = (pageIndex - 1) * pageSize + 2 - 16;
+    }
+    dispatch(
+      searchIssue(
+        {
+          query: {},
+        },
+        {
+          pagination: {
+            size: pageSize,
+            from,
+          },
+          type: "all",
+          trigger: "libraryPage"
+        },
+      ),
+    );
+  }, []);
+
   // ImportStatus.propTypes = {
   //   value: PropTypes.bool.isRequired,
   // };
-
 
   return (
     <section className="container">
@@ -333,10 +213,13 @@ export const Library = (): ReactElement => {
               <T2Table
                 totalPages={searchResults.hits.total.value}
                 columns={columns}
-
+                sourceData={searchResults?.hits?.hits}
                 rowClickHandler={navigateToComicDetail}
+                paginationHandlers={{
+                  nextPage,
+                  previousPage,
+                }}
               />
-              {/* pagination controls */}
             </div>
           </div>
         )}
