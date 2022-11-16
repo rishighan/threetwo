@@ -4,18 +4,19 @@ import { getWeeklyPullList } from "../../actions/comicinfo.actions";
 import { useDispatch, useSelector } from "react-redux";
 import Card from "../Carda";
 import ellipsize from "ellipsize";
+import { isNil, isUndefined } from "lodash";
 
 export const PullList = (): ReactElement => {
   const pullListComics = useSelector(
     (state: RootState) => state.comicInfo.pullList,
   );
-  console.log(pullListComics);
+
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(
       getWeeklyPullList({
-        startDate: "2022-6-1",
-        pageSize: "100",
+        startDate: "2022-11-15",
+        pageSize: "15",
         currentPage: "1",
       }),
     );
@@ -25,24 +26,25 @@ export const PullList = (): ReactElement => {
   const columnData = useMemo(
     () => [
       {
-        Header: "Comic Information",
+        header: "Comic Information",
         columns: [
           {
-            Header: "Details",
+            header: "Details",
             id: "comicDetails",
             minWidth: 450,
-            accessor: (row) => {
-              console.log(row);
+            accessorKey: "issue",
+            cell: (row) => {
+              const item = row.getValue();
               return (
                 <div className="columns">
-                  <div className="column">
+                  <div className="column is-three-quarters">
                     <div className="comic-detail issue-metadata">
                       <dl>
                         <dd>
                           <div className="columns mt-2">
                             <div className="column is-3">
                               <Card
-                                imageUrl={row.cover}
+                                imageUrl={item.cover}
                                 orientation={"vertical"}
                                 hasDetails={false}
                                 // cardContainerStyle={{ maxWidth: 200 }}
@@ -52,18 +54,20 @@ export const PullList = (): ReactElement => {
                               <dl>
                                 <dt>
                                   <h6 className="name has-text-weight-medium mb-1">
-                                    {row.name}
+                                    {item.name}
                                   </h6>
                                 </dt>
                                 <dd className="is-size-7">
                                   published by{" "}
                                   <span className="has-text-weight-semibold">
-                                    {row.publisher}
+                                    {item.publisher}
                                   </span>
                                 </dd>
 
                                 <dd className="is-size-7">
-                                  <span>{ellipsize(row.description, 190)}</span>
+                                  <span>
+                                    {ellipsize(item.description, 190)}
+                                  </span>
                                 </dd>
 
                                 <dd className="is-size-7 mt-2">
@@ -71,10 +75,10 @@ export const PullList = (): ReactElement => {
                                     <div className="control">
                                       <span className="tags">
                                         <span className="tag is-success is-light has-text-weight-semibold">
-                                          {row.price}
+                                          {item.price}
                                         </span>
                                         <span className="tag is-success is-light">
-                                          {row.pulls}
+                                          {item.pulls}
                                         </span>
                                       </span>
                                     </div>
@@ -99,16 +103,24 @@ export const PullList = (): ReactElement => {
   return (
     <section className="container">
       <div className="section">
-        <h1 className="title">Weekly Pull List</h1>
-        <T2Table
-          rowData={pullListComics}
-          columns={columnData}
-          totalPages={pullListComics.length}
-          paginationHandlers={{
-            nextPage: nextPageHandler,
-            previousPage: previousPageHandler,
-          }}
-        />
+        <div className="header-area">
+          <h1 className="title">Weekly Pull List</h1>
+        </div>
+        {!isNil(pullListComics) && (
+          <div>
+            <div className="library">
+            <T2Table
+              sourceData={pullListComics}
+              columns={columnData}
+              totalPages={pullListComics.length}
+              paginationHandlers={{
+                nextPage: nextPageHandler,
+                previousPage: previousPageHandler,
+              }}
+            />
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

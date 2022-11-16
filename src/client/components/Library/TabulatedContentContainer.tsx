@@ -1,39 +1,34 @@
-import { isEmpty, isUndefined } from "lodash";
-import React, { ReactElement, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { searchIssue } from "../../actions/fileops.actions";
+import React, { ReactElement } from "react";
+import PullList from "../PullList/PullList";
+import { Volumes } from "../Volumes/Volumes";
+import WantedComics from "../WantedComics/WantedComics";
 import { Library } from "./Library";
 
-const LibraryContainer = (): ReactElement => {
-  // const dispatch = useDispatch();
-  // useEffect(() => {
-  //   dispatch(
-  //     searchIssue(
-  //       {
-  //         query: {},
-  //       },
-  //       {
-  //         pagination: {
-  //           size: 25,
-  //           from: 0,
-  //         },
-  //         type: "all",
-  //         trigger: "libraryPage"
-  //       },
-  //     ),
-  //   );
-  // }, []);
+interface ITabulatedContentContainerProps {
+  category: string;
+}
 
-  // const searchResults = useSelector(
-  //   (state: RootState) => state.fileOps.libraryComics,
-  // );
-  // const searchError = useSelector(
-  //   (state: RootState) => state.fileOps.librarySearchError,
-  // );
+const TabulatedContentContainer = (
+  props: ITabulatedContentContainerProps,
+): ReactElement => {
+  const { category } = props;
+  const renderTabulatedContent = () => {
+    switch (category) {
+      case "library":
+        return <Library />;
+      case "pullList":
+        return <PullList />;
+      case "wanted":
+        return <WantedComics />;
+      case "volumes":
+        return <Volumes />;
+      default:
+        return <></>;
+    }
+  };
 
-  return  (
-    <Library  />) 
-    // : (
+  return renderTabulatedContent();
+  // : (
   //   <div className="container">
   //     <section className="section is-small">
   //       <div className="columns">
@@ -59,4 +54,4 @@ const LibraryContainer = (): ReactElement => {
   // );
 };
 
-export default LibraryContainer;
+export default TabulatedContentContainer;

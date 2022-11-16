@@ -81,7 +81,7 @@ export const Library = (): ReactElement => {
   const WantedStatus = ({ value }) => {
     return !value ? <span className="tag is-info is-light">Wanted</span> : null;
   };
-  const columns = React.useMemo(() => [
+  const columns = useMemo(() => [
     {
       header: "Comic Metadata",
       footer: 1,

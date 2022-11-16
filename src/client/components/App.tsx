@@ -3,7 +3,7 @@ import Dashboard from "./Dashboard/Dashboard";
 
 import Import from "./Import";
 import { ComicDetailContainer } from "./ComicDetail/ComicDetailContainer";
-import LibraryContainer from "./Library/LibraryContainer";
+import TabulatedContentContainer from "./Library/TabulatedContentContainer";
 import LibraryGrid from "./Library/LibraryGrid";
 import Search from "./Search";
 import Settings from "./Settings";
@@ -92,7 +92,7 @@ export const App = (): ReactElement => {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/import" element={<Import path={"./comics"} />} />
-          <Route path="/library" element={<LibraryContainer />} />
+          <Route path="/library" element={<TabulatedContentContainer category="library" />} />
           <Route path="/library-grid" element={<LibraryGrid />} />
           <Route path="/downloads" element={<Downloads data={{}} />} />
           <Route path="/search" element={<Search />} />
@@ -105,9 +105,9 @@ export const App = (): ReactElement => {
             element={<VolumeDetail />}
           />
           <Route path="/settings" element={<Settings />} />
-          <Route path="/pull-list/all" element={<PullList />} />
-          <Route path="/wanted/all" element={<WantedComics />} />
-          <Route path="/volumes/all" element={<Volumes />} />
+          <Route path="/pull-list/all" element={<TabulatedContentContainer category="pullList" />} />
+          <Route path="/wanted/all" element={<TabulatedContentContainer category="wanted" />} />
+          <Route path="/volumes/all" element={<TabulatedContentContainer category="volumes" />} />
         </Routes>
       </div>
     </AirDCPPSocketContextProvider>

@@ -2,16 +2,13 @@ import React, { ReactElement, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { searchIssue } from "../../actions/fileops.actions";
 import Card from "../Carda";
-import SearchBar from "../Library/SearchBar";
 import T2Table from "../shared/T2Table";
 import ellipsize from "ellipsize";
-import { isUndefined } from "lodash";
 import { convert } from "html-to-text";
+import { isUndefined } from "lodash";
 
 export const Volumes = (props): ReactElement => {
-  const volumes = useSelector(
-    (state: RootState) => state.fileOps.librarySearchResults,
-  );
+  const volumes = useSelector((state: RootState) => state.fileOps.volumes);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(
@@ -25,19 +22,20 @@ export const Volumes = (props): ReactElement => {
             from: 0,
           },
           type: "volumes",
+          trigger: "volumesPage",
         },
       ),
     );
   }, []);
-  console.log(volumes);
-
   const columnData = useMemo(
     () => [
       {
-        Header: "Volume Details",
+        header: "Volume Details",
         id: "volumeDetails",
         minWidth: 450,
-        accessor: (row) => {
+        accessorKey: "_source",
+        cell: (row) => {
+          const foo = row.getValue();
           return (
             <div className="columns">
               <div className="column">
@@ -45,11 +43,11 @@ export const Volumes = (props): ReactElement => {
                   <dl>
                     <dd>
                       <div className="columns mt-2">
-                        <div className="column is-3">
+                        <div className="">
                           <Card
                             imageUrl={
-                              row._source.sourcedMetadata.comicvine
-                                .volumeInformation.image.thumb_url
+                              foo.sourcedMetadata.comicvine.volumeInformation
+                                .image.thumb_url
                             }
                             orientation={"vertical"}
                             hasDetails={false}
@@ -61,7 +59,7 @@ export const Volumes = (props): ReactElement => {
                             <dt>
                               <h6 className="name has-text-weight-medium mb-1">
                                 {
-                                  row._source.sourcedMetadata.comicvine
+                                  foo.sourcedMetadata.comicvine
                                     .volumeInformation.name
                                 }
                               </h6>
@@ -70,7 +68,7 @@ export const Volumes = (props): ReactElement => {
                               published by{" "}
                               <span className="has-text-weight-semibold">
                                 {
-                                  row._source.sourcedMetadata.comicvine
+                                  foo.sourcedMetadata.comicvine
                                     .volumeInformation.publisher.name
                                 }
                               </span>
@@ -80,7 +78,7 @@ export const Volumes = (props): ReactElement => {
                               <span>
                                 {ellipsize(
                                   convert(
-                                    row._source.sourcedMetadata.comicvine
+                                    foo.sourcedMetadata.comicvine
                                       .volumeInformation.description,
                                     {
                                       baseElements: {
@@ -102,7 +100,7 @@ export const Volumes = (props): ReactElement => {
                                     </span>
                                     <span className="tag is-success is-light">
                                       {
-                                        row._source.sourcedMetadata.comicvine
+                                        foo.sourcedMetadata.comicvine
                                           .volumeInformation.count_of_issues
                                       }
                                     </span>
@@ -122,36 +120,35 @@ export const Volumes = (props): ReactElement => {
         },
       },
       {
-        Header: "Download Status",
+        header: "Download Status",
         columns: [
           {
-            Header: "Files",
-            accessor: "_source.acquisition.directconnect",
+            header: "Files",
+            accessorKey: "_source.acquisition.directconnect",
             align: "right",
-            Cell: (props) => {
+            cell: (props) => {
+              const row = props.getValue();
               return (
                 <div
                   style={{
                     display: "flex",
-                    // flexDirection: "column",
+                    flexDirection: "column",
                     justifyContent: "center",
                   }}
                 >
-                  {props.cell.value.length > 0 ? (
-                    <span className="tag is-warning">
-                      {props.cell.value.length}
-                    </span>
+                  {row.length > 0 ? (
+                    <span className="tag is-warning">{row.length}</span>
                   ) : null}
                 </div>
               );
             },
           },
           {
-            Header: "Type",
+            header: "Type",
             id: "Air",
           },
           {
-            Header: "Type",
+            header: "Type",
             id: "dcc",
           },
         ],
@@ -162,16 +159,24 @@ export const Volumes = (props): ReactElement => {
   return (
     <section className="container">
       <div className="section">
-        {volumes.hits ? (
+        <div className="header-area">
+          <h1 className="title">Volumes</h1>
+        </div>
+        {!isUndefined(volumes.hits) && (
           <div>
             <div className="library">
-              <h1 className="title">Volumes</h1>
-              {/* Search bar */}
-              <SearchBar />
-              <T2Table rowData={volumes.hits.hits} columns={columnData} />
+              <T2Table
+                sourceData={volumes?.hits?.hits}
+                totalPages={volumes.hits.hits.length}
+                paginationHandlers={{
+                  nextPage: () => {},
+                  previousPage: () => {},
+                }}
+                columns={columnData}
+              />
             </div>
           </div>
-        ) : null}
+        )}
       </div>
     </section>
   );

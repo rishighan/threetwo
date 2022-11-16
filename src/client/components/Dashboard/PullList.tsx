@@ -20,7 +20,7 @@ export const PullList = ({ issues }: PullListProps): ReactElement => {
   useEffect(() => {
     dispatch(
       getWeeklyPullList({
-        startDate: "2022-11-9",
+        startDate: "2022-11-15",
         pageSize: "15",
         currentPage: "1",
       }),
@@ -127,7 +127,7 @@ export const PullList = ({ issues }: PullListProps): ReactElement => {
       <Slider {...settings} ref={(c) => (sliderRef = c)}>
         {!isNil(pullList) &&
           pullList &&
-          map(pullList, (issue, idx) => {
+          map(pullList, ({issue}, idx) => {
             return (
               <Card
                 key={idx}

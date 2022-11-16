@@ -20,6 +20,7 @@ export const T2Table = (tableOptions): ReactElement => {
       pageIndex: 1,
       pageSize: 15,
     });
+    console.log(sourceData)
 
 
   const pagination = useMemo(

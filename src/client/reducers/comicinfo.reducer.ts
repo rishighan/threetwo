@@ -109,10 +109,14 @@ function comicinfoReducer(state = initialState, action) {
         ...state,
       };
     case CV_WEEKLY_PULLLIST_FETCHED: {
+      const foo = [];
+      action.data.map((item) => {
+        foo.push({issue: item})
+      });
       return {
         ...state,
         inProgress: false,
-        pullList: [...action.data],
+        pullList: foo,
       };
     }
     case LIBRARY_STATISTICS_CALL_IN_PROGRESS:

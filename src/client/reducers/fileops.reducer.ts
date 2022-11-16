@@ -28,6 +28,7 @@ import {
   LS_IMPORT_CALL_IN_PROGRESS,
   SS_SEARCH_FAILED,
   SS_SEARCH_RESULTS_FETCHED_SPECIAL,
+  VOLUMES_FETCHED,
 } from "../constants/action-types";
 const initialState = {
   IMSCallInProgress: false,
@@ -45,6 +46,7 @@ const initialState = {
   recentComics: [],
   wantedComics: [],
   libraryComics: [],
+  volumes: [],
   librarySearchResultsFormatted: [],
   librarySearchResultCount: 0,
   libraryQueueResults: [],
@@ -188,7 +190,6 @@ function fileOpsReducer(state = initialState, action) {
     }
 
     case SS_SEARCH_RESULTS_FETCHED: {
-      console.log(action.data);
       return {
         ...state,
         libraryComics: action.data,
@@ -221,6 +222,13 @@ function fileOpsReducer(state = initialState, action) {
         SSCallInProgress: false,
       };
     }
+
+    case VOLUMES_FETCHED:
+      return {
+        ...state,
+        volumes: action.data,
+        SSCallInProgress: false,
+      };
     
     case SS_SEARCH_FAILED: {
       return {

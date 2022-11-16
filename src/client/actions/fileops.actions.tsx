@@ -32,6 +32,8 @@ import {
   SS_SEARCH_FAILED,
   SS_SEARCH_RESULTS_FETCHED_SPECIAL,
   WANTED_COMICS_FETCHED,
+  VOLUMES_FETCHED,
+  CV_WEEKLY_PULLLIST_FETCHED,
 } from "../constants/action-types";
 import { success } from "react-notification-system-redux";
 import { removeLeadingPeriod } from "../shared/utils/formatting.utils";
@@ -316,12 +318,16 @@ export const searchIssue = (query, options) => async (dispatch) => {
         data: response.data.body,
       });
       break;
+    case "volumesPage":
+      dispatch({
+        type: VOLUMES_FETCHED,
+        data: response.data.body,
+      });
+      break;
 
     default:
       break;
   }
-
-
 };
 export const analyzeImage =
   (imageFilePath: string | Buffer) => async (dispatch) => {
