@@ -42,20 +42,22 @@ export const ComicVineSearchForm = (data) => {
           </span>
           <div className="field is-horizontal">
             <div className="field-body">
-              <Field name="issueName">
-                {(props) => (
-                  <p className="control is-expanded has-icons-left">
-                    <input
-                      {...props.input}
-                      className="input is-normal"
-                      placeholder="Type the issue name"
-                    />
-                    <span className="icon is-small is-left">
-                      <i className="fas fa-journal-whills"></i>
-                    </span>
-                  </p>
-                )}
-              </Field>
+              <div className="field">
+                <Field name="issueName">
+                  {(props) => (
+                    <p className="control is-expanded has-icons-left">
+                      <input
+                        {...props.input}
+                        className="input is-normal"
+                        placeholder="Type the issue name"
+                      />
+                      <span className="icon is-small is-left">
+                        <i className="fas fa-journal-whills"></i>
+                      </span>
+                    </p>
+                  )}
+                </Field>
+              </div>
             </div>
           </div>
 
@@ -103,10 +105,10 @@ export const ComicVineSearchForm = (data) => {
                 <div className="control">
                   <button
                     type="submit"
-                    className="button is-info is-light is-outlined is-small"
+                    className="button is-success is-light is-outlined is-small"
                   >
                     <span className="icon">
-                      <i className="fas fa-hand-sparkles"></i>
+                      <i className="fas fa-search"></i>
                     </span>
                     <span>Search</span>
                   </button>
