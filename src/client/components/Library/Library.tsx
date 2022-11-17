@@ -8,6 +8,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { searchIssue } from "../../actions/fileops.actions";
 import ellipsize from "ellipsize";
 
+
+/**
+ * Component that tabulates the contents of the user's ThreeTwo Library.
+ * 
+ * @component
+ * @example
+ * <Library />
+ */
 export const Library = (): ReactElement => {
   const searchResults = useSelector(
     (state: RootState) => state.fileOps.libraryComics,
@@ -141,7 +149,7 @@ export const Library = (): ReactElement => {
 
   /**
    * Pagination control that fetches the next x (pageSize) items
-   * based on the y (pageIndex) offset from the Elasticsearch index
+   * based on the y (pageIndex) offset from the ThreeTwo Elasticsearch index
    * @param {number} pageIndex
    * @param {number} pageSize
    * @returns void
@@ -168,7 +176,7 @@ export const Library = (): ReactElement => {
 
   /**
    * Pagination control that fetches the previous x (pageSize) items
-   * based on the y (pageIndex) offset from the Elasticsearch index
+   * based on the y (pageIndex) offset from the ThreeTwo Elasticsearch index
    * @param {number} pageIndex
    * @param {number} pageSize
    * @returns void

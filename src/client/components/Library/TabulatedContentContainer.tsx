@@ -7,6 +7,15 @@ import { Library } from "./Library";
 interface ITabulatedContentContainerProps {
   category: string;
 }
+/**
+ * Component to draw the contents of a category in a table.
+ *
+ * @component
+ * @example
+ * return (
+ *   <TabulatedContentContainer category={"library"} />
+ * )
+ */
 
 const TabulatedContentContainer = (
   props: ITabulatedContentContainerProps,

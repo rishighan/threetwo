@@ -8,9 +8,6 @@ import LibraryGrid from "./Library/LibraryGrid";
 import Search from "./Search";
 import Settings from "./Settings";
 import VolumeDetail from "./VolumeDetail/VolumeDetail";
-import PullList from "./PullList/PullList";
-import WantedComics from "./WantedComics/WantedComics";
-import Volumes from "./Volumes/Volumes";
 import Downloads from "./Downloads/Downloads";
 
 import { Routes, Route } from "react-router-dom";
@@ -23,9 +20,6 @@ import {
 import { isEmpty, isUndefined } from "lodash";
 import { AIRDCPP_DOWNLOAD_PROGRESS_TICK } from "../constants/action-types";
 import { useDispatch } from "react-redux";
-import axios from "axios";
-import { LIBRARY_SERVICE_BASE_URI } from "../constants/endpoints";
-import { useParams } from "react-router";
 
 const AirDCPPSocketComponent = (): ReactElement => {
   const airDCPPConfiguration = useContext(AirDCPPSocketContext);
