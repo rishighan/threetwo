@@ -4,7 +4,7 @@ import { getWeeklyPullList } from "../../actions/comicinfo.actions";
 import { useDispatch, useSelector } from "react-redux";
 import Card from "../Carda";
 import ellipsize from "ellipsize";
-import { isNil, isUndefined } from "lodash";
+import { isNil } from "lodash";
 
 export const PullList = (): ReactElement => {
   const pullListComics = useSelector(

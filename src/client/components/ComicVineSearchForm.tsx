@@ -23,8 +23,8 @@ export const ComicVineSearchForm = (data) => {
         number: value.issueNumber,
         subtitle: "",
         year: value.issueYear,
-      }
-    }
+      },
+    };
     dispatch(fetchComicVineMatches(data, userInititatedQuery));
   }, []);
   const validate = () => {
@@ -42,27 +42,29 @@ export const ComicVineSearchForm = (data) => {
           </span>
           <div className="field is-horizontal">
             <div className="field-body">
-              <div className="field">
-                <Field name="issueName">
-                  {(props) => (
-                    <p className="control is-expanded has-icons-left">
-                      <input
-                        {...props.input}
-                        className="input is-normal"
-                        placeholder="Type the issue name"
-                      />
-                      <span className="icon is-small is-left">
-                        <i className="fas fa-journal-whills"></i>
-                      </span>
-                    </p>
-                  )}
-                </Field>
-              </div>
+              <Field name="issueName">
+                {(props) => (
+                  <p className="control is-expanded has-icons-left">
+                    <input
+                      {...props.input}
+                      className="input is-normal"
+                      placeholder="Type the issue name"
+                    />
+                    <span className="icon is-small is-left">
+                      <i className="fas fa-journal-whills"></i>
+                    </span>
+                  </p>
+                )}
+              </Field>
+            </div>
+          </div>
 
+          <div className="field is-horizontal">
+            <div className="field-body">
               <div className="field">
                 <Field name="issueNumber">
                   {(props) => (
-                    <p className="control is-expanded has-icons-left">
+                    <p className="control has-icons-left">
                       <input
                         {...props.input}
                         className="input is-normal"
@@ -74,26 +76,27 @@ export const ComicVineSearchForm = (data) => {
                     </p>
                   )}
                 </Field>
+              </div>
 
-                <div className="field">
-                  <Field name="issueYear">
-                    {(props) => (
-                      <p className="control is-expanded has-icons-left">
-                        <input
-                          {...props.input}
-                          className="input is-normal"
-                          placeholder="Type the issue year"
-                        />
-                        <span className="icon is-small is-left">
-                          <i className="fas fa-hashtag"></i>
-                        </span>
-                      </p>
-                    )}
-                  </Field>
-                </div>
+              <div className="field">
+                <Field name="issueYear">
+                  {(props) => (
+                    <p className="control has-icons-left">
+                      <input
+                        {...props.input}
+                        className="input is-normal"
+                        placeholder="Type the issue year"
+                      />
+                      <span className="icon is-small is-left">
+                        <i className="fas fa-hashtag"></i>
+                      </span>
+                    </p>
+                  )}
+                </Field>
               </div>
             </div>
           </div>
+
           <div className="field is-horizontal">
             <div className="field-body">
               <div className="field">
