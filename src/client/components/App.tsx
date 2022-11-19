@@ -21,11 +21,17 @@ import { isEmpty, isUndefined } from "lodash";
 import { AIRDCPP_DOWNLOAD_PROGRESS_TICK } from "../constants/action-types";
 import { useDispatch } from "react-redux";
 
+/**
+ * Method that initializes an AirDC++ socket connection
+ * 1. Initializes event listeners for download init, tick and complete events
+ * 2. Handles errors in case the connection to AirDC++ is not established or terminated 
+ * @returns void 
+ */
 const AirDCPPSocketComponent = (): ReactElement => {
   const airDCPPConfiguration = useContext(AirDCPPSocketContext);
   const dispatch = useDispatch();
   useEffect(() => {
-    const foo = async () => {
+    const initializeAirDCPPEventListeners = async () => {
       if (
         !isUndefined(airDCPPConfiguration.airDCPPState) &&
         !isEmpty(airDCPPConfiguration.airDCPPState.settings) &&
@@ -73,7 +79,7 @@ const AirDCPPSocketComponent = (): ReactElement => {
         );
       }
     };
-    foo();
+    initializeAirDCPPEventListeners();
   }, [airDCPPConfiguration]);
   return <></>;
 };

@@ -3,7 +3,6 @@ import { Form, Field } from "react-final-form";
 import Collapsible from "react-collapsible";
 import { fetchComicVineMatches } from "../actions/fileops.actions";
 import { useDispatch } from "react-redux";
-import { refineQuery } from "filename-parser";
 
 /**
  * Component for performing search against ComicVine
