@@ -7,7 +7,7 @@ import Card from "../Carda";
 export const ComicVineDetails = (props): ReactElement => {
   const { data, updatedAt } = props;
   return (
-    <div className="column is-two-thirds">
+    <div className="column is-half">
       <div className="comic-detail comicvine-metadata">
         <dl>
           <dt>ComicVine Metadata</dt>

@@ -74,7 +74,13 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
 
   const openModal = useCallback((filePath) => {
     setIsOpen(true);
-    dispatch(extractComicArchive(filePath));
+    dispatch(extractComicArchive(filePath, {
+      type: "full",
+      purpose: "readComicBook",
+      imageResizeOptions: {
+        baseWidth: 275,
+      }
+    }));
   }, []);
 
   const afterOpenModal = useCallback((things) => {
@@ -249,7 +255,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                 </div>
               </div>
               {/* raw file details */}
-              <div className="column is-three-fifths">
+              <div className="column">
                 {!isUndefined(rawFileDetails) &&
                   !isEmpty(rawFileDetails.cover) && (
                     <>
