@@ -274,7 +274,7 @@ export const extractComicArchive =
       },
       data: {
         filePath: path,
-        ...options,
+        options,
       },
     });
     map(extractedComicBookArchive.data, (page) => {
