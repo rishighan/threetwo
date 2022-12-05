@@ -278,7 +278,6 @@ export const extractComicArchive =
       },
     });
     map(extractedComicBookArchive.data, (page) => {
-      console.log(page);
       const pageFilePath = removeLeadingPeriod(page);
       const imagePath = encodeURI(`${LIBRARY_SERVICE_HOST}${pageFilePath}`);
       comicBookPages.push(imagePath);

@@ -74,19 +74,21 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
 
   const openModal = useCallback((filePath) => {
     setIsOpen(true);
-    dispatch(extractComicArchive(filePath, {
-      type: "full",
-      purpose: "readComicBook",
-      imageResizeOptions: {
-        baseWidth: 275,
-      }
-    }));
+    dispatch(
+      extractComicArchive(filePath, {
+        type: "full",
+        purpose: "readComicBook",
+        imageResizeOptions: {
+          baseWidth: 1024,
+        },
+      }),
+    );
   }, []);
 
   const afterOpenModal = useCallback((things) => {
     // references are now sync'd and can be accessed.
     // subtitle.style.color = "#f00";
-    console.log(things);
+    console.log("kolaveri", things);
   }, []);
 
   const closeModal = useCallback(() => {
@@ -100,7 +102,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
         <>
           <div className="card search-criteria-card">
             <div className="card-content">
-              <ComicVineSearchForm data={rawFileDetails}/>
+              <ComicVineSearchForm data={rawFileDetails} />
             </div>
           </div>
           <p className="is-size-5 mt-3 mb-2 ml-3">Searching for:</p>
@@ -118,7 +120,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                 comicVineSearchResults,
                 comicObjectId,
               }}
-            />) : (<div className="progress-indicator-container" >
+            />
+          ) : (
+            <div className="progress-indicator-container">
               <div className="indicator">
                 <Loader
                   type="MutatingDots"
@@ -129,16 +133,16 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                   visible={comicVineAPICallProgress}
                 />
               </div>
-            </div >)}
-        </>),
+            </div>
+          )}
+        </>
+      ),
     },
-
 
     editComicBookMetadata: {
       content: () => <EditMetadataPanel />,
     },
   };
-  
 
   // check for the availability of CV metadata
   const isComicBookMetadataAvailable =
@@ -286,6 +290,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                           <ComicViewer
                             pages={extractedComicBook}
                             direction="ltr"
+                            className={{closeButton: "border: 1px solid red;"}}
                           />
                         )}
                       </Modal>
