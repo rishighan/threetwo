@@ -65,7 +65,7 @@
     "qs": "^6.10.5",
     "react": "^18.1.0",
     "react-collapsible": "^2.9.0",
-    "react-comic-viewer": "^0.3.5",
+    "react-comic-viewer": "^0.4.0",
     "react-day-picker": "^8.0.6",
     "react-dom": "^18.1.0",
     "react-fast-compare": "^3.2.0",

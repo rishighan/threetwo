@@ -256,35 +256,37 @@ export const fetchComicVineMatches =
 /**
  * This method is a proxy to `uncompressFullArchive` which uncompresses complete `rar` or `zip` archives
  * @param {string} path The path to the compressed archive
- * @param {any} options Options object 
+ * @param {any} options Options object
  * @returns {any}
  */
-export const extractComicArchive = (path: string, options: any) => async (dispatch) => {
-  const comicBookPages: string[] = [];
-  dispatch({
-    type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
-  });
-  const extractedComicBookArchive = await axios({
-    method: "POST",
-    url: `${LIBRARY_SERVICE_BASE_URI}/uncompressFullArchive`,
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-    },
-    data: {
-      filePath: path,
-    },
-  });
-  map(extractedComicBookArchive.data, (page) => {
-    console.log(page);
-    const pageFilePath = removeLeadingPeriod(page);
-    const imagePath = encodeURI(`${LIBRARY_SERVICE_HOST}${pageFilePath}`);
-    comicBookPages.push(imagePath);
-  });
-  dispatch({
-    type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
-    extractedComicBookArchive: comicBookPages,
-  });
-};
+export const extractComicArchive =
+  (path: string, options: any): any => async (dispatch) => {
+    const comicBookPages: string[] = [];
+    console.log(options);
+    dispatch({
+      type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
+    });
+    const extractedComicBookArchive = await axios({
+      method: "POST",
+      url: `${LIBRARY_SERVICE_BASE_URI}/uncompressFullArchive`,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      data: {
+        filePath: path,
+        options,
+      },
+    });
+    map(extractedComicBookArchive.data, (page) => {
+      const pageFilePath = removeLeadingPeriod(page);
+      const imagePath = encodeURI(`${LIBRARY_SERVICE_HOST}${pageFilePath}`);
+      comicBookPages.push(imagePath);
+    });
+    dispatch({
+      type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
+      extractedComicBookArchive: comicBookPages,
+    });
+  };
 
 export const searchIssue = (query, options) => async (dispatch) => {
   dispatch({
