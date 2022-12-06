@@ -4,6 +4,16 @@ ThreeTwo! _aims to be_ a comic book curation app.
 
 [![Docker Image CI](https://github.com/rishighan/threetwo/actions/workflows/docker-image.yml/badge.svg)](https://github.com/rishighan/threetwo/actions/workflows/docker-image.yml)
 
+###Screenshots
+
+![](https://raw.githubusercontent.com/rishighan/threetwo/rishighan-screenshots-dec-2022/Dashboard.png)
+
+![](https://raw.githubusercontent.com/rishighan/threetwo/rishighan-screenshots-dec-2022/Library.png)
+
+![](https://raw.githubusercontent.com/rishighan/threetwo/rishighan-screenshots-dec-2022/DC%2B%2B%20integration.png)
+
+![](https://raw.githubusercontent.com/rishighan/threetwo/rishighan-screenshots-dec-2022/ComicVine%20Matching.png)
+
 
 ### 🦄 Early Development Support Channel
 
