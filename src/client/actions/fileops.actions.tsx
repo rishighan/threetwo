@@ -36,7 +36,7 @@ import {
   CV_WEEKLY_PULLLIST_FETCHED,
 } from "../constants/action-types";
 import { success } from "react-notification-system-redux";
-import { removeLeadingPeriod } from "../shared/utils/formatting.utils";
+
 import { isNil, map } from "lodash";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
@@ -260,13 +260,12 @@ export const fetchComicVineMatches =
  * @returns {any}
  */
 export const extractComicArchive =
-  (path: string, options: any): any => async (dispatch) => {
-    const comicBookPages: string[] = [];
-    console.log(options);
+  (path: string, options: any): any =>
+  async (dispatch) => {
     dispatch({
       type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
     });
-    const extractedComicBookArchive = await axios({
+    await axios({
       method: "POST",
       url: `${LIBRARY_SERVICE_BASE_URI}/uncompressFullArchive`,
       headers: {
@@ -277,17 +276,14 @@ export const extractComicArchive =
         options,
       },
     });
-    map(extractedComicBookArchive.data, (page) => {
-      const pageFilePath = removeLeadingPeriod(page);
-      const imagePath = encodeURI(`${LIBRARY_SERVICE_HOST}${pageFilePath}`);
-      comicBookPages.push(imagePath);
-    });
-    dispatch({
-      type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
-      extractedComicBookArchive: comicBookPages,
-    });
   };
 
+/**
+ * Description
+ * @param {any} query
+ * @param {any} options
+ * @returns {any}
+ */
 export const searchIssue = (query, options) => async (dispatch) => {
   dispatch({
     type: SS_SEARCH_IN_PROGRESS,

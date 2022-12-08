@@ -63,7 +63,7 @@
     "pretty-bytes": "^5.6.0",
     "prop-types": "^15.8.1",
     "qs": "^6.10.5",
-    "react": "^18.1.0",
+    "react": "^18.2.0",
     "react-collapsible": "^2.9.0",
     "react-comic-viewer": "^0.4.0",
     "react-day-picker": "^8.0.6",

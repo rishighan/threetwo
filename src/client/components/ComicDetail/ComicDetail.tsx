@@ -77,7 +77,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     dispatch(
       extractComicArchive(filePath, {
         type: "full",
-        purpose: "readComicBook",
+        purpose: "reading",
         imageResizeOptions: {
           baseWidth: 1024,
         },

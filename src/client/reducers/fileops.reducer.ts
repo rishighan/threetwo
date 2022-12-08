@@ -29,7 +29,11 @@ import {
   SS_SEARCH_FAILED,
   SS_SEARCH_RESULTS_FETCHED_SPECIAL,
   VOLUMES_FETCHED,
+  COMICBOOK_EXTRACTION_SUCCESS,
 } from "../constants/action-types";
+import { removeLeadingPeriod } from "../shared/utils/formatting.utils";
+import { LIBRARY_SERVICE_HOST } from "../constants/endpoints";
+
 const initialState = {
   IMSCallInProgress: false,
   IMGCallInProgress: false,
@@ -157,6 +161,19 @@ function fileOpsReducer(state = initialState, action) {
         librarySearchResultCount: state.librarySearchResultCount + 1,
       };
     }
+
+    case COMICBOOK_EXTRACTION_SUCCESS: {
+      const comicBookPages: string[] = [];
+      map(action.result, (page) => {
+        const pageFilePath = removeLeadingPeriod(page);
+        const imagePath = encodeURI(`${LIBRARY_SERVICE_HOST}${pageFilePath}`);
+        comicBookPages.push(imagePath);
+      });
+      return {
+        ...state,
+        extractedComicBookArchive: comicBookPages,
+      };
+    }
     case LS_QUEUE_DRAINED: {
       console.log("drained", action);
       return {
@@ -229,7 +246,7 @@ function fileOpsReducer(state = initialState, action) {
         volumes: action.data,
         SSCallInProgress: false,
       };
-    
+
     case SS_SEARCH_FAILED: {
       return {
         ...state,
