@@ -14,7 +14,7 @@ export const ArchiveOperations = (props): ReactElement => {
     (state: RootState) => state.fileOps.comicBookExtractionInProgress,
   );
   const extractedComicBookArchive = useSelector(
-    (state: RootState) => state.fileOps.extractedComicBookArchive,
+    (state: RootState) => state.fileOps.extractedComicBookArchive.analysis,
   );
 
   const imageAnalysisResult = useSelector((state: RootState) => {

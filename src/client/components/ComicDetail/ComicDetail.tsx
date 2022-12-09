@@ -66,7 +66,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   );
 
   const extractedComicBook = useSelector(
-    (state: RootState) => state.fileOps.extractedComicBookArchive,
+    (state: RootState) => state.fileOps.extractedComicBookArchive.reading,
   );
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
 

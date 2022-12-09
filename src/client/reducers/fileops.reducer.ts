@@ -46,7 +46,10 @@ const initialState = {
   isComicVineMetadataImportInProgress: false,
   comicVineMetadataImportError: {},
   rawImportError: {},
-  extractedComicBookArchive: [],
+  extractedComicBookArchive: {
+    reading: [],
+    analysis: [],
+  },
   recentComics: [],
   wantedComics: [],
   libraryComics: [],
@@ -135,13 +138,7 @@ function fileOpsReducer(state = initialState, action) {
         comicBookExtractionInProgress: true,
       };
     }
-    case IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS: {
-      return {
-        ...state,
-        extractedComicBookArchive: action.extractedComicBookArchive,
-        comicBookExtractionInProgress: false,
-      };
-    }
+
     case LOCATION_CHANGE: {
       return {
         ...state,
@@ -164,15 +161,32 @@ function fileOpsReducer(state = initialState, action) {
 
     case COMICBOOK_EXTRACTION_SUCCESS: {
       const comicBookPages: string[] = [];
-      map(action.result, (page) => {
+      map(action.result.files, (page) => {
         const pageFilePath = removeLeadingPeriod(page);
         const imagePath = encodeURI(`${LIBRARY_SERVICE_HOST}${pageFilePath}`);
         comicBookPages.push(imagePath);
       });
-      return {
-        ...state,
-        extractedComicBookArchive: comicBookPages,
-      };
+
+      switch (action.result.purpose) {
+        case "reading":
+          return {
+            ...state,
+            extractedComicBookArchive: {
+              reading: comicBookPages
+            },
+            comicBookExtractionInProgress: false,
+          };
+
+        case "analysis":
+          return {
+            ...state,
+            extractedComicBookArchive: {
+              analysis: comicBookPages
+            },
+            comicBookExtractionInProgress: false,
+          };
+      }
+
     }
     case LS_QUEUE_DRAINED: {
       console.log("drained", action);
