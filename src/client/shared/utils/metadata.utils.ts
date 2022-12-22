@@ -67,7 +67,10 @@ export const determineCoverFile = (data) => {
   }
 };
 
-export const determineExternalMetadata = (metadataSource, source) => {
+export const determineExternalMetadata = (
+  metadataSource: string,
+  source: any
+) => {
   switch (metadataSource) {
     case "comicvine":
       return {

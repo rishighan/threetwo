@@ -2,7 +2,6 @@ import React, { ReactElement } from "react";
 import Card from "../Carda";
 import { Link } from "react-router-dom";
 import ellipsize from "ellipsize";
-import { escapePoundSymbol } from "../../shared/utils/formatting.utils";
 import { isEmpty, isNil, isUndefined, map } from "lodash";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
 import Masonry from "react-masonry-css";
@@ -24,7 +23,6 @@ export const RecentlyImported = ({
     700: 2,
     600: 2,
   };
-
   return (
     <>
       <div className="content mt-5">
@@ -41,7 +39,7 @@ export const RecentlyImported = ({
         columnClassName="recent-comics-column"
       >
         {map(
-          comicBookCovers.docs,
+          comicBookCovers,
           (
             {
               _id,
@@ -53,6 +51,7 @@ export const RecentlyImported = ({
             },
             idx,
           ) => {
+            console.log(comicvine);
             const { issueName, url } = determineCoverFile({
               rawFileDetails,
               comicvine,
@@ -64,7 +63,7 @@ export const RecentlyImported = ({
               comicInfo,
               locg,
             });
-
+            console.log(name);
             const isComicBookMetadataAvailable =
               !isUndefined(comicvine) &&
               !isUndefined(comicvine.volumeInformation);
@@ -123,7 +122,7 @@ export const RecentlyImported = ({
                   </div>
                 </Card>
                 {/* metadata card */}
-                {!isNil(name) ? (
+                {!isNil(name) && (
                   <Card orientation="horizontal" hasDetails imageUrl={coverURL}>
                     <dd className="is-size-9">
                       <dl>
@@ -138,7 +137,7 @@ export const RecentlyImported = ({
                       </dl>
                     </dd>
                   </Card>
-                ) : null}
+                )}
               </React.Fragment>
             );
           },

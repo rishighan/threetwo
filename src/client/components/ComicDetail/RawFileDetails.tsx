@@ -38,7 +38,8 @@ export const RawFileDetails = (props): ReactElement => {
           </dd>
         </dl>
       </div>
-      <div className="content comic-detail raw-file-details mt-3 column is-one-third">
+
+      <div className="content comic-detail raw-file-details mt-3 column is-three-fifths">
         <dl>
           {/* inferred metadata */}
           <dt>Inferred Issue Metadata</dt>
