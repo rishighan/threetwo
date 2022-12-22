@@ -14,7 +14,7 @@ export const ArchiveOperations = (props): ReactElement => {
     (state: RootState) => state.fileOps.comicBookExtractionInProgress,
   );
   const extractedComicBookArchive = useSelector(
-    (state: RootState) => state.fileOps.extractedComicBookArchive,
+    (state: RootState) => state.fileOps.extractedComicBookArchive.analysis,
   );
 
   const imageAnalysisResult = useSelector((state: RootState) => {
@@ -23,7 +23,15 @@ export const ArchiveOperations = (props): ReactElement => {
 
   const dispatch = useDispatch();
   const unpackComicArchive = useCallback(() => {
-    dispatch(extractComicArchive(data.rawFileDetails.filePath));
+    dispatch(
+      extractComicArchive(data.rawFileDetails.filePath, {
+        type: "full",
+        purpose: "analysis",
+        imageResizeOptions: {
+          baseWidth: 275,
+        },
+      }),
+    );
   }, []);
 
   // sliding panel config

@@ -36,7 +36,7 @@ import {
   CV_WEEKLY_PULLLIST_FETCHED,
 } from "../constants/action-types";
 import { success } from "react-notification-system-redux";
-import { removeLeadingPeriod } from "../shared/utils/formatting.utils";
+
 import { isNil, map } from "lodash";
 
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
@@ -60,15 +60,6 @@ export async function walkFolder(path: string): Promise<Array<IFolderData>> {
  * @return the comic book metadata
  */
 export const fetchComicBookMetadata = () => async (dispatch) => {
-  const extractionOptions = {
-    extractTarget: "cover",
-    targetExtractionFolder: "./userdata/covers",
-    extractionMode: "bulk",
-    paginationOptions: {
-      pageLimit: 25,
-      page: 1,
-    },
-  };
   dispatch({
     type: LS_IMPORT_CALL_IN_PROGRESS,
   });
@@ -86,7 +77,7 @@ export const fetchComicBookMetadata = () => async (dispatch) => {
   dispatch({
     type: LS_IMPORT,
     meta: { remote: true },
-    data: { extractionOptions },
+    data: {},
   });
 };
 export const toggleImportQueueStatus = (options) => async (dispatch) => {
@@ -136,21 +127,24 @@ export const getComicBooks = (options) => async (dispatch) => {
  * @returns Nothing.
  * @param payload
  */
-export const importToDB = (sourceName: string, payload?: any) => (dispatch) => {
+export const importToDB = (sourceName: string, metadata?: any) => (dispatch) => {
   try {
     const comicBookMetadata = {
-      rawFileDetails: {
-        name: "",
-      },
-      importStatus: {
-        isImported: true,
-        tagged: false,
-        matchedResult: {
-          score: "0",
+      importType: "new",
+      payload: {
+        rawFileDetails: {
+          name: "",
         },
-      },
-      sourcedMetadata: payload || null,
-      acquisition: { source: { wanted: true, name: sourceName } },
+        importStatus: {
+          isImported: true,
+          tagged: false,
+          matchedResult: {
+            score: "0",
+          },
+        },
+        sourcedMetadata: metadata || null,
+        acquisition: { source: { wanted: true, name: sourceName } },
+      }
     };
     dispatch({
       type: IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
@@ -260,34 +254,31 @@ export const fetchComicVineMatches =
  * @returns {any}
  */
 export const extractComicArchive =
-  (path: string, options: any): any => async (dispatch) => {
-    const comicBookPages: string[] = [];
-    console.log(options);
-    dispatch({
-      type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
-    });
-    const extractedComicBookArchive = await axios({
-      method: "POST",
-      url: `${LIBRARY_SERVICE_BASE_URI}/uncompressFullArchive`,
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      data: {
-        filePath: path,
-        options,
-      },
-    });
-    map(extractedComicBookArchive.data, (page) => {
-      const pageFilePath = removeLeadingPeriod(page);
-      const imagePath = encodeURI(`${LIBRARY_SERVICE_HOST}${pageFilePath}`);
-      comicBookPages.push(imagePath);
-    });
-    dispatch({
-      type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
-      extractedComicBookArchive: comicBookPages,
-    });
-  };
 
+  (path: string, options: any): any =>
+    async (dispatch) => {
+      dispatch({
+        type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
+      });
+      await axios({
+        method: "POST",
+        url: `${LIBRARY_SERVICE_BASE_URI}/uncompressFullArchive`,
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        data: {
+          filePath: path,
+          options,
+        },
+      });
+    };
+
+/**
+ * Description
+ * @param {any} query
+ * @param {any} options
+ * @returns {any}
+ */
 export const searchIssue = (query, options) => async (dispatch) => {
   dispatch({
     type: SS_SEARCH_IN_PROGRESS,

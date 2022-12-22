@@ -16,6 +16,7 @@ import ellipsize from "ellipsize";
 import { Form, Field } from "react-final-form";
 import { isEmpty, isNil, map } from "lodash";
 import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
+
 interface IAcquisitionPanelProps {
   query: any;
   comicObjectId: any;
@@ -96,9 +97,12 @@ export const AcquisitionPanel = (
     (searchInstanceId, resultId, name, size, type) => {
       dispatch(
         downloadAirDCPPItem(
-          searchInstanceId, resultId,
+          searchInstanceId,
+          resultId,
           props.comicObjectId,
-          name, size, type,
+          name,
+          size,
+          type,
           airDCPPConfiguration.airDCPPState.socket,
           {
             username: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.username}`,

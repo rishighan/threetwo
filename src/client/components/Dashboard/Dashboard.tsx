@@ -11,7 +11,7 @@ import {
   getComicBooks,
 } from "../../actions/fileops.actions";
 import { getLibraryStatistics } from "../../actions/comicinfo.actions";
-import { isEmpty } from "lodash";
+import { isEmpty, isNil } from "lodash";
 
 export const Dashboard = (): ReactElement => {
   const dispatch = useDispatch();
@@ -43,7 +43,7 @@ export const Dashboard = (): ReactElement => {
   }, []);
 
   const recentComics = useSelector(
-    (state: RootState) => state.fileOps.recentComics,
+    (state: RootState) => state.fileOps.recentComics
   );
   const wantedComics = useSelector(
     (state: RootState) => state.fileOps.wantedComics,
@@ -60,7 +60,7 @@ export const Dashboard = (): ReactElement => {
       <section className="section">
         <h1 className="title">Dashboard</h1>
 
-        {!isEmpty(recentComics) && !isEmpty(recentComics.docs) ? (
+        {!isEmpty(recentComics) ? (
           <>
             {/* Pull List */}
             <PullList issues={recentComics} />
@@ -74,9 +74,8 @@ export const Dashboard = (): ReactElement => {
               <WantedComicsList comics={wantedComics} />
             )}
             {/* Recent imports */}
-            {!isEmpty(recentComics) && (
               <RecentlyImported comicBookCovers={recentComics} />
-            )}
+            
             {/* Volumes */}
             {!isEmpty(volumeGroups) && (
               <VolumeGroups volumeGroups={volumeGroups} />

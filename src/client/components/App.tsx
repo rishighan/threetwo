@@ -18,18 +18,22 @@ import {
   AirDCPPSocketContext,
 } from "../context/AirDCPPSocket";
 import { isEmpty, isUndefined } from "lodash";
-import { AIRDCPP_DOWNLOAD_PROGRESS_TICK } from "../constants/action-types";
-import { useDispatch } from "react-redux";
+import {
+  AIRDCPP_DOWNLOAD_PROGRESS_TICK,
+  LS_SINGLE_IMPORT,
+} from "../constants/action-types";
+import { useDispatch, useSelector } from "react-redux";
 
 /**
  * Method that initializes an AirDC++ socket connection
  * 1. Initializes event listeners for download init, tick and complete events
- * 2. Handles errors in case the connection to AirDC++ is not established or terminated 
- * @returns void 
+ * 2. Handles errors in case the connection to AirDC++ is not established or terminated
+ * @returns void
  */
 const AirDCPPSocketComponent = (): ReactElement => {
   const airDCPPConfiguration = useContext(AirDCPPSocketContext);
   const dispatch = useDispatch();
+
   useEffect(() => {
     const initializeAirDCPPEventListeners = async () => {
       if (
@@ -42,9 +46,7 @@ const AirDCPPSocketComponent = (): ReactElement => {
           "queue_bundle_added",
           async (data) => {
             console.log("JEMEN:", data);
-
-
-          }
+          },
         );
         // download tick listener
         await airDCPPConfiguration.airDCPPState.socket.addListener(
@@ -62,9 +64,18 @@ const AirDCPPSocketComponent = (): ReactElement => {
           `queue`,
           "queue_bundle_status",
           async (bundleData) => {
+            let count = 0;
             if (bundleData.status.completed && bundleData.status.downloaded) {
               // dispatch the action for raw import, with the metadata
-              console.log("IM THE MAN UP IN THIS")
+              if (count < 1) {
+                console.log(`[AirDCPP]: Download complete.`);
+                dispatch({
+                  type: LS_SINGLE_IMPORT,
+                  meta: { remote: true },
+                  data: bundleData,
+                });
+                count += 1;
+              }
             }
           },
         );
@@ -92,7 +103,10 @@ export const App = (): ReactElement => {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/import" element={<Import path={"./comics"} />} />
-          <Route path="/library" element={<TabulatedContentContainer category="library" />} />
+          <Route
+            path="/library"
+            element={<TabulatedContentContainer category="library" />}
+          />
           <Route path="/library-grid" element={<LibraryGrid />} />
           <Route path="/downloads" element={<Downloads data={{}} />} />
           <Route path="/search" element={<Search />} />
@@ -105,9 +119,18 @@ export const App = (): ReactElement => {
             element={<VolumeDetail />}
           />
           <Route path="/settings" element={<Settings />} />
-          <Route path="/pull-list/all" element={<TabulatedContentContainer category="pullList" />} />
-          <Route path="/wanted/all" element={<TabulatedContentContainer category="wanted" />} />
-          <Route path="/volumes/all" element={<TabulatedContentContainer category="volumes" />} />
+          <Route
+            path="/pull-list/all"
+            element={<TabulatedContentContainer category="pullList" />}
+          />
+          <Route
+            path="/wanted/all"
+            element={<TabulatedContentContainer category="wanted" />}
+          />
+          <Route
+            path="/volumes/all"
+            element={<TabulatedContentContainer category="volumes" />}
+          />
         </Routes>
       </div>
     </AirDCPPSocketContextProvider>
