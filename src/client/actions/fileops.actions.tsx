@@ -60,15 +60,6 @@ export async function walkFolder(path: string): Promise<Array<IFolderData>> {
  * @return the comic book metadata
  */
 export const fetchComicBookMetadata = () => async (dispatch) => {
-  const extractionOptions = {
-    extractTarget: "cover",
-    targetExtractionFolder: "./userdata/covers",
-    extractionMode: "bulk",
-    paginationOptions: {
-      pageLimit: 25,
-      page: 1,
-    },
-  };
   dispatch({
     type: LS_IMPORT_CALL_IN_PROGRESS,
   });
@@ -86,7 +77,7 @@ export const fetchComicBookMetadata = () => async (dispatch) => {
   dispatch({
     type: LS_IMPORT,
     meta: { remote: true },
-    data: { extractionOptions },
+    data: {},
   });
 };
 export const toggleImportQueueStatus = (options) => async (dispatch) => {
@@ -136,21 +127,24 @@ export const getComicBooks = (options) => async (dispatch) => {
  * @returns Nothing.
  * @param payload
  */
-export const importToDB = (sourceName: string, payload?: any) => (dispatch) => {
+export const importToDB = (sourceName: string, metadata?: any) => (dispatch) => {
   try {
     const comicBookMetadata = {
-      rawFileDetails: {
-        name: "",
-      },
-      importStatus: {
-        isImported: true,
-        tagged: false,
-        matchedResult: {
-          score: "0",
+      importType: "new",
+      payload: {
+        rawFileDetails: {
+          name: "",
         },
-      },
-      sourcedMetadata: payload || null,
-      acquisition: { source: { wanted: true, name: sourceName } },
+        importStatus: {
+          isImported: true,
+          tagged: false,
+          matchedResult: {
+            score: "0",
+          },
+        },
+        sourcedMetadata: metadata || null,
+        acquisition: { source: { wanted: true, name: sourceName } },
+      }
     };
     dispatch({
       type: IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
@@ -261,22 +255,22 @@ export const fetchComicVineMatches =
  */
 export const extractComicArchive =
   (path: string, options: any): any =>
-  async (dispatch) => {
-    dispatch({
-      type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
-    });
-    await axios({
-      method: "POST",
-      url: `${LIBRARY_SERVICE_BASE_URI}/uncompressFullArchive`,
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      data: {
-        filePath: path,
-        options,
-      },
-    });
-  };
+    async (dispatch) => {
+      dispatch({
+        type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
+      });
+      await axios({
+        method: "POST",
+        url: `${LIBRARY_SERVICE_BASE_URI}/uncompressFullArchive`,
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        data: {
+          filePath: path,
+          options,
+        },
+      });
+    };
 
 /**
  * Description

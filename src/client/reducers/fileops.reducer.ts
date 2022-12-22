@@ -88,7 +88,7 @@ function fileOpsReducer(state = initialState, action) {
     case IMS_RECENT_COMICS_FETCHED:
       return {
         ...state,
-        recentComics: action.data,
+        recentComics: action.data.docs,
       };
     case IMS_WANTED_COMICS_FETCHED:
       return {
@@ -153,9 +153,13 @@ function fileOpsReducer(state = initialState, action) {
     }
     case LS_COVER_EXTRACTED: {
       console.log("BASH", action);
+      if(state.recentComics.length === 5) {
+        state.recentComics.pop();
+      }
       return {
         ...state,
         librarySearchResultCount: state.librarySearchResultCount + 1,
+        recentComics: [...state.recentComics, action.result.data.importResult]
       };
     }
 
@@ -172,7 +176,7 @@ function fileOpsReducer(state = initialState, action) {
           return {
             ...state,
             extractedComicBookArchive: {
-              reading: comicBookPages
+              reading: comicBookPages,
             },
             comicBookExtractionInProgress: false,
           };
@@ -181,12 +185,11 @@ function fileOpsReducer(state = initialState, action) {
           return {
             ...state,
             extractedComicBookArchive: {
-              analysis: comicBookPages
+              analysis: comicBookPages,
             },
             comicBookExtractionInProgress: false,
           };
       }
-
     }
     case LS_QUEUE_DRAINED: {
       console.log("drained", action);
