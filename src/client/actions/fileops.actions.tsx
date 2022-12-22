@@ -254,6 +254,7 @@ export const fetchComicVineMatches =
  * @returns {any}
  */
 export const extractComicArchive =
+
   (path: string, options: any): any =>
     async (dispatch) => {
       dispatch({
