@@ -208,14 +208,13 @@ export const Library = (): ReactElement => {
   // ImportStatus.propTypes = {
   //   value: PropTypes.bool.isRequired,
   // };
-
   return (
     <section className="container">
       <div className="section">
         <div className="header-area">
           <h1 className="title">Library</h1>
         </div>
-        {!isUndefined(searchResults.hits) && (
+        {!isEmpty(searchResults) ? (
           <div>
             <div className="library">
               <T2Table
@@ -230,7 +229,25 @@ export const Library = (): ReactElement => {
               />
             </div>
           </div>
-        )}
+        ): <div className="columns">
+          <div className="column is-two-thirds">
+            <article className="message is-link">
+              <div className="message-body">
+                No comics were found in the library, Elasticsearch reports no
+                indices. Try importing a few comics into the library and come
+                back.
+              </div>
+            </article>
+            <pre>
+              {!isUndefined(searchError.data) &&
+                JSON.stringify(
+                  searchError.data.meta.body.error.root_cause,
+                  null,
+                  4,
+                )}
+            </pre>
+          </div>
+        </div> }
       </div>
     </section>
   );
