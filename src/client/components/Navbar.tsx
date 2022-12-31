@@ -84,6 +84,14 @@ const Navbar: React.FunctionComponent = (props) => {
               </div>
             ) : null}
           </div>
+          {/* AirDC++ socket connection status */}
+          <div className="navbar-item has-dropdown is-hoverable">
+            <a className="navbar-link is-arrowless">
+              <i className="fa-solid fa-bolt"></i>
+            </a>
+          </div>
+          
+          
           <div className="navbar-item has-dropdown is-hoverable is-mega">
             <div className="navbar-link flex">Blog</div>
             <div id="blogDropdown" className="navbar-dropdown">

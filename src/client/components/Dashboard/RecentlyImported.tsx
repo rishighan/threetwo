@@ -51,7 +51,6 @@ export const RecentlyImported = ({
             },
             idx,
           ) => {
-            console.log(comicvine);
             const { issueName, url } = determineCoverFile({
               rawFileDetails,
               comicvine,
@@ -63,7 +62,6 @@ export const RecentlyImported = ({
               comicInfo,
               locg,
             });
-            console.log(name);
             const isComicBookMetadataAvailable =
               !isUndefined(comicvine) &&
               !isUndefined(comicvine.volumeInformation);
