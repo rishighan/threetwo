@@ -55,6 +55,7 @@ const AirDCPPSocketContextProvider = ({ children }) => {
       protocol: `${host.protocol}`,
       hostname: `${host.hostname}:${host.port}`,
     });
+
     let socketConnectionInformation = await initializedAirDCPPSocket.connect(
       `${host.username}`,
       `${host.password}`,
