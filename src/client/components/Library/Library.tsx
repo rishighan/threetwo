@@ -8,10 +8,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { searchIssue } from "../../actions/fileops.actions";
 import ellipsize from "ellipsize";
 
-
 /**
  * Component that tabulates the contents of the user's ThreeTwo Library.
- * 
+ *
  * @component
  * @example
  * <Library />
@@ -20,9 +19,10 @@ export const Library = (): ReactElement => {
   const searchResults = useSelector(
     (state: RootState) => state.fileOps.libraryComics,
   );
-  const searchError = useSelector(
-    (state: RootState) => state.fileOps.librarySearchError,
-  );
+  const searchError = useSelector((state: RootState) => {
+    console.log(state);
+    return state.fileOps.librarySearchError;
+  });
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(
@@ -36,7 +36,7 @@ export const Library = (): ReactElement => {
             from: 0,
           },
           type: "all",
-          trigger: "libraryPage"
+          trigger: "libraryPage",
         },
       ),
     );
@@ -89,63 +89,67 @@ export const Library = (): ReactElement => {
   const WantedStatus = ({ value }) => {
     return !value ? <span className="tag is-info is-light">Wanted</span> : null;
   };
-  const columns = useMemo(() => [
-    {
-      header: "Comic Metadata",
-      footer: 1,
-      columns: [
-        {
-          header: "File Details",
-          id: "fileDetails",
-          minWidth: 400,
-          accessorKey: "_source",
-          cell: info => {
-            return <MetadataPanel data={info.getValue()} />;
+  const columns = useMemo(
+    () => [
+      {
+        header: "Comic Metadata",
+        footer: 1,
+        columns: [
+          {
+            header: "File Details",
+            id: "fileDetails",
+            minWidth: 400,
+            accessorKey: "_source",
+            cell: (info) => {
+              return <MetadataPanel data={info.getValue()} />;
+            },
           },
-        },
-        {
-          header: "ComicInfo.xml",
-          accessorKey: "_source.sourcedMetadata.comicInfo",
-          align: "center",
-          minWidth: 250,
-          cell: info =>
-            !isEmpty(info.getValue()) ? (
-              <ComicInfoXML data={info.getValue()} />
-            ) : (
-              <span className="tag mt-5">No ComicInfo.xml</span>
-            ),
-        },
-      ],
-    },
-    {
-      header: "Additional Metadata",
-      columns: [
-        {
-          header: "Publisher",
-          accessorKey:
-            "_source.sourcedMetadata.comicvine.volumeInformation",
-          cell: info => {
-            return (
-              !isNil(info.getValue()) && (
-                <h6 className="is-size-7 has-text-weight-bold">
-                  {info.getValue().publisher.name}
-                </h6>
-              )
-            );
+          {
+            header: "ComicInfo.xml",
+            accessorKey: "_source.sourcedMetadata.comicInfo",
+            align: "center",
+            minWidth: 250,
+            cell: (info) =>
+              !isEmpty(info.getValue()) ? (
+                <ComicInfoXML data={info.getValue()} />
+              ) : (
+                <span className="tag mt-5">No ComicInfo.xml</span>
+              ),
           },
-        },
-        {
-          header: "Something",
-          accessorKey: "_source.acquisition.source.wanted",
-          cell: info => {
-            !isUndefined(info.getValue()) ?
-              <WantedStatus value={info.getValue().toString()} /> : "Nothing";
+        ],
+      },
+      {
+        header: "Additional Metadata",
+        columns: [
+          {
+            header: "Publisher",
+            accessorKey: "_source.sourcedMetadata.comicvine.volumeInformation",
+            cell: (info) => {
+              return (
+                !isNil(info.getValue()) && (
+                  <h6 className="is-size-7 has-text-weight-bold">
+                    {info.getValue().publisher.name}
+                  </h6>
+                )
+              );
+            },
           },
-        },
-      ],
-    }
-  ], []);
-
+          {
+            header: "Something",
+            accessorKey: "_source.acquisition.source.wanted",
+            cell: (info) => {
+              !isUndefined(info.getValue()) ? (
+                <WantedStatus value={info.getValue().toString()} />
+              ) : (
+                "Nothing"
+              );
+            },
+          },
+        ],
+      },
+    ],
+    [],
+  );
 
   /**
    * Pagination control that fetches the next x (pageSize) items
@@ -153,7 +157,7 @@ export const Library = (): ReactElement => {
    * @param {number} pageIndex
    * @param {number} pageSize
    * @returns void
-   *  
+   *
    **/
   const nextPage = useCallback((pageIndex: number, pageSize: number) => {
     dispatch(
@@ -172,7 +176,6 @@ export const Library = (): ReactElement => {
       ),
     );
   }, []);
-
 
   /**
    * Pagination control that fetches the previous x (pageSize) items
@@ -199,7 +202,7 @@ export const Library = (): ReactElement => {
             from,
           },
           type: "all",
-          trigger: "libraryPage"
+          trigger: "libraryPage",
         },
       ),
     );
@@ -229,25 +232,27 @@ export const Library = (): ReactElement => {
               />
             </div>
           </div>
-        ): <div className="columns">
-          <div className="column is-two-thirds">
-            <article className="message is-link">
-              <div className="message-body">
-                No comics were found in the library, Elasticsearch reports no
-                indices. Try importing a few comics into the library and come
-                back.
-              </div>
-            </article>
-            <pre>
-              {!isUndefined(searchError.data) &&
-                JSON.stringify(
-                  searchError.data.meta.body.error.root_cause,
-                  null,
-                  4,
-                )}
-            </pre>
+        ) : (
+          <div className="columns">
+            <div className="column is-two-thirds">
+              <article className="message is-link">
+                <div className="message-body">
+                  No comics were found in the library, Elasticsearch reports no
+                  indices. Try importing a few comics into the library and come
+                  back.
+                </div>
+              </article>
+              <pre>
+                {!isUndefined(searchError.data) &&
+                  JSON.stringify(
+                    searchError.data.meta.body.error.root_cause,
+                    null,
+                    4,
+                  )}
+              </pre>
+            </div>
           </div>
-        </div> }
+        )}
       </div>
     </section>
   );

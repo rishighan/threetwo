@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { SearchBar } from "./GlobalSearchBar/SearchBar";
 import { DownloadProgressTick } from "./ComicDetail/DownloadProgressTick";
 import { Link } from "react-router-dom";
@@ -9,6 +9,10 @@ const Navbar: React.FunctionComponent = (props) => {
   const downloadProgressTick = useSelector(
     (state: RootState) => state.airdcpp.downloadProgressData,
   );
+
+  // const airDCPPSocketConnectionStatus = useSelector((state: RootState) => {
+  //   console.log(state);
+  // });
 
   return (
     <nav className="navbar is-fixed-top">
@@ -72,9 +76,7 @@ const Navbar: React.FunctionComponent = (props) => {
           <div className="navbar-item has-dropdown is-hoverable">
             <a className="navbar-link is-arrowless">
               <i className="fa-solid fa-download"></i>
-              {downloadProgressTick && (
-                <div className="pulsating-circle"></div>
-              )}
+              {downloadProgressTick && <div className="pulsating-circle"></div>}
             </a>
             {!isUndefined(downloadProgressTick) ? (
               <div className="navbar-dropdown download-progress-meter">
@@ -86,12 +88,11 @@ const Navbar: React.FunctionComponent = (props) => {
           </div>
           {/* AirDC++ socket connection status */}
           <div className="navbar-item has-dropdown is-hoverable">
-            <a className="navbar-link is-arrowless">
+            <a className="navbar-link is-arrowless has-text-success">
               <i className="fa-solid fa-bolt"></i>
             </a>
           </div>
-          
-          
+
           <div className="navbar-item has-dropdown is-hoverable is-mega">
             <div className="navbar-link flex">Blog</div>
             <div id="blogDropdown" className="navbar-dropdown">

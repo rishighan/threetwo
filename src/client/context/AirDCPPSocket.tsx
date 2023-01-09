@@ -1,7 +1,9 @@
 import { isEmpty, isUndefined } from "lodash";
 import React, { createContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { setAirDCPPSocketConnectionAsActive } from "../actions/airdcpp.actions";
 import { getSettings } from "../actions/settings.actions";
+
 import AirDCPPSocket from "../services/DcppSearchService";
 
 const AirDCPPSocketContextProvider = ({ children }) => {
@@ -51,16 +53,31 @@ const AirDCPPSocketContextProvider = ({ children }) => {
         client: { host },
       },
     } = configuration;
+
     const initializedAirDCPPSocket = new AirDCPPSocket({
       protocol: `${host.protocol}`,
       hostname: `${host.hostname}:${host.port}`,
     });
+
+    // connect and disconnect handlers
+    initializedAirDCPPSocket.onConnected = (sessionInfo) => {
+      dispatch(setAirDCPPSocketConnectionAsActive());
+    };
+    initializedAirDCPPSocket.onDisconnected = async (
+      reason,
+      code,
+      wasClean,
+    ) => {
+      console.log("kulkarni kamal kulthe", reason, code, wasClean);
+    };
 
     const socketConnectionInformation = await initializedAirDCPPSocket.connect(
       `${host.username}`,
       `${host.password}`,
       true,
     );
+
+    // update the state with the new socket connection information
     persistSettings({
       ...airDCPPState,
       airDCPPState: {

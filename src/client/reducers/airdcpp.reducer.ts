@@ -9,6 +9,8 @@ import {
   AIRDCPP_BUNDLES_FETCHED,
   AIRDCPP_TRANSFERS_FETCHED,
   LIBRARY_ISSUE_BUNDLES,
+  AIRDCPP_SOCKET_CONNECTED,
+  AIRDCPP_SOCKET_DISCONNECTED,
 } from "../constants/action-types";
 import { LOCATION_CHANGE } from "redux-first-history";
 import { isNil, isUndefined } from "lodash";
@@ -24,6 +26,7 @@ const initialState = {
   downloadFileStatus: {},
   bundles: [],
   transfers: [],
+  isAirDCPPSocketConnected: false,
 };
 
 function airdcppReducer(state = initialState, action) {
@@ -95,6 +98,18 @@ function airdcppReducer(state = initialState, action) {
         ...state,
         transfers: action.bundles,
       };
+
+    case AIRDCPP_SOCKET_CONNECTED:
+      return {
+        ...state,
+        isAirDCPPSocketConnected: true,
+      };
+
+    case AIRDCPP_SOCKET_DISCONNECTED:
+      return {
+        ...state,
+        isAirDCPPSocketConnected: false,
+      };
     case LOCATION_CHANGE:
       return {
         searchResults: [],
@@ -105,7 +120,6 @@ function airdcppReducer(state = initialState, action) {
         bundleDBImportResult: null,
         // bundles: [],
       };
-
     default:
       return state;
   }
