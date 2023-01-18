@@ -10,9 +10,10 @@ const Navbar: React.FunctionComponent = (props) => {
     (state: RootState) => state.airdcpp.downloadProgressData,
   );
 
-  // const airDCPPSocketConnectionStatus = useSelector((state: RootState) => {
-  //   console.log(state);
-  // });
+  const airDCPPSocketConnectionStatus = useSelector((state: RootState) => {
+    console.log(state);
+    return state.airdcpp.isAirDCPPSocketConnected;
+  });
 
   return (
     <nav className="navbar is-fixed-top">
@@ -88,9 +89,15 @@ const Navbar: React.FunctionComponent = (props) => {
           </div>
           {/* AirDC++ socket connection status */}
           <div className="navbar-item has-dropdown is-hoverable">
-            <a className="navbar-link is-arrowless has-text-success">
-              <i className="fa-solid fa-bolt"></i>
-            </a>
+            {airDCPPSocketConnectionStatus ? (
+              <a className="navbar-link is-arrowless has-text-success">
+                <i className="fa-solid fa-bolt"></i>
+              </a>
+            ) : (
+              <a className="navbar-link is-arrowless has-text-danger">
+                <i className="fa-solid fa-bolt"></i>
+              </a>
+            )}
           </div>
 
           <div className="navbar-item has-dropdown is-hoverable is-mega">

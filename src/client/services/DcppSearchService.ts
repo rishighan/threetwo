@@ -10,7 +10,7 @@ class AirDCPPSocket {
     }
     const options = {
       url: `${socketProtocol}://${configuration.hostname}/api/v1/`,
-      autoReconnect: false,
+      autoReconnect: true,
       reconnectInterval: 5,
       logLevel: "verbose",
       ignoredListenerEvents: [
@@ -18,6 +18,8 @@ class AirDCPPSocket {
         "hash_statistics",
         "hub_counts_updated",
       ],
+      username: `${configuration.username}`,
+      password: `${configuration.password}`,
     };
     const AirDCPPSocketInstance = Socket(options, window.WebSocket as any);
     return AirDCPPSocketInstance;

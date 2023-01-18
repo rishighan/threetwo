@@ -37,12 +37,27 @@ function sleep(ms: number): Promise<NodeJS.Timeout> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export const setAirDCPPSocketConnectionAsActive = () => async (dispatch) => {
-  console.log("fire, fire, fire");
-  dispatch({
-    type: AIRDCPP_SOCKET_CONNECTED,
-  });
-};
+export const toggleAirDCPPSocketConnectionStatus =
+  (status: String) => async (dispatch) => {
+    console.log("sanul", status);
+    switch (status) {
+      case "connected":
+        dispatch({
+          type: AIRDCPP_SOCKET_CONNECTED,
+        });
+        break;
+
+      case "disconnected":
+        dispatch({
+          type: AIRDCPP_SOCKET_DISCONNECTED,
+        });
+        break;
+
+      default:
+        console.log("Can't set AirDC++ socket status.");
+        break;
+    }
+  };
 export const search =
   (data: SearchData, ADCPPSocket: any, credentials: any) =>
   async (dispatch) => {
