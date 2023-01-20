@@ -79,11 +79,7 @@ const AirDCPPSocketContextProvider = ({ children }) => {
       );
     };
 
-    const socketConnectionInformation = await initializedAirDCPPSocket.connect(
-      `${host.username}`,
-      `${host.password}`,
-      true,
-    );
+    const socketConnectionInformation = await initializedAirDCPPSocket.connect();
 
     // update the state with the new socket connection information
     persistSettings({
