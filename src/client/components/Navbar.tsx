@@ -11,6 +11,7 @@ const Navbar: React.FunctionComponent = (props) => {
     (state: RootState) => state.airdcpp.downloadProgressData,
   );
 
+
   const airDCPPSocketConnectionStatus = useSelector(
     (state: RootState) => state.airdcpp.isAirDCPPSocketConnected,
   );
@@ -89,8 +90,7 @@ const Navbar: React.FunctionComponent = (props) => {
               <div className="navbar-dropdown is-right">
                 <a className="navbar-item">
                   <DownloadProgressTick data={downloadProgressTick} />
-                </a>
-              </div>
+                </a>              </div>
             ) : null}
           </div>
           {/* AirDC++ socket connection status */}

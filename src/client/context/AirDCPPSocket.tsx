@@ -14,7 +14,7 @@ const AirDCPPSocketContextProvider = ({ children }) => {
       airDCPPState: {
         settings: settingsObject,
         socket: {},
-        socketConnectionInformation: {},
+        socketConectionInformation: {},
       },
     });
   };
@@ -61,6 +61,7 @@ const AirDCPPSocketContextProvider = ({ children }) => {
       password: `${host.password}`,
     });
 
+
     // connect and disconnect handlers
     initializedAirDCPPSocket.onConnected = (sessionInfo) => {
       dispatch(toggleAirDCPPSocketConnectionStatus("connected", sessionInfo));
@@ -86,6 +87,8 @@ const AirDCPPSocketContextProvider = ({ children }) => {
     );
 
     // update the state with the new socket connection information
+
+
     persistSettings({
       ...airDCPPState,
       airDCPPState: {
@@ -105,7 +108,7 @@ const AirDCPPSocketContextProvider = ({ children }) => {
 };
 const AirDCPPSocketContext = createContext({
   airDCPPState: {},
-  saveSettings: () => {},
+  saveSettings: () => { },
 });
 
 export { AirDCPPSocketContext, AirDCPPSocketContextProvider };
