@@ -4,16 +4,22 @@ import { DownloadProgressTick } from "./ComicDetail/DownloadProgressTick";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { isUndefined } from "lodash";
+import { format, fromUnixTime } from "date-fns";
 
 const Navbar: React.FunctionComponent = (props) => {
   const downloadProgressTick = useSelector(
     (state: RootState) => state.airdcpp.downloadProgressData,
   );
 
-  const airDCPPSocketConnectionStatus = useSelector((state: RootState) => {
-    console.log(state);
-    return state.airdcpp.isAirDCPPSocketConnected;
-  });
+  const airDCPPSocketConnectionStatus = useSelector(
+    (state: RootState) => state.airdcpp.isAirDCPPSocketConnected,
+  );
+  const airDCPPSessionInfo = useSelector(
+    (state: RootState) => state.airdcpp.airDCPPSessionInfo,
+  );
+  const socketDisconnectionReason = useSelector(
+    (state: RootState) => state.airdcpp.socketDisconnectionReason,
+  );
 
   return (
     <nav className="navbar is-fixed-top">
@@ -80,7 +86,7 @@ const Navbar: React.FunctionComponent = (props) => {
               {downloadProgressTick && <div className="pulsating-circle"></div>}
             </a>
             {!isUndefined(downloadProgressTick) ? (
-              <div className="navbar-dropdown download-progress-meter">
+              <div className="navbar-dropdown is-right">
                 <a className="navbar-item">
                   <DownloadProgressTick data={downloadProgressTick} />
                 </a>
@@ -90,13 +96,51 @@ const Navbar: React.FunctionComponent = (props) => {
           {/* AirDC++ socket connection status */}
           <div className="navbar-item has-dropdown is-hoverable">
             {airDCPPSocketConnectionStatus ? (
-              <a className="navbar-link is-arrowless has-text-success">
-                <i className="fa-solid fa-bolt"></i>
-              </a>
+              <>
+                <a className="navbar-link is-arrowless has-text-success">
+                  <i className="fa-solid fa-bolt"></i>
+                </a>
+                <div className="navbar-dropdown pt-4 pr-2 pl-2 is-right airdcpp-status">
+                  {/* AirDC++ Session Information */}
+
+                  <p>
+                    Last login was{" "}
+                    <span className="tag">
+                      {format(
+                        fromUnixTime(airDCPPSessionInfo.user.last_login),
+                        "dd MMMM, yyyy",
+                      )}
+                    </span>
+                  </p>
+                  <hr className="navbar-divider" />
+                  <p>
+                    <span className="tag has-text-success">
+                      {airDCPPSessionInfo.user.username}
+                    </span>
+                    connected to{" "}
+                    <span className="tag has-text-success">
+                      {airDCPPSessionInfo.system_info.client_version}
+                    </span>{" "}
+                    with session ID{" "}
+                    <span className="tag has-text-success">
+                      {airDCPPSessionInfo.session_id}
+                    </span>
+                  </p>
+
+                  {/* <pre>{JSON.stringify(airDCPPSessionInfo, null, 2)}</pre> */}
+                </div>
+              </>
             ) : (
-              <a className="navbar-link is-arrowless has-text-danger">
-                <i className="fa-solid fa-bolt"></i>
-              </a>
+              <>
+                <a className="navbar-link is-arrowless has-text-danger">
+                  <i className="fa-solid fa-bolt"></i>
+                </a>
+                <div className="navbar-dropdown pr-2 pl-2 is-right">
+                  <pre>
+                    {JSON.stringify(socketDisconnectionReason, null, 2)}
+                  </pre>
+                </div>
+              </>
             )}
           </div>
 

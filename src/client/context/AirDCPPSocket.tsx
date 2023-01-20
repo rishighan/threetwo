@@ -63,14 +63,20 @@ const AirDCPPSocketContextProvider = ({ children }) => {
 
     // connect and disconnect handlers
     initializedAirDCPPSocket.onConnected = (sessionInfo) => {
-      dispatch(toggleAirDCPPSocketConnectionStatus("connected"));
+      dispatch(toggleAirDCPPSocketConnectionStatus("connected", sessionInfo));
     };
     initializedAirDCPPSocket.onDisconnected = async (
       reason,
       code,
       wasClean,
     ) => {
-      dispatch(toggleAirDCPPSocketConnectionStatus("disconnected"));
+      dispatch(
+        toggleAirDCPPSocketConnectionStatus("disconnected", {
+          reason,
+          code,
+          wasClean,
+        }),
+      );
     };
 
     const socketConnectionInformation = await initializedAirDCPPSocket.connect(

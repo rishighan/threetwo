@@ -27,6 +27,8 @@ const initialState = {
   bundles: [],
   transfers: [],
   isAirDCPPSocketConnected: false,
+  airDCPPSessionInfo: {},
+  socketDisconnectionReason: {},
 };
 
 function airdcppReducer(state = initialState, action) {
@@ -103,12 +105,14 @@ function airdcppReducer(state = initialState, action) {
       return {
         ...state,
         isAirDCPPSocketConnected: true,
+        airDCPPSessionInfo: action.data,
       };
 
     case AIRDCPP_SOCKET_DISCONNECTED:
       return {
         ...state,
         isAirDCPPSocketConnected: false,
+        socketDisconnectionReason: action.data,
       };
     case LOCATION_CHANGE:
       return {

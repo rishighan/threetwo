@@ -38,18 +38,20 @@ function sleep(ms: number): Promise<NodeJS.Timeout> {
 }
 
 export const toggleAirDCPPSocketConnectionStatus =
-  (status: String) => async (dispatch) => {
+  (status: String, payload?: any) => async (dispatch) => {
     console.log("sanul", status);
     switch (status) {
       case "connected":
         dispatch({
           type: AIRDCPP_SOCKET_CONNECTED,
+          data: payload,
         });
         break;
 
       case "disconnected":
         dispatch({
           type: AIRDCPP_SOCKET_DISCONNECTED,
+          data: payload,
         });
         break;
 
