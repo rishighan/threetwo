@@ -14,7 +14,7 @@ const AirDCPPSocketContextProvider = ({ children }) => {
       airDCPPState: {
         settings: settingsObject,
         socket: {},
-        socketConnectionInformation: {},
+        socketConectionInformation: {},
       },
     });
   };
@@ -105,7 +105,7 @@ const AirDCPPSocketContextProvider = ({ children }) => {
 };
 const AirDCPPSocketContext = createContext({
   airDCPPState: {},
-  saveSettings: () => {},
+  saveSettings: () => { },
 });
 
 export { AirDCPPSocketContext, AirDCPPSocketContextProvider };
