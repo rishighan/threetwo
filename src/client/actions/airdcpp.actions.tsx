@@ -4,7 +4,10 @@ import {
   PriorityEnum,
   SearchResponse,
 } from "threetwo-ui-typings";
-import { LIBRARY_SERVICE_BASE_URI, SEARCH_SERVICE_BASE_URI } from "../constants/endpoints";
+import {
+  LIBRARY_SERVICE_BASE_URI,
+  SEARCH_SERVICE_BASE_URI,
+} from "../constants/endpoints";
 import {
   AIRDCPP_SEARCH_RESULTS_ADDED,
   AIRDCPP_SEARCH_RESULTS_UPDATED,
@@ -18,6 +21,8 @@ import {
   IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
   AIRDCPP_TRANSFERS_FETCHED,
   LIBRARY_ISSUE_BUNDLES,
+  AIRDCPP_SOCKET_CONNECTED,
+  AIRDCPP_SOCKET_DISCONNECTED,
 } from "../constants/action-types";
 import { isNil } from "lodash";
 import axios from "axios";
@@ -32,190 +37,199 @@ function sleep(ms: number): Promise<NodeJS.Timeout> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export const toggleAirDCPPSocketConnectionStatus =
+  (status: String, payload?: any) => async (dispatch) => {
+    switch (status) {
+      case "connected":
+        dispatch({
+          type: AIRDCPP_SOCKET_CONNECTED,
+          data: payload,
+        });
+        break;
+
+      case "disconnected":
+        dispatch({
+          type: AIRDCPP_SOCKET_DISCONNECTED,
+          data: payload,
+        });
+        break;
+
+      default:
+        console.log("Can't set AirDC++ socket status.");
+        break;
+    }
+  };
 export const search =
   (data: SearchData, ADCPPSocket: any, credentials: any) =>
-    async (dispatch) => {
-      try {
-        if (!ADCPPSocket.isConnected()) {
-          await ADCPPSocket.connect(
-            credentials.username,
-            credentials.password,
-            true,
-          );
-        }
-        const instance: SearchInstance = await ADCPPSocket.post("search");
-        dispatch({
-          type: AIRDCPP_SEARCH_IN_PROGRESS,
-        });
-
-        // We want to get notified about every new result in order to make the user experience better
-        await ADCPPSocket.addListener(
-          `search`,
-          "search_result_added",
-          async (groupedResult) => {
-            // ...add the received result in the UI
-            // (it's probably a good idea to have some kind of throttling for the UI updates as there can be thousands of results)
-
-            dispatch({
-              type: AIRDCPP_SEARCH_RESULTS_ADDED,
-              groupedResult,
-            });
-          },
-          instance.id,
-        );
-
-        // We also want to update the existing items in our list when new hits arrive for the previously listed files/directories
-        await ADCPPSocket.addListener(
-          `search`,
-          "search_result_updated",
-          async (groupedResult) => {
-            // ...update properties of the existing result in the UI
-            dispatch({
-              type: AIRDCPP_SEARCH_RESULTS_UPDATED,
-              groupedResult,
-            });
-          },
-          instance.id,
-        );
-
-        // We need to show something to the user in case the search won't yield any results so that he won't be waiting forever)
-        // Wait for 5 seconds for any results to arrive after the searches were sent to the hubs
-        await ADCPPSocket.addListener(
-          `search`,
-          "search_hub_searches_sent",
-          async (searchInfo) => {
-            await sleep(5000);
-
-            // Check the number of received results (in real use cases we should know that even without calling the API)
-            const currentInstance = await ADCPPSocket.get(
-              `search/${instance.id}`,
-            );
-            if (currentInstance.result_count === 0) {
-              // ...nothing was received, show an informative message to the user
-              console.log("No more search results.");
-            }
-
-            // The search can now be considered to be "complete"
-            // If there's an "in progress" indicator in the UI, that could also be disabled here
-            dispatch({
-              type: AIRDCPP_HUB_SEARCHES_SENT,
-              searchInfo,
-              instance,
-            });
-          },
-          instance.id,
-        );
-        // Finally, perform the actual search
-        await ADCPPSocket.post(`search/${instance.id}/hub_search`, data);
-      } catch (error) {
-        console.log(error);
-        throw error;
+  async (dispatch) => {
+    try {
+      if (!ADCPPSocket.isConnected()) {
+        await ADCPPSocket();
       }
-    };
+      const instance: SearchInstance = await ADCPPSocket.post("search");
+      dispatch({
+        type: AIRDCPP_SEARCH_IN_PROGRESS,
+      });
+
+      // We want to get notified about every new result in order to make the user experience better
+      await ADCPPSocket.addListener(
+        `search`,
+        "search_result_added",
+        async (groupedResult) => {
+          // ...add the received result in the UI
+          // (it's probably a good idea to have some kind of throttling for the UI updates as there can be thousands of results)
+
+          dispatch({
+            type: AIRDCPP_SEARCH_RESULTS_ADDED,
+            groupedResult,
+          });
+        },
+        instance.id,
+      );
+
+      // We also want to update the existing items in our list when new hits arrive for the previously listed files/directories
+      await ADCPPSocket.addListener(
+        `search`,
+        "search_result_updated",
+        async (groupedResult) => {
+          // ...update properties of the existing result in the UI
+          dispatch({
+            type: AIRDCPP_SEARCH_RESULTS_UPDATED,
+            groupedResult,
+          });
+        },
+        instance.id,
+      );
+
+      // We need to show something to the user in case the search won't yield any results so that he won't be waiting forever)
+      // Wait for 5 seconds for any results to arrive after the searches were sent to the hubs
+      await ADCPPSocket.addListener(
+        `search`,
+        "search_hub_searches_sent",
+        async (searchInfo) => {
+          await sleep(5000);
+
+          // Check the number of received results (in real use cases we should know that even without calling the API)
+          const currentInstance = await ADCPPSocket.get(
+            `search/${instance.id}`,
+          );
+          if (currentInstance.result_count === 0) {
+            // ...nothing was received, show an informative message to the user
+            console.log("No more search results.");
+          }
+
+          // The search can now be considered to be "complete"
+          // If there's an "in progress" indicator in the UI, that could also be disabled here
+          dispatch({
+            type: AIRDCPP_HUB_SEARCHES_SENT,
+            searchInfo,
+            instance,
+          });
+        },
+        instance.id,
+      );
+      // Finally, perform the actual search
+      await ADCPPSocket.post(`search/${instance.id}/hub_search`, data);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
 
 export const downloadAirDCPPItem =
-  (searchInstanceId: Number,
+  (
+    searchInstanceId: Number,
     resultId: String,
     comicObjectId: String,
-    name: String, size: Number, type: any,
+    name: String,
+    size: Number,
+    type: any,
     ADCPPSocket: any,
     credentials: any,
   ): void =>
-    async (dispatch) => {
-      try {
-        if (!ADCPPSocket.isConnected()) {
-          await ADCPPSocket.connect(
-            `${credentials.username}`,
-            `${credentials.password}`,
-            true,
-          );
-        }
-        let bundleDBImportResult = {};
-        const downloadResult = await ADCPPSocket.post(
-          `search/${searchInstanceId}/results/${resultId}/download`,
-        );
-
-        if (!isNil(downloadResult)) {
-          bundleDBImportResult = await axios({
-            method: "POST",
-            url: `${LIBRARY_SERVICE_BASE_URI}/applyAirDCPPDownloadMetadata`,
-            headers: {
-              "Content-Type": "application/json; charset=utf-8",
-            },
-            data: {
-              bundleId: downloadResult.bundle_info.id,
-              comicObjectId,
-              name,
-              size,
-              type,
-            },
-          });
-
-          dispatch({
-            type: AIRDCPP_RESULT_DOWNLOAD_INITIATED,
-            downloadResult,
-            bundleDBImportResult,
-          });
-          
-          dispatch({
-            type: IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
-            comicBookDetail: bundleDBImportResult.data,
-            IMS_inProgress: false,
-          });
-
-        }
-      } catch (error) {
-        throw error;
+  async (dispatch) => {
+    try {
+      if (!ADCPPSocket.isConnected()) {
+        await ADCPPSocket.connect();
       }
-    };
+      let bundleDBImportResult = {};
+      const downloadResult = await ADCPPSocket.post(
+        `search/${searchInstanceId}/results/${resultId}/download`,
+      );
 
-export const getBundlesForComic =
-  (comicObjectId: string, ADCPPSocket: any, credentials: any) =>
-    async (dispatch) => {
-      try {
-        if (!ADCPPSocket.isConnected()) {
-          await ADCPPSocket.connect(
-            `${credentials.username}`,
-            `${credentials.password}`,
-            true,
-          );
-        }
-        const comicObject = await axios({
+      if (!isNil(downloadResult)) {
+        bundleDBImportResult = await axios({
           method: "POST",
-          url: `${LIBRARY_SERVICE_BASE_URI}/getComicBookById`,
+          url: `${LIBRARY_SERVICE_BASE_URI}/applyAirDCPPDownloadMetadata`,
           headers: {
             "Content-Type": "application/json; charset=utf-8",
           },
           data: {
-            id: `${comicObjectId}`,
+            bundleId: downloadResult.bundle_info.id,
+            comicObjectId,
+            name,
+            size,
+            type,
           },
         });
-        // get only the bundles applicable for the comic
-        if (comicObject.data.acquisition.directconnect) {
-          const filteredBundles = comicObject.data.acquisition.directconnect.downloads.map(
+
+        dispatch({
+          type: AIRDCPP_RESULT_DOWNLOAD_INITIATED,
+          downloadResult,
+          bundleDBImportResult,
+        });
+
+        dispatch({
+          type: IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
+          comicBookDetail: bundleDBImportResult.data,
+          IMS_inProgress: false,
+        });
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+export const getBundlesForComic =
+  (comicObjectId: string, ADCPPSocket: any, credentials: any) =>
+  async (dispatch) => {
+    try {
+      if (!ADCPPSocket.isConnected()) {
+        await ADCPPSocket.connect();
+      }
+      const comicObject = await axios({
+        method: "POST",
+        url: `${LIBRARY_SERVICE_BASE_URI}/getComicBookById`,
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        data: {
+          id: `${comicObjectId}`,
+        },
+      });
+      // get only the bundles applicable for the comic
+      if (comicObject.data.acquisition.directconnect) {
+        const filteredBundles =
+          comicObject.data.acquisition.directconnect.downloads.map(
             async ({ bundleId }) => {
               return await ADCPPSocket.get(`queue/bundles/${bundleId}`);
             },
           );
-          dispatch({
-            type: AIRDCPP_BUNDLES_FETCHED,
-            bundles: await Promise.all(filteredBundles),
-          });
-        }
-      } catch (error) {
-        throw error;
+        dispatch({
+          type: AIRDCPP_BUNDLES_FETCHED,
+          bundles: await Promise.all(filteredBundles),
+        });
       }
-    };
+    } catch (error) {
+      throw error;
+    }
+  };
 
 export const getTransfers =
   (ADCPPSocket: any, credentials: any) => async (dispatch) => {
     try {
       if (!ADCPPSocket.isConnected()) {
-        await ADCPPSocket.connect(
-          `${credentials.username}`,
-          `${credentials.password}`,
-          true,
-        );
+        await ADCPPSocket.connect();
       }
       const bundles = await ADCPPSocket.get("queue/bundles/1/85", {});
       if (!isNil(bundles)) {
@@ -234,7 +248,6 @@ export const getTransfers =
           type: LIBRARY_ISSUE_BUNDLES,
           issue_bundles,
         });
-
       }
     } catch (err) {
       throw err;

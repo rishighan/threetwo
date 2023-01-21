@@ -6686,13 +6686,6 @@ character-reference-invalid@^1.0.0:
   resolved "https://registry.yarnpkg.com/character-reference-invalid/-/character-reference-invalid-1.1.4.tgz#083329cda0eae272ab3dbbf37e9a382c13af1560"
   integrity sha512-mKKUkUbhPpQlCOfIuZkvSEgktjPFIsZKRRbC6KWVEMvlzblj3i3asQv5ODsrwt0N3pHAEvjP8KTQPHkp0+6jOg==
 
-chevrotain@7.0.3:
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/chevrotain/-/chevrotain-7.0.3.tgz#f9621971a726eba804f7763edace2183d157c5d7"
-  integrity sha512-G634q7M5EiqNNv+0MKcQES2jmqabbi4PvUDpzjG2t+i1XQFaMCz0o8BZ8lbQbZex4RqkzJ3pOy+UwNLFlQm4eg==
-  dependencies:
-    regexp-to-ast "0.5.0"
-
 chokidar@^2.1.8:
   version "2.1.8"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-2.1.8.tgz#804b3a7b6a99358c3c5c61e71d8728f041cff917"
@@ -7120,14 +7113,7 @@ compromise-sentences@^0.3.0:
   resolved "https://registry.yarnpkg.com/compromise-sentences/-/compromise-sentences-0.3.0.tgz#61d34039323155bc20dad10f24340daaabf86e26"
   integrity sha512-L6d5PXmmyPyWRMoJURYOM0yILhtV37zCOy9ZW8Xd6KgY+2qQBTwuokekaGL9MDpSH3/grRDL+AHKytYpGrTEmA==
 
-compromise-strict@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/compromise-strict/-/compromise-strict-0.0.2.tgz#e4bf4cc386e8795c6408d3606ebb2cd31cab9fbd"
-  integrity sha512-1ApkPa6kjmyS1ZFhDRZgttDcnVv+Ci8U0kIIsxRBLCN0vautyPm6FROvBwoLimlU3pgIH3hMIpdNdVfe2yj3Gw==
-  dependencies:
-    chevrotain "7.0.3"
-
-compromise@^13.11.3, compromise@^13.11.4:
+compromise@^13.11.4:
   version "13.11.4"
   resolved "https://registry.yarnpkg.com/compromise/-/compromise-13.11.4.tgz#3136e6d2c2cca822ba7cebd140c9f27f405b67f1"
   integrity sha512-nBITcNdqIHSVDDluaG6guyFFCSNXN+Hu87fU8VlhkE5Z0PwTZN1nro2O7a8JcUH88nB5EOzrxd9zKfXLSNFqcg==
@@ -15854,11 +15840,6 @@ regex-not@^1.0.0, regex-not@^1.0.2:
   dependencies:
     extend-shallow "^3.0.2"
     safe-regex "^1.1.0"
-
-regexp-to-ast@0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/regexp-to-ast/-/regexp-to-ast-0.5.0.tgz#56c73856bee5e1fef7f73a00f1473452ab712a24"
-  integrity sha512-tlbJqcMHnPKI9zSrystikWKwHkBqu2a/Sgw01h3zFjvYrMxEDYHzzoMZnUrbIfpTFEsoRnnviOXNCzFiSc54Qw==
 
 regexp.prototype.flags@^1.4.1, regexp.prototype.flags@^1.4.3:
   version "1.4.3"

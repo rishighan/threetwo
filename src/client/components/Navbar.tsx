@@ -3,15 +3,23 @@ import { SearchBar } from "./GlobalSearchBar/SearchBar";
 import { DownloadProgressTick } from "./ComicDetail/DownloadProgressTick";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { isUndefined, isEmpty } from "lodash";
-import { AirDCPPSocketContext } from "../context/AirDCPPSocket";
+import { isUndefined } from "lodash";
+import { format, fromUnixTime } from "date-fns";
 
 const Navbar: React.FunctionComponent = (props) => {
   const downloadProgressTick = useSelector(
     (state: RootState) => state.airdcpp.downloadProgressData,
   );
-  const airDCPPConfiguration = useContext(AirDCPPSocketContext);
-console.log(airDCPPConfiguration)
+
+  const airDCPPSocketConnectionStatus = useSelector(
+    (state: RootState) => state.airdcpp.isAirDCPPSocketConnected,
+  );
+  const airDCPPSessionInfo = useSelector(
+    (state: RootState) => state.airdcpp.airDCPPSessionInfo,
+  );
+  const socketDisconnectionReason = useSelector(
+    (state: RootState) => state.airdcpp.socketDisconnectionReason,
+  );
   return (
     <nav className="navbar is-fixed-top">
       <div className="navbar-brand">
@@ -74,12 +82,10 @@ console.log(airDCPPConfiguration)
           <div className="navbar-item has-dropdown is-hoverable">
             <a className="navbar-link is-arrowless">
               <i className="fa-solid fa-download"></i>
-              {downloadProgressTick && (
-                <div className="pulsating-circle"></div>
-              )}
+              {downloadProgressTick && <div className="pulsating-circle"></div>}
             </a>
             {!isUndefined(downloadProgressTick) ? (
-              <div className="navbar-dropdown download-progress-meter">
+              <div className="navbar-dropdown is-right">
                 <a className="navbar-item">
                   <DownloadProgressTick data={downloadProgressTick} />
                 </a>              </div>
@@ -87,18 +93,55 @@ console.log(airDCPPConfiguration)
           </div>
           {/* AirDC++ socket connection status */}
           <div className="navbar-item has-dropdown is-hoverable">
-            <a className="navbar-link is-arrowless has-text-success">
-              {!isEmpty(airDCPPConfiguration.airDCPPState.socketConnectionInformation) ? (
-                <i className="fa-solid fa-bolt"></i>) : null}
-            </a>    
-            <div className="navbar-dropdown download-progress-meter">
-              <a className="navbar-item">
-                <pre>{JSON.stringify(airDCPPConfiguration.airDCPPState.socketConnectionInformation, null, 2)}</pre>
-              </a>
-            </div>      
+            {airDCPPSocketConnectionStatus ? (
+              <>
+                <a className="navbar-link is-arrowless has-text-success">
+                  <i className="fa-solid fa-bolt"></i>
+                </a>
+                <div className="navbar-dropdown pt-4 pr-2 pl-2 is-right airdcpp-status">
+                  {/* AirDC++ Session Information */}
+
+                  <p>
+                    Last login was{" "}
+                    <span className="tag">
+                      {format(
+                        fromUnixTime(airDCPPSessionInfo.user.last_login),
+                        "dd MMMM, yyyy",
+                      )}
+                    </span>
+                  </p>
+                  <hr className="navbar-divider" />
+                  <p>
+                    <span className="tag has-text-success">
+                      {airDCPPSessionInfo.user.username}
+                    </span>
+                    connected to{" "}
+                    <span className="tag has-text-success">
+                      {airDCPPSessionInfo.system_info.client_version}
+                    </span>{" "}
+                    with session ID{" "}
+                    <span className="tag has-text-success">
+                      {airDCPPSessionInfo.session_id}
+                    </span>
+                  </p>
+
+                  {/* <pre>{JSON.stringify(airDCPPSessionInfo, null, 2)}</pre> */}
+                </div>
+              </>
+            ) : (
+              <>
+                <a className="navbar-link is-arrowless has-text-danger">
+                  <i className="fa-solid fa-bolt"></i>
+                </a>
+                <div className="navbar-dropdown pr-2 pl-2 is-right">
+                  <pre>
+                    {JSON.stringify(socketDisconnectionReason, null, 2)}
+                  </pre>
+                </div>
+              </>
+            )}
           </div>
-          
-          
+
           <div className="navbar-item has-dropdown is-hoverable is-mega">
             <div className="navbar-link flex">Blog</div>
             <div id="blogDropdown" className="navbar-dropdown">
