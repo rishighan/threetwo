@@ -116,6 +116,7 @@ function airdcppReducer(state = initialState, action) {
       };
     case LOCATION_CHANGE:
       return {
+        ...state,
         searchResults: [],
         isAirDCPPSearchInProgress: false,
         searchInfo: null,

@@ -20,7 +20,6 @@ const Navbar: React.FunctionComponent = (props) => {
   const socketDisconnectionReason = useSelector(
     (state: RootState) => state.airdcpp.socketDisconnectionReason,
   );
-
   return (
     <nav className="navbar is-fixed-top">
       <div className="navbar-brand">

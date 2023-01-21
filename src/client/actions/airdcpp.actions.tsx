@@ -64,11 +64,7 @@ export const search =
   async (dispatch) => {
     try {
       if (!ADCPPSocket.isConnected()) {
-        await ADCPPSocket.connect(
-          credentials.username,
-          credentials.password,
-          true,
-        );
+        await ADCPPSocket();
       }
       const instance: SearchInstance = await ADCPPSocket.post("search");
       dispatch({
@@ -154,11 +150,7 @@ export const downloadAirDCPPItem =
   async (dispatch) => {
     try {
       if (!ADCPPSocket.isConnected()) {
-        await ADCPPSocket.connect(
-          `${credentials.username}`,
-          `${credentials.password}`,
-          true,
-        );
+        await ADCPPSocket.connect();
       }
       let bundleDBImportResult = {};
       const downloadResult = await ADCPPSocket.post(
@@ -203,11 +195,7 @@ export const getBundlesForComic =
   async (dispatch) => {
     try {
       if (!ADCPPSocket.isConnected()) {
-        await ADCPPSocket.connect(
-          `${credentials.username}`,
-          `${credentials.password}`,
-          true,
-        );
+        await ADCPPSocket.connect();
       }
       const comicObject = await axios({
         method: "POST",
@@ -241,11 +229,7 @@ export const getTransfers =
   (ADCPPSocket: any, credentials: any) => async (dispatch) => {
     try {
       if (!ADCPPSocket.isConnected()) {
-        await ADCPPSocket.connect(
-          `${credentials.username}`,
-          `${credentials.password}`,
-          true,
-        );
+        await ADCPPSocket.connect();
       }
       const bundles = await ADCPPSocket.get("queue/bundles/1/85", {});
       if (!isNil(bundles)) {
