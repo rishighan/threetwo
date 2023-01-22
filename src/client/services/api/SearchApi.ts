@@ -18,7 +18,7 @@ function sleep(ms: number): Promise<NodeJS.Timeout> {
 }
 
 export const search = async (data: SearchData) => {
-  await SocketService.connect("admin", "password");
+  await SocketService.connect();
   const instance: SearchInstance = await SocketService.post("search");
   const unsubscribe = await SocketService.addListener(
     "search",
