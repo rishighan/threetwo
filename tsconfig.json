@@ -14,6 +14,7 @@
     "lib": ["dom", "dom.iterable", "esnext", "webworker"],
     "baseUrl": ".",
     "esModuleInterop": true,
+    "isolatedModules": true,
     "strict": true
   },
   "settings": {
