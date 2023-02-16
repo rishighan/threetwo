@@ -2,20 +2,21 @@
   "extends": "@tsconfig/node14/tsconfig.json",
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "noImplicitAny": false,
-    "target": "es2019",
-    "jsx": "react",
-    "module": "commonjs",
-    "sourceMap": true,
-    "outDir": "./dist/",
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
     "skipLibCheck": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
-    "lib": ["dom", "dom.iterable", "esnext", "webworker"],
-    "baseUrl": ".",
-    "esModuleInterop": true,
     "isolatedModules": true,
-    "strict": true
+    "noEmit": true,
+    "jsx": "react-jsx"
   },
   "settings": {
     "eslint.workingDirectories": [
