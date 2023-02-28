@@ -1,20 +1,21 @@
-import react from '@vitejs/plugin-react';
+import react from "@vitejs/plugin-react";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
-import { defineConfig } from 'vite';
+import { defineConfig } from "vite";
 
 export default defineConfig({
-  // publicDir: './public',
+  // publicDir: "./public",
   build: "esnext",
+  base: "/",
   plugins: [
     nodeResolve({
       // browser: true
-      exportConditions: ['node'],
+      exportConditions: ["node"],
     }),
     react({
       // Use React plugin in all *.jsx and *.tsx files
-      include: '**/*.{jsx,tsx}',
+      include: "**/*.{jsx,tsx}",
       babel: {
-        plugins: ['babel-plugin-styled-components'],
+        plugins: ["babel-plugin-styled-components"],
       },
     }),
   ],
