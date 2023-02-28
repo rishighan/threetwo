@@ -12,8 +12,6 @@
     "dev": "concurrently \"nodemon\" \"npm run client\"",
     "server-dev": "nodemon",
     "docs": "jsdoc -c jsdoc.json",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
   },
   "author": "Rishi Ghan",
   "license": "MIT",
