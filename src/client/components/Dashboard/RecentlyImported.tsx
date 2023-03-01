@@ -83,14 +83,14 @@ export const RecentlyImported = ({
                     {/* Raw file presence  */}
                     {isNil(rawFileDetails) && (
                       <span className="icon custom-icon is-small has-text-danger mr-2">
-                        <img src="/img/missing-file.svg" />
+                        <img src="/src/client/img/missing-file.svg" />
                       </span>
                     )}
                     {/* ComicInfo.xml presence */}
                     {!isNil(comicInfo) && !isEmpty(comicInfo) && (
                       <span className="icon custom-icon is-small has-text-danger">
                         <img
-                          src="/img/comicinfoxml.svg"
+                          src="/src/client/img/comicinfoxml.svg"
                           alt={"ComicInfo.xml file detected."}
                         />
                       </span>
@@ -99,8 +99,8 @@ export const RecentlyImported = ({
                     {isComicBookMetadataAvailable && (
                       <span className="icon custom-icon">
                         <img
-                          src="/img/cvlogo.svg"
-                          alt={"ComicInfo.xml file detected."}
+                          src="/src/client/assets/img/cvlogo.svg"
+                          alt={"ComicVine metadata detected."}
                         />
                       </span>
                     )}

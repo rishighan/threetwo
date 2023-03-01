@@ -31,7 +31,7 @@ export const SearchBar = (data: ISearchBarProps): ReactElement => {
               from: 0,
             },
             type: "volumeName",
-            trigger: "globalSearchBar"
+            trigger: "globalSearchBar",
           },
         ),
       );
@@ -51,7 +51,6 @@ export const SearchBar = (data: ISearchBarProps): ReactElement => {
           <i className="fa-solid fa-magnifying-glass"></i>
         </span>
       </div>
-
       {!isEmpty(searchResults) ? (
         <div
           className="columns box is-multiline"

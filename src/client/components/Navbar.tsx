@@ -25,7 +25,7 @@ const Navbar: React.FunctionComponent = (props) => {
       <div className="navbar-brand">
         <Link to="/" className="navbar-item">
           <img
-            src="/img/threetwo.svg"
+            src="/src/client/assets/img/threetwo.svg"
             alt="ThreeTwo! A comic book curator"
             width="112"
             height="28"

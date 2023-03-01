@@ -3,9 +3,9 @@ import { nodeResolve } from "@rollup/plugin-node-resolve";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  // publicDir: "./public",
+  publicDir: "public",
+  base: "",
   build: "esnext",
-  base: "/",
   plugins: [
     nodeResolve({
       // browser: true
