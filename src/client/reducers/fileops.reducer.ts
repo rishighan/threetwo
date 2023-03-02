@@ -246,7 +246,7 @@ function fileOpsReducer(state = initialState, action) {
     case WANTED_COMICS_FETCHED: {
       const foo = [];
       if (!isUndefined(action.data.hits)) {
-        map(action.data.hits.hits, ({ _source }) => {
+        map(action.data.hits, ({ _source }) => {
           foo.push(_source);
         });
       }

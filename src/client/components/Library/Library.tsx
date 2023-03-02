@@ -19,10 +19,7 @@ export const Library = (): ReactElement => {
   const searchResults = useSelector(
     (state: RootState) => state.fileOps.libraryComics,
   );
-  const searchError = useSelector((state: RootState) => {
-    console.log(state);
-    return state.fileOps.librarySearchError;
-  });
+  const searchError = useSelector((state: RootState) => state.fileOps.librarySearchError);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(
@@ -221,9 +218,9 @@ export const Library = (): ReactElement => {
           <div>
             <div className="library">
               <T2Table
-                totalPages={searchResults.hits.total.value}
+                totalPages={searchResults.total.value}
                 columns={columns}
-                sourceData={searchResults?.hits?.hits}
+                sourceData={searchResults?.hits}
                 rowClickHandler={navigateToComicDetail}
                 paginationHandlers={{
                   nextPage,

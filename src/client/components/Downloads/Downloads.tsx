@@ -3,7 +3,6 @@ import { getTransfers } from "../../actions/airdcpp.actions";
 import { useDispatch, useSelector } from "react-redux";
 import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
 import { isEmpty, isNil, isUndefined } from "lodash";
-import { searchIssue } from "../../actions/fileops.actions";
 import { determineCoverFile } from "../../shared/utils/metadata.utils";
 import MetadataPanel from "../shared/MetadataPanel";
 
@@ -47,7 +46,6 @@ export const Downloads = (props: IDownloadsProps): ReactElement => {
       })
       setBundles(foo);
     }
-
   }, [issueBundles])
 
   return !isNil(bundles) ?
@@ -56,9 +54,9 @@ export const Downloads = (props: IDownloadsProps): ReactElement => {
         <h1 className="title">Downloads</h1>
         <div className="columns">
           <div className="column is-half">
-            {bundles.map(bundle => {
+            {bundles.map((bundle, idx) => {
               console.log(bundle);
-              return <>
+              return <div key={idx}>
                 <MetadataPanel
                   data={bundle}
                   imageStyle={{ maxWidth: 80 }}
@@ -70,30 +68,33 @@ export const Downloads = (props: IDownloadsProps): ReactElement => {
                     margin: "0 0 8px 0",
                   }} />
 
-                  <table className="table is-size-7">
+                <table className="table is-size-7">
+                  <thead>
                     <tr>
                       <th>Name</th>
                       <th>Size</th>
                       <th>Type</th>
                       <th>Bundle ID</th>
                     </tr>
-
-                    {bundle.acquisition.directconnect.downloads.map((bundle) => {
-                      return(<tr>
+                  </thead>
+                  <tbody>
+                    {bundle.acquisition.directconnect.downloads.map((bundle, idx) => {
+                      return (<tr key={idx}>
                         <td>{bundle.name}</td>
                         <td>{bundle.size}</td>
                         <td>{bundle.type.str}</td>
                         <td><span className="tag is-warning">{bundle.bundleId}</span></td>
                       </tr>)
                     })}
-                  </table>
+                  </tbody>
+                </table>
                 {/* <pre>{JSON.stringify(bundle.acquisition.directconnect.downloads, null, 2)}</pre> */}
-              </>
+              </div>
             })}
           </div>
         </div>
       </section>
-    </div> : <div>asd</div>;
+    </div> : <div>There are no downloads.</div>;
 };
 
 export default Downloads;

@@ -61,9 +61,10 @@ export const SearchBar = (data: ISearchBarProps): ReactElement => {
             margin: "60px 0 0 350px",
           }}
         >
-          {map(searchResults, (result) => (
+          {map(searchResults, (result, idx) => (
             <MetadataPanel
               data={result}
+              key={idx}
               imageStyle={{ maxWidth: 70 }}
               titleStyle={{ fontSize: "0.8rem" }}
               tagsStyle={{ fontSize: "0.7rem" }}
