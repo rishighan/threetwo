@@ -30,12 +30,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // REGISTER ROUTES
 // all of the routes will be prefixed with /api
 const routes: Router[] = Object.values(router);
-app.use("/api", routes);
+// app.use("/api", routes);
 
 // Send index.html on root request
-app.use(express.static("dist"));
-app.use(express.static("public"));
+// app.use(express.static("dist"));
+// app.use(express.static("public"));
 
-app.listen(port);
+// app.listen(port);
 
-console.log(`Server is listening on ${port}`);
+// console.log(`Server is listening on ${port}`);

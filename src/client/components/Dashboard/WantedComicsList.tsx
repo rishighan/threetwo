@@ -82,12 +82,12 @@ export const WantedComicsList = ({
                   {/* comicVine metadata presence */}
                   {isComicBookMetadataAvailable && (
                     <span className="icon custom-icon">
-                      <img src="/img/cvlogo.svg" />
+                      <img src="/src/client/assets/img/cvlogo.svg" />
                     </span>
                   )}
                   {!isEmpty(locg) && (
                     <span className="icon custom-icon">
-                      <img src="/img/locglogo.svg" />
+                      <img src="/src/client/img/locglogo.svg" />
                     </span>
                   )}
                   {/* Issue type */}

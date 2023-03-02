@@ -307,7 +307,7 @@ export const searchIssue = (query, options) => async (dispatch) => {
     case "globalSearchBar":
       dispatch({
         type: SS_SEARCH_RESULTS_FETCHED_SPECIAL,
-        data: response.data.body,
+        data: response.data.hits,
       });
       break;
 
