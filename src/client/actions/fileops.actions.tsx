@@ -314,13 +314,13 @@ export const searchIssue = (query, options) => async (dispatch) => {
     case "libraryPage":
       dispatch({
         type: SS_SEARCH_RESULTS_FETCHED,
-        data: response.data.body,
+        data: response.data.hits,
       });
       break;
     case "volumesPage":
       dispatch({
         type: VOLUMES_FETCHED,
-        data: response.data.body,
+        data: response.data.hits,
       });
       break;
 

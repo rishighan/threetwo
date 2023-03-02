@@ -221,9 +221,9 @@ export const Library = (): ReactElement => {
           <div>
             <div className="library">
               <T2Table
-                totalPages={searchResults.hits.total.value}
+                totalPages={searchResults.total.value}
                 columns={columns}
-                sourceData={searchResults?.hits?.hits}
+                sourceData={searchResults?.hits}
                 rowClickHandler={navigateToComicDetail}
                 paginationHandlers={{
                   nextPage,
