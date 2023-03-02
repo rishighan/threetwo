@@ -167,7 +167,7 @@ export const AcquisitionPanel = (
                         }
                       >
                         <span className="icon is-small">
-                          <img src="/img/airdcpp_logo.svg" />
+                          <img src="/src/client/assets/img/airdcpp_logo.svg" />
                         </span>
                         <span className="airdcpp-text">Search on AirDC++</span>
                       </button>

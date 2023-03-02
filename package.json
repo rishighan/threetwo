@@ -6,7 +6,8 @@
   "typings": "server/index.js",
   "scripts": {
     "build": "vite build",
-    "dev": "rimraf dist && vite",
+    "dev": "rimraf dist && npm run build && vite",
+    "prod": "npm run build && vite",
     "docs": "jsdoc -c jsdoc.json"
   },
   "author": "Rishi Ghan",
