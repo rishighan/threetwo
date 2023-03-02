@@ -20,8 +20,6 @@ export const T2Table = (tableOptions): ReactElement => {
       pageIndex: 1,
       pageSize: 15,
     });
-    console.log(sourceData)
-
 
   const pagination = useMemo(
     () => ({
@@ -81,12 +79,12 @@ export const T2Table = (tableOptions): ReactElement => {
             {/* <p>{totalPages} comics in all</p> */}
           </div>
           <div className="field has-addons">
-            <p className="control">
+            <div className="control">
               <div className="button" onClick={() => goToPreviousPage()}> <i className="fas fa-chevron-left"></i></div>
-            </p>
-            <p className="control">
+            </div>
+            <div className="control">
               <div className="button" onClick={() => goToNextPage()}> <i className="fas fa-chevron-right"></i> </div>
-            </p>
+            </div>
 
             <div className="field has-addons ml-5">
               <p className="control">

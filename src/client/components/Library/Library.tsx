@@ -19,10 +19,7 @@ export const Library = (): ReactElement => {
   const searchResults = useSelector(
     (state: RootState) => state.fileOps.libraryComics,
   );
-  const searchError = useSelector((state: RootState) => {
-    console.log(state);
-    return state.fileOps.librarySearchError;
-  });
+  const searchError = useSelector((state: RootState) => state.fileOps.librarySearchError);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(
