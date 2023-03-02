@@ -301,7 +301,7 @@ export const searchIssue = (query, options) => async (dispatch) => {
     case "wantedComicsPage":
       dispatch({
         type: WANTED_COMICS_FETCHED,
-        data: response.data.body,
+        data: response.data.hits,
       });
       break;
     case "globalSearchBar":
