@@ -166,8 +166,8 @@ export const Volumes = (props): ReactElement => {
           <div>
             <div className="library">
               <T2Table
-                sourceData={volumes?.hits?.hits}
-                totalPages={volumes.hits.hits.length}
+                sourceData={volumes?.hits}
+                totalPages={volumes.hits.length}
                 paginationHandlers={{
                   nextPage: () => {},
                   previousPage: () => {},

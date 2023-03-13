@@ -31,7 +31,7 @@ export const SearchBar = (data: ISearchBarProps): ReactElement => {
               from: 0,
             },
             type: "volumeName",
-            trigger: "globalSearchBar"
+            trigger: "globalSearchBar",
           },
         ),
       );
@@ -51,7 +51,6 @@ export const SearchBar = (data: ISearchBarProps): ReactElement => {
           <i className="fa-solid fa-magnifying-glass"></i>
         </span>
       </div>
-
       {!isEmpty(searchResults) ? (
         <div
           className="columns box is-multiline"
@@ -62,9 +61,10 @@ export const SearchBar = (data: ISearchBarProps): ReactElement => {
             margin: "60px 0 0 350px",
           }}
         >
-          {map(searchResults, (result) => (
+          {map(searchResults, (result, idx) => (
             <MetadataPanel
               data={result}
+              key={idx}
               imageStyle={{ maxWidth: 70 }}
               titleStyle={{ fontSize: "0.8rem" }}
               tagsStyle={{ fontSize: "0.7rem" }}

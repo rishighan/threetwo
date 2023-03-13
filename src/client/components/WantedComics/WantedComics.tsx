@@ -73,8 +73,8 @@ export const WantedComics = (props): ReactElement => {
           id: "downloadDetails",
           accessorKey: "acquisition",
           cell: data => <ol>
-            {data.getValue().directconnect.downloads.map(download => {
-              return <li className="is-size-7">{download.name}</li>;
+            {data.getValue().directconnect.downloads.map((download, idx) => {
+              return <li className="is-size-7" key={idx}>{download.name}</li>;
             })}
           </ol>
         },

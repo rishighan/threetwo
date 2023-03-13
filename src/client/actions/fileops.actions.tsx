@@ -301,26 +301,26 @@ export const searchIssue = (query, options) => async (dispatch) => {
     case "wantedComicsPage":
       dispatch({
         type: WANTED_COMICS_FETCHED,
-        data: response.data.body,
+        data: response.data.hits,
       });
       break;
     case "globalSearchBar":
       dispatch({
         type: SS_SEARCH_RESULTS_FETCHED_SPECIAL,
-        data: response.data.body,
+        data: response.data.hits,
       });
       break;
 
     case "libraryPage":
       dispatch({
         type: SS_SEARCH_RESULTS_FETCHED,
-        data: response.data.body,
+        data: response.data.hits,
       });
       break;
     case "volumesPage":
       dispatch({
         type: VOLUMES_FETCHED,
-        data: response.data.body,
+        data: response.data.hits,
       });
       break;
 
