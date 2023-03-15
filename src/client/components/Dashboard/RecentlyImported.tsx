@@ -83,14 +83,14 @@ export const RecentlyImported = ({
                     {/* Raw file presence  */}
                     {isNil(rawFileDetails) && (
                       <span className="icon custom-icon is-small has-text-danger mr-2">
-                        <img src="/src/client/img/missing-file.svg" />
+                        <img src="/src/client/assets/img/missing-file.svg" />
                       </span>
                     )}
                     {/* ComicInfo.xml presence */}
                     {!isNil(comicInfo) && !isEmpty(comicInfo) && (
                       <span className="icon custom-icon is-small has-text-danger">
                         <img
-                          src="/src/client/img/comicinfoxml.svg"
+                          src="/src/client/assets/img/comicinfoxml.svg"
                           alt={"ComicInfo.xml file detected."}
                         />
                       </span>

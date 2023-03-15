@@ -87,7 +87,7 @@ export const WantedComicsList = ({
                   )}
                   {!isEmpty(locg) && (
                     <span className="icon custom-icon">
-                      <img src="/src/client/img/locglogo.svg" />
+                      <img src="/src/client/assets/img/locglogo.svg" />
                     </span>
                   )}
                   {/* Issue type */}
