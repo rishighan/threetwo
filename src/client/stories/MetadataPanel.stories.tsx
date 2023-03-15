@@ -30,20 +30,20 @@ RawFileDetails.args = {
         },
         "inferredMetadata": {
           "issue": {
-            "name": "Fantastic Four 143",
+            "name": "Batman Annual 02",
             "number": 197402,
             "year": "1974",
             "subtitle": ""
           }
         },
         "rawFileDetails": {
-          "name": "197402 Fantastic Four 143",
+          "name": "Batman Annual 02",
           "filePath": "/Users/rishi/work/threetwo-core-service/comics/197402 Fantastic Four 143.cbz",
           "fileSize": 10341074,
           "extension": ".cbz",
           "containedIn": "./userdata/covers/197402 Fantastic Four 143",
           "cover": {
-            "filePath": "userdata/covers/197402 Fantastic Four 143/FF143_01.jpg"
+            "filePath": "userdata/covers/Batman Annual 02/Batman 002_00a.jpg"
           }
         },
         "sourcedMetadata": { "comicInfo": null, "comicvine": { "aliases": [] } },
