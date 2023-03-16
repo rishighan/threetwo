@@ -6,13 +6,13 @@ ThreeTwo! _aims to be_ a comic book curation app.
 
 ### Screenshots
 
-![](https://raw.githubusercontent.com/rishighan/threetwo/rishighan-screenshots-dec-2022/Dashboard.png)
+![](https://github.com/rishighan/threetwo-visual-updates/raw/67e56878eb0381c73c1dea746a45253d3dcaa184/update_december_2022/Dashboard.png)
 
-![](https://raw.githubusercontent.com/rishighan/threetwo/rishighan-screenshots-dec-2022/Library.png)
+![](https://github.com/rishighan/threetwo-visual-updates/raw/67e56878eb0381c73c1dea746a45253d3dcaa184/update_december_2022/Library.png)
 
-![](https://raw.githubusercontent.com/rishighan/threetwo/rishighan-screenshots-dec-2022/DC%2B%2B%20integration.png)
+![](https://github.com/rishighan/threetwo-visual-updates/raw/67e56878eb0381c73c1dea746a45253d3dcaa184/update_december_2022/DC%2B%2B%20integration.png)
 
-![](https://raw.githubusercontent.com/rishighan/threetwo/rishighan-screenshots-dec-2022/ComicVine%20Matching.png)
+![](https://github.com/rishighan/threetwo-visual-updates/raw/67e56878eb0381c73c1dea746a45253d3dcaa184/update_december_2022/ComicVine%20Matching.png)
 
 
 ### 🦄 Early Development Support Channel

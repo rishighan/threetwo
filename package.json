@@ -8,7 +8,9 @@
     "build": "vite build",
     "dev": "rimraf dist && npm run build && vite",
     "prod": "npm run build && vite",
-    "docs": "jsdoc -c jsdoc.json"
+    "docs": "jsdoc -c jsdoc.json",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "author": "Rishi Ghan",
   "license": "MIT",
@@ -93,6 +95,13 @@
     "@babel/preset-env": "^7.20.2",
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.13.0",
+    "@storybook/addon-essentials": "^7.0.0-rc.3",
+    "@storybook/addon-interactions": "^7.0.0-rc.3",
+    "@storybook/addon-links": "^7.0.0-rc.3",
+    "@storybook/blocks": "^7.0.0-rc.3",
+    "@storybook/react": "^7.0.0-rc.3",
+    "@storybook/react-vite": "^7.0.0-rc.3",
+    "@storybook/testing-library": "^0.0.14-next.1",
     "@tsconfig/node14": "^1.0.0",
     "@types/express": "^4.17.8",
     "@types/jest": "^26.0.20",
@@ -117,6 +126,7 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-storybook": "^0.6.11",
     "express": "^4.17.1",
     "install": "^0.13.0",
     "jest": "^26.6.3",
@@ -126,8 +136,9 @@
     "react-refresh": "^0.14.0",
     "rimraf": "^4.1.3",
     "sass": "^1.58.1",
+    "storybook": "^7.0.0-rc.3",
     "tslint": "^6.1.3",
-    "typescript": "^4.2.3",
+    "typescript": "^4.9",
     "vite": "^4.1.1"
   }
 }
