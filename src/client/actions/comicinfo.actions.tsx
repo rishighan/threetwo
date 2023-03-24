@@ -1,9 +1,6 @@
 import axios from "axios";
 import rateLimiter from "axios-rate-limit";
-import {
-  AxiosCacheRequestConfig,
-  createCacheAdapter,
-} from "axios-simple-cache-adapter";
+import { setupCache } from "axios-cache-interceptor";
 import qs from "qs";
 import {
   CV_SEARCH_SUCCESS,
@@ -26,25 +23,22 @@ import {
   LIBRARY_SERVICE_BASE_URI,
 } from "../constants/endpoints";
 
-const axiosCacheAdapter = createCacheAdapter();
 const http = rateLimiter(axios.create(), {
   maxRequests: 1,
   perMilliseconds: 1000,
   maxRPS: 1,
 });
-
+const cachedAxios = setupCache(axios);
 export const getWeeklyPullList = (options) => async (dispatch) => {
   try {
     dispatch({
       type: CV_WEEKLY_PULLLIST_CALL_IN_PROGRESS,
     });
 
-    await axios(`${COMICVINE_SERVICE_URI}/getWeeklyPullList`, {
+    await cachedAxios(`${COMICVINE_SERVICE_URI}/getWeeklyPullList`, {
       method: "get",
       params: options,
-      axiosCacheAdapter,
-      cache: 1000, // value in MS
-    } as AxiosCacheRequestConfig).then((response) => {
+    }).then((response) => {
       dispatch({
         type: CV_WEEKLY_PULLLIST_FETCHED,
         data: response.data.result,
