@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import PropTypes from "prop-types";
 import prettyBytes from "pretty-bytes";
-import { isUndefined } from "lodash";
+import { isEmpty } from "lodash";
 
 export const RawFileDetails = (props): ReactElement => {
   const { rawFileDetails, inferredMetadata } = props.data;
@@ -34,6 +34,14 @@ export const RawFileDetails = (props): ReactElement => {
                   </span>
                 </div>
               </div>
+              <div className="control">
+                <div className="tags has-addons">
+                  <span className="tag">MIME type</span>
+                  <span className="tag is-primary is-light">
+                    {rawFileDetails.mimeType}
+                  </span>
+                </div>
+              </div>
             </div>
           </dd>
         </dl>
@@ -53,7 +61,7 @@ export const RawFileDetails = (props): ReactElement => {
                   </span>
                 </div>
               </div>
-              {!isUndefined(inferredMetadata.issue.number) ? (
+              {!isEmpty(inferredMetadata.issue.number) ? (
                 <div className="control">
                   <div className="tags has-addons">
                     <span className="tag">Number</span>
@@ -81,6 +89,7 @@ RawFileDetails.propTypes = {
       fileSize: PropTypes.number,
       path: PropTypes.string,
       extension: PropTypes.string,
+      mimeType: PropTypes.string,
       cover: PropTypes.shape({
         filePath: PropTypes.string,
       }),

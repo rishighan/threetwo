@@ -98,7 +98,7 @@ const Navbar: React.FunctionComponent = (props) => {
                 <a className="navbar-link is-arrowless has-text-success">
                   <i className="fa-solid fa-bolt"></i>
                 </a>
-                <div className="navbar-dropdown pt-4 pr-2 pl-2 is-right airdcpp-status">
+                <div className="navbar-dropdown mt-3 pt-4 pr-2 pl-2 is-right airdcpp-status is-boxed">
                   {/* AirDC++ Session Information */}
 
                   <p>
@@ -133,7 +133,7 @@ const Navbar: React.FunctionComponent = (props) => {
                 <a className="navbar-link is-arrowless has-text-danger">
                   <i className="fa-solid fa-bolt"></i>
                 </a>
-                <div className="navbar-dropdown pr-2 pl-2 is-right">
+                <div className="navbar-dropdown pr-2 pl-2 is-right is-boxed">
                   <pre>
                     {JSON.stringify(socketDisconnectionReason, null, 2)}
                   </pre>

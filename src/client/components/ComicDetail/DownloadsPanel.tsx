@@ -1,7 +1,5 @@
 import React, { useEffect, useContext, ReactElement } from "react";
-import {
-  getBundlesForComic,
-} from "../../actions/airdcpp.actions";
+import { getBundlesForComic } from "../../actions/airdcpp.actions";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "threetwo-ui-typings";
 import { isEmpty, isNil, map } from "lodash";

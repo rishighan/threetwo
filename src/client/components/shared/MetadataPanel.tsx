@@ -58,6 +58,12 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
                     {rawFileDetails.extension}
                   </span>
                   <span
+                    className="tag is-success is-light has-text-weight-semibold"
+                    style={props.tagsStyle}
+                  >
+                    {rawFileDetails.mimeType}
+                  </span>
+                  <span
                     className="tag is-success is-light"
                     style={props.tagsStyle}
                   >
