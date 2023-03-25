@@ -55,6 +55,7 @@ export const comicinfoAPICall = (options) => async (dispatch) => {
       type: CV_API_CALL_IN_PROGRESS,
       inProgress: true,
     });
+    console.log(options);
     const serviceURI = `${COMICVINE_SERVICE_URI}/${options.callURIAction}`;
     const response = await http(serviceURI, {
       method: options.callMethod,
@@ -64,9 +65,11 @@ export const comicinfoAPICall = (options) => async (dispatch) => {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
       },
-      paramsSerializer: (params) => {
-        return qs.stringify(params, { arrayFormat: "repeat" });
+      paramsSerializer: {
+        indexes: null,
       },
+      // (params) =>
+      // qs.stringify(params, { arrayFormat: "repeat" }),
     });
 
     switch (options.callURIAction) {
@@ -81,7 +84,7 @@ export const comicinfoAPICall = (options) => async (dispatch) => {
         console.log("Could not complete request.");
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     dispatch({
       type: CV_API_GENERIC_FAILURE,
       error,
