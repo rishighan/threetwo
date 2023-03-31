@@ -1,4 +1,4 @@
-FROM node:17.3-alpine
+FROM node:18.15.0-alpine
 LABEL maintainer="Rishi Ghan <rishi.ghan@gmail.com>"
 
 WORKDIR /threetwo
@@ -9,7 +9,7 @@ COPY nodemon.json ./
 COPY jsdoc.json ./
 
 # RUN apt-get update && apt-get install -y git python3 build-essential autoconf automake g++ libpng-dev make
-RUN apk --no-cache add g++ make libpng-dev python3 git libc6-compat autoconf automake  bash libjpeg-turbo-dev libpng-dev mesa-dev mesa libxi build-base gcc libtool nasm
+RUN apk --no-cache add g++ make libpng-dev git python3 libc6-compat autoconf automake libjpeg-turbo-dev libpng-dev mesa-dev mesa libxi build-base gcc libtool nasm
 RUN yarn --ignore-engines
 
 

@@ -7,7 +7,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "rimraf dist && npm run build && vite",
-    "prod": "npm run build && vite",
+    "start": "npm run build && vite",
     "docs": "jsdoc -c jsdoc.json",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
