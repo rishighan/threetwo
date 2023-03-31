@@ -14,6 +14,6 @@ RUN yarn --ignore-engines
 
 
 COPY . .
-EXPOSE 3050
+EXPOSE 5173
 
 ENTRYPOINT [ "npm", "start" ]
