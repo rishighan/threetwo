@@ -6,6 +6,7 @@ export default defineConfig({
   publicDir: "public",
   base: "",
   build: "esnext",
+  server: { host: true },
   plugins: [
     nodeResolve({
       // browser: true
