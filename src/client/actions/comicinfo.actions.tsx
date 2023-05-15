@@ -64,9 +64,6 @@ export const comicinfoAPICall = (options) => async (dispatch) => {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
       },
-      paramsSerializer: (params) => {
-        return qs.stringify(params, { arrayFormat: "repeat" });
-      },
     });
 
     switch (options.callURIAction) {

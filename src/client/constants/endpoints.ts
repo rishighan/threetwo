@@ -8,6 +8,7 @@ export const hostURIBuilder = (options: Record<string, string>): string => {
     options.apiPath
   );
 };
+console.log(import.meta);
 
 export const CORS_PROXY_SERVER_URI = hostURIBuilder({
   protocol: "http",

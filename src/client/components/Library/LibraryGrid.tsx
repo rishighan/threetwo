@@ -73,7 +73,7 @@ export const LibraryGrid = (libraryGridProps: ILibraryGridProps) => {
                 <div className="content is-flex is-flex-direction-row">
                   {!isEmpty(sourcedMetadata.comicvine) && (
                     <span className="icon cv-icon is-small">
-                      <img src="/dist/img/cvlogo.svg" />
+                      <img src="/src/client/assets/img/cvlogo.svg" />
                     </span>
                   )}
                   {isNil(rawFileDetails) && (

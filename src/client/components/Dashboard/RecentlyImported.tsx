@@ -125,7 +125,7 @@ export const RecentlyImported = ({
                     <dd className="is-size-9">
                       <dl>
                         <span className="icon custom-icon">
-                          <img src={`/img/${icon}`} />
+                          <img src={`/src/client/assets/img/${icon}`} />
                         </span>
                       </dl>
                       <dl>
