@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, ReactElement } from "react";
+import React, { useCallback, ReactElement } from "react";
 import { isNil, isEmpty } from "lodash";
 import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";
 import { importToDB } from "../actions/fileops.actions";

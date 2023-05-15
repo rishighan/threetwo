@@ -1,7 +1,6 @@
 import axios from "axios";
 import rateLimiter from "axios-rate-limit";
 import { setupCache } from "axios-cache-interceptor";
-import qs from "qs";
 import {
   CV_SEARCH_SUCCESS,
   CV_API_CALL_IN_PROGRESS,
@@ -63,9 +62,6 @@ export const comicinfoAPICall = (options) => async (dispatch) => {
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
-      },
-      paramsSerializer: (params) => {
-        return qs.stringify(params, { arrayFormat: "repeat" });
       },
     });
 
