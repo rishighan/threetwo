@@ -127,49 +127,50 @@ export const getComicBooks = (options) => async (dispatch) => {
  * @returns Nothing.
  * @param payload
  */
-export const importToDB = (sourceName: string, metadata?: any) => (dispatch) => {
-  try {
-    const comicBookMetadata = {
-      importType: "new",
-      payload: {
-        rawFileDetails: {
-          name: "",
-        },
-        importStatus: {
-          isImported: true,
-          tagged: false,
-          matchedResult: {
-            score: "0",
+export const importToDB =
+  (sourceName: string, metadata?: any) => (dispatch) => {
+    try {
+      const comicBookMetadata = {
+        importType: "new",
+        payload: {
+          rawFileDetails: {
+            name: "",
           },
+          importStatus: {
+            isImported: true,
+            tagged: false,
+            matchedResult: {
+              score: "0",
+            },
+          },
+          sourcedMetadata: metadata || null,
+          acquisition: { source: { wanted: true, name: sourceName } },
         },
-        sourcedMetadata: metadata || null,
-        acquisition: { source: { wanted: true, name: sourceName } },
-      }
-    };
-    dispatch({
-      type: IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
-    });
-    return axios
-      .request({
-        url: `${LIBRARY_SERVICE_BASE_URI}/rawImportToDb`,
-        method: "POST",
-        data: comicBookMetadata,
-        // transformResponse: (r: string) => JSON.parse(r),
-      })
-      .then((response) => {
-        const { data } = response;
-        dispatch({
-          type: IMS_CV_METADATA_IMPORT_SUCCESSFUL,
-          importResult: data,
-        });
+      };
+      dispatch({
+        type: IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS,
       });
-  } catch (error) {
-    dispatch({
-      type: IMS_CV_METADATA_IMPORT_FAILED,
-      importError: error,
-    });
-  }
-};
+      return axios
+        .request({
+          url: `${LIBRARY_SERVICE_BASE_URI}/rawImportToDb`,
+          method: "POST",
+          data: comicBookMetadata,
+          // transformResponse: (r: string) => JSON.parse(r),
+        })
+        .then((response) => {
+          const { data } = response;
+          dispatch({
+            type: IMS_CV_METADATA_IMPORT_SUCCESSFUL,
+            importResult: data,
+          });
+        });
+    } catch (error) {
+      dispatch({
+        type: IMS_CV_METADATA_IMPORT_FAILED,
+        importError: error,
+      });
+    }
+  };
 
 export const fetchVolumeGroups = () => async (dispatch) => {
   try {
@@ -254,24 +255,23 @@ export const fetchComicVineMatches =
  * @returns {any}
  */
 export const extractComicArchive =
-
   (path: string, options: any): any =>
-    async (dispatch) => {
-      dispatch({
-        type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
-      });
-      await axios({
-        method: "POST",
-        url: `${LIBRARY_SERVICE_BASE_URI}/uncompressFullArchive`,
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-        },
-        data: {
-          filePath: path,
-          options,
-        },
-      });
-    };
+  async (dispatch) => {
+    dispatch({
+      type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
+    });
+    await axios({
+      method: "POST",
+      url: `${LIBRARY_SERVICE_BASE_URI}/uncompressFullArchive`,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      data: {
+        filePath: path,
+        options,
+      },
+    });
+  };
 
 /**
  * Description

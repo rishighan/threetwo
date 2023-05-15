@@ -85,7 +85,7 @@ const Navbar: React.FunctionComponent = (props) => {
               {downloadProgressTick && <div className="pulsating-circle"></div>}
             </a>
             {!isUndefined(downloadProgressTick) ? (
-              <div className="navbar-dropdown is-right">
+              <div className="navbar-dropdown is-right is-boxed">
                 <a className="navbar-item">
                   <DownloadProgressTick data={downloadProgressTick} />
                 </a>              </div>
@@ -98,7 +98,7 @@ const Navbar: React.FunctionComponent = (props) => {
                 <a className="navbar-link is-arrowless has-text-success">
                   <i className="fa-solid fa-bolt"></i>
                 </a>
-                <div className="navbar-dropdown mt-3 pt-4 pr-2 pl-2 is-right airdcpp-status is-boxed">
+                <div className="navbar-dropdown pr-2 pl-2 is-right airdcpp-status is-boxed">
                   {/* AirDC++ Session Information */}
 
                   <p>
