@@ -2,6 +2,7 @@ import React, { useState, ReactElement } from "react";
 import { AirDCPPSettingsForm } from "./AirDCPPSettings/AirDCPPSettingsForm";
 import { AirDCPPHubsForm } from "./AirDCPPSettings/AirDCPPHubsForm";
 import { SystemSettingsForm } from "./SystemSettings/SystemSettingsForm";
+import { ServiceStatuses } from "./ServiceStatuses/ServiceStatuses";
 import settingsObject from "../constants/settings/settingsMenu.json";
 import { isUndefined, map } from "lodash";
 
@@ -21,6 +22,10 @@ export const Settings = (props: ISettingsProps): ReactElement => {
           <AirDCPPSettingsForm />
         </div>
       ),
+    },
+    {
+      id: "core-service",
+      content: <ServiceStatuses />,
     },
     {
       id: "flushdb",

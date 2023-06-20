@@ -34,11 +34,27 @@ import {
   WANTED_COMICS_FETCHED,
   VOLUMES_FETCHED,
   CV_WEEKLY_PULLLIST_FETCHED,
+  LIBRARY_SERVICE_HEALTH,
 } from "../constants/action-types";
 import { success } from "react-notification-system-redux";
 
 import { isNil, map } from "lodash";
 
+export const getServiceStatus = (serviceName?: string) => async dispatch => {
+  axios
+    .request({
+      url: `${LIBRARY_SERVICE_BASE_URI}/getHealthInformation`,
+      method: "GET",
+      transformResponse: (r: string) => JSON.parse(r),
+    })
+    .then((response) => {
+      const { data } = response;
+      dispatch({
+        type: LIBRARY_SERVICE_HEALTH,
+        status: data,
+      });
+    });
+};
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
     .request<Array<IFolderData>>({

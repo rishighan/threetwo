@@ -30,6 +30,8 @@ import {
   SS_SEARCH_RESULTS_FETCHED_SPECIAL,
   VOLUMES_FETCHED,
   COMICBOOK_EXTRACTION_SUCCESS,
+  LIBRARY_SERVICE_HEALTH,
+  HEALTH_STATUS_TICK,
 } from "../constants/action-types";
 import { removeLeadingPeriod } from "../shared/utils/formatting.utils";
 import { LIBRARY_SERVICE_HOST } from "../constants/endpoints";
@@ -58,6 +60,7 @@ const initialState = {
   librarySearchResultCount: 0,
   libraryQueueResults: [],
   librarySearchError: {},
+  libraryServiceStatus: {},
 };
 
 function fileOpsReducer(state = initialState, action) {
@@ -153,13 +156,13 @@ function fileOpsReducer(state = initialState, action) {
     }
     case LS_COVER_EXTRACTED: {
       console.log("BASH", action);
-      if(state.recentComics.length === 5) {
+      if (state.recentComics.length === 5) {
         state.recentComics.pop();
       }
       return {
         ...state,
         librarySearchResultCount: state.librarySearchResultCount + 1,
-        recentComics: [...state.recentComics, action.result.data.importResult]
+        recentComics: [...state.recentComics, action.result.data.importResult],
       };
     }
 
@@ -271,7 +274,12 @@ function fileOpsReducer(state = initialState, action) {
         SSCallInProgress: false,
       };
     }
-
+    case LIBRARY_SERVICE_HEALTH: {
+      return {
+        ...state,
+        libraryServiceStatus: action.status,
+      };
+    }
     case FILEOPS_STATE_RESET: {
       return {
         ...state,

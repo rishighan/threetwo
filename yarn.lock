@@ -4083,12 +4083,12 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-airdcpp-apisocket@2.4.5-beta.1:
-  version "2.4.5-beta.1"
-  resolved "https://registry.yarnpkg.com/airdcpp-apisocket/-/airdcpp-apisocket-2.4.5-beta.1.tgz#f85674e98b7b733d91ee1e9b751ea9e757239964"
-  integrity sha512-Esa+p72zA9gMWDdlOkEWinvOhu01WvV9CCOvmQUrwLZXCNtT+70QBQqAY+vh0FMYrpkiH8Ync7ues4ERHPnxyw==
+airdcpp-apisocket@~2.4.5-beta.2:
+  version "2.5.0-beta.2"
+  resolved "https://registry.yarnpkg.com/airdcpp-apisocket/-/airdcpp-apisocket-2.5.0-beta.2.tgz#062541095de75775bfa92b5cb4e785674beb8986"
+  integrity sha512-N/+39wYrZc/2N5CaZPG8kUSMu9shGGmLqR/0WQbJ1NiHF5VHcifN27ioldijN10KGfssFvTZBjV93m+D8ADDkQ==
   dependencies:
-    chalk "^5.1.2"
+    chalk "^4.1.2"
     events "^3.3.0"
     invariant "^2.2.4"
     is-in-browser "^2.0.0"
@@ -5291,11 +5291,6 @@ chalk@^4.0.0, chalk@^4.0.2, chalk@^4.1.0, chalk@^4.1.2:
   dependencies:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
-
-chalk@^5.1.2:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/chalk/-/chalk-5.2.0.tgz#249623b7d66869c673699fb66d65723e54dfcfb3"
-  integrity sha512-ree3Gqw/nazQAPuJJEy+avdl7QfZMcUvmHIKgEZkGL+xOBzRvup5Hxo6LHuMceSxOabuJLJm5Yp/92R9eMmMvA==
 
 char-regex@^1.0.2:
   version "1.0.2"
@@ -11497,7 +11492,7 @@ react-docgen@^5.4.0:
     node-dir "^0.1.10"
     strip-indent "^3.0.0"
 
-react-dom@^18.1.0:
+react-dom@^18.2.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-18.2.0.tgz#22aaf38708db2674ed9ada224ca4aa708d821e3d"
   integrity sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==
