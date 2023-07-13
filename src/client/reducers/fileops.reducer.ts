@@ -62,9 +62,11 @@ const initialState = {
   librarySearchError: {},
   libraryServiceStatus: {},
 };
-
 function fileOpsReducer(state = initialState, action) {
   switch (action.type) {
+    case "sessionId": 
+      console.log(action);
+    break;
     case IMS_COMICBOOK_METADATA_FETCHED:
       return {
         ...state,

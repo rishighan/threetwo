@@ -8,7 +8,7 @@ import { reducers } from "../reducers/index";
 import { io } from "socket.io-client";
 import socketIoMiddleware from "redux-socket.io-middleware";
 import { SOCKET_BASE_URI } from "../constants/endpoints";
-const socketConnection = io(SOCKET_BASE_URI, { transports: ["websocket"] });
+const socketConnection = io(SOCKET_BASE_URI, { transports: ["websocket"], withCredentials: true, });
 
 const { createReduxHistory, routerMiddleware, routerReducer } =
   createReduxHistoryContext({

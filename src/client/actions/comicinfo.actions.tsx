@@ -127,7 +127,7 @@ export const analyzeLibrary = (issues) => async (dispatch) => {
       queryObjects,
     },
   });
-
+  
   dispatch({
     type: CV_ISSUES_MATCHES_IN_LIBRARY_FETCHED,
     matches: foo.data,
