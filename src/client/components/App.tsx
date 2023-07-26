@@ -17,6 +17,8 @@ import {
   AirDCPPSocketContextProvider,
   AirDCPPSocketContext,
 } from "../context/AirDCPPSocket";
+import { SocketIOProvider } from "../context/SocketIOContext";
+import socketIOConnectionInstance from "../shared/socket.io/instance";
 import { isEmpty, isUndefined } from "lodash";
 import {
   AIRDCPP_DOWNLOAD_PROGRESS_TICK,
@@ -95,45 +97,55 @@ const AirDCPPSocketComponent = (): ReactElement => {
   return <></>;
 };
 export const App = (): ReactElement => {
+  useEffect(() => {
+    // Listen for the sessionInitialized event
+    socketIOConnectionInstance.on("sessionInitialized", (sessionId) => {
+      console.log(sessionId);
+      // Store the session ID in Redux state
+      // initSession(sessionId);
+    });
+  }, []);
   return (
-    <AirDCPPSocketContextProvider>
-      <div>
-        <AirDCPPSocketComponent />
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/import" element={<Import path={"./comics"} />} />
-          <Route
-            path="/library"
-            element={<TabulatedContentContainer category="library" />}
-          />
-          <Route path="/library-grid" element={<LibraryGrid />} />
-          <Route path="/downloads" element={<Downloads data={{}} />} />
-          <Route path="/search" element={<Search />} />
-          <Route
-            path={"/comic/details/:comicObjectId"}
-            element={<ComicDetailContainer />}
-          />
-          <Route
-            path={"/volume/details/:comicObjectId"}
-            element={<VolumeDetail />}
-          />
-          <Route path="/settings" element={<Settings />} />
-          <Route
-            path="/pull-list/all"
-            element={<TabulatedContentContainer category="pullList" />}
-          />
-          <Route
-            path="/wanted/all"
-            element={<TabulatedContentContainer category="wanted" />}
-          />
-          <Route
-            path="/volumes/all"
-            element={<TabulatedContentContainer category="volumes" />}
-          />
-        </Routes>
-      </div>
-    </AirDCPPSocketContextProvider>
+    <SocketIOProvider socket={socketIOConnectionInstance}>
+      <AirDCPPSocketContextProvider>
+        <div>
+          <AirDCPPSocketComponent />
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/import" element={<Import path={"./comics"} />} />
+            <Route
+              path="/library"
+              element={<TabulatedContentContainer category="library" />}
+            />
+            <Route path="/library-grid" element={<LibraryGrid />} />
+            <Route path="/downloads" element={<Downloads data={{}} />} />
+            <Route path="/search" element={<Search />} />
+            <Route
+              path={"/comic/details/:comicObjectId"}
+              element={<ComicDetailContainer />}
+            />
+            <Route
+              path={"/volume/details/:comicObjectId"}
+              element={<VolumeDetail />}
+            />
+            <Route path="/settings" element={<Settings />} />
+            <Route
+              path="/pull-list/all"
+              element={<TabulatedContentContainer category="pullList" />}
+            />
+            <Route
+              path="/wanted/all"
+              element={<TabulatedContentContainer category="wanted" />}
+            />
+            <Route
+              path="/volumes/all"
+              element={<TabulatedContentContainer category="volumes" />}
+            />
+          </Routes>
+        </div>
+      </AirDCPPSocketContextProvider>
+    </SocketIOProvider>
   );
 };
 

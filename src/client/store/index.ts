@@ -4,11 +4,11 @@ import { composeWithDevTools } from "@redux-devtools/extension";
 import thunk from "redux-thunk";
 import { createReduxHistoryContext } from "redux-first-history";
 import { reducers } from "../reducers/index";
-
-import { io } from "socket.io-client";
 import socketIoMiddleware from "redux-socket.io-middleware";
-import { SOCKET_BASE_URI } from "../constants/endpoints";
-const socketConnection = io(SOCKET_BASE_URI, { transports: ["websocket"], withCredentials: true, });
+import socketIOMiddleware from "../shared/middleware/SocketIOMiddleware";
+import socketIOConnectionInstance from "../shared/socket.io/instance";
+
+const customSocketIOMiddleware = socketIOMiddleware(socketIOConnectionInstance);
 
 const { createReduxHistory, routerMiddleware, routerReducer } =
   createReduxHistoryContext({
@@ -22,7 +22,8 @@ export const store = createStore(
   }),
   composeWithDevTools(
     applyMiddleware(
-      socketIoMiddleware(socketConnection),
+      socketIoMiddleware(socketIOConnectionInstance),
+      customSocketIOMiddleware,
       thunk,
       routerMiddleware,
     ),
