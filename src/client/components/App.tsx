@@ -19,7 +19,7 @@ import {
 } from "../context/AirDCPPSocket";
 import { SocketIOProvider } from "../context/SocketIOContext";
 import socketIOConnectionInstance from "../shared/socket.io/instance";
-import { isEmpty, isUndefined } from "lodash";
+import { isEmpty, isNil, isUndefined } from "lodash";
 import {
   AIRDCPP_DOWNLOAD_PROGRESS_TICK,
   LS_SINGLE_IMPORT,
@@ -97,13 +97,23 @@ const AirDCPPSocketComponent = (): ReactElement => {
   return <></>;
 };
 export const App = (): ReactElement => {
+  const dispatch = useDispatch();
   useEffect(() => {
-    // Listen for the sessionInitialized event
-    socketIOConnectionInstance.on("sessionInitialized", (sessionId) => {
-      console.log(sessionId);
-      // Store the session ID in Redux state
-      // initSession(sessionId);
-    });
+    // Check if there is a sessionId in localStorage
+    const sessionId = localStorage.getItem("sessionId");
+    if (!isNil(sessionId)) {
+      // Resume the session
+      dispatch({
+        type: "RESUME_SESSION",
+        meta: { remote: true },
+        data: { sessionId },
+      });
+    } else {
+      // Inititalize the session and persist the sessionId to localStorage
+      socketIOConnectionInstance.on("sessionInitialized", (sessionId) => {
+        localStorage.setItem("sessionId", sessionId);
+      });
+    }
   }, []);
   return (
     <SocketIOProvider socket={socketIOConnectionInstance}>

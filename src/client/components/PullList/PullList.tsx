@@ -15,7 +15,7 @@ export const PullList = (): ReactElement => {
   useEffect(() => {
     dispatch(
       getWeeklyPullList({
-        startDate: "2022-11-15",
+        startDate: "2023-7-28",
         pageSize: "15",
         currentPage: "1",
       }),
@@ -109,15 +109,15 @@ export const PullList = (): ReactElement => {
         {!isNil(pullListComics) && (
           <div>
             <div className="library">
-            <T2Table
-              sourceData={pullListComics}
-              columns={columnData}
-              totalPages={pullListComics.length}
-              paginationHandlers={{
-                nextPage: nextPageHandler,
-                previousPage: previousPageHandler,
-              }}
-            />
+              <T2Table
+                sourceData={pullListComics}
+                columns={columnData}
+                totalPages={pullListComics.length}
+                paginationHandlers={{
+                  nextPage: nextPageHandler,
+                  previousPage: previousPageHandler,
+                }}
+              />
             </div>
           </div>
         )}

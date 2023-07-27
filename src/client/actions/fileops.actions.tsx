@@ -40,7 +40,7 @@ import { success } from "react-notification-system-redux";
 
 import { isNil, map } from "lodash";
 
-export const getServiceStatus = (serviceName?: string) => async (dispatch) => {
+export const getServiceStatus = (serviceName?: string) => async dispatch => {
   axios
     .request({
       url: `${LIBRARY_SERVICE_BASE_URI}/getHealthInformation`,
@@ -91,9 +91,9 @@ export const fetchComicBookMetadata = () => async (dispatch) => {
   //   }),
   // );
   dispatch({
-    type: "EMIT_SOCKET_EVENT",
+    type: LS_IMPORT,
     meta: { remote: true },
-    data: { gym: "asas" },
+    data: {},
   });
 };
 export const toggleImportQueueStatus = (options) => async (dispatch) => {
