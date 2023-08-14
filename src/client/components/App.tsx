@@ -106,7 +106,10 @@ export const App = (): ReactElement => {
       dispatch({
         type: "RESUME_SESSION",
         meta: { remote: true },
-        data: { sessionId },
+        session: { sessionId },
+      });
+      socketIOConnectionInstance.on("yelaveda", (data) => {
+        console.log(data);
       });
     } else {
       // Inititalize the session and persist the sessionId to localStorage
