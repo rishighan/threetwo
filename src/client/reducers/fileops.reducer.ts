@@ -18,6 +18,7 @@ import {
   IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
   LS_IMPORT,
   LS_COVER_EXTRACTED,
+  LS_COVER_EXTRACTION_FAILED,
   LS_QUEUE_DRAINED,
   LS_COMIC_ADDED,
   IMG_ANALYSIS_CALL_IN_PROGRESS,
@@ -58,6 +59,7 @@ const initialState = {
   volumes: [],
   librarySearchResultsFormatted: [],
   librarySearchResultCount: 0,
+  failedJobCount: 0,
   libraryQueueResults: [],
   librarySearchError: {},
   libraryServiceStatus: {},
@@ -160,8 +162,16 @@ function fileOpsReducer(state = initialState, action) {
       }
       return {
         ...state,
-        librarySearchResultCount: state.librarySearchResultCount + 1,
-        recentComics: [...state.recentComics, action.result.data.importResult],
+        librarySearchResultCount: action.completedJobCount,
+        recentComics: [...state.recentComics, action.importResult],
+      };
+    }
+
+    case LS_COVER_EXTRACTION_FAILED: {
+      console.log("FAILED", action);
+      return {
+        ...state,
+        failedImportJobCount: action.failedJobCount,
       };
     }
 

@@ -32,6 +32,9 @@ export const Import = (props: IProps): ReactElement => {
   const libraryQueueResults = useSelector(
     (state: RootState) => state.fileOps.librarySearchResultCount,
   );
+  const failedImportJobCount = useSelector(
+    (state: RootState) => state.fileOps.failedImportJobCount,
+  );
   const libraryQueueImportStatus = useSelector(
     (state: RootState) => state.fileOps.IMSCallInProgress,
   );
@@ -63,22 +66,22 @@ export const Import = (props: IProps): ReactElement => {
   return (
     <div className="container">
       <section className="section is-small">
-        <h1 className="title">Import</h1>
+        <h1 className="title">Import Comics</h1>
         <article className="message is-dark">
           <div className="message-body">
             <p className="mb-2">
               <span className="tag is-medium is-info is-light">
-                Import Only
+                Import Comics
               </span>
-              will add comics identified from the mapped folder into the local
-              db.
+              will add comics identified from the mapped folder into ThreeTwo's
+              database.
             </p>
             <p>
-              <span className="tag is-medium is-info is-light">
-                Import and Tag
-              </span>
-              will scan the ComicVine, shortboxed APIs and import comics from
-              the mapped folder with the additional metadata.
+              Metadata from ComicInfo.xml, if present, will also be extracted.
+            </p>
+            <p>
+              This process could take a while, if you have a lot of comics, or
+              are importing over a network connection.
             </p>
           </div>
         </article>
@@ -94,33 +97,34 @@ export const Import = (props: IProps): ReactElement => {
             <span className="icon">
               <i className="fas fa-file-import"></i>
             </span>
-            <span>Import Only</span>
-          </button>
-
-          <button className="button is-medium">
-            <span className="icon">
-              <i className="fas fa-tag"></i>
-            </span>
-            <span>Import and Tag</span>
+            <span>Start Import</span>
           </button>
         </p>
-        <div className="columns is-multiline">
-          <div className="column is-one-fifth">
-            <div className="box control-palette">
+        <div className="columns is-multiline is-half">
+          <div className="column is-2 has-text-centered">
+            <div className="box has-background-success-light">
               <span className="is-size-2 has-text-weight-bold">
-                {JSON.stringify(libraryQueueResults, null, 2)}
+                {libraryQueueResults}
               </span>
             </div>
-            <div className="is-half">
-              <div className="content">
-                <div className="control">
-                  <button
-                    className="button is-warning is-light"
-                    onClick={toggleImport}
-                  >
-                    {!isImportQueuePaused ? pauseIconText : playIconText}
-                  </button>
-                </div>
+          </div>
+          <div className="column is-2 has-text-centered">
+            <div className="box has-background-danger">
+              <span className="is-size-2 has-text-weight-bold">
+                {failedImportJobCount}
+              </span>
+            </div>
+          </div>
+
+          <div className="column">
+            <div className="content">
+              <div className="control">
+                <button
+                  className="button is-warning is-light"
+                  onClick={toggleImport}
+                >
+                  {!isImportQueuePaused ? pauseIconText : playIconText}
+                </button>
               </div>
             </div>
           </div>
