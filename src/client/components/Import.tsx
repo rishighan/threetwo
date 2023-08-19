@@ -6,6 +6,7 @@ import {
 } from "../actions/fileops.actions";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Loader from "react-loader-spinner";
+import { isUndefined } from "lodash";
 
 interface IProps {
   matches?: unknown;
@@ -35,6 +36,10 @@ export const Import = (props: IProps): ReactElement => {
   const failedImportJobCount = useSelector(
     (state: RootState) => state.fileOps.failedImportJobCount,
   );
+
+  const lastQueueJob = useSelector(
+    (state: RootState) => state.fileOps.lastQueueJob,
+  );
   const libraryQueueImportStatus = useSelector(
     (state: RootState) => state.fileOps.IMSCallInProgress,
   );
@@ -55,12 +60,12 @@ export const Import = (props: IProps): ReactElement => {
   }, [isImportQueuePaused]);
   const pauseIconText = (
     <>
-      <i className="fa-solid fa-pause mr-2"></i> Pause Import
+      <i className="fa-solid fa-pause mr-2"></i> Pause
     </>
   );
   const playIconText = (
     <>
-      <i className="fa-solid fa-play mr-2"></i> Resume Import
+      <i className="fa-solid fa-play mr-2"></i> Resume
     </>
   );
   return (
@@ -100,35 +105,52 @@ export const Import = (props: IProps): ReactElement => {
             <span>Start Import</span>
           </button>
         </p>
-        <div className="columns is-multiline is-half">
-          <div className="column is-2 has-text-centered">
-            <div className="box has-background-success-light">
-              <span className="is-size-2 has-text-weight-bold">
-                {libraryQueueResults}
-              </span>
-            </div>
-          </div>
-          <div className="column is-2 has-text-centered">
-            <div className="box has-background-danger">
-              <span className="is-size-2 has-text-weight-bold">
-                {failedImportJobCount}
-              </span>
-            </div>
-          </div>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>
+                <abbr title="Position">Completed Jobs</abbr>
+              </th>
+              <th>Failed Jobs</th>
+              <th>
+                <abbr title="Played">Queue Controls</abbr>
+              </th>
+            </tr>
+          </thead>
 
-          <div className="column">
-            <div className="content">
-              <div className="control">
-                <button
-                  className="button is-warning is-light"
-                  onClick={toggleImport}
-                >
-                  {!isImportQueuePaused ? pauseIconText : playIconText}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+          <tbody>
+            <tr>
+              <th>
+                <div className="box has-background-success-light has-text-centered">
+                  <span className="is-size-2 has-text-weight-bold">
+                    {libraryQueueResults}
+                  </span>
+                </div>
+              </th>
+              <td>
+                {!isUndefined(failedImportJobCount) && (
+                  <div className="box has-background-danger has-text-centered">
+                    <span className="is-size-2 has-text-weight-bold">
+                      {failedImportJobCount}
+                    </span>
+                  </div>
+                )}
+              </td>
+
+              <td>
+                <div className="control">
+                  <button
+                    className="button is-warning is-light"
+                    onClick={toggleImport}
+                  >
+                    {!isImportQueuePaused ? pauseIconText : playIconText}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        Imported <span className="has-text-weight-bold">{lastQueueJob}</span>
       </section>
     </div>
   );

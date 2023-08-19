@@ -58,6 +58,7 @@ const initialState = {
   libraryComics: [],
   volumes: [],
   librarySearchResultsFormatted: [],
+  lastQueueJob: "",
   librarySearchResultCount: 0,
   failedJobCount: 0,
   libraryQueueResults: [],
@@ -163,6 +164,7 @@ function fileOpsReducer(state = initialState, action) {
       return {
         ...state,
         librarySearchResultCount: action.completedJobCount,
+        lastQueueJob: action.importResult.rawFileDetails.name,
         recentComics: [...state.recentComics, action.importResult],
       };
     }
