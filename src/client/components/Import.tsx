@@ -43,7 +43,7 @@ export const Import = (props: IProps): ReactElement => {
   const libraryQueueImportStatus = useSelector(
     (state: RootState) => state.fileOps.IMSCallInProgress,
   );
-  const [isImportQueuePaused, setImportQueueStatus] = useState(false);
+  const [isImportQueuePaused, setImportQueueStatus] = useState(undefined);
   const initiateImport = useCallback(() => {
     if (typeof props.path !== "undefined") {
       dispatch(fetchComicBookMetadata(props.path));
@@ -52,9 +52,9 @@ export const Import = (props: IProps): ReactElement => {
 
   const toggleImport = useCallback(() => {
     setImportQueueStatus(!isImportQueuePaused);
-    if (isImportQueuePaused === false) {
+    if (isImportQueuePaused === true) {
       dispatch(toggleImportQueueStatus({ action: "resume" }));
-    } else if (isImportQueuePaused === true) {
+    } else if (isImportQueuePaused === false) {
       dispatch(toggleImportQueueStatus({ action: "pause" }));
     }
   }, [isImportQueuePaused]);
@@ -143,7 +143,7 @@ export const Import = (props: IProps): ReactElement => {
                     className="button is-warning is-light"
                     onClick={toggleImport}
                   >
-                    {!isImportQueuePaused ? pauseIconText : playIconText}
+                    {isImportQueuePaused ? pauseIconText : playIconText}
                   </button>
                 </div>
               </td>
