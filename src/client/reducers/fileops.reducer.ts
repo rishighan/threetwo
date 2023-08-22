@@ -179,6 +179,9 @@ function fileOpsReducer(state = initialState, action) {
 
     case "LS_IMPORT_QUEUE_DRAINED": {
       console.log("Queue drained");
+      return {
+        ...state,
+      };
     }
 
     case COMICBOOK_EXTRACTION_SUCCESS: {
