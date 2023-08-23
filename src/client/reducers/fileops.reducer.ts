@@ -33,6 +33,8 @@ import {
   COMICBOOK_EXTRACTION_SUCCESS,
   LIBRARY_SERVICE_HEALTH,
   HEALTH_STATUS_TICK,
+  LS_IMPORT_QUEUE_DRAINED,
+  LS_SET_QUEUE_STATUS,
 } from "../constants/action-types";
 import { removeLeadingPeriod } from "../shared/utils/formatting.utils";
 import { LIBRARY_SERVICE_HOST } from "../constants/endpoints";
@@ -43,6 +45,7 @@ const initialState = {
   SSCallInProgress: false,
   imageAnalysisResults: {},
   comicBookExtractionInProgress: false,
+  LSQueueImportStatus: undefined,
   comicBookMetadata: [],
   comicVolumeGroups: [],
   isSocketConnected: false,
@@ -154,6 +157,7 @@ function fileOpsReducer(state = initialState, action) {
     case LS_IMPORT: {
       return {
         ...state,
+        LSQueueImportStatus: "running",
       };
     }
     case LS_COVER_EXTRACTED: {
@@ -173,14 +177,32 @@ function fileOpsReducer(state = initialState, action) {
       console.log("FAILED", action);
       return {
         ...state,
-        failedImportJobCount: action.failedJobCount,
+        failedJobCount: action.failedJobCount,
       };
     }
 
-    case "LS_IMPORT_QUEUE_DRAINED": {
-      console.log("Queue drained");
+    case LS_IMPORT_QUEUE_DRAINED: {
+      console.log("drained");
       return {
         ...state,
+        LSQueueImportStatus: "drained",
+      };
+    }
+
+    case "RESTORE_JOB_COUNTS_AFTER_SESSION_RESTORATION": {
+      console.log(action);
+      return {
+        ...state,
+        librarySearchResultCount: action.completedJobCount,
+        failedJobCount: action.failedJobCount,
+      };
+    }
+
+    case LS_SET_QUEUE_STATUS: {
+      console.log(action);
+      return {
+        ...state,
+        LSQueueImportStatus: action.data.queueStatus,
       };
     }
 

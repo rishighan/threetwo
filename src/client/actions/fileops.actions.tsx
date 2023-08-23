@@ -35,6 +35,7 @@ import {
   VOLUMES_FETCHED,
   CV_WEEKLY_PULLLIST_FETCHED,
   LIBRARY_SERVICE_HEALTH,
+  LS_SET_QUEUE_STATUS,
 } from "../constants/action-types";
 import { success } from "react-notification-system-redux";
 
@@ -96,13 +97,14 @@ export const fetchComicBookMetadata = () => async (dispatch) => {
     data: {},
   });
 };
-export const toggleImportQueueStatus = (options) => async (dispatch) => {
-  dispatch({
-    type: LS_TOGGLE_IMPORT_QUEUE,
-    meta: { remote: true },
-    data: { manjhul: "jigyadam", action: options.action },
-  });
-};
+export const setQueueControl =
+  (queueAction: string, queueStatus: string) => async (dispatch) => {
+    dispatch({
+      type: LS_SET_QUEUE_STATUS,
+      meta: { remote: true },
+      data: { queueAction, queueStatus },
+    });
+  };
 /**
  * Fetches comic book metadata for various types
  * @return metadata for the comic book object categories

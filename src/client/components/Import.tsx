@@ -2,11 +2,15 @@ import React, { ReactElement, useCallback, useContext, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   fetchComicBookMetadata,
-  toggleImportQueueStatus,
+  setQueueControl,
 } from "../actions/fileops.actions";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Loader from "react-loader-spinner";
 import { isUndefined } from "lodash";
+import {
+  LS_IMPORT_CALL_IN_PROGRESS,
+  LS_SET_QUEUE_STATUS,
+} from "../constants/action-types";
 
 interface IProps {
   matches?: unknown;
@@ -34,40 +38,62 @@ export const Import = (props: IProps): ReactElement => {
     (state: RootState) => state.fileOps.librarySearchResultCount,
   );
   const failedImportJobCount = useSelector(
-    (state: RootState) => state.fileOps.failedImportJobCount,
+    (state: RootState) => state.fileOps.failedJobCount,
   );
 
   const lastQueueJob = useSelector(
     (state: RootState) => state.fileOps.lastQueueJob,
   );
   const libraryQueueImportStatus = useSelector(
-    (state: RootState) => state.fileOps.IMSCallInProgress,
+    (state: RootState) => state.fileOps.LSQueueImportStatus,
   );
-  const [isImportQueuePaused, setImportQueueStatus] = useState(undefined);
+
   const initiateImport = useCallback(() => {
     if (typeof props.path !== "undefined") {
       dispatch(fetchComicBookMetadata(props.path));
     }
   }, [dispatch]);
 
-  const toggleImport = useCallback(() => {
-    setImportQueueStatus(!isImportQueuePaused);
-    if (isImportQueuePaused === true) {
-      dispatch(toggleImportQueueStatus({ action: "resume" }));
-    } else if (isImportQueuePaused === false) {
-      dispatch(toggleImportQueueStatus({ action: "pause" }));
+  const toggleQueue = useCallback(
+    (queueAction: string, queueStatus: string) => {
+      dispatch(setQueueControl(queueAction, queueStatus));
+    },
+    [],
+  );
+
+  const renderQueueControls = (status: string): ReactElement | null => {
+    switch (status) {
+      case "running":
+        return (
+          <div className="control">
+            <button
+              className="button is-warning is-light"
+              onClick={() => toggleQueue("pause", "paused")}
+            >
+              <i className="fa-solid fa-pause mr-2"></i> Pause
+            </button>
+          </div>
+        );
+      case "paused":
+        return (
+          <div className="control">
+            <button
+              className="button is-success is-light"
+              onClick={() => toggleQueue("resume", "running")}
+            >
+              <i className="fa-solid fa-play mr-2"></i> Resume
+            </button>
+          </div>
+        );
+
+      case "drained":
+        return null;
+
+      default:
+        return null;
     }
-  }, [isImportQueuePaused]);
-  const pauseIconText = (
-    <>
-      <i className="fa-solid fa-pause mr-2"></i> Pause
-    </>
-  );
-  const playIconText = (
-    <>
-      <i className="fa-solid fa-play mr-2"></i> Resume
-    </>
-  );
+  };
+
   return (
     <div className="container">
       <section className="section is-small">
@@ -88,14 +114,16 @@ export const Import = (props: IProps): ReactElement => {
               This process could take a while, if you have a lot of comics, or
               are importing over a network connection.
             </p>
+            {JSON.stringify(libraryQueueImportStatus)}
           </div>
         </article>
         <p className="buttons">
           <button
             className={
-              libraryQueueImportStatus
-                ? "button is-loading is-medium"
-                : "button is-medium"
+              libraryQueueImportStatus === "drained" ||
+              libraryQueueImportStatus === undefined
+                ? "button is-medium"
+                : "button is-loading is-medium"
             }
             onClick={initiateImport}
           >
@@ -121,11 +149,13 @@ export const Import = (props: IProps): ReactElement => {
           <tbody>
             <tr>
               <th>
-                <div className="box has-background-success-light has-text-centered">
-                  <span className="is-size-2 has-text-weight-bold">
-                    {libraryQueueResults}
-                  </span>
-                </div>
+                {libraryQueueResults && (
+                  <div className="box has-background-success-light has-text-centered">
+                    <span className="is-size-2 has-text-weight-bold">
+                      {libraryQueueResults}
+                    </span>
+                  </div>
+                )}
               </th>
               <td>
                 {!isUndefined(failedImportJobCount) && (
@@ -137,16 +167,7 @@ export const Import = (props: IProps): ReactElement => {
                 )}
               </td>
 
-              <td>
-                <div className="control">
-                  <button
-                    className="button is-warning is-light"
-                    onClick={toggleImport}
-                  >
-                    {isImportQueuePaused ? pauseIconText : playIconText}
-                  </button>
-                </div>
-              </td>
+              <td>{renderQueueControls(libraryQueueImportStatus)}</td>
             </tr>
           </tbody>
         </table>

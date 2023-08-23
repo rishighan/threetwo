@@ -108,9 +108,6 @@ export const App = (): ReactElement => {
         meta: { remote: true },
         session: { sessionId },
       });
-      socketIOConnectionInstance.on("yelaveda", (data) => {
-        console.log(data);
-      });
     } else {
       // Inititalize the session and persist the sessionId to localStorage
       socketIOConnectionInstance.on("sessionInitialized", (sessionId) => {
