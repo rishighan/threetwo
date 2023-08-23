@@ -5168,16 +5168,16 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
-airdcpp-apisocket@^2.4.4:
-  version "2.4.4"
-  resolved "https://registry.yarnpkg.com/airdcpp-apisocket/-/airdcpp-apisocket-2.4.4.tgz#94c3b8082022982557b8cad2fc77a670709f0b2c"
-  integrity sha512-Xn0kWSVdLJwPpOoHcdI2wzzfzZW2jTpuyZR2wCNs2UIlZhO+FTwMf3QQfNCt5gYTOld9LaiCEulxFuXDA8qrLA==
+airdcpp-apisocket@^2.5.0-beta.2:
+  version "2.5.0-beta.2"
+  resolved "https://registry.yarnpkg.com/airdcpp-apisocket/-/airdcpp-apisocket-2.5.0-beta.2.tgz#062541095de75775bfa92b5cb4e785674beb8986"
+  integrity sha512-N/+39wYrZc/2N5CaZPG8kUSMu9shGGmLqR/0WQbJ1NiHF5VHcifN27ioldijN10KGfssFvTZBjV93m+D8ADDkQ==
   dependencies:
     chalk "^4.1.2"
     events "^3.3.0"
     invariant "^2.2.4"
     is-in-browser "^2.0.0"
-    promise "^8.1.0"
+    promise "^8.3.0"
 
 ajv@^6.10.0, ajv@^6.12.4:
   version "6.12.6"
@@ -12728,7 +12728,7 @@ promise@^7.0.1:
   dependencies:
     asap "~2.0.3"
 
-promise@^8.1.0:
+promise@^8.3.0:
   version "8.3.0"
   resolved "https://registry.yarnpkg.com/promise/-/promise-8.3.0.tgz#8cb333d1edeb61ef23869fbb8a4ea0279ab60e0a"
   integrity sha512-rZPNPKTOYVNEEKFaq1HqTgOwZD+4/YHS5ukLzQCypkj+OkYx7iv0mA91lJlpPPZ8vMau3IIGj5Qlwrx+8iiSmg==
