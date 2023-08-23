@@ -34,8 +34,8 @@ interface IProps {
 
 export const Import = (props: IProps): ReactElement => {
   const dispatch = useDispatch();
-  const libraryQueueResults = useSelector(
-    (state: RootState) => state.fileOps.librarySearchResultCount,
+  const successfulImportJobCount = useSelector(
+    (state: RootState) => state.fileOps.successfulJobCount,
   );
   const failedImportJobCount = useSelector(
     (state: RootState) => state.fileOps.failedJobCount,
@@ -149,16 +149,16 @@ export const Import = (props: IProps): ReactElement => {
           <tbody>
             <tr>
               <th>
-                {libraryQueueResults && (
+                {successfulImportJobCount > 0 && (
                   <div className="box has-background-success-light has-text-centered">
                     <span className="is-size-2 has-text-weight-bold">
-                      {libraryQueueResults}
+                      {successfulImportJobCount}
                     </span>
                   </div>
                 )}
               </th>
               <td>
-                {!isUndefined(failedImportJobCount) && (
+                {failedImportJobCount > 0 && (
                   <div className="box has-background-danger has-text-centered">
                     <span className="is-size-2 has-text-weight-bold">
                       {failedImportJobCount}
@@ -171,7 +171,13 @@ export const Import = (props: IProps): ReactElement => {
             </tr>
           </tbody>
         </table>
-        Imported <span className="has-text-weight-bold">{lastQueueJob}</span>
+        {libraryQueueImportStatus !== "drained" &&
+          !isUndefined(libraryQueueImportStatus) && (
+            <>
+              Imported{" "}
+              <span className="has-text-weight-bold">{lastQueueJob}</span>
+            </>
+          )}
       </section>
     </div>
   );
