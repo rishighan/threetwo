@@ -47,7 +47,7 @@ export const Library = (): ReactElement => {
 
   const ComicInfoXML = (value) => {
     return value.data ? (
-      <div className="comicvine-metadata">
+      <div className="comicvine-metadata mt-3">
         <dl>
           <span className="tags has-addons is-size-7">
             <span className="tag">Series</span>
