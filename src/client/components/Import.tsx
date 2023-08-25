@@ -136,13 +136,9 @@ export const Import = (props: IProps): ReactElement => {
         <table className="table">
           <thead>
             <tr>
-              <th>
-                <abbr title="Position">Completed Jobs</abbr>
-              </th>
+              <th>Completed Jobs</th>
               <th>Failed Jobs</th>
-              <th>
-                <abbr title="Played">Queue Controls</abbr>
-              </th>
+              <th>Queue Controls</th>
             </tr>
           </thead>
 
@@ -178,6 +174,29 @@ export const Import = (props: IProps): ReactElement => {
               <span className="has-text-weight-bold">{lastQueueJob}</span>
             </>
           )}
+
+        {/* Past imports */}
+
+        <h3 className="subtitle is-4">Past Imports</h3>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Time Started</th>
+              <th>Imported</th>
+              <th>Failed</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
       </section>
     </div>
   );

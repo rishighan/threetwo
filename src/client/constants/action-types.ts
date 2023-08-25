@@ -14,7 +14,6 @@ export const IMS_RAW_IMPORT_FAILED = "IMS_RAW_IMPORT_FAILED";
 export const LS_IMPORT_CALL_IN_PROGRESS = "LS_IMPORT_CALL_IN_PROGRESS";
 // Library import bull mq queue control
 export const LS_TOGGLE_IMPORT_QUEUE = "LS_TOGGLE_IMPORT_QUEUE";
-export const LS_QUEUE_DRAINED = "LS_QUEUE_DRAINED";
 
 // ComicVine Metadata
 export const IMS_CV_METADATA_IMPORT_CALL_IN_PROGRESS =

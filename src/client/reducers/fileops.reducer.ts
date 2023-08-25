@@ -15,11 +15,9 @@ import {
   IMS_COMIC_BOOK_GROUPS_FETCHED,
   IMS_COMIC_BOOK_GROUPS_CALL_FAILED,
   IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
-  IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
   LS_IMPORT,
   LS_COVER_EXTRACTED,
   LS_COVER_EXTRACTION_FAILED,
-  LS_QUEUE_DRAINED,
   LS_COMIC_ADDED,
   IMG_ANALYSIS_CALL_IN_PROGRESS,
   IMG_ANALYSIS_DATA_FETCH_SUCCESS,
@@ -32,7 +30,6 @@ import {
   VOLUMES_FETCHED,
   COMICBOOK_EXTRACTION_SUCCESS,
   LIBRARY_SERVICE_HEALTH,
-  HEALTH_STATUS_TICK,
   LS_IMPORT_QUEUE_DRAINED,
   LS_SET_QUEUE_STATUS,
   RESTORE_JOB_COUNTS_AFTER_SESSION_RESTORATION,
@@ -233,14 +230,7 @@ function fileOpsReducer(state = initialState, action) {
           };
       }
     }
-    case LS_QUEUE_DRAINED: {
-      console.log("drained", action);
-      return {
-        ...state,
-      };
-    }
     case LS_COMIC_ADDED: {
-      console.log("ADDED na anna", action);
       return {
         ...state,
       };
