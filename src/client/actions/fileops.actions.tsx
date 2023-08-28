@@ -5,6 +5,7 @@ import {
   IMAGETRANSFORMATION_SERVICE_BASE_URI,
   LIBRARY_SERVICE_BASE_URI,
   SEARCH_SERVICE_BASE_URI,
+  JOB_QUEUE_SERVICE_BASE_URI,
 } from "../constants/endpoints";
 import {
   IMS_COMIC_BOOK_GROUPS_FETCHED,
@@ -86,10 +87,24 @@ export const fetchComicBookMetadata = () => async (dispatch) => {
   //     autoDismiss: 0,
   //   }),
   // );
-  dispatch({
-    type: LS_IMPORT,
-    meta: { remote: true },
-    data: {},
+  const sessionId = localStorage.getItem("sessionId");
+  // dispatch({
+  //   type: LS_IMPORT,
+  //   meta: { remote: true },
+  //   data: { sessionId },
+  // });
+
+  await axios.request({
+    url: `${LIBRARY_SERVICE_BASE_URI}/newImport`,
+    method: "POST",
+    data: { sessionId },
+  });
+};
+
+export const getImportJobResultStatistics = () => async (dispatch) => {
+  await axios.request({
+    url: `${JOB_QUEUE_SERVICE_BASE_URI}/getJobResultStatistics`,
+    method: "GET",
   });
 };
 export const setQueueControl =
@@ -100,6 +115,7 @@ export const setQueueControl =
       data: { queueAction, queueStatus },
     });
   };
+
 /**
  * Fetches comic book metadata for various types
  * @return metadata for the comic book object categories

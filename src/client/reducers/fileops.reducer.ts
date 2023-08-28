@@ -33,6 +33,7 @@ import {
   LS_IMPORT_QUEUE_DRAINED,
   LS_SET_QUEUE_STATUS,
   RESTORE_JOB_COUNTS_AFTER_SESSION_RESTORATION,
+  IMPORT_JOB_RESULTS_RETRIEVED,
 } from "../constants/action-types";
 import { removeLeadingPeriod } from "../shared/utils/formatting.utils";
 import { LIBRARY_SERVICE_HOST } from "../constants/endpoints";
@@ -62,6 +63,7 @@ const initialState = {
   lastQueueJob: "",
   successfulJobCount: 0,
   failedJobCount: 0,
+  importJobStatistics: [],
   libraryQueueResults: [],
   librarySearchError: {},
   libraryServiceStatus: {},
@@ -229,6 +231,11 @@ function fileOpsReducer(state = initialState, action) {
             comicBookExtractionInProgress: false,
           };
       }
+    }
+    case IMPORT_JOB_RESULTS_RETRIEVED: {
+      return {
+        ...state,
+      };
     }
     case LS_COMIC_ADDED: {
       return {
