@@ -190,7 +190,7 @@ export const Import = (props: IProps): ReactElement => {
 
         {/* Past imports */}
 
-        <h3 className="subtitle is-4">Past Imports</h3>
+        <h3 className="subtitle is-4 mt-5">Past Imports</h3>
         <table className="table">
           <thead>
             <tr>
