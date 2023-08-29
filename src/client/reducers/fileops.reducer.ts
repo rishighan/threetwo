@@ -33,7 +33,7 @@ import {
   LS_IMPORT_QUEUE_DRAINED,
   LS_SET_QUEUE_STATUS,
   RESTORE_JOB_COUNTS_AFTER_SESSION_RESTORATION,
-  IMPORT_JOB_RESULTS_RETRIEVED,
+  LS_IMPORT_JOB_STATISTICS_FETCHED,
 } from "../constants/action-types";
 import { removeLeadingPeriod } from "../shared/utils/formatting.utils";
 import { LIBRARY_SERVICE_HOST } from "../constants/endpoints";
@@ -197,10 +197,16 @@ function fileOpsReducer(state = initialState, action) {
     }
 
     case LS_SET_QUEUE_STATUS: {
-      console.log(action);
       return {
         ...state,
         LSQueueImportStatus: action.data.queueStatus,
+      };
+    }
+
+    case LS_IMPORT_JOB_STATISTICS_FETCHED: {
+      return {
+        ...state,
+        importJobStatistics: action.data,
       };
     }
 
@@ -232,11 +238,7 @@ function fileOpsReducer(state = initialState, action) {
           };
       }
     }
-    case IMPORT_JOB_RESULTS_RETRIEVED: {
-      return {
-        ...state,
-      };
-    }
+
     case LS_COMIC_ADDED: {
       return {
         ...state,

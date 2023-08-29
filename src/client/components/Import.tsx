@@ -1,16 +1,14 @@
-import React, { ReactElement, useCallback, useContext, useState } from "react";
+import React, { ReactElement, useCallback, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   fetchComicBookMetadata,
+  getImportJobResultStatistics,
   setQueueControl,
 } from "../actions/fileops.actions";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+import { format } from "date-fns";
 import Loader from "react-loader-spinner";
-import { isUndefined } from "lodash";
-import {
-  LS_IMPORT_CALL_IN_PROGRESS,
-  LS_SET_QUEUE_STATUS,
-} from "../constants/action-types";
+import { isEmpty, isNil, isUndefined } from "lodash";
 
 interface IProps {
   matches?: unknown;
@@ -48,6 +46,10 @@ export const Import = (props: IProps): ReactElement => {
     (state: RootState) => state.fileOps.LSQueueImportStatus,
   );
 
+  const allImportJobResults = useSelector(
+    (state: RootState) => state.fileOps.importJobStatistics,
+  );
+
   const initiateImport = useCallback(() => {
     if (typeof props.path !== "undefined") {
       dispatch(fetchComicBookMetadata(props.path));
@@ -60,6 +62,10 @@ export const Import = (props: IProps): ReactElement => {
     },
     [],
   );
+
+  useEffect(() => {
+    dispatch(getImportJobResultStatistics());
+  }, []);
 
   const renderQueueControls = (status: string): ReactElement | null => {
     switch (status) {
@@ -93,7 +99,7 @@ export const Import = (props: IProps): ReactElement => {
         return null;
     }
   };
-
+  console.log(...allImportJobResults);
   return (
     <div className="container">
       <section className="section is-small">
@@ -114,7 +120,6 @@ export const Import = (props: IProps): ReactElement => {
               This process could take a while, if you have a lot of comics, or
               are importing over a network connection.
             </p>
-            {JSON.stringify(libraryQueueImportStatus)}
           </div>
         </article>
         <p className="buttons">
@@ -133,43 +138,51 @@ export const Import = (props: IProps): ReactElement => {
             <span>Start Import</span>
           </button>
         </p>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Completed Jobs</th>
-              <th>Failed Jobs</th>
-              <th>Queue Controls</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr>
-              <th>
-                {successfulImportJobCount > 0 && (
-                  <div className="box has-background-success-light has-text-centered">
-                    <span className="is-size-2 has-text-weight-bold">
-                      {successfulImportJobCount}
-                    </span>
-                  </div>
-                )}
-              </th>
-              <td>
-                {failedImportJobCount > 0 && (
-                  <div className="box has-background-danger has-text-centered">
-                    <span className="is-size-2 has-text-weight-bold">
-                      {failedImportJobCount}
-                    </span>
-                  </div>
-                )}
-              </td>
-
-              <td>{renderQueueControls(libraryQueueImportStatus)}</td>
-            </tr>
-          </tbody>
-        </table>
         {libraryQueueImportStatus !== "drained" &&
           !isUndefined(libraryQueueImportStatus) && (
             <>
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Completed Jobs</th>
+                    <th>Failed Jobs</th>
+                    <th>Queue Controls</th>
+                    <th>Queue Status</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <th>
+                      {successfulImportJobCount > 0 && (
+                        <div className="box has-background-success-light has-text-centered">
+                          <span className="is-size-2 has-text-weight-bold">
+                            {successfulImportJobCount}
+                          </span>
+                        </div>
+                      )}
+                    </th>
+                    <td>
+                      {failedImportJobCount > 0 && (
+                        <div className="box has-background-danger has-text-centered">
+                          <span className="is-size-2 has-text-weight-bold">
+                            {failedImportJobCount}
+                          </span>
+                        </div>
+                      )}
+                    </td>
+
+                    <td>{renderQueueControls(libraryQueueImportStatus)}</td>
+                    <td>
+                      {libraryQueueImportStatus !== undefined ? (
+                        <span className="tag is-warning">
+                          {libraryQueueImportStatus}
+                        </span>
+                      ) : null}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
               Imported{" "}
               <span className="has-text-weight-bold">{lastQueueJob}</span>
             </>
@@ -182,19 +195,38 @@ export const Import = (props: IProps): ReactElement => {
           <thead>
             <tr>
               <th>Time Started</th>
+              <th>Session Id</th>
               <th>Imported</th>
               <th>Failed</th>
-              <th>Actions</th>
             </tr>
           </thead>
 
           <tbody>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
+            {allImportJobResults.map((jobResult, id) => {
+              return (
+                <tr key={id}>
+                  <td>
+                    {format(
+                      new Date(jobResult.statuses[0].earliestTimestamp),
+                      "EEEE, hh:mma, do LLLL Y",
+                    )}
+                  </td>
+                  <td>
+                    <span className="tag is-warning">{jobResult._id}</span>
+                  </td>
+                  <td>
+                    <span className="tag is-success">
+                      {jobResult.statuses[1].count}
+                    </span>
+                  </td>
+                  <td>
+                    <span className="tag is-danger">
+                      {jobResult.statuses[0].count}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </section>

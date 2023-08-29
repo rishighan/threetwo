@@ -32,6 +32,7 @@ import {
   VOLUMES_FETCHED,
   LIBRARY_SERVICE_HEALTH,
   LS_SET_QUEUE_STATUS,
+  LS_IMPORT_JOB_STATISTICS_FETCHED,
 } from "../constants/action-types";
 import { success } from "react-notification-system-redux";
 
@@ -88,11 +89,9 @@ export const fetchComicBookMetadata = () => async (dispatch) => {
   //   }),
   // );
   const sessionId = localStorage.getItem("sessionId");
-  // dispatch({
-  //   type: LS_IMPORT,
-  //   meta: { remote: true },
-  //   data: { sessionId },
-  // });
+  dispatch({
+    type: LS_IMPORT,
+  });
 
   await axios.request({
     url: `${LIBRARY_SERVICE_BASE_URI}/newImport`,
@@ -102,11 +101,16 @@ export const fetchComicBookMetadata = () => async (dispatch) => {
 };
 
 export const getImportJobResultStatistics = () => async (dispatch) => {
-  await axios.request({
+  const result = await axios.request({
     url: `${JOB_QUEUE_SERVICE_BASE_URI}/getJobResultStatistics`,
     method: "GET",
   });
+  dispatch({
+    type: LS_IMPORT_JOB_STATISTICS_FETCHED,
+    data: result.data,
+  });
 };
+
 export const setQueueControl =
   (queueAction: string, queueStatus: string) => async (dispatch) => {
     dispatch({
