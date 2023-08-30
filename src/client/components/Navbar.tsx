@@ -20,6 +20,25 @@ const Navbar: React.FunctionComponent = (props) => {
   const socketDisconnectionReason = useSelector(
     (state: RootState) => state.airdcpp.socketDisconnectionReason,
   );
+
+  // Import-related selector hooks
+  const successfulImportJobCount = useSelector(
+    (state: RootState) => state.fileOps.successfulJobCount,
+  );
+  const failedImportJobCount = useSelector(
+    (state: RootState) => state.fileOps.failedJobCount,
+  );
+
+  const lastQueueJob = useSelector(
+    (state: RootState) => state.fileOps.lastQueueJob,
+  );
+  const libraryQueueImportStatus = useSelector(
+    (state: RootState) => state.fileOps.LSQueueImportStatus,
+  );
+
+  const allImportJobResults = useSelector(
+    (state: RootState) => state.fileOps.importJobStatistics,
+  );
   return (
     <nav className="navbar is-fixed-top">
       <div className="navbar-brand">
@@ -88,9 +107,43 @@ const Navbar: React.FunctionComponent = (props) => {
               <div className="navbar-dropdown is-right is-boxed">
                 <a className="navbar-item">
                   <DownloadProgressTick data={downloadProgressTick} />
-                </a>              </div>
+                </a>
+              </div>
             ) : null}
           </div>
+
+          {!isUndefined(libraryQueueImportStatus) &&
+          location.hash !== "#/import" ? (
+            <div className="navbar-item has-dropdown is-hoverable">
+              <a className="navbar-link is-arrowless">
+                <i className="fa-solid fa-file-import has-text-warning-dark"></i>
+              </a>
+
+              <div className="navbar-dropdown is-right is-boxed">
+                <a className="navbar-item">
+                  <ul>
+                    {successfulImportJobCount > 0 ? (
+                      <li className="mb-2">
+                        <span className="tag is-success mr-2">
+                          {successfulImportJobCount}
+                        </span>
+                        imported.
+                      </li>
+                    ) : null}
+                    {failedImportJobCount > 0 ? (
+                      <li>
+                        <span className="tag is-danger mr-2">
+                          {failedImportJobCount}
+                        </span>
+                        failed to import.
+                      </li>
+                    ) : null}
+                  </ul>
+                </a>
+              </div>
+            </div>
+          ) : null}
+
           {/* AirDC++ socket connection status */}
           <div className="navbar-item has-dropdown is-hoverable">
             {airDCPPSocketConnectionStatus ? (

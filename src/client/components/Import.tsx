@@ -62,7 +62,6 @@ export const Import = (props: IProps): ReactElement => {
     },
     [],
   );
-
   useEffect(() => {
     dispatch(getImportJobResultStatistics());
   }, []);
@@ -99,7 +98,6 @@ export const Import = (props: IProps): ReactElement => {
         return null;
     }
   };
-  console.log(...allImportJobResults);
   return (
     <div className="container">
       <section className="section is-small">
@@ -207,21 +205,23 @@ export const Import = (props: IProps): ReactElement => {
                 <tr key={id}>
                   <td>
                     {format(
-                      new Date(jobResult.statuses[0].earliestTimestamp),
+                      new Date(jobResult.earliestTimestamp),
                       "EEEE, hh:mma, do LLLL Y",
                     )}
                   </td>
                   <td>
-                    <span className="tag is-warning">{jobResult._id}</span>
+                    <span className="tag is-warning">
+                      {jobResult.sessionId}
+                    </span>
                   </td>
                   <td>
                     <span className="tag is-success">
-                      {jobResult.statuses[1].count}
+                      {jobResult.completedJobs}
                     </span>
                   </td>
                   <td>
                     <span className="tag is-danger">
-                      {jobResult.statuses[0].count}
+                      {jobResult.failedJobs}
                     </span>
                   </td>
                 </tr>

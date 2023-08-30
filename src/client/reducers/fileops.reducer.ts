@@ -181,6 +181,7 @@ function fileOpsReducer(state = initialState, action) {
     }
 
     case LS_IMPORT_QUEUE_DRAINED: {
+      localStorage.removeItem("sessionId");
       return {
         ...state,
         LSQueueImportStatus: "drained",
@@ -188,6 +189,7 @@ function fileOpsReducer(state = initialState, action) {
     }
 
     case RESTORE_JOB_COUNTS_AFTER_SESSION_RESTORATION: {
+      console.log("AASSSSHHHHH");
       return {
         ...state,
         successfulJobCount: action.completedJobCount,
