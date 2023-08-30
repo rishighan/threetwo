@@ -48,7 +48,9 @@ export const ComicInfoXML = (data): ReactElement => {
         <dd>
           <span className="is-size-7">{json.notes[0]}</span>
         </dd>
-        <dd className="mt-1 mb-1">{json.summary[0]}</dd>
+        <dd className="mt-1 mb-1">
+          {!isUndefined(json.summary) && json.summary[0]}
+        </dd>
       </dl>
     </div>
   );

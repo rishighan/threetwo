@@ -15,10 +15,9 @@ import {
   IMS_COMIC_BOOK_GROUPS_FETCHED,
   IMS_COMIC_BOOK_GROUPS_CALL_FAILED,
   IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
-  IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
   LS_IMPORT,
   LS_COVER_EXTRACTED,
-  LS_QUEUE_DRAINED,
+  LS_COVER_EXTRACTION_FAILED,
   LS_COMIC_ADDED,
   IMG_ANALYSIS_CALL_IN_PROGRESS,
   IMG_ANALYSIS_DATA_FETCH_SUCCESS,
@@ -30,6 +29,11 @@ import {
   SS_SEARCH_RESULTS_FETCHED_SPECIAL,
   VOLUMES_FETCHED,
   COMICBOOK_EXTRACTION_SUCCESS,
+  LIBRARY_SERVICE_HEALTH,
+  LS_IMPORT_QUEUE_DRAINED,
+  LS_SET_QUEUE_STATUS,
+  RESTORE_JOB_COUNTS_AFTER_SESSION_RESTORATION,
+  LS_IMPORT_JOB_STATISTICS_FETCHED,
 } from "../constants/action-types";
 import { removeLeadingPeriod } from "../shared/utils/formatting.utils";
 import { LIBRARY_SERVICE_HOST } from "../constants/endpoints";
@@ -40,6 +44,7 @@ const initialState = {
   SSCallInProgress: false,
   imageAnalysisResults: {},
   comicBookExtractionInProgress: false,
+  LSQueueImportStatus: undefined,
   comicBookMetadata: [],
   comicVolumeGroups: [],
   isSocketConnected: false,
@@ -55,11 +60,14 @@ const initialState = {
   libraryComics: [],
   volumes: [],
   librarySearchResultsFormatted: [],
-  librarySearchResultCount: 0,
+  lastQueueJob: "",
+  successfulJobCount: 0,
+  failedJobCount: 0,
+  importJobStatistics: [],
   libraryQueueResults: [],
   librarySearchError: {},
+  libraryServiceStatus: {},
 };
-
 function fileOpsReducer(state = initialState, action) {
   switch (action.type) {
     case IMS_COMICBOOK_METADATA_FETCHED:
@@ -149,17 +157,58 @@ function fileOpsReducer(state = initialState, action) {
     case LS_IMPORT: {
       return {
         ...state,
+        LSQueueImportStatus: "running",
       };
     }
+
     case LS_COVER_EXTRACTED: {
-      console.log("BASH", action);
-      if(state.recentComics.length === 5) {
+      if (state.recentComics.length === 5) {
         state.recentComics.pop();
       }
       return {
         ...state,
-        librarySearchResultCount: state.librarySearchResultCount + 1,
-        recentComics: [...state.recentComics, action.result.data.importResult]
+        successfulJobCount: action.completedJobCount,
+        lastQueueJob: action.importResult.rawFileDetails.name,
+        recentComics: [...state.recentComics, action.importResult],
+      };
+    }
+
+    case LS_COVER_EXTRACTION_FAILED: {
+      return {
+        ...state,
+        failedJobCount: action.failedJobCount,
+      };
+    }
+
+    case LS_IMPORT_QUEUE_DRAINED: {
+      localStorage.removeItem("sessionId");
+      return {
+        ...state,
+        LSQueueImportStatus: "drained",
+      };
+    }
+
+    case RESTORE_JOB_COUNTS_AFTER_SESSION_RESTORATION: {
+      console.log("Restoring state for an active import in progress...");
+      return {
+        ...state,
+        successfulJobCount: action.completedJobCount,
+        failedJobCount: action.failedJobCount,
+        LSQueueImportStatus: action.queueStatus,
+      };
+    }
+
+    case LS_SET_QUEUE_STATUS: {
+      return {
+        ...state,
+        LSQueueImportStatus: action.data.queueStatus,
+      };
+    }
+
+    case LS_IMPORT_JOB_STATISTICS_FETCHED: {
+      return {
+        ...state,
+        importJobStatistics: action.data,
       };
     }
 
@@ -191,14 +240,8 @@ function fileOpsReducer(state = initialState, action) {
           };
       }
     }
-    case LS_QUEUE_DRAINED: {
-      console.log("drained", action);
-      return {
-        ...state,
-      };
-    }
+
     case LS_COMIC_ADDED: {
-      console.log("ADDED na anna", action);
       return {
         ...state,
       };
@@ -271,7 +314,12 @@ function fileOpsReducer(state = initialState, action) {
         SSCallInProgress: false,
       };
     }
-
+    case LIBRARY_SERVICE_HEALTH: {
+      return {
+        ...state,
+        libraryServiceStatus: action.status,
+      };
+    }
     case FILEOPS_STATE_RESET: {
       return {
         ...state,

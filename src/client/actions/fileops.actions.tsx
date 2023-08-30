@@ -4,13 +4,12 @@ import {
   COMICVINE_SERVICE_URI,
   IMAGETRANSFORMATION_SERVICE_BASE_URI,
   LIBRARY_SERVICE_BASE_URI,
-  LIBRARY_SERVICE_HOST,
   SEARCH_SERVICE_BASE_URI,
+  JOB_QUEUE_SERVICE_BASE_URI,
 } from "../constants/endpoints";
 import {
   IMS_COMIC_BOOK_GROUPS_FETCHED,
   IMS_COMIC_BOOK_GROUPS_CALL_IN_PROGRESS,
-  IMS_COMIC_BOOK_GROUPS_CALL_FAILED,
   IMS_RECENT_COMICS_FETCHED,
   IMS_WANTED_COMICS_FETCHED,
   CV_API_CALL_IN_PROGRESS,
@@ -22,23 +21,38 @@ import {
   LS_IMPORT,
   IMG_ANALYSIS_CALL_IN_PROGRESS,
   IMG_ANALYSIS_DATA_FETCH_SUCCESS,
-  IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_SUCCESS,
   IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
   SS_SEARCH_RESULTS_FETCHED,
   SS_SEARCH_IN_PROGRESS,
   FILEOPS_STATE_RESET,
   LS_IMPORT_CALL_IN_PROGRESS,
-  LS_TOGGLE_IMPORT_QUEUE,
   SS_SEARCH_FAILED,
   SS_SEARCH_RESULTS_FETCHED_SPECIAL,
   WANTED_COMICS_FETCHED,
   VOLUMES_FETCHED,
-  CV_WEEKLY_PULLLIST_FETCHED,
+  LIBRARY_SERVICE_HEALTH,
+  LS_SET_QUEUE_STATUS,
+  LS_IMPORT_JOB_STATISTICS_FETCHED,
 } from "../constants/action-types";
 import { success } from "react-notification-system-redux";
 
-import { isNil, map } from "lodash";
+import { isNil } from "lodash";
 
+export const getServiceStatus = (serviceName?: string) => async (dispatch) => {
+  axios
+    .request({
+      url: `${LIBRARY_SERVICE_BASE_URI}/getHealthInformation`,
+      method: "GET",
+      transformResponse: (r: string) => JSON.parse(r),
+    })
+    .then((response) => {
+      const { data } = response;
+      dispatch({
+        type: LIBRARY_SERVICE_HEALTH,
+        status: data,
+      });
+    });
+};
 export async function walkFolder(path: string): Promise<Array<IFolderData>> {
   return axios
     .request<Array<IFolderData>>({
@@ -74,19 +88,38 @@ export const fetchComicBookMetadata = () => async (dispatch) => {
   //     autoDismiss: 0,
   //   }),
   // );
+  const sessionId = localStorage.getItem("sessionId");
   dispatch({
     type: LS_IMPORT,
-    meta: { remote: true },
-    data: {},
+  });
+
+  await axios.request({
+    url: `${LIBRARY_SERVICE_BASE_URI}/newImport`,
+    method: "POST",
+    data: { sessionId },
   });
 };
-export const toggleImportQueueStatus = (options) => async (dispatch) => {
+
+export const getImportJobResultStatistics = () => async (dispatch) => {
+  const result = await axios.request({
+    url: `${JOB_QUEUE_SERVICE_BASE_URI}/getJobResultStatistics`,
+    method: "GET",
+  });
   dispatch({
-    type: LS_TOGGLE_IMPORT_QUEUE,
-    meta: { remote: true },
-    data: { manjhul: "jigyadam", action: options.action },
+    type: LS_IMPORT_JOB_STATISTICS_FETCHED,
+    data: result.data,
   });
 };
+
+export const setQueueControl =
+  (queueAction: string, queueStatus: string) => async (dispatch) => {
+    dispatch({
+      type: LS_SET_QUEUE_STATUS,
+      meta: { remote: true },
+      data: { queueAction, queueStatus },
+    });
+  };
+
 /**
  * Fetches comic book metadata for various types
  * @return metadata for the comic book object categories

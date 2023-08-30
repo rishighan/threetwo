@@ -33,7 +33,6 @@ export const getWeeklyPullList = (options) => async (dispatch) => {
     dispatch({
       type: CV_WEEKLY_PULLLIST_CALL_IN_PROGRESS,
     });
-
     await cachedAxios(`${COMICVINE_SERVICE_URI}/getWeeklyPullList`, {
       method: "get",
       params: options,
@@ -127,7 +126,7 @@ export const analyzeLibrary = (issues) => async (dispatch) => {
       queryObjects,
     },
   });
-
+  
   dispatch({
     type: CV_ISSUES_MATCHES_IN_LIBRARY_FETCHED,
     matches: foo.data,

@@ -57,6 +57,21 @@
   },
   {
     "id": 4,
+    "category": "statuses",
+    "displayName": "Service Status",
+    "children": [
+      {
+        "id": "core-service",
+        "displayName": "Core Services"
+      },
+      {
+        "id": "metadata-service",
+        "displayName": "Metadata Services"
+      }
+    ]
+  },
+  {
+    "id": 5,
     "category": "system",
     "displayName": "System",
     "children": [
@@ -67,7 +82,7 @@
     ]
   },
   {
-    "id": 5,
+    "id": 6,
     "category": "acknowledgments",
     "displayName": "Acknowledgments",
     "children": [

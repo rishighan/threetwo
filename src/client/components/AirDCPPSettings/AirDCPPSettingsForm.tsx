@@ -15,14 +15,15 @@ export const AirDCPPSettingsForm = (): ReactElement => {
     try {
       if (!isUndefined(hostname)) {
         const matches = hostname.match(hostnameRegex);
-        return (isNil(matches) && matches.length !== 0) ? hostname : "Invalid hostname; it should not contain special characters";
+        return isNil(matches) && matches.length !== 0
+          ? hostname
+          : "Invalid hostname; it should not contain special characters";
       }
-    }
-    catch {
+    } catch {
       return null;
     }
-  }
-  
+  };
+
   const onSubmit = useCallback(async (values) => {
     try {
       airDCPPSettings.setSettings(values);
@@ -39,7 +40,7 @@ export const AirDCPPSettingsForm = (): ReactElement => {
     airDCPPSettings.setSettings({});
     dispatch(deleteSettings());
   }, []);
-  const validate = async () => { };
+  const validate = async () => {};
   const initFormData = !isUndefined(
     airDCPPSettings.airDCPPState.settings.directConnect,
   )
@@ -67,13 +68,20 @@ export const AirDCPPSettingsForm = (): ReactElement => {
                 </span>
               </p>
               <div className="control is-expanded">
-                <Field
-                  name="hostname"
-                  validate={hostValidator}>
+                <Field name="hostname" validate={hostValidator}>
                   {({ input, meta }) => (
                     <div>
-                      <input {...input} type="text" placeholder="AirDC++ hostname" className="input" />
-                      {meta.error && meta.touched && <span className="is-size-7 has-text-danger">{meta.error}</span>}
+                      <input
+                        {...input}
+                        type="text"
+                        placeholder="AirDC++ hostname"
+                        className="input"
+                      />
+                      {meta.error && meta.touched && (
+                        <span className="is-size-7 has-text-danger">
+                          {meta.error}
+                        </span>
+                      )}
                     </div>
                   )}
                 </Field>

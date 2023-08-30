@@ -77,3 +77,10 @@ export const SOCKET_BASE_URI = hostURIBuilder({
   port: "3001",
   apiPath: `/`,
 });
+
+export const JOB_QUEUE_SERVICE_BASE_URI = hostURIBuilder({
+  protocol: "http",
+  host: import.meta.env.UNDERLYING_HOSTNAME || "localhost",
+  port: "3000",
+  apiPath: `/api/jobqueue`,
+});

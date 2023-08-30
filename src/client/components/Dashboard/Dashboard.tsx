@@ -12,6 +12,7 @@ import {
 } from "../../actions/fileops.actions";
 import { getLibraryStatistics } from "../../actions/comicinfo.actions";
 import { isEmpty, isNil } from "lodash";
+import Header from "../Header";
 
 export const Dashboard = (): ReactElement => {
   const dispatch = useDispatch();
@@ -43,7 +44,7 @@ export const Dashboard = (): ReactElement => {
   }, []);
 
   const recentComics = useSelector(
-    (state: RootState) => state.fileOps.recentComics
+    (state: RootState) => state.fileOps.recentComics,
   );
   const wantedComics = useSelector(
     (state: RootState) => state.fileOps.wantedComics,
@@ -64,6 +65,36 @@ export const Dashboard = (): ReactElement => {
           <>
             {/* Pull List */}
             <PullList issues={recentComics} />
+            <>
+              <div className="content mt-6">
+                <Header
+                  headerContent="Import Activity"
+                  subHeaderContent="Results aggregated from the last import"
+                  iconClassNames="fa-solid fa-file-invoice mr-2"
+                />
+              </div>
+
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>
+                      <abbr title="Position">Pos</abbr>
+                    </th>
+                    <th>Team</th>
+                    <th>
+                      <abbr title="Played">Pld</abbr>
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <th>1</th>
+                    <td>38</td>
+                  </tr>
+                </tbody>
+              </table>
+            </>
 
             {/* Stats */}
             {!isEmpty(libraryStatistics) && (
@@ -74,8 +105,8 @@ export const Dashboard = (): ReactElement => {
               <WantedComicsList comics={wantedComics} />
             )}
             {/* Recent imports */}
-              <RecentlyImported comicBookCovers={recentComics} />
-            
+            <RecentlyImported comicBookCovers={recentComics} />
+
             {/* Volumes */}
             {!isEmpty(volumeGroups) && (
               <VolumeGroups volumeGroups={volumeGroups} />
