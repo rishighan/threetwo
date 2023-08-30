@@ -189,7 +189,7 @@ function fileOpsReducer(state = initialState, action) {
     }
 
     case RESTORE_JOB_COUNTS_AFTER_SESSION_RESTORATION: {
-      console.log("AASSSSHHHHH");
+      console.log("Restoring state for an active import in progress...");
       return {
         ...state,
         successfulJobCount: action.completedJobCount,
