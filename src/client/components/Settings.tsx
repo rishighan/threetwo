@@ -24,6 +24,12 @@ export const Settings = (props: ISettingsProps): ReactElement => {
       ),
     },
     {
+      id: "qbt-connection",
+      content: (
+        <div key="qbt-connection">{/* <QbitTorrentSettingsForm /> */}</div>
+      ),
+    },
+    {
       id: "core-service",
       content: <ServiceStatuses />,
     },

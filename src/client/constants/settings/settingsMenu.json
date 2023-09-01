@@ -37,6 +37,20 @@
             "displayName": "Additional Configuration"
           }
         ]
+      },
+      {
+        "id": "qbittorrent",
+        "displayName": "qBitTorrent",
+        "children": [
+          {
+            "id": "qbt-connection",
+            "displayName": "Connection"
+          },
+          {
+            "id": "qbt-additional-configuration",
+            "displayName": "qbt-configuration"
+          }
+        ]
       }
     ]
   },
