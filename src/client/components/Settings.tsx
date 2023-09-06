@@ -1,12 +1,13 @@
 import React, { useState, ReactElement } from "react";
 import { AirDCPPSettingsForm } from "./AirDCPPSettings/AirDCPPSettingsForm";
 import { AirDCPPHubsForm } from "./AirDCPPSettings/AirDCPPHubsForm";
+import { QbittorrentConnectionForm } from "./QbittorrentSettings/QbittorrentConnectionForm";
 import { SystemSettingsForm } from "./SystemSettings/SystemSettingsForm";
 import { ServiceStatuses } from "./ServiceStatuses/ServiceStatuses";
 import settingsObject from "../constants/settings/settingsMenu.json";
 import { isUndefined, map } from "lodash";
 
-interface ISettingsProps {}
+interface ISettingsProps { }
 
 export const Settings = (props: ISettingsProps): ReactElement => {
   const [active, setActive] = useState("gen-db");
@@ -26,7 +27,9 @@ export const Settings = (props: ISettingsProps): ReactElement => {
     {
       id: "qbt-connection",
       content: (
-        <div key="qbt-connection">{/* <QbitTorrentSettingsForm /> */}</div>
+        <div key="qbt-connection">
+          <QbittorrentConnectionForm />
+        </div>
       ),
     },
     {

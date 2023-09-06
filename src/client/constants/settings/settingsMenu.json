@@ -40,7 +40,7 @@
       },
       {
         "id": "qbittorrent",
-        "displayName": "qBitTorrent",
+        "displayName": "qBittorrent",
         "children": [
           {
             "id": "qbt-connection",

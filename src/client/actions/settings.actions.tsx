@@ -3,10 +3,12 @@ import {
   SETTINGS_OBJECT_FETCHED,
   SETTINGS_CALL_IN_PROGRESS,
   SETTINGS_DB_FLUSH_SUCCESS,
+  SETTINGS_QBITTORRENT_TORRENTS_LIST_FETCHED,
 } from "../constants/action-types";
 import {
   LIBRARY_SERVICE_BASE_URI,
   SETTINGS_SERVICE_BASE_URI,
+  QBITTORRENT_SERVICE_BASE_URI,
 } from "../constants/endpoints";
 
 export const saveSettings =
@@ -67,3 +69,19 @@ export const flushDb = () => async (dispatch) => {
     });
   }
 };
+
+
+
+export const getQBitTorrentClientInfo = () => async (dispatch) => {
+  
+  const foo = await axios.request({
+    url: `${QBITTORRENT_SERVICE_BASE_URI}/getList`,
+    method: "GET",
+  });
+  
+  dispatch({
+    type: SETTINGS_QBITTORRENT_TORRENTS_LIST_FETCHED,
+    data: foo,
+  })
+  
+}

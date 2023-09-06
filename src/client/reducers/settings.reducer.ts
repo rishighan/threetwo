@@ -4,11 +4,13 @@ import {
   SETTINGS_OBJECT_DELETED,
   SETTINGS_CALL_IN_PROGRESS,
   SETTINGS_DB_FLUSH_SUCCESS,
+  SETTINGS_QBITTORRENT_TORRENTS_LIST_FETCHED,
 } from "../constants/action-types";
 const initialState = {
   data: {},
   inProgress: false,
   DbFlushed: false,
+  torrentsList: [],
 };
 
 function settingsReducer(state = initialState, action) {
@@ -40,6 +42,12 @@ function settingsReducer(state = initialState, action) {
         DbFlushed: action.data,
         inProgress: false,
       };
+      
+    case SETTINGS_QBITTORRENT_TORRENTS_LIST_FETCHED:
+      return {
+        ...state,
+        torrentsList: action.data,
+      }
 
     default:
       return { ...state };
