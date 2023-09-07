@@ -21,7 +21,7 @@ export const PullList = ({ issues }: PullListProps): ReactElement => {
   useEffect(() => {
     dispatch(
       getWeeklyPullList({
-        startDate: "2023-8-9",
+        startDate: "2023-9-9",
         pageSize: "15",
         currentPage: "1",
       }),
@@ -91,7 +91,7 @@ export const PullList = ({ issues }: PullListProps): ReactElement => {
       <div className="content">
         <Header headerContent="Discover"
                 subHeaderContent="Pull List aggregated for the week from League Of Comic Geeks"
-                iconClassNames="fa-solid fa-splotch mr-2"/>
+                iconClassNames="fa-solid fa-binoculars mr-2"/>
         <div className="field is-grouped">
           {/* select week */}
           <div className="control">

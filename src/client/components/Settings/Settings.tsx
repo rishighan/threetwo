@@ -3,8 +3,8 @@ import { AirDCPPSettingsForm } from "./AirDCPPSettings/AirDCPPSettingsForm";
 import { AirDCPPHubsForm } from "./AirDCPPSettings/AirDCPPHubsForm";
 import { QbittorrentConnectionForm } from "./QbittorrentSettings/QbittorrentConnectionForm";
 import { SystemSettingsForm } from "./SystemSettings/SystemSettingsForm";
-import { ServiceStatuses } from "./ServiceStatuses/ServiceStatuses";
-import settingsObject from "../constants/settings/settingsMenu.json";
+import { ServiceStatuses } from "../ServiceStatuses/ServiceStatuses";
+import settingsObject from "../../constants/settings/settingsMenu.json";
 import { isUndefined, map } from "lodash";
 
 interface ISettingsProps { }

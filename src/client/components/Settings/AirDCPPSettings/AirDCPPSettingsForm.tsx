@@ -1,9 +1,9 @@
 import React, { ReactElement, useCallback, useContext } from "react";
 import { Form, Field } from "react-final-form";
 import { useDispatch } from "react-redux";
-import { saveSettings, deleteSettings } from "../../actions/settings.actions";
+import { saveSettings, deleteSettings } from "../../../actions/settings.actions";
 import { AirDCPPSettingsConfirmation } from "./AirDCPPSettingsConfirmation";
-import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
+import { AirDCPPSocketContext } from "../../../context/AirDCPPSocket";
 import { isUndefined, isEmpty, isNil } from "lodash";
 
 export const AirDCPPSettingsForm = (): ReactElement => {
