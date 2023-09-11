@@ -1,34 +1,25 @@
 {
-  "tags": {
-    "allowUnknownTags": true,
-    "dictionaries": [
-      "jsdoc",
-      "closure"
-    ]
-  },
-  "source": {
-    "include": [
-      "./src/client"
+    "tags": {
+        "allowUnknownTags": false
+    },
+    "source": {
+        "include": [
+          "./src/client"
+        ],
+        "includePattern": "\\.(jsx|js|ts|tsx)$"
+    },
+    "plugins": [
+        "plugins/markdown"
     ],
-    "includePattern": "\\.(jsx|js|ts|tsx)$"
-  },
-  "plugins": [
-    "better-docs/component",
-    "better-docs/category",
-    "plugins/markdown",
-    "node_modules/better-docs/typescript"
-  ],
-  "templates": {
-    "better-docs": {
-      "name": "ThreeTwo UI components"
+    "opts": {
+        "template": "node_modules/docdash",
+        "encoding": "utf8",
+        "destination": "docs/",
+        "recurse": true,
+        "verbose": true
+    },
+    "templates": {
+        "cleverLinks": false,
+        "monospaceLinks": false
     }
-  },
-  "opts": {
-    "destination": "docs/",
-    "readme": "README.md",
-    "recurse": true,
-    "encoding": "utf8",
-    "verbose": true,
-    "template": "node_modules/better-docs"
-  }
 }
