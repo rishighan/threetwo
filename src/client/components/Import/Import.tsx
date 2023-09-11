@@ -4,7 +4,7 @@ import {
   fetchComicBookMetadata,
   getImportJobResultStatistics,
   setQueueControl,
-} from "../actions/fileops.actions";
+} from "../../actions/fileops.actions";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import { format } from "date-fns";
 import Loader from "react-loader-spinner";
