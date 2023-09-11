@@ -118,6 +118,7 @@
     "sass": "^1.66.1",
     "storybook": "^7.3.2",
     "tslint": "^6.1.3",
+    "tui-jsdoc-template": "^1.2.2",
     "typescript": "^5.1.6"
   },
   "resolutions": {

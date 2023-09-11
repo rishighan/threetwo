@@ -1,4 +1,5 @@
 import React, { ReactElement, useCallback, useEffect } from "react";
+import { Form, Field } from "react-final-form";
 import { useDispatch, useSelector } from "react-redux";
 import { getQBitTorrentClientInfo } from "../../../actions/settings.actions";
 
@@ -9,12 +10,23 @@ export const QbittorrentConnectionForm = (): ReactElement => {
   useEffect(() => {
 	  dispatch(getQBitTorrentClientInfo());
   }, [])
-
-  return (
-	<div className="is-clearfix">
+  const handleSubmit  = () => {}
+  return (<>
 	 <pre> {JSON.stringify(torrents, null, 4)} </pre>
-	</div>
-  );
+   
+   <Form
+     onSubmit={handleSubmit}
+     // validate={}
+     /* initialValues={} */
+     render={({ handleSubmit }) => (
+       <form onSubmit={handleSubmit}>
+         <h2>Configure Qbittorrent</h2>
+         
+       </form>
+     )}
+   />
+  
+  </>);
 };
 
 export default QbittorrentConnectionForm;
