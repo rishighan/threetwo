@@ -1,10 +1,10 @@
 import React, { ReactElement, useContext, useEffect } from "react";
 import Dashboard from "./Dashboard/Dashboard";
-import Import from "./Import";
+import Import from "./Import/Import";
 import { ComicDetailContainer } from "./ComicDetail/ComicDetailContainer";
 import TabulatedContentContainer from "./Library/TabulatedContentContainer";
 import LibraryGrid from "./Library/LibraryGrid";
-import Search from "./Search";
+import Search from "./Search/Search";
 import Settings from "./Settings/Settings";
 import VolumeDetail from "./VolumeDetail/VolumeDetail";
 import Downloads from "./Downloads/Downloads";
