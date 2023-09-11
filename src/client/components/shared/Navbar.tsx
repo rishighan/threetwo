@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
-import { SearchBar } from "./GlobalSearchBar/SearchBar";
-import { DownloadProgressTick } from "./ComicDetail/DownloadProgressTick";
+import { SearchBar } from "../GlobalSearchBar/SearchBar";
+import { DownloadProgressTick } from "../ComicDetail/DownloadProgressTick";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { isUndefined } from "lodash";

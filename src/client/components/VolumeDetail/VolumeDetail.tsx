@@ -9,7 +9,7 @@ import {
 } from "../../actions/comicinfo.actions";
 import PotentialLibraryMatches from "./PotentialLibraryMatches";
 import Masonry from "react-masonry-css";
-import { Card } from "../Carda";
+import { Card } from "../shared/Carda";
 import SlidingPane from "react-sliding-pane";
 import { convert } from "html-to-text";
 import ellipsize from "ellipsize";

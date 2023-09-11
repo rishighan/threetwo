@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { isNil, map } from "lodash";
-import { applyComicVineMatch } from "../actions/comicinfo.actions";
+import { applyComicVineMatch } from "../../actions/comicinfo.actions";
 import { convert } from "html-to-text";
 import ellipsize from "ellipsize";
 
