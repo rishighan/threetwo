@@ -12,7 +12,7 @@ import {
 } from "../../actions/fileops.actions";
 import { getLibraryStatistics } from "../../actions/comicinfo.actions";
 import { isEmpty, isNil } from "lodash";
-import Header from "../Header";
+import Header from "../shared/Header";
 
 export const Dashboard = (): ReactElement => {
   const dispatch = useDispatch();

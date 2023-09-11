@@ -5,12 +5,12 @@ import { ComicDetailContainer } from "./ComicDetail/ComicDetailContainer";
 import TabulatedContentContainer from "./Library/TabulatedContentContainer";
 import LibraryGrid from "./Library/LibraryGrid";
 import Search from "./Search";
-import Settings from "./Settings";
+import Settings from "./Settings/Settings";
 import VolumeDetail from "./VolumeDetail/VolumeDetail";
 import Downloads from "./Downloads/Downloads";
 
 import { Routes, Route } from "react-router-dom";
-import Navbar from "./Navbar";
+import Navbar from "./shared/Navbar";
 import "../assets/scss/App.scss";
 import {
   AirDCPPSocketContextProvider,

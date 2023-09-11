@@ -2,7 +2,7 @@ import React, { ReactElement } from "react";
 import PropTypes from "prop-types";
 import ellipsize from "ellipsize";
 import prettyBytes from "pretty-bytes";
-import { Card } from "../Carda";
+import { Card } from "../shared/Carda";
 import { convert } from "html-to-text";
 import { determineCoverFile } from "../../shared/utils/metadata.utils";
 import { find, isUndefined } from "lodash";

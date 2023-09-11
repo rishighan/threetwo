@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { comicinfoAPICall } from "../actions/comicinfo.actions";
 import { search } from "../services/api/SearchApi";
 import { Form, Field } from "react-final-form";
-import Card from "./Carda";
+import Card from "./shared/Carda";
 import ellipsize from "ellipsize";
 import { convert } from "html-to-text";
 import dayjs from "dayjs";

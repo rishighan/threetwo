@@ -2,7 +2,7 @@ import { isArray, map } from "lodash";
 import React, { useEffect, ReactElement } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getComicBooksDetailsByIds } from "../../actions/comicinfo.actions";
-import { Card } from "../Carda";
+import { Card } from "../shared/Carda";
 import ellipsize from "ellipsize";
 import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
 import { escapePoundSymbol } from "../../shared/utils/formatting.utils";

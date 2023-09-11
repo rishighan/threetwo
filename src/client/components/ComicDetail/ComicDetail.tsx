@@ -1,11 +1,11 @@
 import React, { useState, ReactElement, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import Card from "../Carda";
+import Card from "../shared/Carda";
 import { ComicVineMatchPanel } from "./ComicVineMatchPanel";
 
 import { RawFileDetails } from "./RawFileDetails";
-import { ComicVineSearchForm } from "../ComicVineSearchForm";
+import { ComicVineSearchForm } from "./ComicVineSearchForm";
 
 import TabControls from "./TabControls";
 import { EditMetadataPanel } from "./EditMetadataPanel";

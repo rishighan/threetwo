@@ -148,8 +148,8 @@ const Navbar: React.FunctionComponent = (props) => {
           <div className="navbar-item has-dropdown is-hoverable">
             {airDCPPSocketConnectionStatus ? (
               <>
-                <a className="navbar-link is-arrowless has-text-success">
-                  <i className="fa-solid fa-bolt"></i>
+                <a className="navbar-link is-arrowless">
+                  <i className="fa-solid fa-tower-cell"></i>
                 </a>
                 <div className="navbar-dropdown pr-2 pl-2 is-right airdcpp-status is-boxed">
                   {/* AirDC++ Session Information */}

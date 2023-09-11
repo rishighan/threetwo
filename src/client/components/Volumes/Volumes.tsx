@@ -1,7 +1,7 @@
 import React, { ReactElement, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { searchIssue } from "../../actions/fileops.actions";
-import Card from "../Carda";
+import Card from "../shared/Carda";
 import T2Table from "../shared/T2Table";
 import ellipsize from "ellipsize";
 import { convert } from "html-to-text";

@@ -1,7 +1,7 @@
 import { isNil, map } from "lodash";
 import React, { createRef, ReactElement, useCallback, useEffect } from "react";
-import Card from "../Carda";
-import Header from "../Header";
+import Card from "../shared/Carda";
+import Header from "../shared/Header";
 import Masonry from "react-masonry-css";
 import { useDispatch, useSelector } from "react-redux";
 import { getWeeklyPullList } from "../../actions/comicinfo.actions";
