@@ -1,7 +1,10 @@
 import React, { ReactElement, useCallback, useContext } from "react";
 import { Form, Field } from "react-final-form";
 import { useDispatch } from "react-redux";
-import { saveSettings, deleteSettings } from "../../../actions/settings.actions";
+import {
+  saveSettings,
+  deleteSettings,
+} from "../../../actions/settings.actions";
 import { AirDCPPSettingsConfirmation } from "./AirDCPPSettingsConfirmation";
 import { AirDCPPSocketContext } from "../../../context/AirDCPPSocket";
 import { isUndefined, isEmpty, isNil } from "lodash";
@@ -10,17 +13,16 @@ export const AirDCPPSettingsForm = (): ReactElement => {
   const dispatch = useDispatch();
   const airDCPPSettings = useContext(AirDCPPSocketContext);
 
-  const hostValidator = (hostname: string): string | null => {
-    const hostnameRegex = /[\W]+/gm;
-    try {
-      if (!isUndefined(hostname)) {
-        const matches = hostname.match(hostnameRegex);
-        return isNil(matches) && matches.length !== 0
-          ? hostname
-          : "Invalid hostname; it should not contain special characters";
-      }
-    } catch {
-      return null;
+  const hostValidator = (hostname: string): string | undefined => {
+    const hostnameRegex =
+      /^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$/;
+
+    if (!isUndefined(hostname)) {
+      const matches = hostname.match(hostnameRegex);
+      console.log(matches);
+      return !isNil(matches) && matches.length > 0
+        ? undefined
+        : "Enter a valid hostname";
     }
   };
 
@@ -96,9 +98,7 @@ export const AirDCPPSettingsForm = (): ReactElement => {
               </p>
             </div>
             <div className="field">
-              <div className="is-clearfix">
-                <label className="label">Credentials</label>
-              </div>
+              <label className="label">Credentials</label>
               <div className="field-body">
                 <div className="field">
                   <p className="control is-expanded has-icons-left">
