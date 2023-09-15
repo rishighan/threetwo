@@ -12,11 +12,12 @@ import {
 } from "../constants/endpoints";
 
 export const saveSettings =
-  (settingsPayload, settingsObjectId?: string) => async (dispatch) => {
+  (settingsPayload, settingsKey: string, settingsObjectId?: string) =>
+  async (dispatch) => {
     const result = await axios({
       url: `${SETTINGS_SERVICE_BASE_URI}/saveSettings`,
       method: "POST",
-      data: { settingsPayload, settingsObjectId },
+      data: { settingsPayload, settingsKey, settingsObjectId },
     });
     dispatch({
       type: SETTINGS_OBJECT_FETCHED,
@@ -70,18 +71,20 @@ export const flushDb = () => async (dispatch) => {
   }
 };
 
-
-
-export const getQBitTorrentClientInfo = () => async (dispatch) => {
-  
+export const getQBitTorrentClientInfo = (hostInfo) => async (dispatch) => {
   const foo = await axios.request({
-    url: `${QBITTORRENT_SERVICE_BASE_URI}/getList`,
+    url: `${QBITTORRENT_SERVICE_BASE_URI}/connect`,
+    method: "POST",
+    data: hostInfo,
+  });
+  const bar = await axios.request({
+    url: `${QBITTORRENT_SERVICE_BASE_URI}/getClientInfo`,
     method: "GET",
   });
-  
+
+  console.log(bar);
   dispatch({
     type: SETTINGS_QBITTORRENT_TORRENTS_LIST_FETCHED,
     data: foo,
-  })
-  
-}
+  });
+};

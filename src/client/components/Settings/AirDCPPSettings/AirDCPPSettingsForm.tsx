@@ -8,32 +8,16 @@ import {
 import { AirDCPPSettingsConfirmation } from "./AirDCPPSettingsConfirmation";
 import { AirDCPPSocketContext } from "../../../context/AirDCPPSocket";
 import { isUndefined, isEmpty, isNil } from "lodash";
+import { hostNameValidator } from "../../../shared/utils/validator.utils";
 
 export const AirDCPPSettingsForm = (): ReactElement => {
   const dispatch = useDispatch();
   const airDCPPSettings = useContext(AirDCPPSocketContext);
 
-  const hostValidator = (hostname: string): string | undefined => {
-    const hostnameRegex =
-      /^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$/;
-
-    if (!isUndefined(hostname)) {
-      const matches = hostname.match(hostnameRegex);
-      console.log(matches);
-      return !isNil(matches) && matches.length > 0
-        ? undefined
-        : "Enter a valid hostname";
-    }
-  };
-
   const onSubmit = useCallback(async (values) => {
     try {
       airDCPPSettings.setSettings(values);
-      dispatch(
-        saveSettings({
-          host: values,
-        }),
-      );
+      dispatch(saveSettings(values, "directConnect"));
     } catch (error) {
       console.log(error);
     }
@@ -70,7 +54,7 @@ export const AirDCPPSettingsForm = (): ReactElement => {
                 </span>
               </p>
               <div className="control is-expanded">
-                <Field name="hostname" validate={hostValidator}>
+                <Field name="hostname" validate={hostNameValidator}>
                   {({ input, meta }) => (
                     <div>
                       <input
@@ -124,9 +108,6 @@ export const AirDCPPSettingsForm = (): ReactElement => {
                     />
                     <span className="icon is-small is-left">
                       <i className="fa-solid fa-lock"></i>
-                    </span>
-                    <span className="icon is-small is-right">
-                      <i className="fas fa-check"></i>
                     </span>
                   </p>
                 </div>

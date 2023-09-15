@@ -2,6 +2,9 @@ import React, { ReactElement, useCallback, useEffect } from "react";
 import { Form, Field } from "react-final-form";
 import { useDispatch, useSelector } from "react-redux";
 import { getQBitTorrentClientInfo } from "../../../actions/settings.actions";
+import { hostNameValidator } from "../../../shared/utils/validator.utils";
+import { saveSettings } from "../../../actions/settings.actions";
+import { isUndefined } from "lodash";
 
 export const QbittorrentConnectionForm = (): ReactElement => {
   const dispatch = useDispatch();
@@ -9,18 +12,34 @@ export const QbittorrentConnectionForm = (): ReactElement => {
     (state: RootState) => state.settings.torrentsList,
   );
 
+  const qBittorrentSettings = useSelector((state: RootState) => {
+    if (!isUndefined(state.settings.data.bittorrent)) {
+      return state.settings.data.bittorrent.client.host;
+    }
+  });
+
   useEffect(() => {
-    dispatch(getQBitTorrentClientInfo());
+    if (!isUndefined(qBittorrentSettings)) {
+      dispatch(getQBitTorrentClientInfo(qBittorrentSettings));
+    }
   }, []);
-  const handleSubmit = () => {};
+
+  const onSubmit = useCallback(async (values) => {
+    try {
+      dispatch(saveSettings(values, "bittorrent"));
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
   return (
     <>
       <pre> {JSON.stringify(torrents, null, 4)} </pre>
 
       <Form
-        onSubmit={handleSubmit}
+        onSubmit={onSubmit}
         // validate={}
-        /* initialValues={} */
+        initialValues={qBittorrentSettings}
         render={({ handleSubmit }) => (
           <form onSubmit={handleSubmit}>
             <h2>Configure Qbittorrent</h2>
@@ -36,7 +55,7 @@ export const QbittorrentConnectionForm = (): ReactElement => {
                 </span>
               </p>
               <div className="control is-expanded">
-                <Field name="hostname">
+                <Field name="hostname" validate={hostNameValidator}>
                   {({ input, meta }) => (
                     <div>
                       <input
@@ -92,12 +111,17 @@ export const QbittorrentConnectionForm = (): ReactElement => {
                     <span className="icon is-small is-left">
                       <i className="fa-solid fa-lock"></i>
                     </span>
-                    <span className="icon is-small is-right">
-                      <i className="fas fa-check"></i>
-                    </span>
                   </p>
                 </div>
               </div>
+            </div>
+
+            <div className="field is-grouped">
+              <p className="control">
+                <button type="submit" className="button is-primary">
+                  Connect
+                </button>
+              </p>
             </div>
           </form>
         )}

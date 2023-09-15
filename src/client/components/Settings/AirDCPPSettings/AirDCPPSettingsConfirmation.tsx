@@ -2,7 +2,6 @@ import React, { ReactElement } from "react";
 
 export const AirDCPPSettingsConfirmation = (settingsObject): ReactElement => {
   const { settings } = settingsObject;
-  console.log(settings);
   return (
     <div className="mt-4 is-clearfix">
       <div className="card">
