@@ -26,7 +26,7 @@ export const AirDCPPSettingsForm = (): ReactElement => {
     airDCPPSettings.setSettings({});
     dispatch(deleteSettings());
   }, []);
-  const validate = async () => {};
+  const validate = async () => { };
   const initFormData = !isUndefined(
     airDCPPSettings.airDCPPState.settings.directConnect,
   )
@@ -41,7 +41,7 @@ export const AirDCPPSettingsForm = (): ReactElement => {
         initialValues={initFormData}
         render={({ handleSubmit }) => (
           <form onSubmit={handleSubmit}>
-            <h2>AirDC++ Connection Information</h2>
+            <h2>Configure AirDC++</h2>
             <label className="label">AirDC++ Hostname</label>
             <div className="field has-addons">
               <p className="control">

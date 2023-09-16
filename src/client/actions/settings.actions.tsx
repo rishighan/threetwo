@@ -13,17 +13,17 @@ import {
 
 export const saveSettings =
   (settingsPayload, settingsKey: string, settingsObjectId?: string) =>
-  async (dispatch) => {
-    const result = await axios({
-      url: `${SETTINGS_SERVICE_BASE_URI}/saveSettings`,
-      method: "POST",
-      data: { settingsPayload, settingsKey, settingsObjectId },
-    });
-    dispatch({
-      type: SETTINGS_OBJECT_FETCHED,
-      data: result.data,
-    });
-  };
+    async (dispatch) => {
+      const result = await axios({
+        url: `${SETTINGS_SERVICE_BASE_URI}/saveSettings`,
+        method: "POST",
+        data: { settingsPayload, settingsKey, settingsObjectId },
+      });
+      dispatch({
+        type: SETTINGS_OBJECT_FETCHED,
+        data: result.data,
+      });
+    };
 
 export const getSettings = (settingsKey?) => async (dispatch) => {
   const result = await axios({
@@ -85,6 +85,6 @@ export const getQBitTorrentClientInfo = (hostInfo) => async (dispatch) => {
   console.log(bar);
   dispatch({
     type: SETTINGS_QBITTORRENT_TORRENTS_LIST_FETCHED,
-    data: foo,
+    data: bar.data
   });
 };

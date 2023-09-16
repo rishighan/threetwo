@@ -34,14 +34,13 @@ export const QbittorrentConnectionForm = (): ReactElement => {
 
   return (
     <>
-      <pre> {JSON.stringify(torrents, null, 4)} </pre>
 
       <Form
         onSubmit={onSubmit}
         // validate={}
         initialValues={qBittorrentSettings}
         render={({ handleSubmit }) => (
-          <form onSubmit={handleSubmit}>
+          <form className="content" onSubmit={handleSubmit}>
             <h2>Configure Qbittorrent</h2>
             <label className="label">Qbittorrent Hostname</label>
             <div className="field has-addons">
@@ -126,6 +125,7 @@ export const QbittorrentConnectionForm = (): ReactElement => {
           </form>
         )}
       />
+      <pre> {JSON.stringify(torrents, null, 4)} </pre>
     </>
   );
 };
