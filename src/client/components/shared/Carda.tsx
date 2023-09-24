@@ -15,7 +15,7 @@ interface ICardProps {
   imageStyle?: PropTypes.object;
 }
 
-const renderCard = (props): ReactElement => {
+const renderCard = (props: ICardProps): ReactElement => {
   switch (props.orientation) {
     case "horizontal":
       return (
@@ -85,8 +85,8 @@ const renderCard = (props): ReactElement => {
   }
 };
 
-export const Card = (props: ICardProps): ReactElement => {
-  return renderCard(props);
-};
+export const Card = React.memo(
+  (props: ICardProps): ReactElement => renderCard(props),
+);
 
 export default Card;

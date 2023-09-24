@@ -290,7 +290,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                           <ComicViewer
                             pages={extractedComicBook}
                             direction="ltr"
-                            className={{closeButton: "border: 1px solid red;"}}
+                            className={{
+                              closeButton: "border: 1px solid red;",
+                            }}
                           />
                         )}
                       </Modal>
