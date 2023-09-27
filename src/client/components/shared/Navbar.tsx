@@ -17,6 +17,9 @@ const Navbar: React.FunctionComponent = (props) => {
   const airDCPPSessionInfo = useSelector(
     (state: RootState) => state.airdcpp.airDCPPSessionInfo,
   );
+  const qBittorrentConnectionInfo = useSelector(
+    (state: RootState) => state.settings.data,
+  );
   const socketDisconnectionReason = useSelector(
     (state: RootState) => state.airdcpp.socketDisconnectionReason,
   );
