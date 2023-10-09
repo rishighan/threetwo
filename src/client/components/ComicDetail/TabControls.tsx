@@ -25,12 +25,15 @@ export const TabControls = (props): ReactElement => {
             >
               {/* Downloads tab and count badge */}
               <a>
-                {id === 5 &&
+                {id === 6 &&
                 !isNil(comicBookDetailData.acquisition.directconnect) ? (
                   <span className="download-icon-labels">
                     <i className="fa-solid fa-download"></i>
                     <span className="tag downloads-count is-info is-light">
-                      {comicBookDetailData.acquisition.directconnect.downloads.length}
+                      {
+                        comicBookDetailData.acquisition.directconnect.downloads
+                          .length
+                      }
                     </span>
                   </span>
                 ) : (

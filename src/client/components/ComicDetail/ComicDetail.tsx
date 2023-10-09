@@ -198,8 +198,8 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     },
     {
       id: 4,
-      icon: <i className="fa-solid fa-floppy-disk"></i>,
-      name: "Acquisition",
+      icon: <i className="fa-solid fa-circle-nodes"></i>,
+      name: "DC++ Search",
       content: (
         <AcquisitionPanel
           query={airDCPPQuery}
@@ -213,6 +213,13 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     },
     {
       id: 5,
+      icon: <i className="fa-solid fa-droplet"></i>,
+      name: "Torrent Search",
+      content: <>Torrents</>,
+      shouldShow: true,
+    },
+    {
+      id: 6,
       icon: null,
       name: !isEmpty(data.data) ? (
         <span className="download-tab-name">Downloads</span>
