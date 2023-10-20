@@ -119,7 +119,6 @@ export const App = (): ReactElement => {
       <AirDCPPSocketContextProvider>
         <div>
           <AirDCPPSocketComponent />
-          <Navbar />
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/import" element={<Import path={"./comics"} />} />

@@ -1,12 +1,12 @@
-import { createStore, combineReducers, applyMiddleware } from "redux";
 import { createHashHistory } from "history";
-import { composeWithDevTools } from "@redux-devtools/extension";
 import thunk from "redux-thunk";
+import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
 import { createReduxHistoryContext } from "redux-first-history";
-import { reducers } from "../reducers/index";
 import socketIoMiddleware from "redux-socket.io-middleware";
 import socketIOMiddleware from "../shared/middleware/SocketIOMiddleware";
 import socketIOConnectionInstance from "../shared/socket.io/instance";
+import settingsReducer from "../reducers/settings.reducer";
+import { settingsApi } from "../services/settings.api";
 
 const customSocketIOMiddleware = socketIOMiddleware(socketIOConnectionInstance);
 
@@ -15,19 +15,30 @@ const { createReduxHistory, routerMiddleware, routerReducer } =
     history: createHashHistory(),
   });
 
-export const store = createStore(
-  combineReducers({
-    router: routerReducer,
-    ...reducers,
-  }),
-  composeWithDevTools(
-    applyMiddleware(
-      socketIoMiddleware(socketIOConnectionInstance),
-      customSocketIOMiddleware,
-      thunk,
-      routerMiddleware,
-    ),
-    // window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
-  ),
-);
+const rootReducer = (history) => ({
+  settings: settingsReducer,
+  [settingsApi.reducerPath]: settingsApi.reducer,
+  router: routerReducer,
+});
+
+const preloadedState = {};
+export const store = configureStore({
+  middleware: [
+    socketIoMiddleware(socketIOConnectionInstance),
+    customSocketIOMiddleware,
+    thunk,
+    routerMiddleware,
+    settingsApi.middleware,
+  ],
+  reducer: rootReducer(createHashHistory()),
+  preloadedState,
+});
+export type AppDispatch = typeof store.dispatch;
+export type RootState = ReturnType<typeof store.getState>;
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  RootState,
+  unknown,
+  Action<string>
+>;
 export const history = createReduxHistory(store);

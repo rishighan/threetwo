@@ -6,6 +6,7 @@ import { isEmpty } from "lodash";
 export const ConnectionForm = ({
   initialData,
   submitHandler,
+  formHeading,
 }): ReactElement => {
   return (
     <>
@@ -14,8 +15,8 @@ export const ConnectionForm = ({
         initialValues={initialData}
         render={({ handleSubmit }) => (
           <form onSubmit={handleSubmit}>
-            <h2>Configure AirDC++</h2>
-            <label className="label">AirDC++ Hostname</label>
+            <h2>{formHeading}</h2>
+            <label className="label">Hostname</label>
             <div className="field has-addons">
               <p className="control">
                 <span className="select">

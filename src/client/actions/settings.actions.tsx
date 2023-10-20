@@ -4,7 +4,7 @@ import {
   SETTINGS_CALL_IN_PROGRESS,
   SETTINGS_DB_FLUSH_SUCCESS,
   SETTINGS_QBITTORRENT_TORRENTS_LIST_FETCHED,
-} from "../constants/action-types";
+} from "../reducers/settings.reducer";
 import {
   LIBRARY_SERVICE_BASE_URI,
   SETTINGS_SERVICE_BASE_URI,
@@ -72,20 +72,19 @@ export const flushDb = () => async (dispatch) => {
 };
 
 export const getQBitTorrentClientInfo = (hostInfo) => async (dispatch) => {
-  const foo = await axios.request({
+  await axios.request({
     url: `${QBITTORRENT_SERVICE_BASE_URI}/connect`,
     method: "POST",
     data: hostInfo,
   });
-  const bar = await axios.request({
+  const qBittorrentClientInfo = await axios.request({
     url: `${QBITTORRENT_SERVICE_BASE_URI}/getClientInfo`,
     method: "GET",
   });
 
-  console.log(bar);
   dispatch({
     type: SETTINGS_QBITTORRENT_TORRENTS_LIST_FETCHED,
-    data: bar.data,
+    data: qBittorrentClientInfo.data,
   });
 };
 

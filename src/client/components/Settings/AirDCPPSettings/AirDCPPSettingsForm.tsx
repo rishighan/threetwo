@@ -34,7 +34,11 @@ export const AirDCPPSettingsForm = (): ReactElement => {
 
   return (
     <>
-      <ConnectionForm initialData={initFormData} submitHandler={onSubmit} />
+      <ConnectionForm
+        initialData={initFormData}
+        submitHandler={onSubmit}
+        formHeading={"Configure AirDC++"}
+      />
 
       {!isEmpty(airDCPPSettings.airDCPPState.socketConnectionInformation) ? (
         <AirDCPPSettingsConfirmation

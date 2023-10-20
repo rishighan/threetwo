@@ -1,57 +1,67 @@
-import {
-  SETTINGS_CALL_FAILED,
-  SETTINGS_OBJECT_FETCHED,
-  SETTINGS_OBJECT_DELETED,
-  SETTINGS_CALL_IN_PROGRESS,
-  SETTINGS_DB_FLUSH_SUCCESS,
-  SETTINGS_QBITTORRENT_TORRENTS_LIST_FETCHED,
-} from "../constants/action-types";
-const initialState = {
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { RootState } from "../store";
+import { isUndefined } from "lodash";
+import { SETTINGS_SERVICE_BASE_URI } from "../constants/endpoints";
+
+export interface InitialState {
+  data: object;
+  inProgress: boolean;
+  dbFlushed: boolean;
+  torrentsList: Array<any>;
+}
+const initialState: InitialState = {
   data: {},
   inProgress: false,
-  DbFlushed: false,
+  dbFlushed: false,
   torrentsList: [],
 };
 
-function settingsReducer(state = initialState, action) {
-  switch (action.type) {
-    case SETTINGS_CALL_IN_PROGRESS:
-      return {
-        ...state,
-        inProgress: true,
-      };
+export const settingsSlice = createSlice({
+  name: "settings",
+  initialState,
+  reducers: {
+    SETTINGS_CALL_IN_PROGRESS: (state) => {
+      state.inProgress = true;
+    },
 
-    case SETTINGS_OBJECT_FETCHED:
-      return {
-        ...state,
-        data: action.data,
-        inProgress: false,
-      };
+    SETTINGS_OBJECT_FETCHED: (state, action) => {
+      state.data = action.payload;
+      state.inProgress = false;
+    },
 
-    case SETTINGS_OBJECT_DELETED:
-      return {
-        ...state,
-        data: action.data,
-        inProgress: false,
-      };
+    SETTINGS_OBJECT_DELETED: (state, action) => {
+      state.data = action.payload;
+      state.inProgress = false;
+    },
 
-    case SETTINGS_DB_FLUSH_SUCCESS:
+    SETTINGS_DB_FLUSH_SUCCESS: (state, action) => {
+      state.dbFlushed = action.payload;
+      state.inProgress = false;
+    },
+
+    SETTINGS_QBITTORRENT_TORRENTS_LIST_FETCHED: (state, action) => {
       console.log(state);
-      return {
-        ...state,
-        DbFlushed: action.data,
-        inProgress: false,
-      };
-      
-    case SETTINGS_QBITTORRENT_TORRENTS_LIST_FETCHED:
-      return {
-        ...state,
-        torrentsList: action.data,
-      }
+      console.log(action);
+      state.torrentsList = action.payload;
+    },
+  },
+});
 
-    default:
-      return { ...state };
+export const {
+  SETTINGS_CALL_IN_PROGRESS,
+  SETTINGS_OBJECT_FETCHED,
+  SETTINGS_OBJECT_DELETED,
+  SETTINGS_DB_FLUSH_SUCCESS,
+  SETTINGS_QBITTORRENT_TORRENTS_LIST_FETCHED,
+} = settingsSlice.actions;
+
+// Other code such as selectors can use the imported `RootState` type
+export const torrentsList = (state: RootState) => state.settings.torrentsList;
+export const qBittorrentSettings = (state: RootState) => {
+  console.log(state);
+  if (!isUndefined(state.settings?.data?.bittorrent)) {
+    return state.settings?.data?.bittorrent.client.host;
   }
-}
-
-export default settingsReducer;
+};
+export default settingsSlice.reducer;
