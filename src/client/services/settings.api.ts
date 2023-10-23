@@ -6,12 +6,6 @@ export const settingsApi = emptySplitApi.injectEndpoints({
     getAllSettings: builder.query({
       query: () => "localhost:3000/api/settings/getAllSettings",
     }),
-    getQBitTorrentClientInfo: builder.query({
-      queryFn: async () => {
-        try {
-        } catch (err) {}
-      },
-    }),
   }),
   overrideExisting: false,
 });
