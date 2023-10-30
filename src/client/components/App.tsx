@@ -24,11 +24,6 @@ import {
   LS_SINGLE_IMPORT,
 } from "../constants/action-types";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
-const queryClient = new QueryClient({});
-
 /**
  * Method that initializes an AirDC++ socket connection
  * 1. Initializes event listeners for download init, tick and complete events
@@ -118,11 +113,10 @@ export const App = (): ReactElement => {
   //   }
   // }, []);
   return (
-    <QueryClientProvider client={queryClient}>
+    <>
       {/* The rest of your application */}
-      <ReactQueryDevtools initialIsOpen={true} />
       {/* <AirDCPPSocketComponent /> */};
-    </QueryClientProvider>
+    </>
   );
 };
 
