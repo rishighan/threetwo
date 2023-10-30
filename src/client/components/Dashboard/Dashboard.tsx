@@ -15,7 +15,6 @@ import { isEmpty, isNil } from "lodash";
 import Header from "../shared/Header";
 
 export const Dashboard = (): ReactElement => {
-  const dispatch = useDispatch();
   //   useEffect(() => {
   //     dispatch(fetchVolumeGroups());
   //     dispatch(

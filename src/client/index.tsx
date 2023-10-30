@@ -1,18 +1,25 @@
 import React from "react";
 import { render } from "react-dom";
-import { Provider, connect } from "react-redux";
-import { HistoryRouter as Router } from "redux-first-history/rr6";
-import { store, history } from "./store/index";
 import { createRoot } from "react-dom/client";
 import App from "./components/App";
-
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Settings from "./components/Settings/Settings";
 const rootEl = document.getElementById("root");
 const root = createRoot(rootEl);
 
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+  },
+  {
+    path: "/settings",
+    element: <Settings />,
+  },
+]);
+
 root.render(
-  <Provider store={store}>
-    <Router history={history}>
-      <App />
-    </Router>
-  </Provider>,
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>,
 );

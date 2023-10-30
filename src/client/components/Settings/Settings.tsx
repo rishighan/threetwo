@@ -7,22 +7,18 @@ import { ServiceStatuses } from "../ServiceStatuses/ServiceStatuses";
 import settingsObject from "../../constants/settings/settingsMenu.json";
 import { isUndefined, map } from "lodash";
 
-interface ISettingsProps { }
+interface ISettingsProps {}
 
 export const Settings = (props: ISettingsProps): ReactElement => {
   const [active, setActive] = useState("gen-db");
   const settingsContent = [
     {
       id: "adc-hubs",
-      content: <div key="adc-hubs">{<AirDCPPHubsForm />}</div>,
+      content: <div key="adc-hubs">{/* <AirDCPPHubsForm /> */}</div>,
     },
     {
       id: "adc-connection",
-      content: (
-        <div key="adc-connection">
-          <AirDCPPSettingsForm />
-        </div>
-      ),
+      content: <div key="adc-connection">{/* <AirDCPPSettingsForm /> */}</div>,
     },
     {
       id: "qbt-connection",
@@ -34,15 +30,11 @@ export const Settings = (props: ISettingsProps): ReactElement => {
     },
     {
       id: "core-service",
-      content: <ServiceStatuses />,
+      content: <>a</>,
     },
     {
       id: "flushdb",
-      content: (
-        <div key="flushdb">
-          <SystemSettingsForm />
-        </div>
-      ),
+      content: <div key="flushdb">{/* <SystemSettingsForm /> */}</div>,
     },
   ];
   return (
