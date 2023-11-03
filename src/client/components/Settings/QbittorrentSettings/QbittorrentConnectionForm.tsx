@@ -1,7 +1,6 @@
-import React, { ReactElement, useCallback, useEffect } from "react";
+import React, { ReactElement } from "react";
 import { ConnectionForm } from "../../shared/ConnectionForm/ConnectionForm";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { saveSettings } from "../../../actions/settings.actions";
 import axios from "axios";
 
 export const QbittorrentConnectionForm = (): ReactElement => {
@@ -38,7 +37,7 @@ export const QbittorrentConnectionForm = (): ReactElement => {
     enabled: !!connectionDetails,
   });
   console.log(qbittorrentClientInfo?.data);
-
+  // Update action using a mutation
   const { mutate } = useMutation({
     mutationFn: async (values) =>
       await axios({
@@ -50,15 +49,21 @@ export const QbittorrentConnectionForm = (): ReactElement => {
 
   return (
     <>
-      <ConnectionForm
-        initialData={hostDetails}
-        formHeading={"qBittorrent Configuration"}
-        submitHandler={mutate}
-      />
+      {!isLoading ? (
+        <>
+          <ConnectionForm
+            initialData={hostDetails}
+            formHeading={"qBittorrent Configuration"}
+            submitHandler={mutate}
+          />
 
-      <pre className="mt-5">
-        {JSON.stringify(qbittorrentClientInfo?.data, null, 4)}
-      </pre>
+          <pre className="mt-5">
+            {JSON.stringify(qbittorrentClientInfo?.data, null, 4)}
+          </pre>
+        </>
+      ) : (
+        "Loading..."
+      )}
     </>
   );
 };
