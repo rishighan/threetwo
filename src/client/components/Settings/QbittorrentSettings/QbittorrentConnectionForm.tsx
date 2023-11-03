@@ -1,26 +1,23 @@
 import React, { ReactElement, useCallback, useEffect } from "react";
 import { ConnectionForm } from "../../shared/ConnectionForm/ConnectionForm";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { saveSettings } from "../../../actions/settings.actions";
 import axios from "axios";
 
 export const QbittorrentConnectionForm = (): ReactElement => {
+  // axios interceptors to destructure response
   // fetch settings
-  const {
-    data: data,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["host"],
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["settings"],
     queryFn: async () =>
       await axios({
         url: "http://localhost:3000/api/settings/getAllSettings",
         method: "GET",
       }),
   });
-
   const hostDetails = data?.data.bittorrent.client.host;
   // connect to qbittorrent client
-  useQuery({
+  const { data: connectionDetails } = useQuery({
     queryKey: [],
     queryFn: async () =>
       await axios({
@@ -30,29 +27,40 @@ export const QbittorrentConnectionForm = (): ReactElement => {
       }),
     enabled: !!hostDetails,
   });
-
   // get qbittorrent client info
-  const {
-    data: {},
-  } = useQuery({
+  const { data: qbittorrentClientInfo } = useQuery({
     queryKey: ["qbittorrentClientInfo"],
     queryFn: async () =>
       await axios({
         url: "http://localhost:3060/api/qbittorrent/getClientInfo",
         method: "GET",
       }),
-    enabled: !!hostDetails,
+    enabled: !!connectionDetails,
+  });
+  console.log(qbittorrentClientInfo?.data);
+
+  const { mutate } = useMutation({
+    mutationFn: async (values) =>
+      await axios({
+        url: `http://localhost:3000/api/settings/saveSettings`,
+        method: "POST",
+        data: { settingsPayload: values, settingsKey: "bittorrent" },
+      }),
   });
 
-  const onSubmit = useCallback(async (values) => {
-    try {
-      // dispatch(saveSettings(values, "bittorrent"));
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
+  return (
+    <>
+      <ConnectionForm
+        initialData={hostDetails}
+        formHeading={"qBittorrent Configuration"}
+        submitHandler={mutate}
+      />
 
-  return <></>;
+      <pre className="mt-5">
+        {JSON.stringify(qbittorrentClientInfo?.data, null, 4)}
+      </pre>
+    </>
+  );
 };
 
 export default QbittorrentConnectionForm;

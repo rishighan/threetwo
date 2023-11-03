@@ -11,20 +11,6 @@ import {
   QBITTORRENT_SERVICE_BASE_URI,
 } from "../constants/endpoints";
 
-export const saveSettings =
-  (settingsPayload, settingsKey: string, settingsObjectId?: string) =>
-  async (dispatch) => {
-    const result = await axios({
-      url: `${SETTINGS_SERVICE_BASE_URI}/saveSettings`,
-      method: "POST",
-      data: { settingsPayload, settingsKey, settingsObjectId },
-    });
-    dispatch({
-      type: SETTINGS_OBJECT_FETCHED,
-      data: result.data,
-    });
-  };
-
 export const getSettings = (settingsKey?) => async (dispatch) => {
   const result = await axios({
     url: `${SETTINGS_SERVICE_BASE_URI}/getSettings`,
