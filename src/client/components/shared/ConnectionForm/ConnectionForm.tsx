@@ -93,6 +93,12 @@ export const ConnectionForm = ({
                   {!isEmpty(initialData) ? "Update" : "Save"}
                 </button>
               </p>
+
+              <p className="control">
+                <button type="submit" className="button is-danger">
+                  {!isEmpty(initialData) && "Delete"}
+                </button>
+              </p>
             </div>
           </form>
         )}

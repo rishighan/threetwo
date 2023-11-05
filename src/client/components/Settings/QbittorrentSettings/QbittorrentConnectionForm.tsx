@@ -47,25 +47,27 @@ export const QbittorrentConnectionForm = (): ReactElement => {
       }),
   });
 
-  return (
-    <>
-      {!isLoading ? (
-        <>
-          <ConnectionForm
-            initialData={hostDetails}
-            formHeading={"qBittorrent Configuration"}
-            submitHandler={mutate}
-          />
+  if (isError)
+    return (
+      <>
+        <pre>Something went wrong connecting to qBittorrent.</pre>
+      </>
+    );
+  if (!isLoading) {
+    return (
+      <>
+        <ConnectionForm
+          initialData={hostDetails}
+          formHeading={"qBittorrent Configuration"}
+          submitHandler={mutate}
+        />
 
-          <pre className="mt-5">
-            {JSON.stringify(qbittorrentClientInfo?.data, null, 4)}
-          </pre>
-        </>
-      ) : (
-        "Loading..."
-      )}
-    </>
-  );
+        <pre className="mt-5">
+          {JSON.stringify(qbittorrentClientInfo?.data, null, 4)}
+        </pre>
+      </>
+    );
+  }
 };
 
 export default QbittorrentConnectionForm;
