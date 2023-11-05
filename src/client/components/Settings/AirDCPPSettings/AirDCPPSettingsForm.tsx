@@ -12,28 +12,26 @@ export const AirDCPPSettingsForm = (): ReactElement => {
   const airDCPPSettings = useContext(AirDCPPSocketContext);
   console.log(airDCPPSettings);
 
-  //   const onSubmit = useCallback(async (values) => {
-  //     try {
-  //       airDCPPSettings.setSettings(values);
-  //       // dispatch(saveSettings(values, "directConnect"));
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }, []);
-  //   const removeSettings = useCallback(async () => {
-  //     airDCPPSettings.setSettings({});
-  //     // dispatch(deleteSettings());
-  //   }, []);
+  const onSubmit = useCallback(async (values) => {
+    try {
+      airDCPPSettings.setSettings(values);
+      // dispatch(saveSettings(values, "directConnect"));
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+  const removeSettings = useCallback(async () => {
+    airDCPPSettings.setSettings({});
+    // dispatch(deleteSettings());
+  }, []);
   //
-  //   const initFormData = !isUndefined(
-  //     airDCPPSettings.airDCPPState.settings.directConnect,
-  //   )
-  //     ? airDCPPSettings.airDCPPState.settings.directConnect.client.host
-  //     : {};
+  const initFormData = !isUndefined(airDCPPSettings.airDCPPState.settings)
+    ? airDCPPSettings.airDCPPState.settings
+    : {};
 
   return (
     <>
-      {/* <ConnectionForm
+      <ConnectionForm
         initialData={initFormData}
         submitHandler={onSubmit}
         formHeading={"Configure AirDC++"}
@@ -51,7 +49,7 @@ export const AirDCPPSettingsForm = (): ReactElement => {
             Delete
           </button>
         </p>
-      ) : null} */}
+      ) : null}
     </>
   );
 };
