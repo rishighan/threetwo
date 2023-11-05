@@ -1,5 +1,4 @@
 import React, { ReactElement, useCallback, useContext } from "react";
-import { useDispatch } from "react-redux";
 import {
   saveSettings,
   deleteSettings,
@@ -10,31 +9,31 @@ import { isUndefined, isEmpty } from "lodash";
 import { ConnectionForm } from "../../shared/ConnectionForm/ConnectionForm";
 
 export const AirDCPPSettingsForm = (): ReactElement => {
-  const dispatch = useDispatch();
   const airDCPPSettings = useContext(AirDCPPSocketContext);
+  console.log(airDCPPSettings);
 
-  const onSubmit = useCallback(async (values) => {
-    try {
-      airDCPPSettings.setSettings(values);
-      dispatch(saveSettings(values, "directConnect"));
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
-  const removeSettings = useCallback(async () => {
-    airDCPPSettings.setSettings({});
-    dispatch(deleteSettings());
-  }, []);
-
-  const initFormData = !isUndefined(
-    airDCPPSettings.airDCPPState.settings.directConnect,
-  )
-    ? airDCPPSettings.airDCPPState.settings.directConnect.client.host
-    : {};
+  //   const onSubmit = useCallback(async (values) => {
+  //     try {
+  //       airDCPPSettings.setSettings(values);
+  //       // dispatch(saveSettings(values, "directConnect"));
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }, []);
+  //   const removeSettings = useCallback(async () => {
+  //     airDCPPSettings.setSettings({});
+  //     // dispatch(deleteSettings());
+  //   }, []);
+  //
+  //   const initFormData = !isUndefined(
+  //     airDCPPSettings.airDCPPState.settings.directConnect,
+  //   )
+  //     ? airDCPPSettings.airDCPPState.settings.directConnect.client.host
+  //     : {};
 
   return (
     <>
-      <ConnectionForm
+      {/* <ConnectionForm
         initialData={initFormData}
         submitHandler={onSubmit}
         formHeading={"Configure AirDC++"}
@@ -52,7 +51,7 @@ export const AirDCPPSettingsForm = (): ReactElement => {
             Delete
           </button>
         </p>
-      ) : null}
+      ) : null} */}
     </>
   );
 };

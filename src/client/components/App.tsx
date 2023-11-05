@@ -12,10 +12,7 @@ import Downloads from "./Downloads/Downloads";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./shared/Navbar";
 import "../assets/scss/App.scss";
-import {
-  AirDCPPSocketContextProvider,
-  AirDCPPSocketContext,
-} from "../context/AirDCPPSocket";
+
 import { SocketIOProvider } from "../context/SocketIOContext";
 import socketIOConnectionInstance from "../shared/socket.io/instance";
 import { isEmpty, isNil, isUndefined } from "lodash";

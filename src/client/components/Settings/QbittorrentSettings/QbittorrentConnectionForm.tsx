@@ -4,7 +4,6 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
 export const QbittorrentConnectionForm = (): ReactElement => {
-  // axios interceptors to destructure response
   // fetch settings
   const { data, isLoading, isError } = useQuery({
     queryKey: ["settings"],
