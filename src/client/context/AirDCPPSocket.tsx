@@ -1,13 +1,12 @@
 import { isEmpty, isUndefined } from "lodash";
 import React, { createContext, useEffect, useState } from "react";
-import { toggleAirDCPPSocketConnectionStatus } from "../actions/airdcpp.actions";
-import { getSettings } from "../actions/settings.actions";
 import { useQuery, useMutation } from "@tanstack/react-query";
-
+import { useStore } from "../store/index";
 import AirDCPPSocket from "../services/DcppSearchService";
 import axios from "axios";
 
 const AirDCPPSocketContextProvider = ({ children }) => {
+  const { getState, setState } = useStore;
   // setter for settings for use in the context consumer
   const setSettings = (settingsObject) => {
     persistSettings({
@@ -19,7 +18,7 @@ const AirDCPPSocketContextProvider = ({ children }) => {
       },
     });
   };
-  // 1. default zero-state for AirDC++ configuration
+  // Initial state for AirDC++ configuration
   const initState = {
     airDCPPState: {
       settings: {},
@@ -60,24 +59,25 @@ const AirDCPPSocketContextProvider = ({ children }) => {
       password: `${configuration.password}`,
     });
 
-    // connect and disconnect handlers
+    // Set up connect and disconnect handlers
     initializedAirDCPPSocket.onConnected = (sessionInfo) => {
-      // dispatch(toggleAirDCPPSocketConnectionStatus("connected", sessionInfo));
+      // update global state with socket connection status
+      setState({
+        airDCPPSocketConnected: true,
+      });
     };
     initializedAirDCPPSocket.onDisconnected = async (
       reason,
       code,
       wasClean,
     ) => {
-      // dispatch(
-      //   toggleAirDCPPSocketConnectionStatus("disconnected", {
-      //     reason,
-      //     code,
-      //     wasClean,
-      //   }),
-      // );
+      // update global state with socket connection status
+      setState({
+        disconnectionInfo: { reason, code, wasClean },
+        airDCPPSocketConnected: false,
+      });
     };
-
+    // Attempt connection
     const socketConnectionInformation =
       await initializedAirDCPPSocket.connect();
 
@@ -92,6 +92,7 @@ const AirDCPPSocketContextProvider = ({ children }) => {
     });
   };
 
+  console.log("connected?", getState());
   // the Provider gives access to the context to its children
   return (
     <AirDCPPSocketContext.Provider value={airDCPPState}>

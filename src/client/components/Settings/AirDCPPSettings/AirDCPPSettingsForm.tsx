@@ -15,14 +15,12 @@ export const AirDCPPSettingsForm = (): ReactElement => {
   const onSubmit = useCallback(async (values) => {
     try {
       airDCPPSettings.setSettings(values);
-      // dispatch(saveSettings(values, "directConnect"));
     } catch (error) {
       console.log(error);
     }
   }, []);
   const removeSettings = useCallback(async () => {
     airDCPPSettings.setSettings({});
-    // dispatch(deleteSettings());
   }, []);
   //
   const initFormData = !isUndefined(airDCPPSettings.airDCPPState.settings)

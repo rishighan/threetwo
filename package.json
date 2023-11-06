@@ -71,7 +71,8 @@
     "threetwo-ui-typings": "^1.0.14",
     "vite": "^4.4.9",
     "vite-plugin-html": "^3.2.0",
-    "websocket": "^1.0.34"
+    "websocket": "^1.0.34",
+    "zustand": "^4.4.6"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^7.4.1",
