@@ -4,12 +4,13 @@ import {
   deleteSettings,
 } from "../../../actions/settings.actions";
 import { AirDCPPSettingsConfirmation } from "./AirDCPPSettingsConfirmation";
-import { AirDCPPSocketContext } from "../../../context/AirDCPPSocket";
 import { isUndefined, isEmpty } from "lodash";
 import { ConnectionForm } from "../../shared/ConnectionForm/ConnectionForm";
+import { useStore } from "../../../store/index";
 
 export const AirDCPPSettingsForm = (): ReactElement => {
-  const airDCPPSettings = useContext(AirDCPPSocketContext);
+  // const airDCPPSettings = useContext(AirDCPPSocketContext);
+  const airDCPPSettings = useStore((store) => store.airDCPPClientConfiguration);
   console.log(airDCPPSettings);
 
   const onSubmit = useCallback(async (values) => {

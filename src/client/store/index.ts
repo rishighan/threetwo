@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { isEmpty, isUndefined } from "lodash";
-import React, { createContext, useEffect, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import AirDCPPSocket from "../services/DcppSearchService";
 import axios from "axios";
@@ -8,6 +7,7 @@ import axios from "axios";
 export const useStore = create((set, get) => ({
   airDCPPSocketConnected: false,
   disconnectionInfo: {},
+  airDCPPClientConfiguration: {},
   setAirDCPPSocketConnectionStatus: () =>
     set((value) => ({
       airDCPPSocketConnected: value,
@@ -20,23 +20,22 @@ export const useStore = create((set, get) => ({
 const { getState, setState } = useStore;
 
 // 1. get settings from mongo
-const { data, isLoading, isError } = useQuery({
-  queryKey: ["settings"],
-  queryFn: async () =>
-    await axios({
-      url: "http://localhost:3000/api/settings/getAllSettings",
-      method: "GET",
-    }),
+const { data } = await axios({
+  url: "http://localhost:3000/api/settings/getAllSettings",
+  method: "GET",
 });
 
-const directConnectConfiguration = data?.data.directConnect.client.host;
+const directConnectConfiguration = data?.directConnect.client.host;
+console.log(directConnectConfiguration);
 
 // 2. If available, init AirDC++ Socket with those settings
-useEffect(() => {
-  if (!isEmpty(directConnectConfiguration)) {
-    initializeAirDCPPSocket(directConnectConfiguration);
-  }
-}, [directConnectConfiguration]);
+
+if (!isEmpty(directConnectConfiguration)) {
+  initializeAirDCPPSocket(directConnectConfiguration);
+  setState({
+    airDCPPClientConfiguration: directConnectConfiguration,
+  });
+}
 
 // Method to init AirDC++ Socket with supplied settings
 const initializeAirDCPPSocket = async (configuration) => {

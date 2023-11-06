@@ -92,6 +92,7 @@ const AirDCPPSocketComponent = (): ReactElement => {
   return <></>;
 };
 export const App = (): ReactElement => {
+  console.log("randitva");
   // useEffect(() => {
   //   // Check if there is a sessionId in localStorage
   //   const sessionId = localStorage.getItem("sessionId");

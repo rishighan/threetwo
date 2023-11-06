@@ -6,6 +6,11 @@ export default defineConfig({
   publicDir: "public",
   base: "",
   build: "esnext",
+  esbuild: {
+    supported: {
+      "top-level-await": true, //browsers can handle top-level-await features
+    },
+  },
   server: { host: true },
   plugins: [
     nodeResolve({
