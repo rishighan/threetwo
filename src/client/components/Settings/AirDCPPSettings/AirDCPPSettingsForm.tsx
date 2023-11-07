@@ -6,18 +6,21 @@ import { useStore } from "../../../store/index";
 import { useShallow } from "zustand/react/shallow";
 
 export const AirDCPPSettingsForm = (): ReactElement => {
-  // const airDCPPSettings = useContext(AirDCPPSocketContext);
+  // cherry-picking selectors for:
+  // 1. initial values for the form
+  // 2. If initial values are present, get the socket information to display
   const {
     airDCPPSocketConnected,
-    disconnectionInfo,
-    socketConnectionInformation,
+    airDCPPDisconnectionInfo,
+    airDCPPSocketConnectionInformation,
     airDCPPClientConfiguration,
   } = useStore(
     useShallow((state) => ({
       airDCPPSocketConnected: state.airDCPPSocketConnected,
-      disconnectionInfo: state.disconnectionInfo,
+      airDCPPDisconnectionInfo: state.airDCPPDisconnectionInfo,
       airDCPPClientConfiguration: state.airDCPPClientConfiguration,
-      socketConnectionInformation: state.socketConnectionInformation,
+      airDCPPSocketConnectionInformation:
+        state.airDCPPSocketConnectionInformation,
     })),
   );
 
@@ -44,8 +47,10 @@ export const AirDCPPSettingsForm = (): ReactElement => {
         formHeading={"Configure AirDC++"}
       />
 
-      {!isEmpty(socketConnectionInformation) ? (
-        <AirDCPPSettingsConfirmation settings={socketConnectionInformation} />
+      {!isEmpty(airDCPPSocketConnectionInformation) ? (
+        <AirDCPPSettingsConfirmation
+          settings={airDCPPSocketConnectionInformation}
+        />
       ) : null}
 
       {!isEmpty(airDCPPClientConfiguration) ? (
