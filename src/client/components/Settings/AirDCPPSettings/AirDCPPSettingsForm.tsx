@@ -14,6 +14,7 @@ export const AirDCPPSettingsForm = (): ReactElement => {
     airDCPPDisconnectionInfo,
     airDCPPSocketConnectionInformation,
     airDCPPClientConfiguration,
+    airDCPPSocketInstance,
   } = useStore(
     useShallow((state) => ({
       airDCPPSocketConnected: state.airDCPPSocketConnected,
@@ -21,9 +22,9 @@ export const AirDCPPSettingsForm = (): ReactElement => {
       airDCPPClientConfiguration: state.airDCPPClientConfiguration,
       airDCPPSocketConnectionInformation:
         state.airDCPPSocketConnectionInformation,
+      airDCPPSocketInstance: state.airDCPPSocketInstance,
     })),
   );
-
   const onSubmit = useCallback(async (values) => {
     try {
       // airDCPPSettings.setSettings(values);

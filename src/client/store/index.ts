@@ -5,6 +5,7 @@ import axios from "axios";
 
 export const useStore = create((set, get) => ({
   // AirDC++ state
+  airDCPPSocketInstance: {},
   airDCPPSocketConnected: false,
   airDCPPDisconnectionInfo: {},
   airDCPPClientConfiguration: {},
@@ -16,13 +17,18 @@ export const useStore = create((set, get) => ({
   getAirDCPPConnectionStatus: () => {
     const airDCPPSocketConnectionStatus = get().airDCPPSocketConnected;
   },
+  airDCPPDownloadTick: {},
   // Socket.io state
 }));
 
 const { getState, setState } = useStore;
 
-// Method to init AirDC++ Socket with supplied settings
-const initializeAirDCPPSocket = async (configuration) => {
+/**
+ * Method to init AirDC++ Socket with supplied settings
+ * @param configuration - credentials, and hostname details to init AirDC++ connection
+ * @returns Initialized AirDC++ connection socket instance
+ */
+const initializeAirDCPPSocket = async (configuration): Promise<any> => {
   console.log("[AirDCPP]: Initializing socket...");
 
   const initializedAirDCPPSocket = new AirDCPPSocket({
@@ -60,6 +66,9 @@ const initializeAirDCPPSocket = async (configuration) => {
     "queue_bundle_tick",
     async (downloadProgressData) => {
       console.log(downloadProgressData);
+      setState({
+        airDCPPDownloadTick: downloadProgressData,
+      });
     },
   );
   initializedAirDCPPSocket.addListener(
@@ -85,6 +94,7 @@ const initializeAirDCPPSocket = async (configuration) => {
       }
     },
   );
+  return initializedAirDCPPSocket;
 };
 
 // 1. get settings from mongo
@@ -97,8 +107,11 @@ const directConnectConfiguration = data?.directConnect.client.host;
 
 // 2. If available, init AirDC++ Socket with those settings
 if (!isEmpty(directConnectConfiguration)) {
-  initializeAirDCPPSocket(directConnectConfiguration);
+  const airDCPPSocketInstance = await initializeAirDCPPSocket(
+    directConnectConfiguration,
+  );
   setState({
+    airDCPPSocketInstance,
     airDCPPClientConfiguration: directConnectConfiguration,
   });
 }

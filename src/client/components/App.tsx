@@ -46,7 +46,7 @@ export const App = (): ReactElement => {
   //     });
   //   }
   // }, []);
-  return <>{/* The rest of your application */}</>;
+  return <>{/* <Navbar /> */}</>;
 };
 
 export default App;
