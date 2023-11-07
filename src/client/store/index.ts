@@ -7,6 +7,7 @@ export const useStore = create((set, get) => ({
   airDCPPSocketConnected: false,
   disconnectionInfo: {},
   airDCPPClientConfiguration: {},
+  socketConnectionInformation: {},
   setAirDCPPSocketConnectionStatus: () =>
     set((value) => ({
       airDCPPSocketConnected: value,
@@ -45,6 +46,9 @@ const initializeAirDCPPSocket = async (configuration) => {
   };
   // Attempt connection
   const socketConnectionInformation = await initializedAirDCPPSocket.connect();
+  setState({
+    socketConnectionInformation,
+  });
 };
 
 // 1. get settings from mongo

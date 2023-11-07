@@ -10,7 +10,6 @@ import { isUndefined, map } from "lodash";
 interface ISettingsProps {}
 
 export const Settings = (props: ISettingsProps): ReactElement => {
-  console.log("Asd");
   const [active, setActive] = useState("gen-db");
   const settingsContent = [
     {
