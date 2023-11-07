@@ -1,12 +1,12 @@
 import React, { useCallback, ReactElement } from "react";
 import { isNil, isEmpty } from "lodash";
 import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";
-import { importToDB } from "../actions/fileops.actions";
+import { importToDB } from "../../actions/fileops.actions";
 import { useSelector, useDispatch } from "react-redux";
-import { comicinfoAPICall } from "../actions/comicinfo.actions";
-import { search } from "../services/api/SearchApi";
+import { comicinfoAPICall } from "../../actions/comicinfo.actions";
+import { search } from "../../services/api/SearchApi";
 import { Form, Field } from "react-final-form";
-import Card from "./Carda";
+import Card from "../shared/Carda";
 import ellipsize from "ellipsize";
 import { convert } from "html-to-text";
 import dayjs from "dayjs";

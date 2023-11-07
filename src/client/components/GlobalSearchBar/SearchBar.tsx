@@ -1,7 +1,7 @@
 import { debounce, isEmpty, map } from "lodash";
 import React, { ReactElement, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Card from "../Carda";
+import Card from "../shared/Carda";
 
 import { searchIssue } from "../../actions/fileops.actions";
 import MetadataPanel from "../shared/MetadataPanel";

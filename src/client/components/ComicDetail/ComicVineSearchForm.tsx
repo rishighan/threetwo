@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { Form, Field } from "react-final-form";
 import Collapsible from "react-collapsible";
-import { fetchComicVineMatches } from "../actions/fileops.actions";
+import { fetchComicVineMatches } from "../../actions/fileops.actions";
 import { useDispatch } from "react-redux";
 
 /**

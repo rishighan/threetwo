@@ -1,12 +1,12 @@
 import { isEmpty, isUndefined } from "lodash";
 import React, { createContext, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { toggleAirDCPPSocketConnectionStatus } from "../actions/airdcpp.actions";
-import { getSettings } from "../actions/settings.actions";
-
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useStore } from "../store/index";
 import AirDCPPSocket from "../services/DcppSearchService";
+import axios from "axios";
 
 const AirDCPPSocketContextProvider = ({ children }) => {
+  const { getState, setState } = useStore;
   // setter for settings for use in the context consumer
   const setSettings = (settingsObject) => {
     persistSettings({
@@ -14,11 +14,11 @@ const AirDCPPSocketContextProvider = ({ children }) => {
       airDCPPState: {
         settings: settingsObject,
         socket: {},
-        socketConectionInformation: {},
+        socketConnectionInformation: {},
       },
     });
   };
-  // 1. default zero-state for AirDC++ configuration
+  // Initial state for AirDC++ configuration
   const initState = {
     airDCPPState: {
       settings: {},
@@ -27,59 +27,59 @@ const AirDCPPSocketContextProvider = ({ children }) => {
     },
     setSettings: setSettings,
   };
-  const dispatch = useDispatch();
   const [airDCPPState, persistSettings] = useState(initState);
-  const airDCPPSettings = useSelector(
-    (state: RootState) => state.settings.data,
-  );
 
   // 1. get settings from mongo
-  useEffect(() => {
-    dispatch(getSettings());
-  }, []);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["settings"],
+    queryFn: async () =>
+      await axios({
+        url: "http://localhost:3000/api/settings/getAllSettings",
+        method: "GET",
+      }),
+  });
+
+  const directConnectConfiguration = data?.data.directConnect.client.host;
 
   // 2. If available, init AirDC++ Socket with those settings
   useEffect(() => {
-    if (!isEmpty(airDCPPSettings)) {
-      initializeAirDCPPSocket(airDCPPSettings);
+    if (!isEmpty(directConnectConfiguration)) {
+      initializeAirDCPPSocket(directConnectConfiguration);
     }
-  }, [airDCPPSettings]);
+  }, [directConnectConfiguration]);
 
   // Method to init AirDC++ Socket with supplied settings
   const initializeAirDCPPSocket = async (configuration) => {
     console.log("[AirDCPP]: Initializing socket...");
-    const {
-      directConnect: {
-        client: { host },
-      },
-    } = configuration;
 
     const initializedAirDCPPSocket = new AirDCPPSocket({
-      protocol: `${host.protocol}`,
-      hostname: `${host.hostname}:${host.port}`,
-      username: `${host.username}`,
-      password: `${host.password}`,
+      protocol: `${configuration.protocol}`,
+      hostname: `${configuration.hostname}:${configuration.port}`,
+      username: `${configuration.username}`,
+      password: `${configuration.password}`,
     });
 
-    // connect and disconnect handlers
+    // Set up connect and disconnect handlers
     initializedAirDCPPSocket.onConnected = (sessionInfo) => {
-      dispatch(toggleAirDCPPSocketConnectionStatus("connected", sessionInfo));
+      // update global state with socket connection status
+      setState({
+        airDCPPSocketConnected: true,
+      });
     };
     initializedAirDCPPSocket.onDisconnected = async (
       reason,
       code,
       wasClean,
     ) => {
-      dispatch(
-        toggleAirDCPPSocketConnectionStatus("disconnected", {
-          reason,
-          code,
-          wasClean,
-        }),
-      );
+      // update global state with socket connection status
+      setState({
+        disconnectionInfo: { reason, code, wasClean },
+        airDCPPSocketConnected: false,
+      });
     };
-
-    const socketConnectionInformation = await initializedAirDCPPSocket.connect();
+    // Attempt connection
+    const socketConnectionInformation =
+      await initializedAirDCPPSocket.connect();
 
     // update the state with the new socket connection information
     persistSettings({
@@ -92,6 +92,7 @@ const AirDCPPSocketContextProvider = ({ children }) => {
     });
   };
 
+  console.log("connected?", getState());
   // the Provider gives access to the context to its children
   return (
     <AirDCPPSocketContext.Provider value={airDCPPState}>
@@ -101,7 +102,7 @@ const AirDCPPSocketContextProvider = ({ children }) => {
 };
 const AirDCPPSocketContext = createContext({
   airDCPPState: {},
-  saveSettings: () => { },
+  saveSettings: () => {},
 });
 
 export { AirDCPPSocketContext, AirDCPPSocketContextProvider };

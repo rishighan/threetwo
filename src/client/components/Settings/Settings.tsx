@@ -1,9 +1,10 @@
 import React, { useState, ReactElement } from "react";
 import { AirDCPPSettingsForm } from "./AirDCPPSettings/AirDCPPSettingsForm";
 import { AirDCPPHubsForm } from "./AirDCPPSettings/AirDCPPHubsForm";
+import { QbittorrentConnectionForm } from "./QbittorrentSettings/QbittorrentConnectionForm";
 import { SystemSettingsForm } from "./SystemSettings/SystemSettingsForm";
-import { ServiceStatuses } from "./ServiceStatuses/ServiceStatuses";
-import settingsObject from "../constants/settings/settingsMenu.json";
+import { ServiceStatuses } from "../ServiceStatuses/ServiceStatuses";
+import settingsObject from "../../constants/settings/settingsMenu.json";
 import { isUndefined, map } from "lodash";
 
 interface ISettingsProps {}
@@ -13,7 +14,7 @@ export const Settings = (props: ISettingsProps): ReactElement => {
   const settingsContent = [
     {
       id: "adc-hubs",
-      content: <div key="adc-hubs">{<AirDCPPHubsForm />}</div>,
+      content: <div key="adc-hubs">{/* <AirDCPPHubsForm /> */}</div>,
     },
     {
       id: "adc-connection",
@@ -24,16 +25,20 @@ export const Settings = (props: ISettingsProps): ReactElement => {
       ),
     },
     {
+      id: "qbt-connection",
+      content: (
+        <div key="qbt-connection">
+          <QbittorrentConnectionForm />
+        </div>
+      ),
+    },
+    {
       id: "core-service",
-      content: <ServiceStatuses />,
+      content: <>a</>,
     },
     {
       id: "flushdb",
-      content: (
-        <div key="flushdb">
-          <SystemSettingsForm />
-        </div>
-      ),
+      content: <div key="flushdb">{/* <SystemSettingsForm /> */}</div>,
     },
   ];
   return (

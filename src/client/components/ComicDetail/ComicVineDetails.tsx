@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
 import dayjs from "dayjs";
 import { isUndefined } from "lodash";
-import Card from "../Carda";
+import Card from "../shared/Carda";
 export const ComicVineDetails = (props): ReactElement => {
   const { data, updatedAt } = props;
   return (

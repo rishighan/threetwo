@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import { ComicVineSearchForm } from "../ComicVineSearchForm";
-import MatchResult from "../MatchResult";
+import MatchResult from "./MatchResult";
 import { isEmpty } from "lodash";
 
 export const ComicVineMatchPanel = (comicVineData): ReactElement => {

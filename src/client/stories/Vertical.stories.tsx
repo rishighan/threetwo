@@ -4,7 +4,7 @@ import React from 'react';
 
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 
-import { Card } from '../components/Carda';
+import { Card } from '../components/shared/Carda';
 import "../assets/scss/App.scss";
 export default {
   /* 👇 The title prop is optional.

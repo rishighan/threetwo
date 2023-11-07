@@ -1,5 +1,5 @@
 import React, { ReactElement, useCallback } from "react";
-import { flushDb } from "../../actions/settings.actions";
+import { flushDb } from "../../../actions/settings.actions";
 import { useDispatch, useSelector } from "react-redux";
 
 export const SystemSettingsForm = (): ReactElement => {

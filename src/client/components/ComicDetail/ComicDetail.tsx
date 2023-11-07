@@ -1,11 +1,11 @@
 import React, { useState, ReactElement, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import Card from "../Carda";
+import Card from "../shared/Carda";
 import { ComicVineMatchPanel } from "./ComicVineMatchPanel";
 
 import { RawFileDetails } from "./RawFileDetails";
-import { ComicVineSearchForm } from "../ComicVineSearchForm";
+import { ComicVineSearchForm } from "./ComicVineSearchForm";
 
 import TabControls from "./TabControls";
 import { EditMetadataPanel } from "./EditMetadataPanel";
@@ -198,8 +198,8 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     },
     {
       id: 4,
-      icon: <i className="fa-solid fa-floppy-disk"></i>,
-      name: "Acquisition",
+      icon: <i className="fa-solid fa-circle-nodes"></i>,
+      name: "DC++ Search",
       content: (
         <AcquisitionPanel
           query={airDCPPQuery}
@@ -213,6 +213,13 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     },
     {
       id: 5,
+      icon: <i className="fa-solid fa-droplet"></i>,
+      name: "Torrent Search",
+      content: <>Torrents</>,
+      shouldShow: true,
+    },
+    {
+      id: 6,
       icon: null,
       name: !isEmpty(data.data) ? (
         <span className="download-tab-name">Downloads</span>
@@ -290,7 +297,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                           <ComicViewer
                             pages={extractedComicBook}
                             direction="ltr"
-                            className={{closeButton: "border: 1px solid red;"}}
+                            className={{
+                              closeButton: "border: 1px solid red;",
+                            }}
                           />
                         )}
                       </Modal>

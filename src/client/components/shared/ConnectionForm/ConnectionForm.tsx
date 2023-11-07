@@ -1,62 +1,22 @@
-import React, { ReactElement, useCallback, useContext } from "react";
+import React, { ReactElement } from "react";
 import { Form, Field } from "react-final-form";
-import { useDispatch } from "react-redux";
-import { saveSettings, deleteSettings } from "../../actions/settings.actions";
-import { AirDCPPSettingsConfirmation } from "./AirDCPPSettingsConfirmation";
-import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
-import { isUndefined, isEmpty, isNil } from "lodash";
+import { hostNameValidator } from "../../../shared/utils/validator.utils";
+import { isEmpty } from "lodash";
 
-export const AirDCPPSettingsForm = (): ReactElement => {
-  const dispatch = useDispatch();
-  const airDCPPSettings = useContext(AirDCPPSocketContext);
-
-  const hostValidator = (hostname: string): string | null => {
-    const hostnameRegex = /[\W]+/gm;
-    try {
-      if (!isUndefined(hostname)) {
-        const matches = hostname.match(hostnameRegex);
-        return isNil(matches) && matches.length !== 0
-          ? hostname
-          : "Invalid hostname; it should not contain special characters";
-      }
-    } catch {
-      return null;
-    }
-  };
-
-  const onSubmit = useCallback(async (values) => {
-    try {
-      airDCPPSettings.setSettings(values);
-      dispatch(
-        saveSettings({
-          host: values,
-        }),
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
-  const removeSettings = useCallback(async () => {
-    airDCPPSettings.setSettings({});
-    dispatch(deleteSettings());
-  }, []);
-  const validate = async () => {};
-  const initFormData = !isUndefined(
-    airDCPPSettings.airDCPPState.settings.directConnect,
-  )
-    ? airDCPPSettings.airDCPPState.settings.directConnect.client.host
-    : {};
-
+export const ConnectionForm = ({
+  initialData,
+  submitHandler,
+  formHeading,
+}): ReactElement => {
   return (
     <>
       <Form
-        onSubmit={onSubmit}
-        validate={validate}
-        initialValues={initFormData}
+        onSubmit={submitHandler}
+        initialValues={initialData}
         render={({ handleSubmit }) => (
           <form onSubmit={handleSubmit}>
-            <h2>AirDC++ Connection Information</h2>
-            <label className="label">AirDC++ Hostname</label>
+            <h2>{formHeading}</h2>
+            <label className="label">Hostname</label>
             <div className="field has-addons">
               <p className="control">
                 <span className="select">
@@ -68,13 +28,13 @@ export const AirDCPPSettingsForm = (): ReactElement => {
                 </span>
               </p>
               <div className="control is-expanded">
-                <Field name="hostname" validate={hostValidator}>
+                <Field name="hostname" validate={hostNameValidator}>
                   {({ input, meta }) => (
                     <div>
                       <input
                         {...input}
                         type="text"
-                        placeholder="AirDC++ hostname"
+                        placeholder="hostname"
                         className="input"
                       />
                       {meta.error && meta.touched && (
@@ -91,14 +51,12 @@ export const AirDCPPSettingsForm = (): ReactElement => {
                   name="port"
                   component="input"
                   className="input"
-                  placeholder="AirDC++ port"
+                  placeholder="port"
                 />
               </p>
             </div>
             <div className="field">
-              <div className="is-clearfix">
-                <label className="label">Credentials</label>
-              </div>
+              <label className="label">Credentials</label>
               <div className="field-body">
                 <div className="field">
                   <p className="control is-expanded has-icons-left">
@@ -125,9 +83,6 @@ export const AirDCPPSettingsForm = (): ReactElement => {
                     <span className="icon is-small is-left">
                       <i className="fa-solid fa-lock"></i>
                     </span>
-                    <span className="icon is-small is-right">
-                      <i className="fas fa-check"></i>
-                    </span>
                   </p>
                 </div>
               </div>
@@ -135,28 +90,19 @@ export const AirDCPPSettingsForm = (): ReactElement => {
             <div className="field is-grouped">
               <p className="control">
                 <button type="submit" className="button is-primary">
-                  {!isEmpty(initFormData) ? "Update" : "Save"}
+                  {!isEmpty(initialData) ? "Update" : "Save"}
+                </button>
+              </p>
+
+              <p className="control">
+                <button type="submit" className="button is-danger">
+                  {!isEmpty(initialData) && "Delete"}
                 </button>
               </p>
             </div>
           </form>
         )}
       />
-      {!isEmpty(airDCPPSettings.airDCPPState.socketConnectionInformation) ? (
-        <AirDCPPSettingsConfirmation
-          settings={airDCPPSettings.airDCPPState.socketConnectionInformation}
-        />
-      ) : null}
-
-      {!isEmpty(airDCPPSettings.airDCPPState.socketConnectionInformation) ? (
-        <p className="control mt-4">
-          <button className="button is-danger" onClick={removeSettings}>
-            Delete
-          </button>
-        </p>
-      ) : null}
     </>
   );
 };
-
-export default AirDCPPSettingsForm;

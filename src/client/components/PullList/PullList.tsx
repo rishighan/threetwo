@@ -2,7 +2,7 @@ import React, { ReactElement, useEffect, useMemo } from "react";
 import T2Table from "../shared/T2Table";
 import { getWeeklyPullList } from "../../actions/comicinfo.actions";
 import { useDispatch, useSelector } from "react-redux";
-import Card from "../Carda";
+import Card from "../shared/Carda";
 import ellipsize from "ellipsize";
 import { isNil } from "lodash";
 

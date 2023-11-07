@@ -3,24 +3,13 @@ import {
   SETTINGS_OBJECT_FETCHED,
   SETTINGS_CALL_IN_PROGRESS,
   SETTINGS_DB_FLUSH_SUCCESS,
-} from "../constants/action-types";
+  SETTINGS_QBITTORRENT_TORRENTS_LIST_FETCHED,
+} from "../reducers/settings.reducer";
 import {
   LIBRARY_SERVICE_BASE_URI,
   SETTINGS_SERVICE_BASE_URI,
+  QBITTORRENT_SERVICE_BASE_URI,
 } from "../constants/endpoints";
-
-export const saveSettings =
-  (settingsPayload, settingsObjectId?: string) => async (dispatch) => {
-    const result = await axios({
-      url: `${SETTINGS_SERVICE_BASE_URI}/saveSettings`,
-      method: "POST",
-      data: { settingsPayload, settingsObjectId },
-    });
-    dispatch({
-      type: SETTINGS_OBJECT_FETCHED,
-      data: result.data,
-    });
-  };
 
 export const getSettings = (settingsKey?) => async (dispatch) => {
   const result = await axios({
@@ -67,3 +56,22 @@ export const flushDb = () => async (dispatch) => {
     });
   }
 };
+
+export const getQBitTorrentClientInfo = (hostInfo) => async (dispatch) => {
+  await axios.request({
+    url: `${QBITTORRENT_SERVICE_BASE_URI}/connect`,
+    method: "POST",
+    data: hostInfo,
+  });
+  const qBittorrentClientInfo = await axios.request({
+    url: `${QBITTORRENT_SERVICE_BASE_URI}/getClientInfo`,
+    method: "GET",
+  });
+
+  dispatch({
+    type: SETTINGS_QBITTORRENT_TORRENTS_LIST_FETCHED,
+    data: qBittorrentClientInfo.data,
+  });
+};
+
+export const getProwlarrConnectionInfo = (hostInfo) => async (dispatch) => {};

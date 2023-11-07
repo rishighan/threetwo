@@ -3,8 +3,8 @@ import { Form, Field } from "react-final-form";
 import { useDispatch } from "react-redux";
 import { isEmpty, isNil, isUndefined } from "lodash";
 import Select from "react-select";
-import { saveSettings } from "../../actions/settings.actions";
-import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
+import { saveSettings } from "../../../actions/settings.actions";
+import { AirDCPPSocketContext } from "../../../context/AirDCPPSocket";
 
 export const AirDCPPHubsForm = (airDCPPClientUserSettings): ReactElement => {
   const dispatch = useDispatch();

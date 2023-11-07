@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import Card from "../Carda";
+import Card from "../shared/Carda";
 import { Link } from "react-router-dom";
 import ellipsize from "ellipsize";
 import { isEmpty, isNil, isUndefined, map } from "lodash";

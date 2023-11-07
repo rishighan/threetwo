@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getComicBooks } from "../../actions/fileops.actions";
 import { isNil, isEmpty, isUndefined } from "lodash";
 import Masonry from "react-masonry-css";
-import Card from "../Carda";
+import Card from "../shared/Carda";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
 import { Link } from "react-router-dom";
 import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";

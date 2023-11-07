@@ -37,6 +37,34 @@
             "displayName": "Additional Configuration"
           }
         ]
+      },
+      {
+        "id": "qbittorrent",
+        "displayName": "qBittorrent",
+        "children": [
+          {
+            "id": "qbt-connection",
+            "displayName": "Connection"
+          },
+          {
+            "id": "qbt-additional-configuration",
+            "displayName": "qbt-configuration"
+          }
+        ]
+      },
+      {
+        "id": "prowlarr",
+        "displayName": "Prowlarr",
+        "children": [
+          {
+            "id": "prowlarr-connection",
+            "displayName": "Connection"
+          },
+          {
+            "id": "prowlarr-additional-configuration",
+            "displayName": "prowlarr-configuration"
+          }
+        ]
       }
     ]
   },

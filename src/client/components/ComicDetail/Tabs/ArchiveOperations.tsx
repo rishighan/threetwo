@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { DnD } from "../../DnD";
+import { DnD } from "../../shared/Draggable/DnD";
 import { isEmpty } from "lodash";
 import Sticky from "react-stickynode";
 import SlidingPane from "react-sliding-pane";

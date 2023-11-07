@@ -84,3 +84,10 @@ export const JOB_QUEUE_SERVICE_BASE_URI = hostURIBuilder({
   port: "3000",
   apiPath: `/api/jobqueue`,
 });
+
+export const QBITTORRENT_SERVICE_BASE_URI = hostURIBuilder({
+  protocol: "http",
+  host: import.meta.env.UNDERLYING_HOSTNAME || "localhost",
+  port: "3060",
+  apiPath: `/api/qbittorrent`,
+});
