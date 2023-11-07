@@ -11,7 +11,7 @@ import { useStore } from "../../../store/index";
 export const AirDCPPSettingsForm = (): ReactElement => {
   // const airDCPPSettings = useContext(AirDCPPSocketContext);
   const airDCPPSettings = useStore((store) => store.airDCPPClientConfiguration);
-  console.log(airDCPPSettings);
+  console.log("chinnga", airDCPPSettings);
 
   const onSubmit = useCallback(async (values) => {
     try {
@@ -24,8 +24,8 @@ export const AirDCPPSettingsForm = (): ReactElement => {
     airDCPPSettings.setSettings({});
   }, []);
   //
-  const initFormData = !isUndefined(airDCPPSettings.airDCPPState.settings)
-    ? airDCPPSettings.airDCPPState.settings
+  const initFormData = !isUndefined(airDCPPSettings)
+    ? airDCPPSettings
     : {};
 
   return (

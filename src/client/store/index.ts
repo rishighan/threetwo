@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { isEmpty, isUndefined } from "lodash";
-import { useQuery, useMutation } from "@tanstack/react-query";
 import AirDCPPSocket from "../services/DcppSearchService";
 import axios from "axios";
 
@@ -55,10 +54,8 @@ const { data } = await axios({
 });
 
 const directConnectConfiguration = data?.directConnect.client.host;
-console.log(directConnectConfiguration);
 
 // 2. If available, init AirDC++ Socket with those settings
-
 if (!isEmpty(directConnectConfiguration)) {
   initializeAirDCPPSocket(directConnectConfiguration);
   setState({
