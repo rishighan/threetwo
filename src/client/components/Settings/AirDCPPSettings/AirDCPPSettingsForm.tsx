@@ -12,7 +12,7 @@ export const AirDCPPSettingsForm = (): ReactElement => {
   const {
     airDCPPSocketConnected,
     airDCPPDisconnectionInfo,
-    airDCPPSocketConnectionInformation,
+    airDCPPSessionInformation,
     airDCPPClientConfiguration,
     airDCPPSocketInstance,
   } = useStore(
@@ -20,8 +20,7 @@ export const AirDCPPSettingsForm = (): ReactElement => {
       airDCPPSocketConnected: state.airDCPPSocketConnected,
       airDCPPDisconnectionInfo: state.airDCPPDisconnectionInfo,
       airDCPPClientConfiguration: state.airDCPPClientConfiguration,
-      airDCPPSocketConnectionInformation:
-        state.airDCPPSocketConnectionInformation,
+      airDCPPSessionInformation: state.airDCPPSessionInformation,
       airDCPPSocketInstance: state.airDCPPSocketInstance,
     })),
   );
@@ -48,10 +47,8 @@ export const AirDCPPSettingsForm = (): ReactElement => {
         formHeading={"Configure AirDC++"}
       />
 
-      {!isEmpty(airDCPPSocketConnectionInformation) ? (
-        <AirDCPPSettingsConfirmation
-          settings={airDCPPSocketConnectionInformation}
-        />
+      {!isEmpty(airDCPPSessionInformation) ? (
+        <AirDCPPSettingsConfirmation settings={airDCPPSessionInformation} />
       ) : null}
 
       {!isEmpty(airDCPPClientConfiguration) ? (

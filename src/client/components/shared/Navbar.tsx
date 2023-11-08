@@ -1,9 +1,8 @@
-import React, { useContext } from "react";
+import React from "react";
 import { SearchBar } from "../GlobalSearchBar/SearchBar";
 import { DownloadProgressTick } from "../ComicDetail/DownloadProgressTick";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { isUndefined } from "lodash";
+import { isEmpty, isUndefined } from "lodash";
 import { format, fromUnixTime } from "date-fns";
 import { useStore } from "../../store/index";
 import { useShallow } from "zustand/react/shallow";
@@ -12,7 +11,8 @@ const Navbar: React.FunctionComponent = (props) => {
   const {
     airDCPPSocketConnected,
     airDCPPDisconnectionInfo,
-    airDCPPSocketConnectionInformation,
+    airDCPPSessionInformation,
+    airDCPPDownloadTick,
     airDCPPClientConfiguration,
     airDCPPSocketInstance,
   } = useStore(
@@ -20,43 +20,43 @@ const Navbar: React.FunctionComponent = (props) => {
       airDCPPSocketConnected: state.airDCPPSocketConnected,
       airDCPPDisconnectionInfo: state.airDCPPDisconnectionInfo,
       airDCPPClientConfiguration: state.airDCPPClientConfiguration,
-      airDCPPSocketConnectionInformation:
-        state.airDCPPSocketConnectionInformation,
+      airDCPPSessionInformation: state.airDCPPSessionInformation,
       airDCPPSocketInstance: state.airDCPPSocketInstance,
+      airDCPPDownloadTick: state.airDCPPDownloadTick,
     })),
   );
-  const downloadProgressTick = useSelector(
-    (state: RootState) => state.airdcpp.downloadProgressData,
-  );
-
-  const airDCPPSocketConnectionStatus = useSelector(
-    (state: RootState) => state.airdcpp.isAirDCPPSocketConnected,
-  );
-  const airDCPPSessionInfo = useSelector(
-    (state: RootState) => state.airdcpp.airDCPPSessionInfo,
-  );
-  const socketDisconnectionReason = useSelector(
-    (state: RootState) => state.airdcpp.socketDisconnectionReason,
-  );
+  //   const downloadProgressTick = useSelector(
+  //     (state: RootState) => state.airdcpp.downloadProgressData,
+  //   );
+  //
+  //   const airDCPPSocketConnectionStatus = useSelector(
+  //     (state: RootState) => state.airdcpp.isAirDCPPSocketConnected,
+  //   );
+  //   const airDCPPSessionInfo = useSelector(
+  //     (state: RootState) => state.airdcpp.airDCPPSessionInfo,
+  //   );
+  //   const socketDisconnectionReason = useSelector(
+  //     (state: RootState) => state.airdcpp.socketDisconnectionReason,
+  //   );
 
   // Import-related selector hooks
-  const successfulImportJobCount = useSelector(
-    (state: RootState) => state.fileOps.successfulJobCount,
-  );
-  const failedImportJobCount = useSelector(
-    (state: RootState) => state.fileOps.failedJobCount,
-  );
-
-  const lastQueueJob = useSelector(
-    (state: RootState) => state.fileOps.lastQueueJob,
-  );
-  const libraryQueueImportStatus = useSelector(
-    (state: RootState) => state.fileOps.LSQueueImportStatus,
-  );
-
-  const allImportJobResults = useSelector(
-    (state: RootState) => state.fileOps.importJobStatistics,
-  );
+  //   const successfulImportJobCount = useSelector(
+  //     (state: RootState) => state.fileOps.successfulJobCount,
+  //   );
+  //   const failedImportJobCount = useSelector(
+  //     (state: RootState) => state.fileOps.failedJobCount,
+  //   );
+  //
+  //   const lastQueueJob = useSelector(
+  //     (state: RootState) => state.fileOps.lastQueueJob,
+  //   );
+  //   const libraryQueueImportStatus = useSelector(
+  //     (state: RootState) => state.fileOps.LSQueueImportStatus,
+  //   );
+  //
+  //   const allImportJobResults = useSelector(
+  //     (state: RootState) => state.fileOps.importJobStatistics,
+  //   );
   return (
     <nav className="navbar is-fixed-top">
       <div className="navbar-brand">
@@ -106,7 +106,7 @@ const Navbar: React.FunctionComponent = (props) => {
             Downloads
           </Link>
 
-          <SearchBar />
+          {/* <SearchBar /> */}
 
           <Link to="/search" className="navbar-item">
             Search ComicVine
@@ -119,52 +119,22 @@ const Navbar: React.FunctionComponent = (props) => {
           <div className="navbar-item has-dropdown is-hoverable">
             <a className="navbar-link is-arrowless">
               <i className="fa-solid fa-download"></i>
-              {downloadProgressTick && <div className="pulsating-circle"></div>}
+              {!isEmpty(airDCPPDownloadTick) && (
+                <div className="pulsating-circle"></div>
+              )}
             </a>
-            {!isUndefined(downloadProgressTick) ? (
+            {!isEmpty(airDCPPDownloadTick) ? (
               <div className="navbar-dropdown is-right is-boxed">
                 <a className="navbar-item">
-                  <DownloadProgressTick data={downloadProgressTick} />
+                  <DownloadProgressTick data={airDCPPDownloadTick} />
                 </a>
               </div>
             ) : null}
           </div>
 
-          {!isUndefined(libraryQueueImportStatus) &&
-          location.hash !== "#/import" ? (
-            <div className="navbar-item has-dropdown is-hoverable">
-              <a className="navbar-link is-arrowless">
-                <i className="fa-solid fa-file-import has-text-warning-dark"></i>
-              </a>
-
-              <div className="navbar-dropdown is-right is-boxed">
-                <a className="navbar-item">
-                  <ul>
-                    {successfulImportJobCount > 0 ? (
-                      <li className="mb-2">
-                        <span className="tag is-success mr-2">
-                          {successfulImportJobCount}
-                        </span>
-                        imported.
-                      </li>
-                    ) : null}
-                    {failedImportJobCount > 0 ? (
-                      <li>
-                        <span className="tag is-danger mr-2">
-                          {failedImportJobCount}
-                        </span>
-                        failed to import.
-                      </li>
-                    ) : null}
-                  </ul>
-                </a>
-              </div>
-            </div>
-          ) : null}
-
           {/* AirDC++ socket connection status */}
           <div className="navbar-item has-dropdown is-hoverable">
-            {airDCPPSocketConnectionStatus ? (
+            {airDCPPSocketConnected ? (
               <>
                 <a className="navbar-link is-arrowless has-text-success">
                   <i className="fa-solid fa-bolt"></i>
@@ -176,7 +146,7 @@ const Navbar: React.FunctionComponent = (props) => {
                     Last login was{" "}
                     <span className="tag">
                       {format(
-                        fromUnixTime(airDCPPSessionInfo.user.last_login),
+                        fromUnixTime(airDCPPSessionInformation.user.last_login),
                         "dd MMMM, yyyy",
                       )}
                     </span>
@@ -184,15 +154,15 @@ const Navbar: React.FunctionComponent = (props) => {
                   <hr className="navbar-divider" />
                   <p>
                     <span className="tag has-text-success">
-                      {airDCPPSessionInfo.user.username}
+                      {airDCPPSessionInformation.user.username}
                     </span>
                     connected to{" "}
                     <span className="tag has-text-success">
-                      {airDCPPSessionInfo.system_info.client_version}
+                      {airDCPPSessionInformation.system_info.client_version}
                     </span>{" "}
                     with session ID{" "}
                     <span className="tag has-text-success">
-                      {airDCPPSessionInfo.session_id}
+                      {airDCPPSessionInformation.session_id}
                     </span>
                   </p>
 
@@ -205,9 +175,7 @@ const Navbar: React.FunctionComponent = (props) => {
                   <i className="fa-solid fa-bolt"></i>
                 </a>
                 <div className="navbar-dropdown pr-2 pl-2 is-right is-boxed">
-                  <pre>
-                    {JSON.stringify(socketDisconnectionReason, null, 2)}
-                  </pre>
+                  <pre>{JSON.stringify(airDCPPDisconnectionInfo, null, 2)}</pre>
                 </div>
               </>
             )}

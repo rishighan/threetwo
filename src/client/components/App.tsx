@@ -10,6 +10,7 @@ import VolumeDetail from "./VolumeDetail/VolumeDetail";
 import Downloads from "./Downloads/Downloads";
 
 import { Routes, Route } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import Navbar from "./shared/Navbar";
 import "../assets/scss/App.scss";
 
@@ -46,7 +47,12 @@ export const App = (): ReactElement => {
   //     });
   //   }
   // }, []);
-  return <>{/* <Navbar /> */}</>;
+  return (
+    <>
+      <Navbar />
+      <Outlet />
+    </>
+  );
 };
 
 export default App;

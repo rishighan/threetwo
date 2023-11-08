@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import App from "./components/App";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Settings from "./components/Settings/Settings";
+import { ErrorPage } from "./components/shared/ErrorPage";
 const rootEl = document.getElementById("root");
 const root = createRoot(rootEl);
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -15,10 +16,8 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-  },
-  {
-    path: "/settings",
-    element: <Settings />,
+    errorElement: <ErrorPage />,
+    children: [{ path: "settings", element: <Settings /> }],
   },
 ]);
 

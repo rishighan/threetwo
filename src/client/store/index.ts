@@ -9,7 +9,7 @@ export const useStore = create((set, get) => ({
   airDCPPSocketConnected: false,
   airDCPPDisconnectionInfo: {},
   airDCPPClientConfiguration: {},
-  airDCPPSocketConnectionInformation: {},
+  airDCPPSessionInformation: {},
   setAirDCPPSocketConnectionStatus: () =>
     set((value) => ({
       airDCPPSocketConnected: value,
@@ -54,10 +54,9 @@ const initializeAirDCPPSocket = async (configuration): Promise<any> => {
   };
   // AirDC++ Socket-related connection and post-connection
   // Attempt connection
-  const airDCPPSocketConnectionInformation =
-    await initializedAirDCPPSocket.connect();
+  const airDCPPSessionInformation = await initializedAirDCPPSocket.connect();
   setState({
-    airDCPPSocketConnectionInformation,
+    airDCPPSessionInformation,
   });
 
   // Set up event listeners
