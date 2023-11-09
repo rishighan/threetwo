@@ -1,5 +1,4 @@
 import React, { ReactElement, useCallback, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import {
   fetchComicBookMetadata,
   getImportJobResultStatistics,
@@ -9,6 +8,10 @@ import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import { format } from "date-fns";
 import Loader from "react-loader-spinner";
 import { isEmpty, isNil, isUndefined } from "lodash";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useStore } from "../../store";
+import { useShallow } from "zustand/react/shallow";
+import axios from "axios";
 
 interface IProps {
   matches?: unknown;
@@ -31,41 +34,62 @@ interface IProps {
  */
 
 export const Import = (props: IProps): ReactElement => {
-  const dispatch = useDispatch();
-  const successfulImportJobCount = useSelector(
-    (state: RootState) => state.fileOps.successfulJobCount,
+  const { importJobQueue, socketIOInstance } = useStore(
+    useShallow((state) => ({
+      importJobQueue: state.importJobQueue,
+      socketIOInstance: state.socketIOInstance,
+    })),
   );
-  const failedImportJobCount = useSelector(
-    (state: RootState) => state.fileOps.failedJobCount,
-  );
+  //   const successfulImportJobCount = useSelector(
+  //     (state: RootState) => state.fileOps.successfulJobCount,
+  //   );
+  //   const failedImportJobCount = useSelector(
+  //     (state: RootState) => state.fileOps.failedJobCount,
+  //   );
+  //
+  //   const lastQueueJob = useSelector(
+  //     (state: RootState) => state.fileOps.lastQueueJob,
+  //   );
+  //   const libraryQueueImportStatus = useSelector(
+  //     (state: RootState) => state.fileOps.LSQueueImportStatus,
+  //   );
+  //
+  //   const allImportJobResults = useSelector(
+  //     (state: RootState) => state.fileOps.importJobStatistics,
+  //   );
 
-  const lastQueueJob = useSelector(
-    (state: RootState) => state.fileOps.lastQueueJob,
-  );
-  const libraryQueueImportStatus = useSelector(
-    (state: RootState) => state.fileOps.LSQueueImportStatus,
-  );
+  const sessionId = localStorage.getItem("sessionId");
+  const { mutate: initiateImport } = useMutation({
+    mutationFn: async () =>
+      await axios.request({
+        url: `http://localhost:3000/api/library/newImport`,
+        method: "POST",
+        data: { sessionId },
+      }),
+  });
 
-  const allImportJobResults = useSelector(
-    (state: RootState) => state.fileOps.importJobStatistics,
-  );
-
-  const initiateImport = useCallback(() => {
-    if (typeof props.path !== "undefined") {
-      dispatch(fetchComicBookMetadata(props.path));
-    }
-  }, [dispatch]);
-
+  // Act on each comic issue successfully imported, as indicated
+  // by the LS_COVER_EXTRACTED event
+  socketIOInstance.on("LS_COVER_EXTRACTED", (data) => {
+    const { completedJobCount } = data;
+    importJobQueue.setJobCount("successful", completedJobCount);
+  });
+  socketIOInstance.on("LS_COVER_EXTRACTION_FAILED", (data) => {
+    console.log(data);
+    const { failedJobCount } = data;
+    importJobQueue.setJobCount("failed", failedJobCount);
+  });
   const toggleQueue = useCallback(
     (queueAction: string, queueStatus: string) => {
-      dispatch(setQueueControl(queueAction, queueStatus));
+      // dispatch(setQueueControl(queueAction, queueStatus));
     },
     [],
   );
   useEffect(() => {
-    dispatch(getImportJobResultStatistics());
+    // dispatch(getImportJobResultStatistics());
   }, []);
 
+  const libraryQueueImportStatus = undefined;
   const renderQueueControls = (status: string): ReactElement | null => {
     switch (status) {
       case "running":
@@ -128,7 +152,7 @@ export const Import = (props: IProps): ReactElement => {
                 ? "button is-medium"
                 : "button is-loading is-medium"
             }
-            onClick={initiateImport}
+            onClick={() => initiateImport()}
           >
             <span className="icon">
               <i className="fas fa-file-import"></i>
@@ -136,60 +160,58 @@ export const Import = (props: IProps): ReactElement => {
             <span>Start Import</span>
           </button>
         </p>
-        {libraryQueueImportStatus !== "drained" &&
-          !isUndefined(libraryQueueImportStatus) && (
-            <>
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Completed Jobs</th>
-                    <th>Failed Jobs</th>
-                    <th>Queue Controls</th>
-                    <th>Queue Status</th>
-                  </tr>
-                </thead>
 
-                <tbody>
-                  <tr>
-                    <th>
-                      {successfulImportJobCount > 0 && (
-                        <div className="box has-background-success-light has-text-centered">
-                          <span className="is-size-2 has-text-weight-bold">
-                            {successfulImportJobCount}
-                          </span>
-                        </div>
-                      )}
-                    </th>
-                    <td>
-                      {failedImportJobCount > 0 && (
-                        <div className="box has-background-danger has-text-centered">
-                          <span className="is-size-2 has-text-weight-bold">
-                            {failedImportJobCount}
-                          </span>
-                        </div>
-                      )}
-                    </td>
+        <>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Completed Jobs</th>
+                <th>Failed Jobs</th>
+                <th>Queue Controls</th>
+                <th>Queue Status</th>
+              </tr>
+            </thead>
 
-                    <td>{renderQueueControls(libraryQueueImportStatus)}</td>
+            <tbody>
+              <tr>
+                <th>
+                  {importJobQueue.successfulJobCount > 0 && (
+                    <div className="box has-background-success-light has-text-centered">
+                      <span className="is-size-2 has-text-weight-bold">
+                        {importJobQueue.successfulJobCount}
+                      </span>
+                    </div>
+                  )}
+                </th>
+                <td>
+                  {importJobQueue.failedJobCount > 0 && (
+                    <div className="box has-background-danger has-text-centered">
+                      <span className="is-size-2 has-text-weight-bold">
+                        {importJobQueue.failedJobCount}
+                      </span>
+                    </div>
+                  )}
+                </td>
+
+                {/* <td>{renderQueueControls(libraryQueueImportStatus)}</td>
                     <td>
                       {libraryQueueImportStatus !== undefined ? (
                         <span className="tag is-warning">
                           {libraryQueueImportStatus}
                         </span>
                       ) : null}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              Imported{" "}
-              <span className="has-text-weight-bold">{lastQueueJob}</span>
-            </>
-          )}
+                    </td> */}
+              </tr>
+            </tbody>
+          </table>
+          Imported{" "}
+          {/* <span className="has-text-weight-bold">{lastQueueJob}</span> */}
+        </>
 
         {/* Past imports */}
 
         <h3 className="subtitle is-4 mt-5">Past Imports</h3>
-        <table className="table">
+        {/* <table className="table">
           <thead>
             <tr>
               <th>Time Started</th>
@@ -228,7 +250,7 @@ export const Import = (props: IProps): ReactElement => {
               );
             })}
           </tbody>
-        </table>
+        </table> */}
       </section>
     </div>
   );

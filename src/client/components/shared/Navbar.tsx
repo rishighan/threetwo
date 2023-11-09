@@ -13,15 +13,11 @@ const Navbar: React.FunctionComponent = (props) => {
     airDCPPDisconnectionInfo,
     airDCPPSessionInformation,
     airDCPPDownloadTick,
-    airDCPPClientConfiguration,
-    airDCPPSocketInstance,
   } = useStore(
     useShallow((state) => ({
       airDCPPSocketConnected: state.airDCPPSocketConnected,
       airDCPPDisconnectionInfo: state.airDCPPDisconnectionInfo,
-      airDCPPClientConfiguration: state.airDCPPClientConfiguration,
       airDCPPSessionInformation: state.airDCPPSessionInformation,
-      airDCPPSocketInstance: state.airDCPPSocketInstance,
       airDCPPDownloadTick: state.airDCPPDownloadTick,
     })),
   );

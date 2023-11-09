@@ -9,6 +9,7 @@ const rootEl = document.getElementById("root");
 const root = createRoot(rootEl);
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import Import from "./components/Import/Import";
 
 const queryClient = new QueryClient();
 
@@ -17,7 +18,10 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     errorElement: <ErrorPage />,
-    children: [{ path: "settings", element: <Settings /> }],
+    children: [
+      { path: "settings", element: <Settings /> },
+      { path: "import", element: <Import path={"./comics"} /> },
+    ],
   },
 ]);
 

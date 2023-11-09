@@ -1,5 +1,8 @@
 import { create } from "zustand";
 import { isEmpty } from "lodash";
+import io from "socket.io-client";
+import { SOCKET_BASE_URI } from "../constants/endpoints";
+import { produce } from "immer";
 import AirDCPPSocket from "../services/DcppSearchService";
 import axios from "axios";
 
@@ -14,14 +17,48 @@ export const useStore = create((set, get) => ({
     set((value) => ({
       airDCPPSocketConnected: value,
     })),
-  getAirDCPPConnectionStatus: () => {
-    const airDCPPSocketConnectionStatus = get().airDCPPSocketConnected;
-  },
   airDCPPDownloadTick: {},
   // Socket.io state
+  socketIOInstance: {},
+
+  // Import job results
+  importJobQueue: {
+    successfulJobCount: 0,
+    failedJobCount: 0,
+    setJobCount: (jobType: string, count: Number) => {
+      switch (jobType) {
+        case "successful":
+          set(
+            produce((state) => {
+              state.importJobQueue.successfulJobCount = count;
+            }),
+          );
+          break;
+
+        case "failed":
+          set(
+            produce((state) => {
+              state.importJobQueue.failedJobCount = count;
+            }),
+          );
+          break;
+      }
+    },
+  },
 }));
 
 const { getState, setState } = useStore;
+
+// socket.io instantiation
+const sessionId = localStorage.getItem("sessionId");
+const socketIOInstance = io(SOCKET_BASE_URI, {
+  transports: ["websocket"],
+  withCredentials: true,
+  query: { sessionId },
+});
+setState({
+  socketIOInstance,
+});
 
 /**
  * Method to init AirDC++ Socket with supplied settings

@@ -38,7 +38,11 @@ export const Settings = (props: ISettingsProps): ReactElement => {
     },
     {
       id: "flushdb",
-      content: <div key="flushdb">{/* <SystemSettingsForm /> */}</div>,
+      content: (
+        <div key="flushdb">
+          <SystemSettingsForm />
+        </div>
+      ),
     },
   ];
   return (
