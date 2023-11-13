@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { isEmpty } from "lodash";
+import { isEmpty, isNil } from "lodash";
 import io from "socket.io-client";
 import { SOCKET_BASE_URI } from "../constants/endpoints";
 import { produce } from "immer";
@@ -49,8 +49,9 @@ export const useStore = create((set, get) => ({
 
 const { getState, setState } = useStore;
 
-// socket.io instantiation
+// Fetch sessionId from localStorage
 const sessionId = localStorage.getItem("sessionId");
+// socket.io instantiation
 const socketIOInstance = io(SOCKET_BASE_URI, {
   transports: ["websocket"],
   withCredentials: true,
@@ -59,6 +60,23 @@ const socketIOInstance = io(SOCKET_BASE_URI, {
 setState({
   socketIOInstance,
 });
+
+if (!isNil(sessionId)) {
+  // Resume the session
+  socketIOInstance.emit(
+    "call",
+    "socket.resumeSession",
+    {
+      session: { sessionId },
+    },
+    (data) => console.log(data),
+  );
+} else {
+  // Inititalize the session and persist the sessionId to localStorage
+  socketIOInstance.on("sessionInitialized", (sessionId) => {
+    localStorage.setItem("sessionId", sessionId);
+  });
+}
 
 /**
  * Method to init AirDC++ Socket with supplied settings
