@@ -21,7 +21,7 @@ interface IProps {
 }
 
 /**
- * Returns the average of two numbers.
+ * Component to facilitate comics.
  *
  * @remarks
  * This method is part of the {@link core-library#Statistics | Statistics subsystem}.
@@ -75,22 +75,24 @@ export const Import = (props: IProps): ReactElement => {
   //      LS_IMPORT_QUEUE_DRAINED event
   socketIOInstance.on("LS_IMPORT_QUEUE_DRAINED", (data) => {
     localStorage.removeItem("sessionId");
+    importJobQueue.setStatus("drained");
   });
-  const toggleQueue = useCallback(
-    (queueAction: string, queueStatus: string) => {
-      // dispatch(setQueueControl(queueAction, queueStatus));
-      socketIOInstance.emit("call", "socket.setQueueStatus", {
+  const toggleQueue = (queueAction: string, queueStatus: string) => {
+    socketIOInstance.emit(
+      "call",
+      "socket.setQueueStatus",
+      {
         queueAction,
         queueStatus,
-      });
-    },
-    [],
-  );
+      },
+      (data) => console.log(data),
+    );
+  };
+
   useEffect(() => {
     // dispatch(getImportJobResultStatistics());
   }, []);
 
-  const libraryQueueImportStatus = undefined;
   const renderQueueControls = (status: string): ReactElement | null => {
     switch (status) {
       case "running":
@@ -98,7 +100,10 @@ export const Import = (props: IProps): ReactElement => {
           <div className="control">
             <button
               className="button is-warning is-light"
-              onClick={() => toggleQueue("pause", "paused")}
+              onClick={() => {
+                toggleQueue("pause", "paused");
+                importJobQueue.setStatus("paused");
+              }}
             >
               <i className="fa-solid fa-pause mr-2"></i> Pause
             </button>
@@ -109,7 +114,10 @@ export const Import = (props: IProps): ReactElement => {
           <div className="control">
             <button
               className="button is-success is-light"
-              onClick={() => toggleQueue("resume", "running")}
+              onClick={() => {
+                toggleQueue("resume", "running");
+                importJobQueue.setStatus("running");
+              }}
             >
               <i className="fa-solid fa-play mr-2"></i> Resume
             </button>
@@ -148,12 +156,15 @@ export const Import = (props: IProps): ReactElement => {
         <p className="buttons">
           <button
             className={
-              libraryQueueImportStatus === "drained" ||
-              libraryQueueImportStatus === undefined
+              importJobQueue.status === "drained" ||
+              importJobQueue.status === undefined
                 ? "button is-medium"
                 : "button is-loading is-medium"
             }
-            onClick={() => initiateImport()}
+            onClick={() => {
+              initiateImport();
+              importJobQueue.setStatus("running");
+            }}
           >
             <span className="icon">
               <i className="fas fa-file-import"></i>
@@ -194,14 +205,14 @@ export const Import = (props: IProps): ReactElement => {
                   )}
                 </td>
 
-                {/* <td>{renderQueueControls(libraryQueueImportStatus)}</td>
-                    <td>
-                      {libraryQueueImportStatus !== undefined ? (
-                        <span className="tag is-warning">
-                          {libraryQueueImportStatus}
-                        </span>
-                      ) : null}
-                    </td> */}
+                <td>{renderQueueControls(importJobQueue.status)}</td>
+                <td>
+                  {importJobQueue.status !== undefined ? (
+                    <span className="tag is-warning">
+                      {importJobQueue.status}
+                    </span>
+                  ) : null}
+                </td>
               </tr>
             </tbody>
           </table>

@@ -25,6 +25,13 @@ export const useStore = create((set, get) => ({
   importJobQueue: {
     successfulJobCount: 0,
     failedJobCount: 0,
+    status: undefined,
+    setStatus: (status: string) =>
+      set(
+        produce((state) => {
+          state.importJobQueue.status = status;
+        }),
+      ),
     setJobCount: (jobType: string, count: Number) => {
       switch (jobType) {
         case "successful":
