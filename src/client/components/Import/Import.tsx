@@ -79,6 +79,10 @@ export const Import = (props: IProps): ReactElement => {
   const toggleQueue = useCallback(
     (queueAction: string, queueStatus: string) => {
       // dispatch(setQueueControl(queueAction, queueStatus));
+      socketIOInstance.emit("call", "socket.setQueueStatus", {
+        queueAction,
+        queueStatus,
+      });
     },
     [],
   );
