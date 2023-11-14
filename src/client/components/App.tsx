@@ -22,13 +22,6 @@ import {
   LS_SINGLE_IMPORT,
 } from "../constants/action-types";
 
-/**
- * Method that initializes an AirDC++ socket connection
- * 1. Initializes event listeners for download init, tick and complete events
- * 2. Handles errors in case the connection to AirDC++ is not established or terminated
- * @returns void
- */
-
 export const App = (): ReactElement => {
   // useEffect(() => {
   //   // Check if there is a sessionId in localStorage

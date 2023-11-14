@@ -21,7 +21,7 @@ export const useStore = create((set, get) => ({
   // Socket.io state
   socketIOInstance: {},
 
-  // Import job results
+  // Import job queue and associated statuses
   importJobQueue: {
     successfulJobCount: 0,
     failedJobCount: 0,
@@ -43,6 +43,14 @@ export const useStore = create((set, get) => ({
           );
           break;
       }
+    },
+    mostRecentImport: null,
+    setMostRecentImport: (fileName: string) => {
+      set(
+        produce((state) => {
+          state.importJobQueue.mostRecentImport = fileName;
+        }),
+      );
     },
   },
 }));
@@ -67,7 +75,7 @@ if (!isNil(sessionId)) {
     "call",
     "socket.resumeSession",
     {
-      session: { sessionId },
+      sessionId,
     },
     (data) => console.log(data),
   );

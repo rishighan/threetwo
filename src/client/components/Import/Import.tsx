@@ -40,16 +40,7 @@ export const Import = (props: IProps): ReactElement => {
       socketIOInstance: state.socketIOInstance,
     })),
   );
-  //   const successfulImportJobCount = useSelector(
-  //     (state: RootState) => state.fileOps.successfulJobCount,
-  //   );
-  //   const failedImportJobCount = useSelector(
-  //     (state: RootState) => state.fileOps.failedJobCount,
-  //   );
-  //
-  //   const lastQueueJob = useSelector(
-  //     (state: RootState) => state.fileOps.lastQueueJob,
-  //   );
+
   //   const libraryQueueImportStatus = useSelector(
   //     (state: RootState) => state.fileOps.LSQueueImportStatus,
   //   );
@@ -68,16 +59,22 @@ export const Import = (props: IProps): ReactElement => {
       }),
   });
 
-  // Act on each comic issue successfully imported, as indicated
-  // by the LS_COVER_EXTRACTED event
+  // 1a.  Act on each comic issue successfully imported/failed, as indicated
+  //      by the LS_COVER_EXTRACTED/LS_COVER_EXTRACTION_FAILED events
   socketIOInstance.on("LS_COVER_EXTRACTED", (data) => {
-    const { completedJobCount } = data;
+    const { completedJobCount, importResult } = data;
     importJobQueue.setJobCount("successful", completedJobCount);
+    importJobQueue.setMostRecentImport(importResult.rawFileDetails.name);
   });
   socketIOInstance.on("LS_COVER_EXTRACTION_FAILED", (data) => {
-    console.log(data);
     const { failedJobCount } = data;
     importJobQueue.setJobCount("failed", failedJobCount);
+  });
+
+  // 1b.  Clear the localStorage sessionId upon receiving the
+  //      LS_IMPORT_QUEUE_DRAINED event
+  socketIOInstance.on("LS_IMPORT_QUEUE_DRAINED", (data) => {
+    localStorage.removeItem("sessionId");
   });
   const toggleQueue = useCallback(
     (queueAction: string, queueStatus: string) => {
@@ -205,7 +202,9 @@ export const Import = (props: IProps): ReactElement => {
             </tbody>
           </table>
           Imported{" "}
-          {/* <span className="has-text-weight-bold">{lastQueueJob}</span> */}
+          <span className="has-text-weight-bold">
+            {importJobQueue.mostRecentImport}
+          </span>
         </>
 
         {/* Past imports */}

@@ -56,7 +56,7 @@ const Navbar: React.FunctionComponent = (props) => {
   return (
     <nav className="navbar is-fixed-top">
       <div className="navbar-brand">
-        <Link to="/" className="navbar-item">
+        <Link to="/dashboard" className="navbar-item">
           <img
             src="/src/client/assets/img/threetwo.svg"
             alt="ThreeTwo! A comic book curator"
