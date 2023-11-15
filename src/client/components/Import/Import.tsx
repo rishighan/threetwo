@@ -3,7 +3,7 @@ import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import { format } from "date-fns";
 import Loader from "react-loader-spinner";
 import { isEmpty, isNil, isUndefined } from "lodash";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
 import axios from "axios";
@@ -26,6 +26,7 @@ interface IProps {
  */
 
 export const Import = (props: IProps): ReactElement => {
+  const queryClient = useQueryClient();
   const { importJobQueue, socketIOInstance } = useStore(
     useShallow((state) => ({
       importJobQueue: state.importJobQueue,
@@ -69,6 +70,7 @@ export const Import = (props: IProps): ReactElement => {
   socketIOInstance.on("LS_IMPORT_QUEUE_DRAINED", (data) => {
     localStorage.removeItem("sessionId");
     importJobQueue.setStatus("drained");
+    queryClient.invalidateQueries({ queryKey: ["allImportJobResults"] });
   });
   const toggleQueue = (queueAction: string, queueStatus: string) => {
     socketIOInstance.emit(
