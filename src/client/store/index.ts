@@ -6,6 +6,11 @@ import { produce } from "immer";
 import AirDCPPSocket from "../services/DcppSearchService";
 import axios from "axios";
 
+/*  Broadly, this file sets up:
+ *    1. The zustand-based global client state
+ *    2. socket.io client
+ *    3. AirDC++ websocket connection
+ */
 export const useStore = create((set, get) => ({
   // AirDC++ state
   airDCPPSocketInstance: {},
@@ -28,24 +33,24 @@ export const useStore = create((set, get) => ({
     status: undefined,
     setStatus: (status: string) =>
       set(
-        produce((state) => {
-          state.importJobQueue.status = status;
+        produce((draftState) => {
+          draftState.importJobQueue.status = status;
         }),
       ),
     setJobCount: (jobType: string, count: Number) => {
       switch (jobType) {
         case "successful":
           set(
-            produce((state) => {
-              state.importJobQueue.successfulJobCount = count;
+            produce((draftState) => {
+              draftState.importJobQueue.successfulJobCount = count;
             }),
           );
           break;
 
         case "failed":
           set(
-            produce((state) => {
-              state.importJobQueue.failedJobCount = count;
+            produce((draftState) => {
+              draftState.importJobQueue.failedJobCount = count;
             }),
           );
           break;
@@ -64,20 +69,23 @@ export const useStore = create((set, get) => ({
 
 const { getState, setState } = useStore;
 
-// Fetch sessionId from localStorage
+// Socket.IO initialization
+// 1. Fetch sessionId from localStorage
 const sessionId = localStorage.getItem("sessionId");
-// socket.io instantiation
+// 2. socket.io instantiation
 const socketIOInstance = io(SOCKET_BASE_URI, {
   transports: ["websocket"],
   withCredentials: true,
   query: { sessionId },
 });
+// 3. Set the instance in global state
 setState({
   socketIOInstance,
 });
 
+// Socket.io-based session restoration
 if (!isNil(sessionId)) {
-  // Resume the session
+  // 1. Resume the session
   socketIOInstance.emit(
     "call",
     "socket.resumeSession",
@@ -87,11 +95,24 @@ if (!isNil(sessionId)) {
     (data) => console.log(data),
   );
 } else {
-  // Inititalize the session and persist the sessionId to localStorage
+  // 1. Inititalize the session and persist the sessionId to localStorage
   socketIOInstance.on("sessionInitialized", (sessionId) => {
     localStorage.setItem("sessionId", sessionId);
   });
 }
+// 2. If a job is in progress, restore the job counts and persist those to global state
+socketIOInstance.on("RESTORE_JOB_COUNTS_AFTER_SESSION_RESTORATION", (data) => {
+  console.log("Active import in progress detected; restoring counts...");
+  const { completedJobCount, failedJobCount, queueStatus } = data;
+  setState((state) => ({
+    importJobQueue: {
+      ...state.importJobQueue,
+      successfulJobCount: completedJobCount,
+      failedJobCount,
+      status: queueStatus,
+    },
+  }));
+});
 
 /**
  * Method to init AirDC++ Socket with supplied settings

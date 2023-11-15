@@ -81,7 +81,13 @@ export const Import = (props: IProps): ReactElement => {
       (data) => console.log(data),
     );
   };
-
+  /**
+   * Method to render import job queue pause/resume controls on the UI
+   *
+   * @param status The `string` status (either `"pause"` or `"resume"`)
+   * @returns ReactElement A `<button/>` that toggles queue status
+   * @remarks Sets the global `importJobQueue.status` state upon toggling
+   */
   const renderQueueControls = (status: string): ReactElement | null => {
     switch (status) {
       case "running":
