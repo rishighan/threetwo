@@ -1,4 +1,10 @@
-import React, { useMemo, ReactElement, useCallback, useEffect } from "react";
+import React, {
+  useMemo,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { isEmpty, isNil, isUndefined } from "lodash";
@@ -6,7 +12,7 @@ import MetadataPanel from "../shared/MetadataPanel";
 import T2Table from "../shared/T2Table";
 import { searchIssue } from "../../actions/fileops.actions";
 import ellipsize from "ellipsize";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import axios from "axios";
 
 /**
@@ -17,29 +23,31 @@ import axios from "axios";
  * <Library />
  */
 export const Library = (): ReactElement => {
-  // const searchResults = useSelector(
-  //   (state: RootState) => state.fileOps.libraryComics,
-  // );
-  // const searchError = useSelector(
-  //   (state: RootState) => state.fileOps.librarySearchError,
-  // );
-  // const dispatch = useDispatch();
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["comics"],
-    queryFn: async () =>
-      axios({
-        method: "POST",
-        url: "http://localhost:3000/api/search/searchIssue",
-        data: {
-          query: {},
-          pagination: {
-            size: 15,
-            from: 0,
-          },
-          type: "all",
-        },
-      }),
+  // Default page state
+  // 15 issues per page, offset: 0
+  const [page, setPage] = useState(0);
+  // Method to fetch paginated issues
+  const fetchIssues = async (searchQuery, page, type) => {
+    let pagination = {
+      size: 15,
+      from: page,
+    };
+    return await axios({
+      method: "POST",
+      url: "http://localhost:3000/api/search/searchIssue",
+      data: {
+        searchQuery,
+        pagination,
+        type,
+      },
+    });
+  };
+  const { data, isLoading, isError, isPlaceholderData } = useQuery({
+    queryKey: ["comics", page],
+    queryFn: () => fetchIssues({}, page, "all"),
+    placeholderData: keepPreviousData,
   });
+
   const searchResults = data?.data;
   console.log(searchResults);
   // programatically navigate to comic detail
@@ -159,23 +167,11 @@ export const Library = (): ReactElement => {
    * @returns void
    *
    **/
-  const nextPage = useCallback((pageIndex: number, pageSize: number) => {
-    // dispatch(
-    //   searchIssue(
-    //     {
-    //       query: {},
-    //     },
-    //     {
-    //       pagination: {
-    //         size: pageSize,
-    //         from: pageSize * pageIndex + 1,
-    //       },
-    //       type: "all",
-    //       trigger: "libraryPage",
-    //     },
-    //   ),
-    // );
-  }, []);
+  const nextPage = (pageIndex: number, pageSize: number) => {
+    if (!isPlaceholderData) {
+      setPage(pageSize * pageIndex + 1);
+    }
+  };
 
   /**
    * Pagination control that fetches the previous x (pageSize) items
@@ -184,29 +180,15 @@ export const Library = (): ReactElement => {
    * @param {number} pageSize
    * @returns void
    **/
-  const previousPage = useCallback((pageIndex: number, pageSize: number) => {
+  const previousPage = (pageIndex: number, pageSize: number) => {
     let from = 0;
     if (pageIndex === 2) {
-      from = (pageIndex - 1) * pageSize + 2 - 17;
+      from = (pageIndex - 1) * pageSize + 2 - (pageSize + 2);
     } else {
-      from = (pageIndex - 1) * pageSize + 2 - 16;
+      from = (pageIndex - 1) * pageSize + 2 - (pageSize + 1);
     }
-    // dispatch(
-    //   searchIssue(
-    //     {
-    //       query: {},
-    //     },
-    //     {
-    //       pagination: {
-    //         size: pageSize,
-    //         from,
-    //       },
-    //       type: "all",
-    //       trigger: "libraryPage",
-    //     },
-    //   ),
-    // );
-  }, []);
+    setPage(from);
+  };
 
   // ImportStatus.propTypes = {
   //   value: PropTypes.bool.isRequired,
@@ -217,13 +199,13 @@ export const Library = (): ReactElement => {
         <div className="header-area">
           <h1 className="title">Library</h1>
         </div>
-        {!isUndefined(searchResults?.data?.data) ? (
+        {!isUndefined(searchResults) ? (
           <div>
             <div className="library">
               <T2Table
-                totalPages={searchResults.total.value}
+                totalPages={searchResults.hits.total.value}
                 columns={columns}
-                sourceData={searchResults?.hits}
+                sourceData={searchResults?.hits.hits}
                 rowClickHandler={navigateToComicDetail}
                 paginationHandlers={{
                   nextPage,
@@ -242,14 +224,14 @@ export const Library = (): ReactElement => {
                   back.
                 </div>
               </article>
-              <pre>
+              {/* <pre>
                 {!isUndefined(searchResults?.code === 404 && !isLoading) &&
                   JSON.stringify(
-                    searchResults.data.meta.body.error.root_cause,
+                    searchResults.meta.body.error.root_cause,
                     null,
                     4,
                   )}
-              </pre>
+              </pre> */}
             </div>
           </div>
         )}
