@@ -4,9 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { isEmpty, isNil, isUndefined } from "lodash";
 import MetadataPanel from "../shared/MetadataPanel";
 import T2Table from "../shared/T2Table";
-import { useDispatch, useSelector } from "react-redux";
 import { searchIssue } from "../../actions/fileops.actions";
 import ellipsize from "ellipsize";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 /**
  * Component that tabulates the contents of the user's ThreeTwo Library.
@@ -16,29 +17,31 @@ import ellipsize from "ellipsize";
  * <Library />
  */
 export const Library = (): ReactElement => {
-  const searchResults = useSelector(
-    (state: RootState) => state.fileOps.libraryComics,
-  );
-  const searchError = useSelector((state: RootState) => state.fileOps.librarySearchError);
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(
-      searchIssue(
-        {
+  // const searchResults = useSelector(
+  //   (state: RootState) => state.fileOps.libraryComics,
+  // );
+  // const searchError = useSelector(
+  //   (state: RootState) => state.fileOps.librarySearchError,
+  // );
+  // const dispatch = useDispatch();
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["comics"],
+    queryFn: async () =>
+      axios({
+        method: "POST",
+        url: "http://localhost:3000/api/search/searchIssue",
+        data: {
           query: {},
-        },
-        {
           pagination: {
             size: 15,
             from: 0,
           },
           type: "all",
-          trigger: "libraryPage",
         },
-      ),
-    );
-  }, []);
-
+      }),
+  });
+  const searchResults = data?.data;
+  console.log(searchResults);
   // programatically navigate to comic detail
   const navigate = useNavigate();
   const navigateToComicDetail = (row) => {
@@ -157,21 +160,21 @@ export const Library = (): ReactElement => {
    *
    **/
   const nextPage = useCallback((pageIndex: number, pageSize: number) => {
-    dispatch(
-      searchIssue(
-        {
-          query: {},
-        },
-        {
-          pagination: {
-            size: pageSize,
-            from: pageSize * pageIndex + 1,
-          },
-          type: "all",
-          trigger: "libraryPage",
-        },
-      ),
-    );
+    // dispatch(
+    //   searchIssue(
+    //     {
+    //       query: {},
+    //     },
+    //     {
+    //       pagination: {
+    //         size: pageSize,
+    //         from: pageSize * pageIndex + 1,
+    //       },
+    //       type: "all",
+    //       trigger: "libraryPage",
+    //     },
+    //   ),
+    // );
   }, []);
 
   /**
@@ -188,21 +191,21 @@ export const Library = (): ReactElement => {
     } else {
       from = (pageIndex - 1) * pageSize + 2 - 16;
     }
-    dispatch(
-      searchIssue(
-        {
-          query: {},
-        },
-        {
-          pagination: {
-            size: pageSize,
-            from,
-          },
-          type: "all",
-          trigger: "libraryPage",
-        },
-      ),
-    );
+    // dispatch(
+    //   searchIssue(
+    //     {
+    //       query: {},
+    //     },
+    //     {
+    //       pagination: {
+    //         size: pageSize,
+    //         from,
+    //       },
+    //       type: "all",
+    //       trigger: "libraryPage",
+    //     },
+    //   ),
+    // );
   }, []);
 
   // ImportStatus.propTypes = {
@@ -214,7 +217,7 @@ export const Library = (): ReactElement => {
         <div className="header-area">
           <h1 className="title">Library</h1>
         </div>
-        {!isEmpty(searchResults) ? (
+        {!isUndefined(searchResults?.data?.data) ? (
           <div>
             <div className="library">
               <T2Table
@@ -240,9 +243,9 @@ export const Library = (): ReactElement => {
                 </div>
               </article>
               <pre>
-                {!isUndefined(searchError.data) &&
+                {!isUndefined(searchResults?.code === 404 && !isLoading) &&
                   JSON.stringify(
-                    searchError.data.meta.body.error.root_cause,
+                    searchResults.data.meta.body.error.root_cause,
                     null,
                     4,
                   )}

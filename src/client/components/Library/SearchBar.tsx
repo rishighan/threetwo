@@ -2,29 +2,27 @@ import React, { ReactElement, useCallback } from "react";
 import PropTypes from "prop-types";
 import { Form, Field } from "react-final-form";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { searchIssue } from "../../actions/fileops.actions";
 
 export const SearchBar = (): ReactElement => {
-  const dispatch = useDispatch();
   const handleSubmit = useCallback((e) => {
-    dispatch(
-      searchIssue(
-        {
-          query: {
-            volumeName: e.search,
-          },
-        },
-        {
-          pagination: {
-            size: 25,
-            from: 0,
-          },
-          type: "volumeName",
-          trigger: "libraryPage",
-        },
-      ),
-    );
+    // dispatch(
+    //   searchIssue(
+    //     {
+    //       query: {
+    //         volumeName: e.search,
+    //       },
+    //     },
+    //     {
+    //       pagination: {
+    //         size: 25,
+    //         from: 0,
+    //       },
+    //       type: "volumeName",
+    //       trigger: "libraryPage",
+    //     },
+    //   ),
+    // );
   }, []);
   return (
     <div className="box">
@@ -56,7 +54,6 @@ export const SearchBar = (): ReactElement => {
           </form>
         )}
       />
-      
     </div>
   );
 };

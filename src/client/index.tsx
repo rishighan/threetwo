@@ -11,6 +11,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Import from "./components/Import/Import";
 import Dashboard from "./components/Dashboard/Dashboard";
+import TabulatedContentContainer from "./components/Library/TabulatedContentContainer";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
     children: [
       { path: "dashboard", element: <Dashboard /> },
       { path: "settings", element: <Settings /> },
+      {
+        path: "library",
+        element: <TabulatedContentContainer category="library" />,
+      },
       { path: "import", element: <Import path={"./comics"} /> },
     ],
   },

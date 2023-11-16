@@ -1,5 +1,4 @@
 import React, { ReactElement, useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { searchIssue } from "../../actions/fileops.actions";
 import Card from "../shared/Carda";
 import T2Table from "../shared/T2Table";
@@ -8,24 +7,23 @@ import { convert } from "html-to-text";
 import { isUndefined } from "lodash";
 
 export const Volumes = (props): ReactElement => {
-  const volumes = useSelector((state: RootState) => state.fileOps.volumes);
-  const dispatch = useDispatch();
+  // const volumes = useSelector((state: RootState) => state.fileOps.volumes);
   useEffect(() => {
-    dispatch(
-      searchIssue(
-        {
-          query: {},
-        },
-        {
-          pagination: {
-            size: 25,
-            from: 0,
-          },
-          type: "volumes",
-          trigger: "volumesPage",
-        },
-      ),
-    );
+    // dispatch(
+    //   searchIssue(
+    //     {
+    //       query: {},
+    //     },
+    //     {
+    //       pagination: {
+    //         size: 25,
+    //         from: 0,
+    //       },
+    //       type: "volumes",
+    //       trigger: "volumesPage",
+    //     },
+    //   ),
+    // );
   }, []);
   const columnData = useMemo(
     () => [

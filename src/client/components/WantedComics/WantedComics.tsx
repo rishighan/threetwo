@@ -1,5 +1,4 @@
 import React, { ReactElement, useCallback, useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { searchIssue } from "../../actions/fileops.actions";
 import SearchBar from "../Library/SearchBar";
 import T2Table from "../shared/T2Table";
@@ -7,26 +6,25 @@ import { isEmpty, isUndefined } from "lodash";
 import MetadataPanel from "../shared/MetadataPanel";
 
 export const WantedComics = (props): ReactElement => {
-  const wantedComics = useSelector(
-    (state: RootState) => state.fileOps.wantedComics,
-  );
-  const dispatch = useDispatch();
+  // const wantedComics = useSelector(
+  //   (state: RootState) => state.fileOps.wantedComics,
+  // );
   useEffect(() => {
-    dispatch(
-      searchIssue(
-        {
-          query: {},
-        },
-        {
-          pagination: {
-            size: 25,
-            from: 0,
-          },
-          type: "wanted",
-          trigger: "wantedComicsPage"
-        },
-      ),
-    );
+    // dispatch(
+    //   searchIssue(
+    //     {
+    //       query: {},
+    //     },
+    //     {
+    //       pagination: {
+    //         size: 25,
+    //         from: 0,
+    //       },
+    //       type: "wanted",
+    //       trigger: "wantedComicsPage"
+    //     },
+    //   ),
+    // );
   }, []);
 
   const columnData = [
@@ -37,7 +35,7 @@ export const WantedComics = (props): ReactElement => {
           header: "Details",
           id: "comicDetails",
           minWidth: 350,
-          accessorFn: data => data,
+          accessorFn: (data) => data,
           cell: (value) => <MetadataPanel data={value.getValue()} />,
         },
       ],
@@ -49,8 +47,10 @@ export const WantedComics = (props): ReactElement => {
           header: "Files",
           accessorKey: "acquisition",
           align: "right",
-          cell: props => {
-            const { directconnect: { downloads } } = props.getValue();
+          cell: (props) => {
+            const {
+              directconnect: { downloads },
+            } = props.getValue();
             return (
               <div
                 style={{
@@ -60,9 +60,7 @@ export const WantedComics = (props): ReactElement => {
                 }}
               >
                 {downloads.length > 0 ? (
-                  <span className="tag is-warning">
-                    {downloads.length}
-                  </span>
+                  <span className="tag is-warning">{downloads.length}</span>
                 ) : null}
               </div>
             );
@@ -72,11 +70,17 @@ export const WantedComics = (props): ReactElement => {
           header: "Download Details",
           id: "downloadDetails",
           accessorKey: "acquisition",
-          cell: data => <ol>
-            {data.getValue().directconnect.downloads.map((download, idx) => {
-              return <li className="is-size-7" key={idx}>{download.name}</li>;
-            })}
-          </ol>
+          cell: (data) => (
+            <ol>
+              {data.getValue().directconnect.downloads.map((download, idx) => {
+                return (
+                  <li className="is-size-7" key={idx}>
+                    {download.name}
+                  </li>
+                );
+              })}
+            </ol>
+          ),
         },
         {
           header: "Type",
@@ -92,7 +96,7 @@ export const WantedComics = (props): ReactElement => {
    * @param {number} pageIndex
    * @param {number} pageSize
    * @returns void
-   *  
+   *
    **/
   const nextPage = useCallback((pageIndex: number, pageSize: number) => {
     dispatch(
@@ -111,7 +115,6 @@ export const WantedComics = (props): ReactElement => {
       ),
     );
   }, []);
-
 
   /**
    * Pagination control that fetches the previous x (pageSize) items
@@ -138,7 +141,7 @@ export const WantedComics = (props): ReactElement => {
             from,
           },
           type: "wanted",
-          trigger: "wantedComicsPage"
+          trigger: "wantedComicsPage",
         },
       ),
     );
@@ -161,7 +164,7 @@ export const WantedComics = (props): ReactElement => {
                   nextPage: nextPage,
                   previousPage: previousPage,
                 }}
-              // rowClickHandler={navigateToComicDetail}
+                // rowClickHandler={navigateToComicDetail}
               />
               {/* pagination controls */}
             </div>
