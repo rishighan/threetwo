@@ -1,16 +1,9 @@
-import React, {
-  useMemo,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import React, { useMemo, ReactElement, useState } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { isEmpty, isNil, isUndefined } from "lodash";
 import MetadataPanel from "../shared/MetadataPanel";
 import T2Table from "../shared/T2Table";
-import { searchIssue } from "../../actions/fileops.actions";
 import ellipsize from "ellipsize";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import axios from "axios";
@@ -24,13 +17,13 @@ import axios from "axios";
  */
 export const Library = (): ReactElement => {
   // Default page state
-  // 15 issues per page, offset: 0
-  const [page, setPage] = useState(0);
+  // offset: 0
+  const [offset, setOffset] = useState(0);
   // Method to fetch paginated issues
-  const fetchIssues = async (searchQuery, page, type) => {
+  const fetchIssues = async (searchQuery, offset, type) => {
     let pagination = {
       size: 15,
-      from: page,
+      from: offset,
     };
     return await axios({
       method: "POST",
@@ -43,8 +36,8 @@ export const Library = (): ReactElement => {
     });
   };
   const { data, isLoading, isError, isPlaceholderData } = useQuery({
-    queryKey: ["comics", page],
-    queryFn: () => fetchIssues({}, page, "all"),
+    queryKey: ["comics", offset],
+    queryFn: () => fetchIssues({}, offset, "all"),
     placeholderData: keepPreviousData,
   });
 
@@ -169,7 +162,7 @@ export const Library = (): ReactElement => {
    **/
   const nextPage = (pageIndex: number, pageSize: number) => {
     if (!isPlaceholderData) {
-      setPage(pageSize * pageIndex + 1);
+      setOffset(pageSize * pageIndex + 1);
     }
   };
 
@@ -187,7 +180,7 @@ export const Library = (): ReactElement => {
     } else {
       from = (pageIndex - 1) * pageSize + 2 - (pageSize + 1);
     }
-    setPage(from);
+    setOffset(from);
   };
 
   // ImportStatus.propTypes = {
