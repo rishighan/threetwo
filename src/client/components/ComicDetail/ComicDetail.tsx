@@ -46,6 +46,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
       rawFileDetails,
       inferredMetadata,
       sourcedMetadata: { comicvine, locg, comicInfo },
+      acquisition,
     },
     userSettings,
   } = data;
@@ -99,7 +100,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     CVMatches: {
       content: (props) => (
         <>
-          <div className="card search-criteria-card">
+          {/* <div className="card search-criteria-card">
             <div className="card-content">
               <ComicVineSearchForm data={rawFileDetails} />
             </div>
@@ -133,7 +134,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                 />
               </div>
             </div>
-          )}
+          )} */}
         </>
       ),
     },
@@ -192,7 +193,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
       id: 3,
       icon: <i className="fa-regular fa-file-archive"></i>,
       name: "Archive Operations",
-      content: <ArchiveOperations data={data.data} key={3} />,
+      content: <></>,
+      /*
+      <ArchiveOperations data={data.data} key={3} /> */
       shouldShow: areRawFileDetailsAvailable,
     },
     {
@@ -284,7 +287,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                         Read
                       </button>
 
-                      <Modal
+                      {/* <Modal
                         style={{ content: { marginTop: "2rem" } }}
                         isOpen={modalIsOpen}
                         onAfterOpen={afterOpenModal}
@@ -301,13 +304,16 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                             }}
                           />
                         )}
-                      </Modal>
+                      </Modal> */}
                     </>
                   )}
               </div>
             </div>
 
-            {<TabControls filteredTabs={filteredTabs} />}
+            <TabControls
+              filteredTabs={filteredTabs}
+              acquisition={acquisition}
+            />
 
             <SlidingPane
               isOpen={visible}
