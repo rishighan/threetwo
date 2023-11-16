@@ -2,7 +2,6 @@ import React, { useCallback } from "react";
 import { Form, Field } from "react-final-form";
 import Collapsible from "react-collapsible";
 import { fetchComicVineMatches } from "../../actions/fileops.actions";
-import { useDispatch } from "react-redux";
 
 /**
  * Component for performing search against ComicVine
@@ -14,7 +13,6 @@ import { useDispatch } from "react-redux";
  * )
  */
 export const ComicVineSearchForm = (data) => {
-  const dispatch = useDispatch();
   const onSubmit = useCallback((value) => {
     const userInititatedQuery = {
       inferredIssueDetails: {
@@ -24,7 +22,7 @@ export const ComicVineSearchForm = (data) => {
         year: value.issueYear,
       },
     };
-    dispatch(fetchComicVineMatches(data, userInititatedQuery));
+    // dispatch(fetchComicVineMatches(data, userInititatedQuery));
   }, []);
   const validate = () => {
     return true;

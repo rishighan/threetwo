@@ -10,12 +10,10 @@ import {
   downloadAirDCPPItem,
   getBundlesForComic,
 } from "../../actions/airdcpp.actions";
-import { useDispatch, useSelector } from "react-redux";
 import { RootState, SearchInstance } from "threetwo-ui-typings";
 import ellipsize from "ellipsize";
 import { Form, Field } from "react-final-form";
 import { isEmpty, isNil, map } from "lodash";
-import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
 
 interface IAcquisitionPanelProps {
   query: any;
@@ -48,25 +46,27 @@ export const AcquisitionPanel = (
   // const settings = useSelector((state: RootState) => state.settings.data);
   const airDCPPConfiguration = useContext(AirDCPPSocketContext);
 
-  const dispatch = useDispatch();
   const [dcppQuery, setDcppQuery] = useState({});
 
+  // Construct a AirDC++ query based on metadata inferred, upon component mount
+  // Pre-populate the search input with the search string, so that
+  // All the user has to do is hit "Search AirDC++"
   useEffect(() => {
-    if (!isEmpty(airDCPPConfiguration.airDCPPState.settings)) {
-      // AirDC++ search query
-      const dcppSearchQuery = {
-        query: {
-          pattern: `${sanitizedIssueName.replace(/#/g, "")}`,
-          extensions: ["cbz", "cbr", "cb7"],
-        },
-        hub_urls: map(
-          airDCPPConfiguration.airDCPPState.settings.directConnect.client.hubs,
-          (item) => item.value,
-        ),
-        priority: 5,
-      };
-      setDcppQuery(dcppSearchQuery);
-    }
+    // if (!isEmpty(airDCPPConfiguration.airDCPPState.settings)) {
+    //   // AirDC++ search query
+    //   const dcppSearchQuery = {
+    //     query: {
+    //       pattern: `${sanitizedIssueName.replace(/#/g, "")}`,
+    //       extensions: ["cbz", "cbr", "cb7"],
+    //     },
+    //     hub_urls: map(
+    //       airDCPPConfiguration.airDCPPState.settings.directConnect.client.hubs,
+    //       (item) => item.value,
+    //     ),
+    //     priority: 5,
+    //   };
+    //   setDcppQuery(dcppSearchQuery);
+    // }
   }, [airDCPPConfiguration]);
 
   const getDCPPSearchResults = useCallback(
@@ -82,45 +82,45 @@ export const AcquisitionPanel = (
         ),
         priority: 5,
       };
-      dispatch(
-        search(manualQuery, airDCPPConfiguration.airDCPPState.socket, {
-          username: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.username}`,
-          password: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.password}`,
-        }),
-      );
+      // dispatch(
+      //   search(manualQuery, airDCPPConfiguration.airDCPPState.socket, {
+      //     username: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.username}`,
+      //     password: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.password}`,
+      //   }),
+      // );
     },
-    [dispatch, airDCPPConfiguration],
+    [airDCPPConfiguration],
   );
 
   // download via AirDC++
   const downloadDCPPResult = useCallback(
     (searchInstanceId, resultId, name, size, type) => {
-      dispatch(
-        downloadAirDCPPItem(
-          searchInstanceId,
-          resultId,
-          props.comicObjectId,
-          name,
-          size,
-          type,
-          airDCPPConfiguration.airDCPPState.socket,
-          {
-            username: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.username}`,
-            password: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.password}`,
-          },
-        ),
-      );
+      // dispatch(
+      //   downloadAirDCPPItem(
+      //     searchInstanceId,
+      //     resultId,
+      //     props.comicObjectId,
+      //     name,
+      //     size,
+      //     type,
+      //     airDCPPConfiguration.airDCPPState.socket,
+      //     {
+      //       username: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.username}`,
+      //       password: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.password}`,
+      //     },
+      //   ),
+      // );
       // this is to update the download count badge on the downloads tab
-      dispatch(
-        getBundlesForComic(
-          props.comicObjectId,
-          airDCPPConfiguration.airDCPPState.socket,
-          {
-            username: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.username}`,
-            password: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.password}`,
-          },
-        ),
-      );
+      // dispatch(
+      //   getBundlesForComic(
+      //     props.comicObjectId,
+      //     airDCPPConfiguration.airDCPPState.socket,
+      //     {
+      //       username: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.username}`,
+      //       password: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.password}`,
+      //     },
+      //   ),
+      // );
     },
     [airDCPPConfiguration],
   );

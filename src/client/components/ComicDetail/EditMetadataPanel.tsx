@@ -1,5 +1,4 @@
 import React, { ReactElement, useCallback, useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { Form, Field } from "react-final-form";
 import arrayMutators from "final-form-arrays";
 import { FieldArray } from "react-final-form-arrays";
@@ -9,7 +8,7 @@ import TextareaAutosize from "react-textarea-autosize";
 export const EditMetadataPanel = (props): ReactElement => {
   const validate = async () => {};
   const onSubmit = async () => {};
- 
+
   const AsyncSelectPaginateAdapter = ({ input, ...rest }) => {
     return (
       <AsyncSelectPaginate
@@ -28,10 +27,9 @@ export const EditMetadataPanel = (props): ReactElement => {
       />
     );
   };
-  const rawFileDetails = useSelector(
-    (state: RootState) => state.comicInfo.comicBookDetail.rawFileDetails.name,
-  );
-  const dispatch = useDispatch();
+  // const rawFileDetails = useSelector(
+  //   (state: RootState) => state.comicInfo.comicBookDetail.rawFileDetails.name,
+  // );
 
   return (
     <>

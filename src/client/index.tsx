@@ -12,6 +12,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Import from "./components/Import/Import";
 import Dashboard from "./components/Dashboard/Dashboard";
 import TabulatedContentContainer from "./components/Library/TabulatedContentContainer";
+import { ComicDetailContainer } from "./components/ComicDetail/ComicDetailContainer";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
       {
         path: "library",
         element: <TabulatedContentContainer category="library" />,
+      },
+      {
+        path: "comic/details/:comicObjectId",
+        element: <ComicDetailContainer />,
       },
       { path: "import", element: <Import path={"./comics"} /> },
     ],

@@ -1,6 +1,5 @@
 import { filter, isEmpty, isNil, isUndefined } from "lodash";
 import React, { ReactElement, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import Select, { components } from "react-select";
 import { fetchComicVineMatches } from "../../../actions/fileops.actions";
 import { refineQuery } from "filename-parser";
@@ -8,7 +7,6 @@ import { refineQuery } from "filename-parser";
 export const Menu = (props): ReactElement => {
   const { data } = props;
   const { setSlidingPanelContentId, setVisible } = props.handlers;
-  const dispatch = useDispatch();
   const openDrawerWithCVMatches = useCallback(() => {
     let seriesSearchQuery: IComicVineSearchQuery = {} as IComicVineSearchQuery;
     let issueSearchQuery: IComicVineSearchQuery = {} as IComicVineSearchQuery;
@@ -18,10 +16,10 @@ export const Menu = (props): ReactElement => {
     } else if (!isEmpty(data.sourcedMetadata)) {
       issueSearchQuery = refineQuery(data.sourcedMetadata.comicvine.name);
     }
-    dispatch(fetchComicVineMatches(data, issueSearchQuery, seriesSearchQuery));
+    // dispatch(fetchComicVineMatches(data, issueSearchQuery, seriesSearchQuery));
     setSlidingPanelContentId("CVMatches");
     setVisible(true);
-  }, [dispatch, data]);
+  }, [data]);
 
   const openEditMetadataPanel = useCallback(() => {
     setSlidingPanelContentId("editComicBookMetadata");

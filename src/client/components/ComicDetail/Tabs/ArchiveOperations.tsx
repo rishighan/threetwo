@@ -1,5 +1,4 @@
 import React, { ReactElement, useCallback, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { DnD } from "../../shared/Draggable/DnD";
 import { isEmpty } from "lodash";
 import Sticky from "react-stickynode";
@@ -10,28 +9,27 @@ import { Canvas } from "../../shared/Canvas";
 
 export const ArchiveOperations = (props): ReactElement => {
   const { data } = props;
-  const isComicBookExtractionInProgress = useSelector(
-    (state: RootState) => state.fileOps.comicBookExtractionInProgress,
-  );
-  const extractedComicBookArchive = useSelector(
-    (state: RootState) => state.fileOps.extractedComicBookArchive.analysis,
-  );
+  //   const isComicBookExtractionInProgress = useSelector(
+  //     (state: RootState) => state.fileOps.comicBookExtractionInProgress,
+  //   );
+  //   const extractedComicBookArchive = useSelector(
+  //     (state: RootState) => state.fileOps.extractedComicBookArchive.analysis,
+  //   );
+  //
+  //   const imageAnalysisResult = useSelector((state: RootState) => {
+  //     return state.fileOps.imageAnalysisResults;
+  //   });
 
-  const imageAnalysisResult = useSelector((state: RootState) => {
-    return state.fileOps.imageAnalysisResults;
-  });
-
-  const dispatch = useDispatch();
   const unpackComicArchive = useCallback(() => {
-    dispatch(
-      extractComicArchive(data.rawFileDetails.filePath, {
-        type: "full",
-        purpose: "analysis",
-        imageResizeOptions: {
-          baseWidth: 275,
-        },
-      }),
-    );
+    // dispatch(
+    //   extractComicArchive(data.rawFileDetails.filePath, {
+    //     type: "full",
+    //     purpose: "analysis",
+    //     imageResizeOptions: {
+    //       baseWidth: 275,
+    //     },
+    //   }),
+    // );
   }, []);
 
   // sliding panel config
@@ -64,7 +62,7 @@ export const ArchiveOperations = (props): ReactElement => {
   // sliding panel handlers
   const openImageAnalysisPanel = useCallback((imageFilePath) => {
     setSlidingPanelContentId("imageAnalysis");
-    dispatch(analyzeImage(imageFilePath));
+    // dispatch(analyzeImage(imageFilePath));
     setCurrentImage(imageFilePath);
     setVisible(true);
   }, []);

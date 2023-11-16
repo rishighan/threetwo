@@ -1,12 +1,10 @@
 import React, { useEffect, useContext, ReactElement } from "react";
 import { getBundlesForComic } from "../../actions/airdcpp.actions";
-import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "threetwo-ui-typings";
 import { isEmpty, isNil, map } from "lodash";
 import prettyBytes from "pretty-bytes";
 import dayjs from "dayjs";
 import ellipsize from "ellipsize";
-import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
 
 interface IDownloadsPanelProps {
   data: any;
@@ -16,34 +14,33 @@ interface IDownloadsPanelProps {
 export const DownloadsPanel = (
   props: IDownloadsPanelProps,
 ): ReactElement | null => {
-  const bundles = useSelector((state: RootState) => {
-    return state.airdcpp.bundles;
-  });
-
-  // AirDCPP Socket initialization
-  const userSettings = useSelector((state: RootState) => state.settings.data);
-  const airDCPPConfiguration = useContext(AirDCPPSocketContext);
+  //   const bundles = useSelector((state: RootState) => {
+  //     return state.airdcpp.bundles;
+  //   });
+  //
+  //   // AirDCPP Socket initialization
+  //   const userSettings = useSelector((state: RootState) => state.settings.data);
+  //   const airDCPPConfiguration = useContext(AirDCPPSocketContext);
 
   const {
     airDCPPState: { socket, settings },
   } = airDCPPConfiguration;
 
-  const dispatch = useDispatch();
   // Fetch the downloaded files and currently-downloading file(s) from AirDC++
   useEffect(() => {
     try {
       if (!isEmpty(userSettings)) {
-        dispatch(
-          getBundlesForComic(props.comicObjectId, socket, {
-            username: `${settings.directConnect.client.host.username}`,
-            password: `${settings.directConnect.client.host.password}`,
-          }),
-        );
+        // dispatch(
+        //   getBundlesForComic(props.comicObjectId, socket, {
+        //     username: `${settings.directConnect.client.host.username}`,
+        //     password: `${settings.directConnect.client.host.password}`,
+        //   }),
+        // );
       }
     } catch (error) {
       throw new Error(error);
     }
-  }, [dispatch, airDCPPConfiguration]);
+  }, [airDCPPConfiguration]);
 
   const Bundles = (props) => {
     return !isEmpty(props.data) ? (

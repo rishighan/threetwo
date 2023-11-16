@@ -1,5 +1,4 @@
 import React, { useState, ReactElement, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import Card from "../shared/Carda";
 import { ComicVineMatchPanel } from "./ComicVineMatchPanel";
@@ -55,34 +54,34 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
   const [modalIsOpen, setIsOpen] = useState(false);
 
-  const comicVineSearchResults = useSelector(
-    (state: RootState) => state.comicInfo.searchResults,
-  );
-  const comicVineSearchQueryObject = useSelector(
-    (state: RootState) => state.comicInfo.searchQuery,
-  );
-  const comicVineAPICallProgress = useSelector(
-    (state: RootState) => state.comicInfo.inProgress,
-  );
-
-  const extractedComicBook = useSelector(
-    (state: RootState) => state.fileOps.extractedComicBookArchive.reading,
-  );
+  //   const comicVineSearchResults = useSelector(
+  //     (state: RootState) => state.comicInfo.searchResults,
+  //   );
+  //   const comicVineSearchQueryObject = useSelector(
+  //     (state: RootState) => state.comicInfo.searchQuery,
+  //   );
+  //   const comicVineAPICallProgress = useSelector(
+  //     (state: RootState) => state.comicInfo.inProgress,
+  //   );
+  //
+  //   const extractedComicBook = useSelector(
+  //     (state: RootState) => state.fileOps.extractedComicBookArchive.reading,
+  //   );
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const openModal = useCallback((filePath) => {
     setIsOpen(true);
-    dispatch(
-      extractComicArchive(filePath, {
-        type: "full",
-        purpose: "reading",
-        imageResizeOptions: {
-          baseWidth: 1024,
-        },
-      }),
-    );
+    // dispatch(
+    //   extractComicArchive(filePath, {
+    //     type: "full",
+    //     purpose: "reading",
+    //     imageResizeOptions: {
+    //       baseWidth: 1024,
+    //     },
+    //   }),
+    // );
   }, []);
 
   const afterOpenModal = useCallback((things) => {

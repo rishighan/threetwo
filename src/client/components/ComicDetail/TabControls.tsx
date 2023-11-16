@@ -1,11 +1,10 @@
 import React, { ReactElement, useEffect, useState } from "react";
 import { isEmpty, isNil } from "lodash";
-import { useSelector } from "react-redux";
 
 export const TabControls = (props): ReactElement => {
-  const comicBookDetailData = useSelector(
-    (state: RootState) => state.comicInfo.comicBookDetail,
-  );
+  // const comicBookDetailData = useSelector(
+  //   (state: RootState) => state.comicInfo.comicBookDetail,
+  // );
   const { filteredTabs } = props;
 
   const [active, setActive] = useState(filteredTabs[0].id);

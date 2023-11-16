@@ -19,6 +19,7 @@ export const Library = (): ReactElement => {
   // Default page state
   // offset: 0
   const [offset, setOffset] = useState(0);
+
   // Method to fetch paginated issues
   const fetchIssues = async (searchQuery, offset, type) => {
     let pagination = {
@@ -35,6 +36,7 @@ export const Library = (): ReactElement => {
       },
     });
   };
+
   const { data, isLoading, isError, isPlaceholderData } = useQuery({
     queryKey: ["comics", offset],
     queryFn: () => fetchIssues({}, offset, "all"),
@@ -42,8 +44,8 @@ export const Library = (): ReactElement => {
   });
 
   const searchResults = data?.data;
-  console.log(searchResults);
-  // programatically navigate to comic detail
+
+  // Programmatically navigate to comic detail
   const navigate = useNavigate();
   const navigateToComicDetail = (row) => {
     navigate(`/comic/details/${row.original._id}`);
