@@ -194,7 +194,7 @@ export const Library = (): ReactElement => {
         <div className="header-area">
           <h1 className="title">Library</h1>
         </div>
-        {!isUndefined(searchResults) ? (
+        {!isUndefined(searchResults?.hits) ? (
           <div>
             <div className="library">
               <T2Table
@@ -219,14 +219,15 @@ export const Library = (): ReactElement => {
                   back.
                 </div>
               </article>
-              {/* <pre>
-                {!isUndefined(searchResults?.code === 404 && !isLoading) &&
-                  JSON.stringify(
-                    searchResults.meta.body.error.root_cause,
+              {!isUndefined(searchResults?.data?.meta?.body) ? (
+                <pre>
+                  {JSON.stringify(
+                    searchResults.data.meta.body.error.root_cause,
                     null,
                     4,
                   )}
-              </pre> */}
+                </pre>
+              ) : null}
             </div>
           </div>
         )}
