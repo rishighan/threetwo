@@ -14,7 +14,11 @@ export const Settings = (props: ISettingsProps): ReactElement => {
   const settingsContent = [
     {
       id: "adc-hubs",
-      content: <div key="adc-hubs">{/* <AirDCPPHubsForm /> */}</div>,
+      content: (
+        <div key="adc-hubs">
+          <AirDCPPHubsForm />
+        </div>
+      ),
     },
     {
       id: "adc-connection",

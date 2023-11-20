@@ -14,6 +14,8 @@ import { RootState, SearchInstance } from "threetwo-ui-typings";
 import ellipsize from "ellipsize";
 import { Form, Field } from "react-final-form";
 import { isEmpty, isNil, map } from "lodash";
+import { useStore } from "../../store";
+import { useShallow } from "zustand/react/shallow";
 
 interface IAcquisitionPanelProps {
   query: any;
@@ -25,26 +27,38 @@ interface IAcquisitionPanelProps {
 export const AcquisitionPanel = (
   props: IAcquisitionPanelProps,
 ): ReactElement => {
+  const {
+    airDCPPSocketInstance,
+    airDCPPClientConfiguration,
+    airDCPPSessionInformation,
+  } = useStore(
+    useShallow((state) => ({
+      airDCPPSocketInstance: state.airDCPPSocketInstance,
+      airDCPPClientConfiguration: state.airDCPPClientConfiguration,
+      airDCPPSessionInformation: state.airDCPPSessionInformation,
+    })),
+  );
+  console.log("ulhas umlaut", airDCPPSessionInformation);
   const issueName = props.query.issue.name || "";
   // const { settings } = props;
   const sanitizedIssueName = issueName.replace(/[^a-zA-Z0-9 ]/g, " ");
 
   // Selectors for picking state
-  const airDCPPSearchResults = useSelector((state: RootState) => {
-    return state.airdcpp.searchResults;
-  });
-  const isAirDCPPSearchInProgress = useSelector(
-    (state: RootState) => state.airdcpp.isAirDCPPSearchInProgress,
-  );
-  const searchInfo = useSelector(
-    (state: RootState) => state.airdcpp.searchInfo,
-  );
-  const searchInstance: SearchInstance = useSelector(
-    (state: RootState) => state.airdcpp.searchInstance,
-  );
+  // const airDCPPSearchResults = useSelector((state: RootState) => {
+  //   return state.airdcpp.searchResults;
+  // });
+  // const isAirDCPPSearchInProgress = useSelector(
+  //   (state: RootState) => state.airdcpp.isAirDCPPSearchInProgress,
+  // );
+  // const searchInfo = useSelector(
+  //   (state: RootState) => state.airdcpp.searchInfo,
+  // );
+  // const searchInstance: SearchInstance = useSelector(
+  //   (state: RootState) => state.airdcpp.searchInstance,
+  // );
 
   // const settings = useSelector((state: RootState) => state.settings.data);
-  const airDCPPConfiguration = useContext(AirDCPPSocketContext);
+  // const airDCPPConfiguration = useContext(AirDCPPSocketContext);
 
   const [dcppQuery, setDcppQuery] = useState({});
 

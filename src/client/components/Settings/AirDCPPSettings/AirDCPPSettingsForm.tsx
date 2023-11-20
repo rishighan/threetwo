@@ -2,8 +2,10 @@ import React, { ReactElement, useCallback } from "react";
 import { AirDCPPSettingsConfirmation } from "./AirDCPPSettingsConfirmation";
 import { isUndefined, isEmpty } from "lodash";
 import { ConnectionForm } from "../../shared/ConnectionForm/ConnectionForm";
-import { useStore } from "../../../store/index";
+import { initializeAirDCPPSocket, useStore } from "../../../store/index";
 import { useShallow } from "zustand/react/shallow";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 export const AirDCPPSettingsForm = (): ReactElement => {
   // cherry-picking selectors for:
@@ -24,13 +26,27 @@ export const AirDCPPSettingsForm = (): ReactElement => {
       airDCPPSocketInstance: state.airDCPPSocketInstance,
     })),
   );
-  const onSubmit = useCallback(async (values) => {
-    try {
-      // airDCPPSettings.setSettings(values);
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
+
+  const { mutate } = useMutation({
+    mutationFn: async (values) =>
+      await axios({
+        url: `http://localhost:3000/api/settings/saveSettings`,
+        method: "POST",
+        data: { settingsPayload: values, settingsKey: "directConnect" },
+      }),
+    onSuccess: (values) => {
+      const {
+        data: {
+          directConnect: {
+            client: { host },
+          },
+        },
+      } = values;
+      console.log("asdas", host);
+      initializeAirDCPPSocket(host);
+    },
+  });
+
   const removeSettings = useCallback(async () => {
     // airDCPPSettings.setSettings({});
   }, []);
@@ -43,7 +59,7 @@ export const AirDCPPSettingsForm = (): ReactElement => {
     <>
       <ConnectionForm
         initialData={initFormData}
-        submitHandler={onSubmit}
+        submitHandler={mutate}
         formHeading={"Configure AirDC++"}
       />
 

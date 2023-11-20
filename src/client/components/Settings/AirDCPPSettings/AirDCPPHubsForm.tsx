@@ -1,38 +1,67 @@
 import React, { ReactElement, useEffect, useState, useContext } from "react";
 import { Form, Field } from "react-final-form";
-import { useDispatch } from "react-redux";
 import { isEmpty, isNil, isUndefined } from "lodash";
 import Select from "react-select";
 import { saveSettings } from "../../../actions/settings.actions";
-import { AirDCPPSocketContext } from "../../../context/AirDCPPSocket";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useStore } from "../../../store";
+import { useShallow } from "zustand/react/shallow";
+import axios from "axios";
 
 export const AirDCPPHubsForm = (airDCPPClientUserSettings): ReactElement => {
-  const dispatch = useDispatch();
-  const [hubList, setHubList] = useState([]);
-  const airDCPPConfiguration = useContext(AirDCPPSocketContext);
+  const queryClient = useQueryClient();
   const {
-    airDCPPState: { settings, socket },
-  } = airDCPPConfiguration;
+    airDCPPSocketInstance,
+    airDCPPClientConfiguration,
+    airDCPPSessionInformation,
+  } = useStore(
+    useShallow((state) => ({
+      airDCPPSocketInstance: state.airDCPPSocketInstance,
+      airDCPPClientConfiguration: state.airDCPPClientConfiguration,
+      airDCPPSessionInformation: state.airDCPPSessionInformation,
+    })),
+  );
 
-  useEffect(() => {
-    (async () => {
-      if (!isEmpty(settings)) {
-        const hubs = await socket.get(`hubs`);
-        const hubSelectionOptions = hubs.map(({ hub_url, identity }) => ({
-          value: hub_url,
-          label: identity.name,
-        }));
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["settings"],
+    queryFn: async () =>
+      await axios({
+        url: "http://localhost:3000/api/settings/getAllSettings",
+        method: "GET",
+      }),
+  });
 
-        setHubList(hubSelectionOptions);
-      }
-    })();
-  }, []);
+  console.log("Asd", data);
+  const {
+    settings: {
+      data: { directConnect },
+    },
+  } = data;
 
-  const onSubmit = (values) => {
-    if (!isUndefined(values.hubs)) {
-      dispatch(saveSettings({ ...settings, hubs: values.hubs }, settings._id));
-    }
-  };
+  const { data: hubs } = useQuery({
+    queryKey: [],
+    queryFn: async () => await airDCPPSocketInstance.get(`hubs`),
+    enabled: !!settings,
+  });
+  let hubList = {};
+  if (hubs) {
+    hubList = hubs.map(({ hub_url, identity }) => ({
+      value: hub_url,
+      label: identity.name,
+    }));
+  }
+
+  const { mutate } = useMutation({
+    mutationFn: async (values) =>
+      await axios({
+        url: `http://localhost:3000/api/settings/saveSettings`,
+        method: "POST",
+        data: { settingsPayload: values, settingsKey: "directConnect" },
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["settings"] });
+    },
+  });
 
   const validate = async () => {};
 
@@ -43,7 +72,7 @@ export const AirDCPPHubsForm = (airDCPPClientUserSettings): ReactElement => {
   return (
     <>
       <Form
-        onSubmit={onSubmit}
+        onSubmit={mutate}
         validate={validate}
         render={({ handleSubmit }) => (
           <form onSubmit={handleSubmit}>
@@ -82,12 +111,13 @@ export const AirDCPPHubsForm = (airDCPPClientUserSettings): ReactElement => {
       </div>
       <div className="box mt-3">
         <h6>Selected hubs</h6>
-        {settings.directConnect.client.hubs.map(({ value, label }) => (
-          <div key={value}>
-            <div>{label}</div>
-            <span className="is-size-7">{value}</span>
-          </div>
-        ))}
+        {settings &&
+          settings?.directConnect?.client.hubs.map(({ value, label }) => (
+            <div key={value}>
+              <div>{label}</div>
+              <span className="is-size-7">{value}</span>
+            </div>
+          ))}
       </div>
     </>
   );

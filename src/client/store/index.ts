@@ -69,7 +69,7 @@ export const useStore = create((set, get) => ({
 
 const { getState, setState } = useStore;
 
-// Socket.IO initialization
+/** Socket.IO initialization **/
 // 1. Fetch sessionId from localStorage
 const sessionId = localStorage.getItem("sessionId");
 // 2. socket.io instantiation
@@ -119,72 +119,81 @@ socketIOInstance.on("RESTORE_JOB_COUNTS_AFTER_SESSION_RESTORATION", (data) => {
  * @param configuration - credentials, and hostname details to init AirDC++ connection
  * @returns Initialized AirDC++ connection socket instance
  */
-const initializeAirDCPPSocket = async (configuration): Promise<any> => {
-  console.log("[AirDCPP]: Initializing socket...");
+export const initializeAirDCPPSocket = async (configuration): Promise<any> => {
+  try {
+    console.log("[AirDCPP]: Initializing socket...");
 
-  const initializedAirDCPPSocket = new AirDCPPSocket({
-    protocol: `${configuration.protocol}`,
-    hostname: `${configuration.hostname}:${configuration.port}`,
-    username: `${configuration.username}`,
-    password: `${configuration.password}`,
-  });
-
-  // Set up connect and disconnect handlers
-  initializedAirDCPPSocket.onConnected = (sessionInfo) => {
-    // update global state with socket connection status
-    setState({
-      airDCPPSocketConnected: true,
+    const initializedAirDCPPSocket = new AirDCPPSocket({
+      protocol: `${configuration.protocol}`,
+      hostname: `${configuration.hostname}:${configuration.port}`,
+      username: `${configuration.username}`,
+      password: `${configuration.password}`,
     });
-  };
-  initializedAirDCPPSocket.onDisconnected = async (reason, code, wasClean) => {
-    // update global state with socket connection status
-    setState({
-      disconnectionInfo: { reason, code, wasClean },
-      airDCPPSocketConnected: false,
-    });
-  };
-  // AirDC++ Socket-related connection and post-connection
-  // Attempt connection
-  const airDCPPSessionInformation = await initializedAirDCPPSocket.connect();
-  setState({
-    airDCPPSessionInformation,
-  });
 
-  // Set up event listeners
-  initializedAirDCPPSocket.addListener(
-    `queue`,
-    "queue_bundle_tick",
-    async (downloadProgressData) => {
-      console.log(downloadProgressData);
+    // Set up connect and disconnect handlers
+    initializedAirDCPPSocket.onConnected = (sessionInfo) => {
+      // update global state with socket connection status
       setState({
-        airDCPPDownloadTick: downloadProgressData,
+        airDCPPSocketConnected: true,
       });
-    },
-  );
-  initializedAirDCPPSocket.addListener(
-    "queue",
-    "queue_bundle_added",
-    async (data) => {
-      console.log("JEMEN:", data);
-    },
-  );
+    };
+    initializedAirDCPPSocket.onDisconnected = async (
+      reason,
+      code,
+      wasClean,
+    ) => {
+      // update global state with socket connection status
+      setState({
+        disconnectionInfo: { reason, code, wasClean },
+        airDCPPSocketConnected: false,
+      });
+    };
+    // AirDC++ Socket-related connection and post-connection
+    // Attempt connection
+    const airDCPPSessionInformation = await initializedAirDCPPSocket.connect();
+    console.log("zondhale", airDCPPSessionInformation);
+    setState({
+      airDCPPSessionInformation,
+    });
 
-  initializedAirDCPPSocket.addListener(
-    `queue`,
-    "queue_bundle_status",
-    async (bundleData) => {
-      let count = 0;
-      if (bundleData.status.completed && bundleData.status.downloaded) {
-        // dispatch the action for raw import, with the metadata
-        if (count < 1) {
-          console.log(`[AirDCPP]: Download complete.`);
+    // Set up event listeners
+    initializedAirDCPPSocket.addListener(
+      `queue`,
+      "queue_bundle_tick",
+      async (downloadProgressData) => {
+        console.log(downloadProgressData);
+        setState({
+          airDCPPDownloadTick: downloadProgressData,
+        });
+      },
+    );
+    initializedAirDCPPSocket.addListener(
+      "queue",
+      "queue_bundle_added",
+      async (data) => {
+        console.log("JEMEN:", data);
+      },
+    );
 
-          count += 1;
+    initializedAirDCPPSocket.addListener(
+      `queue`,
+      "queue_bundle_status",
+      async (bundleData) => {
+        let count = 0;
+        if (bundleData.status.completed && bundleData.status.downloaded) {
+          // dispatch the action for raw import, with the metadata
+          if (count < 1) {
+            console.log(`[AirDCPP]: Download complete.`);
+
+            count += 1;
+          }
         }
-      }
-    },
-  );
-  return initializedAirDCPPSocket;
+      },
+    );
+    return initializedAirDCPPSocket;
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 // 1. get settings from mongo
@@ -193,10 +202,10 @@ const { data } = await axios({
   method: "GET",
 });
 
-const directConnectConfiguration = data?.directConnect.client.host;
+const directConnectConfiguration = data?.directConnect?.client.host;
 
 // 2. If available, init AirDC++ Socket with those settings
-if (!isEmpty(directConnectConfiguration)) {
+if (!isEmpty(data)) {
   const airDCPPSocketInstance = await initializeAirDCPPSocket(
     directConnectConfiguration,
   );
@@ -204,6 +213,8 @@ if (!isEmpty(directConnectConfiguration)) {
     airDCPPSocketInstance,
     airDCPPClientConfiguration: directConnectConfiguration,
   });
+} else {
+  console.log("problem");
 }
 
 console.log("connected?", getState());

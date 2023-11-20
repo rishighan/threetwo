@@ -2,7 +2,7 @@ import React from "react";
 import { SearchBar } from "../GlobalSearchBar/SearchBar";
 import { DownloadProgressTick } from "../ComicDetail/DownloadProgressTick";
 import { Link } from "react-router-dom";
-import { isEmpty, isUndefined } from "lodash";
+import { isEmpty, isNil, isUndefined } from "lodash";
 import { format, fromUnixTime } from "date-fns";
 import { useStore } from "../../store/index";
 import { useShallow } from "zustand/react/shallow";
@@ -23,6 +23,7 @@ const Navbar: React.FunctionComponent = (props) => {
       importJobQueue: state.importJobQueue,
     })),
   );
+  console.log(airDCPPSessionInformation);
   //   const downloadProgressTick = useSelector(
   //     (state: RootState) => state.airdcpp.downloadProgressData,
   //   );
@@ -146,7 +147,7 @@ const Navbar: React.FunctionComponent = (props) => {
 
           {/* AirDC++ socket connection status */}
           <div className="navbar-item has-dropdown is-hoverable">
-            {airDCPPSocketConnected ? (
+            {!isUndefined(airDCPPSessionInformation.user) ? (
               <>
                 <a className="navbar-link is-arrowless has-text-success">
                   <i className="fa-solid fa-bolt"></i>
@@ -158,7 +159,9 @@ const Navbar: React.FunctionComponent = (props) => {
                     Last login was{" "}
                     <span className="tag">
                       {format(
-                        fromUnixTime(airDCPPSessionInformation.user.last_login),
+                        fromUnixTime(
+                          airDCPPSessionInformation?.user.last_login,
+                        ),
                         "dd MMMM, yyyy",
                       )}
                     </span>
@@ -178,7 +181,11 @@ const Navbar: React.FunctionComponent = (props) => {
                     </span>
                   </p>
 
-                  {/* <pre>{JSON.stringify(airDCPPSessionInfo, null, 2)}</pre> */}
+                  {
+                    <pre>
+                      {JSON.stringify(airDCPPSessionInformation, null, 2)}
+                    </pre>
+                  }
                 </div>
               </>
             ) : (
