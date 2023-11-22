@@ -27,6 +27,10 @@ export const AirDCPPSettingsForm = (): ReactElement => {
     })),
   );
 
+  /**
+   * Mutation to update settings and subsequently initialize
+   * AirDC++ socket with those settings
+   */
   const { mutate } = useMutation({
     mutationFn: async (values) =>
       await axios({
@@ -42,14 +46,20 @@ export const AirDCPPSettingsForm = (): ReactElement => {
           },
         },
       } = values;
-      console.log("asdas", host);
       initializeAirDCPPSocket(host);
     },
   });
+  const deleteSettingsMutation = useMutation(
+    async () =>
+      await axios.post("http://localhost:3000/api/settings/saveSettings", {
+        settingsPayload: {},
+        settingsKey: "directConnect",
+      }),
+  );
 
-  const removeSettings = useCallback(async () => {
-    // airDCPPSettings.setSettings({});
-  }, []);
+  // const removeSettings = useCallback(async () => {
+  //   // airDCPPSettings.setSettings({});
+  // }, []);
   //
   const initFormData = !isUndefined(airDCPPClientConfiguration)
     ? airDCPPClientConfiguration
@@ -69,7 +79,11 @@ export const AirDCPPSettingsForm = (): ReactElement => {
 
       {!isEmpty(airDCPPClientConfiguration) ? (
         <p className="control mt-4">
-          <button className="button is-danger" onClick={removeSettings}>
+          as
+          <button
+            className="button is-danger"
+            onClick={() => deleteSettingsMutation.mutate()}
+          >
             Delete
           </button>
         </p>

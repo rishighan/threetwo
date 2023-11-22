@@ -180,12 +180,6 @@ const Navbar: React.FunctionComponent = (props) => {
                       {airDCPPSessionInformation.session_id}
                     </span>
                   </p>
-
-                  {
-                    <pre>
-                      {JSON.stringify(airDCPPSessionInformation, null, 2)}
-                    </pre>
-                  }
                 </div>
               </>
             ) : (

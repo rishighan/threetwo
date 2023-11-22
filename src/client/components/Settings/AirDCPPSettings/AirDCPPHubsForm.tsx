@@ -22,7 +22,11 @@ export const AirDCPPHubsForm = (airDCPPClientUserSettings): ReactElement => {
     })),
   );
 
-  const { data, isLoading, isError } = useQuery({
+  const {
+    data: settings,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["settings"],
     queryFn: async () =>
       await axios({
@@ -31,12 +35,12 @@ export const AirDCPPHubsForm = (airDCPPClientUserSettings): ReactElement => {
       }),
   });
 
-  console.log("Asd", data);
-  const {
-    settings: {
-      data: { directConnect },
-    },
-  } = data;
+  console.log("Asd", settings);
+  // const {
+  //   settings: {
+  //     data: { directConnect },
+  //   },
+  // } = data;
 
   const { data: hubs } = useQuery({
     queryKey: [],
