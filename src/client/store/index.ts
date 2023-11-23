@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { isEmpty, isNil } from "lodash";
+import { isEmpty, isNil, isUndefined } from "lodash";
 import io from "socket.io-client";
 import { SOCKET_BASE_URI } from "../constants/endpoints";
 import { produce } from "immer";
@@ -151,7 +151,6 @@ export const initializeAirDCPPSocket = async (configuration): Promise<any> => {
     // AirDC++ Socket-related connection and post-connection
     // Attempt connection
     const airDCPPSessionInformation = await initializedAirDCPPSocket.connect();
-    console.log("zondhale", airDCPPSessionInformation);
     setState({
       airDCPPSessionInformation,
     });

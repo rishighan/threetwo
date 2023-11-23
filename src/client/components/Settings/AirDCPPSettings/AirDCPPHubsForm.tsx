@@ -8,19 +8,17 @@ import { useStore } from "../../../store";
 import { useShallow } from "zustand/react/shallow";
 import axios from "axios";
 
-export const AirDCPPHubsForm = (airDCPPClientUserSettings): ReactElement => {
+export const AirDCPPHubsForm = (): ReactElement => {
   const queryClient = useQueryClient();
   const {
     airDCPPSocketInstance,
     airDCPPClientConfiguration,
     airDCPPSessionInformation,
-  } = useStore(
-    useShallow((state) => ({
-      airDCPPSocketInstance: state.airDCPPSocketInstance,
-      airDCPPClientConfiguration: state.airDCPPClientConfiguration,
-      airDCPPSessionInformation: state.airDCPPSessionInformation,
-    })),
-  );
+  } = useStore((state) => ({
+    airDCPPSocketInstance: state.airDCPPSocketInstance,
+    airDCPPClientConfiguration: state.airDCPPClientConfiguration,
+    airDCPPSessionInformation: state.airDCPPSessionInformation,
+  }));
 
   const {
     data: settings,
@@ -35,17 +33,12 @@ export const AirDCPPHubsForm = (airDCPPClientUserSettings): ReactElement => {
       }),
   });
 
-  console.log("Asd", settings);
-  // const {
-  //   settings: {
-  //     data: { directConnect },
-  //   },
-  // } = data;
-
+  /**
+   * Get the hubs list from an AirDCPP Socket
+   */
   const { data: hubs } = useQuery({
     queryKey: [],
     queryFn: async () => await airDCPPSocketInstance.get(`hubs`),
-    enabled: !!settings,
   });
   let hubList = {};
   if (hubs) {
@@ -105,24 +98,28 @@ export const AirDCPPHubsForm = (airDCPPClientUserSettings): ReactElement => {
           </form>
         )}
       />
-      <div className="mt-4">
-        <article className="message is-warning">
-          <div className="message-body is-size-6 is-family-secondary">
-            Your selection in the dropdown <strong>will replace</strong> the
-            existing selection.
+
+      {settings?.directConnect?.client.hubs ? (
+        <>
+          <div className="mt-4">
+            <article className="message is-warning">
+              <div className="message-body is-size-6 is-family-secondary">
+                Your selection in the dropdown <strong>will replace</strong> the
+                existing selection.
+              </div>
+            </article>
           </div>
-        </article>
-      </div>
-      <div className="box mt-3">
-        <h6>Selected hubs</h6>
-        {settings &&
-          settings?.directConnect?.client.hubs.map(({ value, label }) => (
-            <div key={value}>
-              <div>{label}</div>
-              <span className="is-size-7">{value}</span>
-            </div>
-          ))}
-      </div>
+          <div className="box mt-3">
+            <h6>Selected hubs</h6>
+            {settings?.directConnect?.client.hubs.map(({ value, label }) => (
+              <div key={value}>
+                <div>{label}</div>
+                <span className="is-size-7">{value}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : null}
     </>
   );
 };

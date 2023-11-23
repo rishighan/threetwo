@@ -11,12 +11,14 @@ export const AirDCPPSettingsForm = (): ReactElement => {
   // cherry-picking selectors for:
   // 1. initial values for the form
   // 2. If initial values are present, get the socket information to display
+  const { setState } = useStore;
   const {
     airDCPPSocketConnected,
     airDCPPDisconnectionInfo,
     airDCPPSessionInformation,
     airDCPPClientConfiguration,
     airDCPPSocketInstance,
+    setAirDCPPSocketInstance,
   } = useStore(
     useShallow((state) => ({
       airDCPPSocketConnected: state.airDCPPSocketConnected,
@@ -24,6 +26,7 @@ export const AirDCPPSettingsForm = (): ReactElement => {
       airDCPPClientConfiguration: state.airDCPPClientConfiguration,
       airDCPPSessionInformation: state.airDCPPSessionInformation,
       airDCPPSocketInstance: state.airDCPPSocketInstance,
+      setAirDCPPSocketInstance: state.setAirDCPPSocketInstance,
     })),
   );
 
@@ -38,7 +41,7 @@ export const AirDCPPSettingsForm = (): ReactElement => {
         method: "POST",
         data: { settingsPayload: values, settingsKey: "directConnect" },
       }),
-    onSuccess: (values) => {
+    onSuccess: async (values) => {
       const {
         data: {
           directConnect: {
@@ -46,7 +49,9 @@ export const AirDCPPSettingsForm = (): ReactElement => {
           },
         },
       } = values;
-      initializeAirDCPPSocket(host);
+      const dcppSocketInstance = await initializeAirDCPPSocket(host);
+      console.log("jogiya", dcppSocketInstance);
+      setState({ airDCPPSocketInstance: dcppSocketInstance });
     },
   });
   const deleteSettingsMutation = useMutation(

@@ -23,7 +23,6 @@ const Navbar: React.FunctionComponent = (props) => {
       importJobQueue: state.importJobQueue,
     })),
   );
-  console.log(airDCPPSessionInformation);
   //   const downloadProgressTick = useSelector(
   //     (state: RootState) => state.airdcpp.downloadProgressData,
   //   );
