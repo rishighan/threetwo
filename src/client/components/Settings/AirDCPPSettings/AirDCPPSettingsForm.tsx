@@ -50,8 +50,10 @@ export const AirDCPPSettingsForm = (): ReactElement => {
         },
       } = values;
       const dcppSocketInstance = await initializeAirDCPPSocket(host);
-      console.log("jogiya", dcppSocketInstance);
-      setState({ airDCPPSocketInstance: dcppSocketInstance });
+      setState({
+        airDCPPClientConfiguration: host,
+        airDCPPSocketInstance: dcppSocketInstance,
+      });
     },
   });
   const deleteSettingsMutation = useMutation(
@@ -69,7 +71,7 @@ export const AirDCPPSettingsForm = (): ReactElement => {
   const initFormData = !isUndefined(airDCPPClientConfiguration)
     ? airDCPPClientConfiguration
     : {};
-
+  console.log(airDCPPClientConfiguration);
   return (
     <>
       <ConnectionForm

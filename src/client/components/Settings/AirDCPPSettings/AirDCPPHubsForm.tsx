@@ -2,10 +2,8 @@ import React, { ReactElement, useEffect, useState, useContext } from "react";
 import { Form, Field } from "react-final-form";
 import { isEmpty, isNil, isUndefined } from "lodash";
 import Select from "react-select";
-import { saveSettings } from "../../../actions/settings.actions";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "../../../store";
-import { useShallow } from "zustand/react/shallow";
 import axios from "axios";
 
 export const AirDCPPHubsForm = (): ReactElement => {
@@ -47,19 +45,21 @@ export const AirDCPPHubsForm = (): ReactElement => {
       label: identity.name,
     }));
   }
-
   const { mutate } = useMutation({
     mutationFn: async (values) =>
       await axios({
         url: `http://localhost:3000/api/settings/saveSettings`,
         method: "POST",
-        data: { settingsPayload: values, settingsKey: "directConnect" },
+        data: {
+          settingsPayload: values,
+          settingsObjectId: settings?.data._id,
+          settingsKey: "directConnect",
+        },
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings"] });
     },
   });
-
   const validate = async () => {};
 
   const SelectAdapter = ({ input, ...rest }) => {

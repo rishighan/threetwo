@@ -204,7 +204,7 @@ const { data } = await axios({
 const directConnectConfiguration = data?.directConnect?.client.host;
 
 // 2. If available, init AirDC++ Socket with those settings
-if (!isEmpty(data)) {
+if (!isNil(directConnectConfiguration)) {
   const airDCPPSocketInstance = await initializeAirDCPPSocket(
     directConnectConfiguration,
   );
