@@ -39,7 +39,7 @@ export const AirDCPPHubsForm = (): ReactElement => {
     queryFn: async () => await airDCPPSocketInstance.get(`hubs`),
   });
   let hubList = {};
-  if (hubs) {
+  if (!isNil(hubs)) {
     hubList = hubs.map(({ hub_url, identity }) => ({
       value: hub_url,
       label: identity.name,
