@@ -88,22 +88,19 @@ export const AcquisitionPanel = (
     setDcppQuery(dcppSearchQuery);
   }, []);
 
-  const getDCPPSearchResults = useCallback(async (searchQuery) => {
+  const getDCPPSearchResults = async (searchQuery) => {
+    console.log(hubs);
     const manualQuery = {
       query: {
         pattern: `${searchQuery.issueName}`,
         extensions: ["cbz", "cbr", "cb7"],
       },
-      hub_urls: map(hubs, (item) => item.value),
+      hub_urls: map(hubs, (hub) => hub.hub_url),
       priority: 5,
     };
-    // dispatch(
-    //   search(manualQuery, airDCPPConfiguration.airDCPPState.socket, {
-    //     username: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.username}`,
-    //     password: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.password}`,
-    //   }),
-    // );
-  }, []);
+
+    search(manualQuery, airDCPPSocketInstance);
+  };
 
   // download via AirDC++
   const downloadDCPPResult = useCallback(
@@ -137,7 +134,74 @@ export const AcquisitionPanel = (
     },
     [],
   );
-  return <></>;
+  return (
+    <>
+      <div className="comic-detail columns">
+        {!isEmpty(airDCPPSocketInstance) ? (
+          <Form
+            onSubmit={getDCPPSearchResults}
+            initialValues={{
+              issueName,
+            }}
+            render={({ handleSubmit, form, submitting, pristine, values }) => (
+              <form
+                onSubmit={handleSubmit}
+                className="column is-three-quarters"
+              >
+                <div className="box search">
+                  <div className="columns">
+                    <Field name="issueName">
+                      {({ input, meta }) => {
+                        return (
+                          <div className="column is-two-thirds">
+                            <input
+                              {...input}
+                              className="input main-search-bar is-medium"
+                              placeholder="Type an issue/volume name"
+                            />
+                            <span className="help is-clearfix is-light is-info">
+                              This is the auto-detected title; you may need to
+                              change it to get better matches if the
+                              auto-detected one doesn't work.
+                            </span>
+                          </div>
+                        );
+                      }}
+                    </Field>
+
+                    <div className="column">
+                      <button
+                        type="submit"
+                        className={
+                          false
+                            ? "button is-loading is-warning"
+                            : "button is-success is-light"
+                        }
+                      >
+                        <span className="icon is-small">
+                          <img src="/src/client/assets/img/airdcpp_logo.svg" />
+                        </span>
+                        <span className="airdcpp-text">Search on AirDC++</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            )}
+          />
+        ) : (
+          <div className="column is-three-fifths">
+            <article className="message is-info">
+              <div className="message-body is-size-6 is-family-secondary">
+                AirDC++ is not configured. Please configure it in{" "}
+                <code>Settings &gt; AirDC++ &gt; Connection</code>.
+              </div>
+            </article>
+          </div>
+        )}
+      </div>
+    </>
+  );
 };
 
 export default AcquisitionPanel;
