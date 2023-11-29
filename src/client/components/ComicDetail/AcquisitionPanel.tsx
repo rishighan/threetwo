@@ -235,11 +235,7 @@ export const AcquisitionPanel = (
                               className="input main-search-bar is-medium"
                               placeholder="Type an issue/volume name"
                             />
-                            <span className="help is-clearfix is-light is-info">
-                              This is the auto-detected title; you may need to
-                              change it to get better matches if the
-                              auto-detected one doesn't work.
-                            </span>
+                            <span className="help is-clearfix is-light is-info"></span>
                           </div>
                         );
                       }}
@@ -303,7 +299,7 @@ export const AcquisitionPanel = (
                         <p className="mb-2">
                           {result.type.id === "directory" ? (
                             <i className="fas fa-folder"></i>
-                          ) : null}{" "}
+                          ) : null}
                           {ellipsize(result.name, 70)}
                         </p>
 
@@ -343,7 +339,8 @@ export const AcquisitionPanel = (
                         </div>
                       </td>
                       <td>
-                        <a
+                        <button
+                          className="button is-small is-light is-success"
                           onClick={() =>
                             downloadDCPPResult(
                               searchInstance.id,
@@ -354,8 +351,11 @@ export const AcquisitionPanel = (
                             )
                           }
                         >
-                          <i className="fas fa-file-download"></i>
-                        </a>
+                          <span className="icon">
+                            <i className="fas fa-file-download"></i>
+                          </span>
+                          <span>Download </span>
+                        </button>
                       </td>
                     </tr>
                   );
@@ -367,10 +367,22 @@ export const AcquisitionPanel = (
           <div className="column is-three-fifths">
             <article className="message is-info">
               <div className="message-body is-size-6 is-family-secondary">
-                Searching via <strong>AirDC++</strong> is still in{" "}
-                <strong>alpha</strong>. Some searches may take arbitrarily long,
-                or may not work at all. Searches from <code>ADCS</code> hubs are
-                more reliable than <code>NMDCS</code> ones.
+                <p>
+                  The default search term is an auto-detected title; you may
+                  need to change it to get better matches if the auto-detected
+                  one doesn't work.
+                </p>
+              </div>
+            </article>
+
+            <article className="message is-warning">
+              <div className="message-body is-size-6 is-family-secondary">
+                <p className="content">
+                  Searching via <strong>AirDC++</strong> is still in
+                  <strong>alpha</strong>. Some searches may take arbitrarily
+                  long, or may not work at all. Searches from <code>ADCS</code>
+                  hubs are more reliable than <code>NMDCS</code> ones.
+                </p>
               </div>
             </article>
           </div>

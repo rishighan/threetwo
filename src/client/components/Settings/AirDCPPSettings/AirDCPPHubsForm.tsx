@@ -37,9 +37,11 @@ export const AirDCPPHubsForm = (): ReactElement => {
   const { data: hubs } = useQuery({
     queryKey: [],
     queryFn: async () => await airDCPPSocketInstance.get(`hubs`),
+    enabled: !!settings,
   });
   let hubList = {};
-  if (!isNil(hubs)) {
+  if (!isEmpty(hubs)) {
+    console.log("hs", hubs);
     hubList = hubs.map(({ hub_url, identity }) => ({
       value: hub_url,
       label: identity.name,
@@ -69,7 +71,7 @@ export const AirDCPPHubsForm = (): ReactElement => {
 
   return (
     <>
-      {!isEmpty(hubList) ? (
+      {!isEmpty(hubList) && !isUndefined(hubs) ? (
         <Form
           onSubmit={mutate}
           validate={validate}
