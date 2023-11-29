@@ -115,11 +115,11 @@ export const search = async (data: SearchData, ADCPPSocket: any) => {
 
         // The search can now be considered to be "complete"
         // If there's an "in progress" indicator in the UI, that could also be disabled here
-        dispatch({
-          type: AIRDCPP_HUB_SEARCHES_SENT,
-          searchInfo,
-          instance,
-        });
+        // dispatch({
+        //   type: AIRDCPP_HUB_SEARCHES_SENT,
+        //   searchInfo,
+        //   instance,
+        // });
       },
       instance.id,
     );

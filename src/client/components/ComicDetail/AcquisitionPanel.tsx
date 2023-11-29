@@ -89,7 +89,6 @@ export const AcquisitionPanel = (
   }, []);
 
   const getDCPPSearchResults = async (searchQuery) => {
-    console.log(hubs);
     const manualQuery = {
       query: {
         pattern: `${searchQuery.issueName}`,
