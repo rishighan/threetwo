@@ -1,18 +1,17 @@
 import React, { ReactElement, useEffect, useState } from "react";
 import { isEmpty, isNil } from "lodash";
-import { useSelector } from "react-redux";
 
 export const TabControls = (props): ReactElement => {
-  const comicBookDetailData = useSelector(
-    (state: RootState) => state.comicInfo.comicBookDetail,
-  );
-  const { filteredTabs } = props;
-
+  // const comicBookDetailData = useSelector(
+  //   (state: RootState) => state.comicInfo.comicBookDetail,
+  // );
+  const { filteredTabs, acquisition } = props;
   const [active, setActive] = useState(filteredTabs[0].id);
   useEffect(() => {
     setActive(filteredTabs[0].id);
-  }, [comicBookDetailData]);
+  }, [acquisition]);
 
+  console.log(filteredTabs);
   return (
     <>
       <div className="tabs">
@@ -25,15 +24,11 @@ export const TabControls = (props): ReactElement => {
             >
               {/* Downloads tab and count badge */}
               <a>
-                {id === 6 &&
-                !isNil(comicBookDetailData.acquisition.directconnect) ? (
+                {id === 6 && !isNil(acquisition.directconnect) ? (
                   <span className="download-icon-labels">
                     <i className="fa-solid fa-download"></i>
                     <span className="tag downloads-count is-info is-light">
-                      {
-                        comicBookDetailData.acquisition.directconnect.downloads
-                          .length
-                      }
+                      {acquisition.directconnect.downloads.length}
                     </span>
                   </span>
                 ) : (

@@ -1,5 +1,4 @@
 import React, { useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { isNil, map } from "lodash";
 import { applyComicVineMatch } from "../../actions/comicinfo.actions";
 import { convert } from "html-to-text";
@@ -15,12 +14,11 @@ const handleBrokenImage = (e) => {
 };
 
 export const MatchResult = (props: MatchResultProps) => {
-  const dispatch = useDispatch();
   const applyCVMatch = useCallback(
-    (match, comicObjectId) => {
-      dispatch(applyComicVineMatch(match, comicObjectId));
-    },
-    [dispatch],
+    // (match, comicObjectId) => {
+    //   dispatch(applyComicVineMatch(match, comicObjectId));
+    // },
+    [],
   );
   return (
     <>

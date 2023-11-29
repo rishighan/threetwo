@@ -2,60 +2,95 @@ import React, { ReactElement, useCallback } from "react";
 import { AirDCPPSettingsConfirmation } from "./AirDCPPSettingsConfirmation";
 import { isUndefined, isEmpty } from "lodash";
 import { ConnectionForm } from "../../shared/ConnectionForm/ConnectionForm";
-import { useStore } from "../../../store/index";
+import { initializeAirDCPPSocket, useStore } from "../../../store/index";
 import { useShallow } from "zustand/react/shallow";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 export const AirDCPPSettingsForm = (): ReactElement => {
   // cherry-picking selectors for:
   // 1. initial values for the form
   // 2. If initial values are present, get the socket information to display
+  const { setState } = useStore;
   const {
     airDCPPSocketConnected,
     airDCPPDisconnectionInfo,
-    airDCPPSocketConnectionInformation,
+    airDCPPSessionInformation,
     airDCPPClientConfiguration,
+    airDCPPSocketInstance,
+    setAirDCPPSocketInstance,
   } = useStore(
     useShallow((state) => ({
       airDCPPSocketConnected: state.airDCPPSocketConnected,
       airDCPPDisconnectionInfo: state.airDCPPDisconnectionInfo,
       airDCPPClientConfiguration: state.airDCPPClientConfiguration,
-      airDCPPSocketConnectionInformation:
-        state.airDCPPSocketConnectionInformation,
+      airDCPPSessionInformation: state.airDCPPSessionInformation,
+      airDCPPSocketInstance: state.airDCPPSocketInstance,
+      setAirDCPPSocketInstance: state.setAirDCPPSocketInstance,
     })),
   );
 
-  const onSubmit = useCallback(async (values) => {
-    try {
-      // airDCPPSettings.setSettings(values);
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
-  const removeSettings = useCallback(async () => {
-    // airDCPPSettings.setSettings({});
-  }, []);
+  /**
+   * Mutation to update settings and subsequently initialize
+   * AirDC++ socket with those settings
+   */
+  const { mutate } = useMutation({
+    mutationFn: async (values) =>
+      await axios({
+        url: `http://localhost:3000/api/settings/saveSettings`,
+        method: "POST",
+        data: { settingsPayload: values, settingsKey: "directConnect" },
+      }),
+    onSuccess: async (values) => {
+      const {
+        data: {
+          directConnect: {
+            client: { host },
+          },
+        },
+      } = values;
+      const dcppSocketInstance = await initializeAirDCPPSocket(host);
+      setState({
+        airDCPPClientConfiguration: host,
+        airDCPPSocketInstance: dcppSocketInstance,
+      });
+    },
+  });
+  const deleteSettingsMutation = useMutation(
+    async () =>
+      await axios.post("http://localhost:3000/api/settings/saveSettings", {
+        settingsPayload: {},
+        settingsKey: "directConnect",
+      }),
+  );
+
+  // const removeSettings = useCallback(async () => {
+  //   // airDCPPSettings.setSettings({});
+  // }, []);
   //
   const initFormData = !isUndefined(airDCPPClientConfiguration)
     ? airDCPPClientConfiguration
     : {};
-
+  console.log(airDCPPClientConfiguration);
   return (
     <>
       <ConnectionForm
         initialData={initFormData}
-        submitHandler={onSubmit}
+        submitHandler={mutate}
         formHeading={"Configure AirDC++"}
       />
 
-      {!isEmpty(airDCPPSocketConnectionInformation) ? (
-        <AirDCPPSettingsConfirmation
-          settings={airDCPPSocketConnectionInformation}
-        />
+      {!isEmpty(airDCPPSessionInformation) ? (
+        <AirDCPPSettingsConfirmation settings={airDCPPSessionInformation} />
       ) : null}
 
       {!isEmpty(airDCPPClientConfiguration) ? (
         <p className="control mt-4">
-          <button className="button is-danger" onClick={removeSettings}>
+          as
+          <button
+            className="button is-danger"
+            onClick={() => deleteSettingsMutation.mutate()}
+          >
             Delete
           </button>
         </p>

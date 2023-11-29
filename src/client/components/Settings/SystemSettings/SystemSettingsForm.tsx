@@ -1,15 +1,16 @@
-import React, { ReactElement, useCallback } from "react";
-import { flushDb } from "../../../actions/settings.actions";
-import { useDispatch, useSelector } from "react-redux";
+import React, { ReactElement } from "react";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 export const SystemSettingsForm = (): ReactElement => {
-  const dispatch = useDispatch();
-  const isSettingsCallInProgress = useSelector(
-    (state: RootState) => state.settings.inProgress,
-  );
-  const flushDatabase = useCallback(() => {
-    dispatch(flushDb());
-  }, []);
+  const { mutate: flushDb, isLoading } = useMutation({
+    mutationFn: async () => {
+      await axios({
+        url: `http://localhost:3000/api/library/flushDb`,
+        method: "POST",
+      });
+    },
+  });
 
   return (
     <div className="is-clearfix">
@@ -48,11 +49,9 @@ export const SystemSettingsForm = (): ReactElement => {
 
         <button
           className={
-            isSettingsCallInProgress
-              ? "button is-danger is-loading"
-              : "button is-danger"
+            isLoading ? "button is-danger is-loading" : "button is-danger"
           }
-          onClick={flushDatabase}
+          onClick={() => flushDb()}
         >
           <span className="icon">
             <i className="fas fa-eraser"></i>

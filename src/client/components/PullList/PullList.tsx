@@ -1,25 +1,23 @@
 import React, { ReactElement, useEffect, useMemo } from "react";
 import T2Table from "../shared/T2Table";
 import { getWeeklyPullList } from "../../actions/comicinfo.actions";
-import { useDispatch, useSelector } from "react-redux";
 import Card from "../shared/Carda";
 import ellipsize from "ellipsize";
 import { isNil } from "lodash";
 
 export const PullList = (): ReactElement => {
-  const pullListComics = useSelector(
-    (state: RootState) => state.comicInfo.pullList,
-  );
+  // const pullListComics = useSelector(
+  //   (state: RootState) => state.comicInfo.pullList,
+  // );
 
-  const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(
-      getWeeklyPullList({
-        startDate: "2023-7-28",
-        pageSize: "15",
-        currentPage: "1",
-      }),
-    );
+    // dispatch(
+    //   getWeeklyPullList({
+    //     startDate: "2023-7-28",
+    //     pageSize: "15",
+    //     currentPage: "1",
+    //   }),
+    // );
   }, []);
   const nextPageHandler = () => {};
   const previousPageHandler = () => {};

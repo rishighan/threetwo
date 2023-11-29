@@ -12,26 +12,30 @@ import {
 } from "@tanstack/react-table";
 
 export const T2Table = (tableOptions): ReactElement => {
-  const { sourceData, columns, paginationHandlers: { nextPage, previousPage }, totalPages, rowClickHandler } =
-    tableOptions;
+  const {
+    sourceData,
+    columns,
+    paginationHandlers: { nextPage, previousPage },
+    totalPages,
+    rowClickHandler,
+  } = tableOptions;
 
-  const [{ pageIndex, pageSize }, setPagination] =
-    useState<PaginationState>({
-      pageIndex: 1,
-      pageSize: 15,
-    });
+  const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
+    pageIndex: 1,
+    pageSize: 15,
+  });
 
   const pagination = useMemo(
     () => ({
       pageIndex,
       pageSize,
     }),
-    [pageIndex, pageSize]
+    [pageIndex, pageSize],
   );
 
   /**
-   * Pagination control to move forward one page 
-   * @returns void 
+   * Pagination control to move forward one page
+   * @returns void
    */
   const goToNextPage = () => {
     setPagination({
@@ -39,10 +43,10 @@ export const T2Table = (tableOptions): ReactElement => {
       pageSize,
     });
     nextPage(pageIndex, pageSize);
-  }
+  };
 
   /**
-   * Pagination control to move backward one page 
+   * Pagination control to move backward one page
    * @returns void
    **/
   const goToPreviousPage = () => {
@@ -51,7 +55,7 @@ export const T2Table = (tableOptions): ReactElement => {
       pageSize,
     });
     previousPage(pageIndex, pageSize);
-  }
+  };
 
   const table = useReactTable({
     data: sourceData,
@@ -75,15 +79,29 @@ export const T2Table = (tableOptions): ReactElement => {
         {/* pagination controls */}
         <nav className="pagination columns">
           <div className="mr-4 has-text-weight-semibold has-text-left">
-            <p className="is-size-5">Page {pageIndex} of {Math.ceil(totalPages / pageSize)}</p>
-            {/* <p>{totalPages} comics in all</p> */}
+            <p className="is-size-5">
+              Page {pageIndex} of {Math.ceil(totalPages / pageSize)}
+            </p>
+            <p>{totalPages} comics in all</p>
           </div>
           <div className="field has-addons">
             <div className="control">
-              <div className="button" onClick={() => goToPreviousPage()}> <i className="fas fa-chevron-left"></i></div>
+              <button
+                className="button"
+                onClick={() => goToPreviousPage()}
+                disabled={pageIndex === 1}
+              >
+                <i className="fas fa-chevron-left"></i>
+              </button>
             </div>
             <div className="control">
-              <div className="button" onClick={() => goToNextPage()}> <i className="fas fa-chevron-right"></i> </div>
+              <button
+                className="button"
+                onClick={() => goToNextPage()}
+                disabled={pageIndex > Math.floor(totalPages / pageSize)}
+              >
+                <i className="fas fa-chevron-right"></i>
+              </button>
             </div>
 
             <div className="field has-addons ml-5">
@@ -112,16 +130,13 @@ export const T2Table = (tableOptions): ReactElement => {
           {table.getHeaderGroups().map((headerGroup, idx) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header, idx) => (
-                <th
-                  key={header.id}
-                  colSpan={header.colSpan}
-                >
+                <th key={header.id} colSpan={header.colSpan}>
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
                 </th>
               ))}
             </tr>
@@ -131,11 +146,8 @@ export const T2Table = (tableOptions): ReactElement => {
         <tbody>
           {table.getRowModel().rows.map((row, idx) => {
             return (
-              <tr
-                key={row.id}
-                onClick={() => rowClickHandler(row)}
-              >
-                {row.getVisibleCells().map(cell => (
+              <tr key={row.id} onClick={() => rowClickHandler(row)}>
+                {row.getVisibleCells().map((cell) => (
                   <td key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>

@@ -4,10 +4,15 @@ import { createRoot } from "react-dom/client";
 import App from "./components/App";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Settings from "./components/Settings/Settings";
+import { ErrorPage } from "./components/shared/ErrorPage";
 const rootEl = document.getElementById("root");
 const root = createRoot(rootEl);
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import Import from "./components/Import/Import";
+import Dashboard from "./components/Dashboard/Dashboard";
+import TabulatedContentContainer from "./components/Library/TabulatedContentContainer";
+import { ComicDetailContainer } from "./components/ComicDetail/ComicDetailContainer";
 
 const queryClient = new QueryClient();
 
@@ -15,10 +20,20 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-  },
-  {
-    path: "/settings",
-    element: <Settings />,
+    errorElement: <ErrorPage />,
+    children: [
+      { path: "dashboard", element: <Dashboard /> },
+      { path: "settings", element: <Settings /> },
+      {
+        path: "library",
+        element: <TabulatedContentContainer category="library" />,
+      },
+      {
+        path: "comic/details/:comicObjectId",
+        element: <ComicDetailContainer />,
+      },
+      { path: "import", element: <Import path={"./comics"} /> },
+    ],
   },
 ]);
 
