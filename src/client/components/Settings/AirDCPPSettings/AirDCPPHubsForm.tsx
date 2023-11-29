@@ -45,6 +45,7 @@ export const AirDCPPHubsForm = (): ReactElement => {
       label: identity.name,
     }));
   }
+  console.log(hubList);
   const { mutate } = useMutation({
     mutationFn: async (values) =>
       await axios({
@@ -66,40 +67,51 @@ export const AirDCPPHubsForm = (): ReactElement => {
     return <Select {...input} {...rest} isClearable isMulti />;
   };
 
+  console.log(settings);
   return (
     <>
-      <Form
-        onSubmit={mutate}
-        validate={validate}
-        render={({ handleSubmit }) => (
-          <form onSubmit={handleSubmit}>
-            <div>
-              <h3 className="title">Hubs</h3>
-              <h6 className="subtitle has-text-grey-light">
-                Select the hubs you want to perform searches against.
-              </h6>
-            </div>
-            <div className="field">
-              <label className="label">AirDC++ Host</label>
-              <div className="control">
-                <Field
-                  name="hubs"
-                  component={SelectAdapter}
-                  className="basic-multi-select"
-                  placeholder="Select Hubs to Search Against"
-                  options={hubList}
-                />
+      {!isEmpty(hubList) ? (
+        <Form
+          onSubmit={mutate}
+          validate={validate}
+          render={({ handleSubmit }) => (
+            <form onSubmit={handleSubmit}>
+              <div>
+                <h3 className="title">Hubs</h3>
+                <h6 className="subtitle has-text-grey-light">
+                  Select the hubs you want to perform searches against.
+                </h6>
               </div>
+              <div className="field">
+                <label className="label">AirDC++ Host</label>
+                <div className="control">
+                  <Field
+                    name="hubs"
+                    component={SelectAdapter}
+                    className="basic-multi-select"
+                    placeholder="Select Hubs to Search Against"
+                    options={hubList}
+                  />
+                </div>
+              </div>
+
+              <button type="submit" className="button is-primary">
+                Submit
+              </button>
+            </form>
+          )}
+        />
+      ) : (
+        <>
+          <article className="message">
+            <div className="message-body">
+              No configured hubs detected in AirDC++. <br />
+              Configure to a hub in AirDC++ and then select a default hub here.
             </div>
-
-            <button type="submit" className="button is-primary">
-              Submit
-            </button>
-          </form>
-        )}
-      />
-
-      {settings?.directConnect?.client.hubs ? (
+          </article>
+        </>
+      )}
+      {!isEmpty(settings?.data.directConnect?.client.hubs) ? (
         <>
           <div className="mt-4">
             <article className="message is-warning">
@@ -110,13 +122,15 @@ export const AirDCPPHubsForm = (): ReactElement => {
             </article>
           </div>
           <div className="box mt-3">
-            <h6>Selected hubs</h6>
-            {settings?.directConnect?.client.hubs.map(({ value, label }) => (
-              <div key={value}>
-                <div>{label}</div>
-                <span className="is-size-7">{value}</span>
-              </div>
-            ))}
+            <h6>Default Hub For Searches:</h6>
+            {settings?.data.directConnect?.client.hubs.map(
+              ({ value, label }) => (
+                <div key={value}>
+                  <div>{label}</div>
+                  <span className="is-size-7">{value}</span>
+                </div>
+              ),
+            )}
           </div>
         </>
       ) : null}
