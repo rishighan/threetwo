@@ -13,7 +13,9 @@ $size-9: 0.7rem;
 $flexSize: 4em;
 $boxSpacing: 1em;
 $colorText: #404646;
-
+body {
+  background: #fffcc;
+}
 .is-size-8 {
   font-size: $size-8;
 }
@@ -422,7 +424,7 @@ pre {
   width: 100%;
   padding: 25px 0 15px 0;
   position: sticky;
-  z-index:9999;
+  z-index: 9999;
   background: #fffffc;
   top: 50px;
 }

@@ -67,7 +67,6 @@ export const AirDCPPHubsForm = (): ReactElement => {
     return <Select {...input} {...rest} isClearable isMulti />;
   };
 
-  console.log(settings);
   return (
     <>
       {!isEmpty(hubList) ? (

@@ -1,18 +1,14 @@
-import React, {
-  useCallback,
-  useContext,
-  ReactElement,
-  useEffect,
-  useState,
-} from "react";
+import React, { useCallback, ReactElement, useEffect, useState } from "react";
 import {
-  search,
   downloadAirDCPPItem,
   getBundlesForComic,
+  sleep,
 } from "../../actions/airdcpp.actions";
+import { SearchQuery, PriorityEnum, SearchResponse } from "threetwo-ui-typings";
 import { RootState, SearchInstance } from "threetwo-ui-typings";
 import ellipsize from "ellipsize";
 import { Form, Field } from "react-final-form";
+import { difference } from "../../shared/utils/object.utils";
 import { isEmpty, isNil, map } from "lodash";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
@@ -48,7 +44,6 @@ export const AcquisitionPanel = (
     queryFn: async () => await airDCPPSocketInstance.get(`hubs`),
   });
 
-  console.log("narangi umlaut", hubs);
   const issueName = props.query.issue.name || "";
   // const { settings } = props;
   const sanitizedIssueName = issueName.replace(/[^a-zA-Z0-9 ]/g, " ");
@@ -69,8 +64,13 @@ export const AcquisitionPanel = (
 
   // const settings = useSelector((state: RootState) => state.settings.data);
   // const airDCPPConfiguration = useContext(AirDCPPSocketContext);
-
+  interface SearchData {
+    query: Pick<SearchQuery, "pattern"> & Partial<Omit<SearchQuery, "pattern">>;
+    hub_urls: string[] | undefined | null;
+    priority: PriorityEnum;
+  }
   const [dcppQuery, setDcppQuery] = useState({});
+  const [airDCPPSearchResults, setAirDCPPSearchResults] = useState([]);
 
   // Construct a AirDC++ query based on metadata inferred, upon component mount
   // Pre-populate the search input with the search string, so that
@@ -88,6 +88,82 @@ export const AcquisitionPanel = (
     setDcppQuery(dcppSearchQuery);
   }, []);
 
+  const search = async (data: SearchData, ADCPPSocket: any) => {
+    try {
+      if (!ADCPPSocket.isConnected()) {
+        await ADCPPSocket();
+      }
+      const instance: SearchInstance = await ADCPPSocket.post("search");
+      // dispatch({
+      //   type: AIRDCPP_SEARCH_IN_PROGRESS,
+      // });
+
+      // We want to get notified about every new result in order to make the user experience better
+      await ADCPPSocket.addListener(
+        `search`,
+        "search_result_added",
+        async (groupedResult) => {
+          // ...add the received result in the UI
+          // (it's probably a good idea to have some kind of throttling for the UI updates as there can be thousands of results)
+          setAirDCPPSearchResults((state) => [...state, groupedResult]);
+        },
+        instance.id,
+      );
+
+      // We also want to update the existing items in our list when new hits arrive for the previously listed files/directories
+      await ADCPPSocket.addListener(
+        `search`,
+        "search_result_updated",
+        async (groupedResult) => {
+          // ...update properties of the existing result in the UI
+          const bundleToUpdateIndex = airDCPPSearchResults?.findIndex(
+            (bundle) => bundle.result.id === groupedResult.result.id,
+          );
+          const updatedState = [...airDCPPSearchResults];
+          if (
+            !isNil(difference(updatedState[bundleToUpdateIndex], groupedResult))
+          ) {
+            updatedState[bundleToUpdateIndex] = groupedResult;
+          }
+          setAirDCPPSearchResults((state) => [...state, ...updatedState]);
+        },
+        instance.id,
+      );
+
+      // We need to show something to the user in case the search won't yield any results so that he won't be waiting forever)
+      // Wait for 5 seconds for any results to arrive after the searches were sent to the hubs
+      await ADCPPSocket.addListener(
+        `search`,
+        "search_hub_searches_sent",
+        async (searchInfo) => {
+          await sleep(5000);
+
+          // Check the number of received results (in real use cases we should know that even without calling the API)
+          const currentInstance = await ADCPPSocket.get(
+            `search/${instance.id}`,
+          );
+          if (currentInstance.result_count === 0) {
+            // ...nothing was received, show an informative message to the user
+            console.log("No more search results.");
+          }
+
+          // The search can now be considered to be "complete"
+          // If there's an "in progress" indicator in the UI, that could also be disabled here
+          // dispatch({
+          //   type: AIRDCPP_HUB_SEARCHES_SENT,
+          //   searchInfo,
+          //   instance,
+          // });
+        },
+        instance.id,
+      );
+      // Finally, perform the actual search
+      await ADCPPSocket.post(`search/${instance.id}/hub_search`, data);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
   const getDCPPSearchResults = async (searchQuery) => {
     const manualQuery = {
       query: {
@@ -133,6 +209,7 @@ export const AcquisitionPanel = (
     },
     [],
   );
+  console.log("yaman", airDCPPSearchResults);
   return (
     <>
       <div className="comic-detail columns">
@@ -194,6 +271,106 @@ export const AcquisitionPanel = (
               <div className="message-body is-size-6 is-family-secondary">
                 AirDC++ is not configured. Please configure it in{" "}
                 <code>Settings &gt; AirDC++ &gt; Connection</code>.
+              </div>
+            </article>
+          </div>
+        )}
+      </div>
+
+      {/* AirDC++ results */}
+      <div className="columns">
+        {!isNil(airDCPPSearchResults) && !isEmpty(airDCPPSearchResults) ? (
+          <div className="column">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Slots</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {map(airDCPPSearchResults, ({ result }, idx) => {
+                  return (
+                    <tr
+                      key={idx}
+                      className={
+                        !isNil(result.dupe) ? "dupe-search-result" : ""
+                      }
+                    >
+                      <td>
+                        <p className="mb-2">
+                          {result.type.id === "directory" ? (
+                            <i className="fas fa-folder"></i>
+                          ) : null}{" "}
+                          {ellipsize(result.name, 70)}
+                        </p>
+
+                        <dl>
+                          <dd>
+                            <div className="tags">
+                              {!isNil(result.dupe) ? (
+                                <span className="tag is-warning">Dupe</span>
+                              ) : null}
+                              <span className="tag is-light is-info">
+                                {result.users.user.nicks}
+                              </span>
+                              {result.users.user.flags.map((flag, idx) => (
+                                <span className="tag is-light" key={idx}>
+                                  {flag}
+                                </span>
+                              ))}
+                            </div>
+                          </dd>
+                        </dl>
+                      </td>
+                      <td>
+                        <span className="tag is-light is-info">
+                          {result.type.id === "directory"
+                            ? "directory"
+                            : result.type.str}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="tags has-addons">
+                          <span className="tag is-success">
+                            {result.slots.free} free
+                          </span>
+                          <span className="tag is-light">
+                            {result.slots.total}
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        <a
+                          onClick={() =>
+                            downloadDCPPResult(
+                              searchInstance.id,
+                              result.id,
+                              result.name,
+                              result.size,
+                              result.type,
+                            )
+                          }
+                        >
+                          <i className="fas fa-file-download"></i>
+                        </a>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="column is-three-fifths">
+            <article className="message is-info">
+              <div className="message-body is-size-6 is-family-secondary">
+                Searching via <strong>AirDC++</strong> is still in{" "}
+                <strong>alpha</strong>. Some searches may take arbitrarily long,
+                or may not work at all. Searches from <code>ADCS</code> hubs are
+                more reliable than <code>NMDCS</code> ones.
               </div>
             </article>
           </div>
