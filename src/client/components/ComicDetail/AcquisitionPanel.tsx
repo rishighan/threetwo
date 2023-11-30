@@ -71,6 +71,9 @@ export const AcquisitionPanel = (
   }
   const [dcppQuery, setDcppQuery] = useState({});
   const [airDCPPSearchResults, setAirDCPPSearchResults] = useState([]);
+  const [airDCPPSearchStatus, setAirDCPPSearchStatus] = useState(false);
+  const [airDCPPSearchInstance, setAirDCPPSearchInstance] = useState({});
+  const [airDCPPSearchInfo, setAirDCPPSearchInfo] = useState({});
 
   // Construct a AirDC++ query based on metadata inferred, upon component mount
   // Pre-populate the search input with the search string, so that
@@ -94,9 +97,7 @@ export const AcquisitionPanel = (
         await ADCPPSocket();
       }
       const instance: SearchInstance = await ADCPPSocket.post("search");
-      // dispatch({
-      //   type: AIRDCPP_SEARCH_IN_PROGRESS,
-      // });
+      setAirDCPPSearchStatus(true);
 
       // We want to get notified about every new result in order to make the user experience better
       await ADCPPSocket.addListener(
@@ -142,6 +143,9 @@ export const AcquisitionPanel = (
           const currentInstance = await ADCPPSocket.get(
             `search/${instance.id}`,
           );
+          setAirDCPPSearchInstance(currentInstance);
+          setAirDCPPSearchInfo(searchInfo);
+          console.log("Asdas", airDCPPSearchInfo);
           if (currentInstance.result_count === 0) {
             // ...nothing was received, show an informative message to the user
             console.log("No more search results.");
@@ -154,6 +158,8 @@ export const AcquisitionPanel = (
           //   searchInfo,
           //   instance,
           // });
+          setAirDCPPSearchInstance(instance);
+          setAirDCPPSearchStatus(false);
         },
         instance.id,
       );
@@ -209,7 +215,6 @@ export const AcquisitionPanel = (
     },
     [],
   );
-  console.log("yaman", airDCPPSearchResults);
   return (
     <>
       <div className="comic-detail columns">
@@ -245,7 +250,7 @@ export const AcquisitionPanel = (
                       <button
                         type="submit"
                         className={
-                          false
+                          airDCPPSearchStatus
                             ? "button is-loading is-warning"
                             : "button is-success is-light"
                         }
@@ -272,6 +277,53 @@ export const AcquisitionPanel = (
           </div>
         )}
       </div>
+
+      {/* AirDC++ search instance details */}
+      {!isNil(airDCPPSearchInstance) &&
+        !isEmpty(airDCPPSearchInfo) &&
+        !isNil(hubs) && (
+          <div className="columns">
+            <div className="column is-one-quarter is-size-7">
+              <div className="card">
+                <div className="card-content">
+                  <dl>
+                    <dt>
+                      <div className="tags mb-1">
+                        {hubs.map(({ value }) => (
+                          <span className="tag is-warning" key={value}>
+                            {value}
+                          </span>
+                        ))}
+                      </div>
+                    </dt>
+                    <dt>
+                      Query:
+                      <span className="has-text-weight-semibold">
+                        {airDCPPSearchInfo.query.pattern}
+                      </span>
+                    </dt>
+                    <dd>
+                      Extensions:
+                      {airDCPPSearchInfo.query.extensions.join(", ")}
+                    </dd>
+                    <dd>File type: {airDCPPSearchInfo.query.file_type}</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+            <div className="column is-one-quarter is-size-7">
+              <div className="card">
+                <div className="card-content">
+                  <dl>
+                    <dt>Search Instance: {airDCPPSearchInstance.id}</dt>
+                    <dt>Owned by {airDCPPSearchInstance.owner}</dt>
+                    <dd>Expires in: {airDCPPSearchInstance.expires_in}</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
       {/* AirDC++ results */}
       <div className="columns">
