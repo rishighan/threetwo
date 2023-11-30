@@ -1,9 +1,5 @@
 import React, { useCallback, ReactElement, useEffect, useState } from "react";
-import {
-  downloadAirDCPPItem,
-  getBundlesForComic,
-  sleep,
-} from "../../actions/airdcpp.actions";
+import { getBundlesForComic, sleep } from "../../actions/airdcpp.actions";
 import { SearchQuery, PriorityEnum, SearchResponse } from "threetwo-ui-typings";
 import { RootState, SearchInstance } from "threetwo-ui-typings";
 import ellipsize from "ellipsize";
@@ -13,6 +9,7 @@ import { isEmpty, isNil, map } from "lodash";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 interface IAcquisitionPanelProps {
   query: any;
@@ -45,25 +42,8 @@ export const AcquisitionPanel = (
   });
 
   const issueName = props.query.issue.name || "";
-  // const { settings } = props;
   const sanitizedIssueName = issueName.replace(/[^a-zA-Z0-9 ]/g, " ");
 
-  // Selectors for picking state
-  // const airDCPPSearchResults = useSelector((state: RootState) => {
-  //   return state.airdcpp.searchResults;
-  // });
-  // const isAirDCPPSearchInProgress = useSelector(
-  //   (state: RootState) => state.airdcpp.isAirDCPPSearchInProgress,
-  // );
-  // const searchInfo = useSelector(
-  //   (state: RootState) => state.airdcpp.searchInfo,
-  // );
-  // const searchInstance: SearchInstance = useSelector(
-  //   (state: RootState) => state.airdcpp.searchInstance,
-  // );
-
-  // const settings = useSelector((state: RootState) => state.settings.data);
-  // const airDCPPConfiguration = useContext(AirDCPPSocketContext);
   interface SearchData {
     query: Pick<SearchQuery, "pattern"> & Partial<Omit<SearchQuery, "pattern">>;
     hub_urls: string[] | undefined | null;
@@ -91,6 +71,11 @@ export const AcquisitionPanel = (
     setDcppQuery(dcppSearchQuery);
   }, []);
 
+  /**
+   * Method to perform a search via an AirDC++ websocket
+   * @param {SearchData} data - a SearchData query
+   * @param {any} ADCPPSocket - an intialized AirDC++ socket instance
+   */
   const search = async (data: SearchData, ADCPPSocket: any) => {
     try {
       if (!ADCPPSocket.isConnected()) {
@@ -162,6 +147,68 @@ export const AcquisitionPanel = (
       await ADCPPSocket.post(`search/${instance.id}/hub_search`, data);
     } catch (error) {
       console.log(error);
+      throw error;
+    }
+  };
+
+  /**
+   * Method to download a bundle associated with a search result from AirDC++
+   * @param {Number} searchInstanceId - description
+   * @param {String} resultId - description
+   * @param {String} comicObjectId - description
+   * @param {String} name - description
+   * @param {Number} size - description
+   * @param {any} type - description
+   * @param {any} ADCPPSocket - description
+   * @returns {void}  - description
+   */
+  const download = async (
+    searchInstanceId: Number,
+    resultId: String,
+    comicObjectId: String,
+    name: String,
+    size: Number,
+    type: any,
+    ADCPPSocket: any,
+  ): void => {
+    try {
+      if (!ADCPPSocket.isConnected()) {
+        await ADCPPSocket.connect();
+      }
+      let bundleDBImportResult = {};
+      const downloadResult = await ADCPPSocket.post(
+        `search/${searchInstanceId}/results/${resultId}/download`,
+      );
+
+      if (!isNil(downloadResult)) {
+        bundleDBImportResult = await axios({
+          method: "POST",
+          url: `${LIBRARY_SERVICE_BASE_URI}/applyAirDCPPDownloadMetadata`,
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+          },
+          data: {
+            bundleId: downloadResult.bundle_info.id,
+            comicObjectId,
+            name,
+            size,
+            type,
+          },
+        });
+
+        //         dispatch({
+        //           type: AIRDCPP_RESULT_DOWNLOAD_INITIATED,
+        //           downloadResult,
+        //           bundleDBImportResult,
+        //         });
+        //
+        //         dispatch({
+        //           type: IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
+        //           comicBookDetail: bundleDBImportResult.data,
+        //           IMS_inProgress: false,
+        //         });
+      }
+    } catch (error) {
       throw error;
     }
   };
@@ -396,7 +443,7 @@ export const AcquisitionPanel = (
                         <button
                           className="button is-small is-light is-success"
                           onClick={() =>
-                            downloadDCPPResult(
+                            download(
                               searchInstance.id,
                               result.id,
                               result.name,
