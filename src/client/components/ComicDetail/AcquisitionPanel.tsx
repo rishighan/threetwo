@@ -153,11 +153,6 @@ export const AcquisitionPanel = (
 
           // The search can now be considered to be "complete"
           // If there's an "in progress" indicator in the UI, that could also be disabled here
-          // dispatch({
-          //   type: AIRDCPP_HUB_SEARCHES_SENT,
-          //   searchInfo,
-          //   instance,
-          // });
           setAirDCPPSearchInstance(instance);
           setAirDCPPSearchStatus(false);
         },
@@ -289,9 +284,9 @@ export const AcquisitionPanel = (
                   <dl>
                     <dt>
                       <div className="tags mb-1">
-                        {hubs.map(({ value }) => (
-                          <span className="tag is-warning" key={value}>
-                            {value}
+                        {hubs.map((value, idx) => (
+                          <span className="tag is-warning" key={idx}>
+                            {value.identity.name}
                           </span>
                         ))}
                       </div>
@@ -304,9 +299,16 @@ export const AcquisitionPanel = (
                     </dt>
                     <dd>
                       Extensions:
-                      {airDCPPSearchInfo.query.extensions.join(", ")}
+                      <span className="has-text-weight-semibold">
+                        {airDCPPSearchInfo.query.extensions.join(", ")}
+                      </span>
                     </dd>
-                    <dd>File type: {airDCPPSearchInfo.query.file_type}</dd>
+                    <dd>
+                      File type:
+                      <span className="has-text-weight-semibold">
+                        {airDCPPSearchInfo.query.file_type}
+                      </span>
+                    </dd>
                   </dl>
                 </div>
               </div>
