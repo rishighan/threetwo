@@ -25,13 +25,21 @@ export const AcquisitionPanel = (
     airDCPPSocketInstance,
     airDCPPClientConfiguration,
     airDCPPSessionInformation,
+    airDCPPDownloadTick,
   } = useStore(
     useShallow((state) => ({
       airDCPPSocketInstance: state.airDCPPSocketInstance,
       airDCPPClientConfiguration: state.airDCPPClientConfiguration,
       airDCPPSessionInformation: state.airDCPPSessionInformation,
+      airDCPPDownloadTick: state.airDCPPDownloadTick,
     })),
   );
+
+  interface SearchData {
+    query: Pick<SearchQuery, "pattern"> & Partial<Omit<SearchQuery, "pattern">>;
+    hub_urls: string[] | undefined | null;
+    priority: PriorityEnum;
+  }
 
   /**
    * Get the hubs list from an AirDCPP Socket
@@ -40,15 +48,10 @@ export const AcquisitionPanel = (
     queryKey: ["hubs"],
     queryFn: async () => await airDCPPSocketInstance.get(`hubs`),
   });
-
+  const { comicObjectId } = props;
   const issueName = props.query.issue.name || "";
   const sanitizedIssueName = issueName.replace(/[^a-zA-Z0-9 ]/g, " ");
 
-  interface SearchData {
-    query: Pick<SearchQuery, "pattern"> & Partial<Omit<SearchQuery, "pattern">>;
-    hub_urls: string[] | undefined | null;
-    priority: PriorityEnum;
-  }
   const [dcppQuery, setDcppQuery] = useState({});
   const [airDCPPSearchResults, setAirDCPPSearchResults] = useState([]);
   const [airDCPPSearchStatus, setAirDCPPSearchStatus] = useState(false);
@@ -183,7 +186,7 @@ export const AcquisitionPanel = (
       if (!isNil(downloadResult)) {
         bundleDBImportResult = await axios({
           method: "POST",
-          url: `${LIBRARY_SERVICE_BASE_URI}/applyAirDCPPDownloadMetadata`,
+          url: `http://localhost:3000/api/library/applyAirDCPPDownloadMetadata`,
           headers: {
             "Content-Type": "application/json; charset=utf-8",
           },
@@ -444,11 +447,13 @@ export const AcquisitionPanel = (
                           className="button is-small is-light is-success"
                           onClick={() =>
                             download(
-                              searchInstance.id,
+                              airDCPPSearchInstance.id,
                               result.id,
+                              comicObjectId,
                               result.name,
                               result.size,
                               result.type,
+                              airDCPPSocketInstance,
                             )
                           }
                         >
