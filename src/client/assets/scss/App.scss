@@ -1,4 +1,5 @@
 @import "/node_modules/bulma/bulma.sass";
+@import "/node_modules/bulma-prefers-dark/bulma-prefers-dark.sass";
 $fa-font-path: "/node_modules/@fortawesome/fontawesome-free/webfonts";
 @import "/node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss";
 @import "/node_modules/@fortawesome/fontawesome-free/scss/regular.scss";
@@ -14,8 +15,9 @@ $flexSize: 4em;
 $boxSpacing: 1em;
 $colorText: #404646;
 body {
-  background: #fffcc;
+  background: #20292f;
 }
+
 .is-size-8 {
   font-size: $size-8;
 }
@@ -68,10 +70,6 @@ pre {
     min-width: 300px;
     line-height: 1.7rem;
   }
-  body {
-    background: #454a59;
-  }
-
   body {
     background: #454a59;
   }
@@ -358,7 +356,7 @@ pre {
 // raw file details
 .raw-file-details {
   padding: 1rem;
-  background-color: beige;
+  background: #30475e;
   border-radius: 0.5rem;
 }
 
@@ -374,12 +372,11 @@ pre {
 }
 
 .issue-metadata {
-  background-color: #fbffee;
+  background-color: #30475e;
   padding: 0.8em;
   border-radius: 0.5rem;
   .name {
     font-size: 0.95rem;
-    color: #4a4f50;
   }
 }
 
@@ -421,17 +418,17 @@ pre {
 }
 // Library
 .header-area {
+  background: #20292f;
   width: 100%;
   padding: 25px 0 15px 0;
   position: sticky;
-  z-index: 9999;
-  background: #fffffc;
-  top: 50px;
+  z-index: 9;
+  top: 57px;
 }
 
 .library {
   .table-controls {
-    background: #fffffc;
+    background: #20292f;
     justify-content: space-between;
     position: sticky;
     top: 126px;
@@ -439,17 +436,17 @@ pre {
   }
   .pagination {
     margin: 0;
-    background: #fffffc;
   }
 
   table {
+    background: #20292f;
     border-collapse: separate;
     width: 100%;
     thead {
+      background: #20292f;
       position: sticky;
       top: 250px;
       z-index: 1;
-      background: #fffffc;
       min-height: 130px;
     }
     tr {

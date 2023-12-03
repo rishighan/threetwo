@@ -226,7 +226,7 @@ export const Import = (props: IProps): ReactElement => {
         {!isLoading && !isEmpty(data?.data) && (
           <>
             <h3 className="subtitle is-4 mt-5">Past Imports</h3>
-            <table className="table">
+            <table className="table is-striped">
               <thead>
                 <tr>
                   <th>Time Started</th>
