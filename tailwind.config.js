@@ -1,3 +1,5 @@
+import { addDynamicIconSelectors } from "@iconify/tailwind";
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
@@ -17,5 +19,11 @@ module.exports = {
       },
     },
   },
-  plugins: ["tailwindcss ,autoprefixer"],
+  plugins: [
+    {
+      tailwindcss: {},
+      autoprefixer: {},
+      addDynamicIconSelectors: addDynamicIconSelectors(),
+    },
+  ],
 };

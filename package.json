@@ -76,6 +76,8 @@
     "zustand": "^4.4.6"
   },
   "devDependencies": {
+    "@iconify-json/solar": "^1.1.8",
+    "@iconify/tailwind": "^0.1.4",
     "@storybook/addon-essentials": "^7.4.1",
     "@storybook/addon-interactions": "^7.4.1",
     "@storybook/addon-links": "^7.4.1",
