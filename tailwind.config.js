@@ -19,11 +19,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    {
-      tailwindcss: {},
-      autoprefixer: {},
-      addDynamicIconSelectors: addDynamicIconSelectors(),
-    },
-  ],
+  plugins: [addDynamicIconSelectors()],
 };
