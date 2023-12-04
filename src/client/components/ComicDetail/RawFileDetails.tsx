@@ -7,7 +7,7 @@ export const RawFileDetails = (props): ReactElement => {
   const { rawFileDetails, inferredMetadata } = props.data;
   return (
     <>
-      <div className="comic-detail raw-file-details column is-three-fifths">
+      <div className="comic-detail raw-file-details column is-three-quarters">
         <dl>
           <dt>Raw File Details</dt>
           <dd className="is-size-7">

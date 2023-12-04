@@ -1,13 +1,5 @@
-import React, {
-  ReactElement,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { getTransfers } from "../../actions/airdcpp.actions";
-import { useDispatch, useSelector } from "react-redux";
-import { AirDCPPSocketContext } from "../../context/AirDCPPSocket";
 import { isEmpty, isNil, isUndefined } from "lodash";
 import { determineCoverFile } from "../../shared/utils/metadata.utils";
 import MetadataPanel from "../shared/MetadataPanel";
@@ -17,18 +9,18 @@ interface IDownloadsProps {
 }
 
 export const Downloads = (props: IDownloadsProps): ReactElement => {
-  const airDCPPConfiguration = useContext(AirDCPPSocketContext);
+  // const airDCPPConfiguration = useContext(AirDCPPSocketContext);
   const {
     airDCPPState: { settings, socket },
   } = airDCPPConfiguration;
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
-  const airDCPPTransfers = useSelector(
-    (state: RootState) => state.airdcpp.transfers,
-  );
-  const issueBundles = useSelector(
-    (state: RootState) => state.airdcpp.issue_bundles,
-  );
+  // const airDCPPTransfers = useSelector(
+  //   (state: RootState) => state.airdcpp.transfers,
+  // );
+  // const issueBundles = useSelector(
+  //   (state: RootState) => state.airdcpp.issue_bundles,
+  // );
   const [bundles, setBundles] = useState([]);
   // Make the call to get all transfers from AirDC++
   useEffect(() => {

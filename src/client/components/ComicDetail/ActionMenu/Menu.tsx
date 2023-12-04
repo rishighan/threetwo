@@ -69,17 +69,29 @@ export const Menu = (props): ReactElement => {
         break;
     }
   };
+  const customStyles = {
+    option: (base, { data, isDisabled, isFocused, isSelected }) => {
+      return {
+        ...base,
+        backgroundColor: isFocused ? "gray" : "black",
+      };
+    },
+    control: (base) => ({
+      ...base,
+      backgroundColor: "black",
+      border: "1px solid #CCC",
+    }),
+  };
 
   return (
     <Select
-      className="basic-single"
-      classNamePrefix="select"
       components={{ Placeholder }}
       placeholder={
         <span>
           <i className="fa-solid fa-list"></i> Actions
         </span>
       }
+      styles={customStyles}
       name="actions"
       isSearchable={false}
       options={filteredActionOptions}

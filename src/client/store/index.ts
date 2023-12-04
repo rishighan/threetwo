@@ -23,6 +23,7 @@ export const useStore = create((set, get) => ({
       airDCPPSocketConnected: value,
     })),
   airDCPPDownloadTick: {},
+  airDCPPTransfers: {},
   // Socket.io state
   socketIOInstance: {},
 
