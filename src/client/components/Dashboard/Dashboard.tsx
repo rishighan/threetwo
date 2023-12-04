@@ -56,7 +56,7 @@ export const Dashboard = (): ReactElement => {
   //     (state: RootState) => state.comicInfo.libraryStatistics,
   //   );
   return (
-    <div className="container">
+    <div className="container mx-auto">
       <section className="section">
         <h1 className="title">Dashboard</h1>
       </section>
