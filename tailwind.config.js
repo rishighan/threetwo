@@ -3,7 +3,7 @@ import { addDynamicIconSelectors } from "@iconify/tailwind";
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
-  darkMode: ["class", '[data-mode="dark"]'],
+  darkMode: "class",
   theme: {
     fontFamily: {
       sans: ["PP Object Sans Regular", "sans-serif"],

@@ -1,15 +1,18 @@
 import React, { ReactElement, useState } from "react";
+import { useDarkMode } from "../../hooks/useDarkMode";
 
 export const Navbar2 = (): ReactElement => {
-  const [isLightMode, setIsLightMode] = useState(false);
-
-  const handleToggle = () => {
-    setIsLightMode(!isLightMode);
-    // Add your code for enabling dark/light mode here
+  const [colorTheme, setTheme] = useDarkMode();
+  const [darkMode, setDarkMode] = useState(false);
+  console.log("as", darkMode);
+  const toggleDarkMode = (checked) => {
+    setTheme(colorTheme);
+    setDarkMode(!darkMode);
+    console.log("here", checked.target.value);
   };
 
   return (
-    <header className="dark:bg-gray h-18 bg-white gap-8 px-5 py-5 border-b-2">
+    <header className="bg-white dark:bg-gray-900 gap-8 px-5 py-5 h-18 border-b-2 dark:border-amber-100">
       {/* Logo */}
       <div className="mx-auto flex">
         <img src="/src/client/assets/img/threetwo.png" alt="ThreeTwo!" />
@@ -77,7 +80,7 @@ export const Navbar2 = (): ReactElement => {
                   href="#"
                   className="flex items-center space-x-1 text-gray-500 transition hover:text-gray-500/75 dark:text-white dark:hover:text-white/75"
                 >
-                  <span className="w-5 h-6">
+                  <span className="w-5 h-5">
                     <span>
                       <i className="icon-[solar--settings-outline] h-5 w-5"></i>
                     </span>
@@ -89,7 +92,7 @@ export const Navbar2 = (): ReactElement => {
               <li>
                 {/* Light/Dark Mode toggle */}
                 <div className="flex items-center space-x-2">
-                  <span className="text-gray-600">Dark Mode</span>
+                  <span className="text-gray-600 dark:text-white">Light</span>
                   <label
                     htmlFor="toggle"
                     className="relative inline-flex items-center"
@@ -98,17 +101,17 @@ export const Navbar2 = (): ReactElement => {
                       type="checkbox"
                       id="toggle"
                       className="sr-only"
-                      checked={isLightMode}
-                      onChange={handleToggle}
+                      checked={darkMode}
+                      onChange={toggleDarkMode}
                     />
                     <span className="bg-gray-300 w-10 h-6 rounded-full"></span>
                     <span
                       className={`bg-white w-4 h-4 rounded-full absolute left-1 top-1 transition-transform duration-300 ease-in-out ${
-                        isLightMode ? "translate-x-4" : ""
+                        darkMode ? "translate-x-4" : ""
                       }`}
                     ></span>
                   </label>
-                  <span className="text-gray-600">Light Mode</span>
+                  <span className="text-gray-600 dark:text-white">Dark</span>
                 </div>
               </li>
             </ul>
