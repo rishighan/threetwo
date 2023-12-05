@@ -1,10 +1,11 @@
 import React, { ReactElement, useState } from "react";
+import { Link } from "react-router-dom";
 import { useDarkMode } from "../../hooks/useDarkMode";
 
 export const Navbar2 = (): ReactElement => {
   const [colorTheme, setTheme] = useDarkMode();
   const [darkMode, setDarkMode] = useState(false);
-  console.log("as", darkMode);
+
   const toggleDarkMode = (checked) => {
     setTheme(colorTheme);
     setDarkMode(!darkMode);
@@ -12,7 +13,7 @@ export const Navbar2 = (): ReactElement => {
   };
 
   return (
-    <header className="bg-white dark:bg-gray-900 gap-8 px-5 py-5 h-18 border-b-2 dark:border-amber-100">
+    <header className="bg-white dark:bg-gray-900 gap-8 px-5 py-5 h-18 border-b-2 border-gray-300 dark:border-slate-200">
       {/* Logo */}
       <div className="mx-auto flex">
         <img src="/src/client/assets/img/threetwo.png" alt="ThreeTwo!" />
@@ -34,21 +35,21 @@ export const Navbar2 = (): ReactElement => {
               </li>
 
               <li>
-                <a
+                <Link
+                  to="/import"
                   className="text-gray-500 transition hover:text-gray-500/75 dark:text-white dark:hover:text-white/75"
-                  href="/"
                 >
                   Import
-                </a>
+                </Link>
               </li>
 
               <li>
-                <a
+                <Link
+                  to="/library"
                   className="text-gray-500 transition hover:text-gray-500/75 dark:text-white dark:hover:text-white/75"
-                  href="/"
                 >
                   Library
-                </a>
+                </Link>
               </li>
 
               <li>

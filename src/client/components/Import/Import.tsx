@@ -129,145 +129,171 @@ export const Import = (props: IProps): ReactElement => {
     }
   };
   return (
-    <div className="container">
-      <section className="section is-small">
-        <h1 className="title">Import Comics</h1>
-        <article className="message is-dark">
-          <div className="message-body">
-            <p className="mb-2">
-              <span className="tag is-medium is-info is-light">
-                Import Comics
-              </span>
-              will add comics identified from the mapped folder into ThreeTwo's
-              database.
-            </p>
-            <p>
-              Metadata from ComicInfo.xml, if present, will also be extracted.
-            </p>
-            <p>
-              This process could take a while, if you have a lot of comics, or
-              are importing over a network connection.
-            </p>
-          </div>
-        </article>
-        <p className="buttons">
-          <button
-            className={
-              importJobQueue.status === "drained" ||
-              importJobQueue.status === undefined
-                ? "button is-medium"
-                : "button is-loading is-medium"
-            }
-            onClick={() => {
-              initiateImport();
-              importJobQueue.setStatus("running");
-            }}
-          >
-            <span className="icon">
-              <i className="fas fa-file-import"></i>
-            </span>
-            <span>Start Import</span>
-          </button>
-        </p>
+    <div>
+      <section>
+        <header className="bg-slate-200 dark:bg-slate-500">
+          <div className="mx-auto max-w-screen-xl px-2 py-2 sm:px-6 sm:py-12 lg:px-8">
+            <div className="sm:flex sm:items-center sm:justify-between">
+              <div className="text-center sm:text-left">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
+                  Import
+                </h1>
 
-        {importJobQueue.status !== "drained" &&
-          !isUndefined(importJobQueue.status) && (
+                <p className="mt-1.5 text-sm text-gray-500 dark:text-white">
+                  Import comics into the ThreeTwo library.
+                </p>
+              </div>
+
+              <div className="mt-4 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
+                <button
+                  className="block rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-indigo-700 focus:outline-none focus:ring"
+                  type="button"
+                >
+                  Create Post
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+          <article className="message is-dark">
+            <div className="message-body">
+              <p className="mb-2">
+                <span className="tag is-medium is-info is-light">
+                  Import Comics
+                </span>
+                will add comics identified from the mapped folder into
+                ThreeTwo's database.
+              </p>
+              <p>
+                Metadata from ComicInfo.xml, if present, will also be extracted.
+              </p>
+              <p>
+                This process could take a while, if you have a lot of comics, or
+                are importing over a network connection.
+              </p>
+            </div>
+          </article>
+          <p className="buttons">
+            <button
+              className={
+                importJobQueue.status === "drained" ||
+                importJobQueue.status === undefined
+                  ? "button is-medium"
+                  : "button is-loading is-medium"
+              }
+              onClick={() => {
+                initiateImport();
+                importJobQueue.setStatus("running");
+              }}
+            >
+              <span className="icon">
+                <i className="fas fa-file-import"></i>
+              </span>
+              <span>Start Import</span>
+            </button>
+          </p>
+
+          {importJobQueue.status !== "drained" &&
+            !isUndefined(importJobQueue.status) && (
+              <>
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Completed Jobs</th>
+                      <th>Failed Jobs</th>
+                      <th>Queue Controls</th>
+                      <th>Queue Status</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr>
+                      <th>
+                        {importJobQueue.successfulJobCount > 0 && (
+                          <div className="box has-background-success-light has-text-centered">
+                            <span className="is-size-2 has-text-weight-bold">
+                              {importJobQueue.successfulJobCount}
+                            </span>
+                          </div>
+                        )}
+                      </th>
+                      <td>
+                        {importJobQueue.failedJobCount > 0 && (
+                          <div className="box has-background-danger has-text-centered">
+                            <span className="is-size-2 has-text-weight-bold">
+                              {importJobQueue.failedJobCount}
+                            </span>
+                          </div>
+                        )}
+                      </td>
+
+                      <td>{renderQueueControls(importJobQueue.status)}</td>
+                      <td>
+                        {importJobQueue.status !== undefined ? (
+                          <span className="tag is-warning">
+                            {importJobQueue.status}
+                          </span>
+                        ) : null}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                Imported{" "}
+                <span className="has-text-weight-bold">
+                  {importJobQueue.mostRecentImport}
+                </span>
+              </>
+            )}
+
+          {/* Past imports */}
+          {!isLoading && !isEmpty(data?.data) && (
             <>
-              <table className="table">
+              <h3 className="subtitle is-4 mt-5">Past Imports</h3>
+              <table className="table is-striped">
                 <thead>
                   <tr>
-                    <th>Completed Jobs</th>
-                    <th>Failed Jobs</th>
-                    <th>Queue Controls</th>
-                    <th>Queue Status</th>
+                    <th>Time Started</th>
+                    <th>Session Id</th>
+                    <th>Imported</th>
+                    <th>Failed</th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  <tr>
-                    <th>
-                      {importJobQueue.successfulJobCount > 0 && (
-                        <div className="box has-background-success-light has-text-centered">
-                          <span className="is-size-2 has-text-weight-bold">
-                            {importJobQueue.successfulJobCount}
+                  {data?.data.map((jobResult, id) => {
+                    return (
+                      <tr key={id}>
+                        <td>
+                          {format(
+                            new Date(jobResult.earliestTimestamp),
+                            "EEEE, hh:mma, do LLLL Y",
+                          )}
+                        </td>
+                        <td>
+                          <span className="tag is-warning">
+                            {jobResult.sessionId}
                           </span>
-                        </div>
-                      )}
-                    </th>
-                    <td>
-                      {importJobQueue.failedJobCount > 0 && (
-                        <div className="box has-background-danger has-text-centered">
-                          <span className="is-size-2 has-text-weight-bold">
-                            {importJobQueue.failedJobCount}
+                        </td>
+                        <td>
+                          <span className="tag is-success">
+                            {jobResult.completedJobs}
                           </span>
-                        </div>
-                      )}
-                    </td>
-
-                    <td>{renderQueueControls(importJobQueue.status)}</td>
-                    <td>
-                      {importJobQueue.status !== undefined ? (
-                        <span className="tag is-warning">
-                          {importJobQueue.status}
-                        </span>
-                      ) : null}
-                    </td>
-                  </tr>
+                        </td>
+                        <td>
+                          <span className="tag is-danger">
+                            {jobResult.failedJobs}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
-              Imported{" "}
-              <span className="has-text-weight-bold">
-                {importJobQueue.mostRecentImport}
-              </span>
             </>
           )}
-
-        {/* Past imports */}
-        {!isLoading && !isEmpty(data?.data) && (
-          <>
-            <h3 className="subtitle is-4 mt-5">Past Imports</h3>
-            <table className="table is-striped">
-              <thead>
-                <tr>
-                  <th>Time Started</th>
-                  <th>Session Id</th>
-                  <th>Imported</th>
-                  <th>Failed</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {data?.data.map((jobResult, id) => {
-                  return (
-                    <tr key={id}>
-                      <td>
-                        {format(
-                          new Date(jobResult.earliestTimestamp),
-                          "EEEE, hh:mma, do LLLL Y",
-                        )}
-                      </td>
-                      <td>
-                        <span className="tag is-warning">
-                          {jobResult.sessionId}
-                        </span>
-                      </td>
-                      <td>
-                        <span className="tag is-success">
-                          {jobResult.completedJobs}
-                        </span>
-                      </td>
-                      <td>
-                        <span className="tag is-danger">
-                          {jobResult.failedJobs}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </>
-        )}
+        </div>
       </section>
     </div>
   );
