@@ -156,14 +156,14 @@ export const Import = (props: IProps): ReactElement => {
           </div>
         </header>
 
-        <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-          <article className="message is-dark">
+        <div className="mx-auto max-w-screen-xl px-4 py-4 sm:px-6 sm:py-12 lg:px-8">
+          <article
+            role="alert"
+            className="rounded-md max-w-screen-md border-s-4 border-blue-500 bg-blue-50 p-4 dark:border-s-4 dark:border-blue-600 dark:bg-blue-300 dark:text-slate-600"
+          >
             <div className="message-body">
-              <p className="mb-2">
-                <span className="tag is-medium is-info is-light">
-                  Import Comics
-                </span>
-                will add comics identified from the mapped folder into
+              <p>
+                Importing will add comics identified from the mapped folder into
                 ThreeTwo's database.
               </p>
               <p>
@@ -175,7 +175,8 @@ export const Import = (props: IProps): ReactElement => {
               </p>
             </div>
           </article>
-          <p className="buttons">
+
+          {/* <p className="buttons">
             <button
               className={
                 importJobQueue.status === "drained" ||
@@ -193,7 +194,21 @@ export const Import = (props: IProps): ReactElement => {
               </span>
               <span>Start Import</span>
             </button>
-          </p>
+          </p> */}
+          <div>
+            <button
+              className="mt-4 flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-600 bg-green-300 px-5 py-3 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+              onClick={() => {
+                initiateImport();
+                importJobQueue.setStatus("running");
+              }}
+            >
+              <span className="text-md">Start Import</span>
+              <span className="w-6 h-6">
+                <i className="h-6 w-6 icon-[solar--file-left-bold-duotone]"></i>
+              </span>
+            </button>
+          </div>
 
           {importJobQueue.status !== "drained" &&
             !isUndefined(importJobQueue.status) && (
@@ -249,9 +264,9 @@ export const Import = (props: IProps): ReactElement => {
 
           {/* Past imports */}
           {!isLoading && !isEmpty(data?.data) && (
-            <>
-              <h3 className="subtitle is-4 mt-5">Past Imports</h3>
-              <table className="table is-striped">
+            <div className="max-w-screen-lg">
+              <h3 className="text-xl">Past Imports</h3>
+              <table className="min-w-lg divide-y-2 divide-gray-200 dark:divide-gray-700 bg-slate text-md">
                 <thead>
                   <tr>
                     <th>Time Started</th>
@@ -291,7 +306,7 @@ export const Import = (props: IProps): ReactElement => {
                   })}
                 </tbody>
               </table>
-            </>
+            </div>
           )}
         </div>
       </section>

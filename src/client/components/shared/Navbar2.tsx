@@ -82,9 +82,7 @@ export const Navbar2 = (): ReactElement => {
                   className="flex items-center space-x-1 text-gray-500 transition hover:text-gray-500/75 dark:text-white dark:hover:text-white/75"
                 >
                   <span className="w-5 h-5">
-                    <span>
-                      <i className="icon-[solar--settings-outline] h-5 w-5"></i>
-                    </span>
+                    <i className="icon-[solar--settings-outline] h-5 w-5"></i>
                   </span>
                   <span>Settings</span>
                 </a>
