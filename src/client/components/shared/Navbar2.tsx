@@ -9,7 +9,6 @@ export const Navbar2 = (): ReactElement => {
   const toggleDarkMode = (checked) => {
     setTheme(colorTheme);
     setDarkMode(!darkMode);
-    console.log("here", checked.target.value);
   };
 
   return (
@@ -26,12 +25,12 @@ export const Navbar2 = (): ReactElement => {
           >
             <ul className="flex items-center gap-6 text-md">
               <li>
-                <a
+                <Link
+                  to="/dashboard"
                   className="text-gray-500 transition hover:text-gray-500/75 dark:text-white dark:hover:text-white/75"
-                  href="/"
                 >
                   Dashboard
-                </a>
+                </Link>
               </li>
 
               <li>
