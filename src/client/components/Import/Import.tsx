@@ -159,7 +159,7 @@ export const Import = (props: IProps): ReactElement => {
         <div className="mx-auto max-w-screen-xl px-4 py-4 sm:px-6 sm:py-12 lg:px-8">
           <article
             role="alert"
-            className="rounded-md max-w-screen-md border-s-4 border-blue-500 bg-blue-50 p-4 dark:border-s-4 dark:border-blue-600 dark:bg-blue-300 dark:text-slate-600"
+            className="rounded-lg max-w-screen-md border-s-4 border-blue-500 bg-blue-50 p-4 dark:border-s-4 dark:border-blue-600 dark:bg-blue-300 dark:text-slate-600"
           >
             <div className="message-body">
               <p>
@@ -195,9 +195,9 @@ export const Import = (props: IProps): ReactElement => {
               <span>Start Import</span>
             </button>
           </p> */}
-          <div>
+          <div className="mt-4">
             <button
-              className="mt-4 flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-600 bg-green-300 px-5 py-3 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+              className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-600 bg-green-300 px-5 py-3 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
               onClick={() => {
                 initiateImport();
                 importJobQueue.setStatus("running");
@@ -212,7 +212,7 @@ export const Import = (props: IProps): ReactElement => {
 
           {importJobQueue.status !== "drained" &&
             !isUndefined(importJobQueue.status) && (
-              <>
+              <div className="mt-4">
                 <table className="table">
                   <thead>
                     <tr>
@@ -259,53 +259,75 @@ export const Import = (props: IProps): ReactElement => {
                 <span className="has-text-weight-bold">
                   {importJobQueue.mostRecentImport}
                 </span>
-              </>
+              </div>
             )}
 
           {/* Past imports */}
           {!isLoading && !isEmpty(data?.data) && (
             <div className="max-w-screen-lg">
-              <h3 className="text-xl">Past Imports</h3>
-              <table className="min-w-lg divide-y-2 divide-gray-200 dark:divide-gray-700 bg-slate text-md">
-                <thead>
-                  <tr>
-                    <th>Time Started</th>
-                    <th>Session Id</th>
-                    <th>Imported</th>
-                    <th>Failed</th>
-                  </tr>
-                </thead>
+              <h3 className="text-xl mt-4">Past Imports</h3>
+              <div className="overflow-x-auto mt-4 rounded-lg border border-gray-200">
+                <table className="min-w-full divide-y-2 divide-gray-200 dark:divide-gray-200 text-md">
+                  <thead className="ltr:text-left rtl:text-right">
+                    <tr>
+                      <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                        Time Started
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                        Session Id
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                        Imported
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                        Failed
+                      </th>
+                    </tr>
+                  </thead>
 
-                <tbody>
-                  {data?.data.map((jobResult, id) => {
-                    return (
-                      <tr key={id}>
-                        <td>
-                          {format(
-                            new Date(jobResult.earliestTimestamp),
-                            "EEEE, hh:mma, do LLLL Y",
-                          )}
-                        </td>
-                        <td>
-                          <span className="tag is-warning">
-                            {jobResult.sessionId}
-                          </span>
-                        </td>
-                        <td>
-                          <span className="tag is-success">
-                            {jobResult.completedJobs}
-                          </span>
-                        </td>
-                        <td>
-                          <span className="tag is-danger">
-                            {jobResult.failedJobs}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                  <tbody className="divide-y divide-gray-200">
+                    {data?.data.map((jobResult, id) => {
+                      return (
+                        <tr key={id}>
+                          <td className="whitespace-nowrap px-4 py-2 text-gray-700 dark:text-slate-400">
+                            {format(
+                              new Date(jobResult.earliestTimestamp),
+                              "EEEE, hh:mma, do LLLL Y",
+                            )}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-2 text-gray-700 dark:text-slate-400">
+                            <span className="tag is-warning">
+                              {jobResult.sessionId}
+                            </span>
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-2 text-gray-700 dark:text-slate-400">
+                            <span className="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-700">
+                              <span className="h-5 w-6">
+                                <i className="icon-[solar--check-circle-line-duotone] h-5 w-5"></i>
+                              </span>
+
+                              <p className="whitespace-nowrap text-sm">
+                                {jobResult.completedJobs}
+                              </p>
+                            </span>
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-2 text-gray-700 dark:text-slate-400">
+                            <span className="inline-flex items-center justify-center rounded-full bg-red-100 px-2 py-0.5 text-red-700">
+                              <span className="h-5 w-6">
+                                <i className="icon-[solar--close-circle-line-duotone] h-5 w-5"></i>
+                              </span>
+
+                              <p className="whitespace-nowrap text-sm">
+                                {jobResult.failedJobs}
+                              </p>
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>
