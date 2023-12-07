@@ -76,15 +76,15 @@ export const Navbar2 = (): ReactElement => {
             <ul className="flex items-center gap-6 text-md">
               {/* Settings Icon and text */}
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/settings"
                   className="flex items-center space-x-1 text-gray-500 transition hover:text-gray-500/75 dark:text-white dark:hover:text-white/75"
                 >
                   <span className="w-5 h-5">
                     <i className="icon-[solar--settings-outline] h-5 w-5"></i>
                   </span>
                   <span>Settings</span>
-                </a>
+                </Link>
               </li>
 
               <li>
