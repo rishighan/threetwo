@@ -13,8 +13,34 @@ import {
 import { getLibraryStatistics } from "../../actions/comicinfo.actions";
 import { isEmpty, isNil } from "lodash";
 import Header from "../shared/Header";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { Card } from "../shared/Carda";
+import {
+  LIBRARY_SERVICE_BASE_URI,
+  LIBRARY_SERVICE_HOST,
+} from "../../constants/endpoints";
 
 export const Dashboard = (): ReactElement => {
+  const { data: recentComics } = useQuery({
+    queryFn: async () =>
+      await axios({
+        url: `${LIBRARY_SERVICE_BASE_URI}/getComicBooks`,
+        method: "POST",
+        data: {
+          paginationOptions: {
+            page: 0,
+            limit: 5,
+            sort: { updatedAt: "-1" },
+          },
+          predicate: { "acquisition.source.wanted": false },
+          comicStatus: "recent",
+        },
+      }),
+    queryKey: ["recentComics"],
+  });
+
+  console.log("hari om", recentComics);
   //   useEffect(() => {
   //     dispatch(fetchVolumeGroups());
   //     dispatch(
@@ -56,9 +82,19 @@ export const Dashboard = (): ReactElement => {
   //     (state: RootState) => state.comicInfo.libraryStatistics,
   //   );
   return (
-    <div className="container mx-auto">
-      <section className="section">
-        <h1 className="title">Dashboard</h1>
+    <div className="container mx-auto max-w-full">
+      <section>
+        <h1>Dashboard</h1>
+        <div className="grid grid-cols-5 gap-6">
+          {recentComics?.data.docs.map((recentComic, idx) => (
+            <Card
+              orientation="vertical-2"
+              key={idx}
+              imageUrl={`${LIBRARY_SERVICE_HOST}/${recentComic.rawFileDetails.cover.filePath}`}
+              title={recentComic.inferredMetadata.issue.name}
+            />
+          ))}
+        </div>
       </section>
     </div>
   );
