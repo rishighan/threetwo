@@ -107,15 +107,32 @@ const renderCard = (props: ICardProps): ReactElement => {
     case "horizontal-2-small":
       return (
         <>
-          <div className="flex flex-row justify-start align-top gap-3 bg-slate-400 h-fit rounded-md">
+          <div className="flex flex-row justify-start align-top gap-3 bg-slate-200 h-fit rounded-md shadow-md shadow-white-400">
             {/* thumbnail */}
             <div className="rounded-l-md overflow-hidden">
               <img src={props.imageUrl} className="object-cover h-20 w-20" />
             </div>
             {/* details */}
-            <div className="w-fit h-fit px-1 py-1">
+            <div className="w-fit h-fit pl-1 pr-2 py-1">
               <p className="text-sm">{props.title}</p>
               nothin
+            </div>
+          </div>
+        </>
+      );
+
+    case "horizontal-2-medium":
+      return (
+        <>
+          <div className="flex flex-row items-center align-top gap-3 bg-slate-200 h-fit p-2 rounded-md shadow-md shadow-white-400">
+            {/* thumbnail */}
+            <div className="rounded-md overflow-hidden">
+              <img src={props.imageUrl} />
+            </div>
+            {/* details */}
+            <div className="pl-1 pr-2 py-1">
+              <p className="text-sm">{props.title}</p>
+              {props.hasDetails && <>{props.children}</>}
             </div>
           </div>
         </>

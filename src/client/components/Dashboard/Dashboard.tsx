@@ -88,7 +88,7 @@ export const Dashboard = (): ReactElement => {
         <div className="grid grid-cols-5 gap-6">
           {recentComics?.data.docs.map((recentComic, idx) => (
             <Card
-              orientation="horizontal-2"
+              orientation="horizontal-2-medium"
               key={idx}
               imageUrl={`${LIBRARY_SERVICE_HOST}/${recentComic.rawFileDetails.cover.filePath}`}
               title={recentComic.inferredMetadata.issue.name}
@@ -96,13 +96,22 @@ export const Dashboard = (): ReactElement => {
             >
               <div>
                 <dt className="sr-only">Address</dt>
-                <dd className="text-sm my-1">
+                <dd className="text-sm my-1 flex flex-row gap-1">
                   <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
                     <span className="pr-1 pt-1">
                       <i className="icon-[solar--hashtag-outline]"></i>
                     </span>
                     <span className="text-md text-slate-500">
                       {recentComic.inferredMetadata.issue.number}
+                    </span>
+                  </span>
+                  <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                    <span className="pr-1 pt-1">
+                      <i className="icon-[solar--file-bold-duotone] w-4 h-4"></i>
+                    </span>
+
+                    <span className="text-md text-slate-500">
+                      {recentComic.rawFileDetails.extension}
                     </span>
                   </span>
                 </dd>
