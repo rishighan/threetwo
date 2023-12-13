@@ -15,7 +15,56 @@ export const ConnectionForm = ({
         initialValues={initialData}
         render={({ handleSubmit }) => (
           <form onSubmit={handleSubmit}>
-            <h2>{formHeading}</h2>
+            <h2 className="text-xl">{formHeading}</h2>
+
+            <div className="relative flex w-full max-w-[24rem]">
+              <Field name="hostname" validate={hostNameValidator}>
+                {({ input, meta }) => (
+                  <div className="flex items-center rounded-md border border-gray-300">
+                    <div className="relative">
+                      {/* <select
+                        id="dropdown"
+                        className="appearance-none h-11 bg-transparent rounded-none border-r border-gray-300 text-gray-700 dark:text-slate-200 py-1 px-3 sm:text-sm sm:leading-5 focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
+                      >
+                        <option>Protocol</option>
+                        <option value="http">http://</option>
+                        <option value="https">https://</option>
+                      </select> */}
+                      <Field
+                        name="protocol"
+                        component="select"
+                        className="appearance-none h-11 bg-transparent rounded-none border-r border-gray-300 text-gray-700 dark:text-slate-200 py-1 px-3 sm:text-sm sm:leading-5 focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
+                      >
+                        <option>Protocol</option>
+                        <option value="http">http://</option>
+                        <option value="https">https://</option>
+                      </Field>
+                      <div className="absolute right-0 inset-y-0 flex items-center px-0 pointer-events-none">
+                        <svg
+                          className="h-5 w-5 text-gray-400"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path d="M7 7l3-3 3 3m0 6l-3 3-3-3"></path>
+                        </svg>
+                      </div>
+                    </div>
+
+                    <input
+                      {...input}
+                      type="text"
+                      placeholder="hostname"
+                      className="ml-2 bg-transparent py-2 px-2 block w-full rounded-md sm:text-sm sm:leading-5 focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
+                    />
+                    {meta.error && meta.touched && (
+                      <span className="is-size-7 has-text-danger">
+                        {meta.error}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </Field>
+            </div>
             <label className="label">Hostname</label>
             <div className="field has-addons">
               <p className="control">

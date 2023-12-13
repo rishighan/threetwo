@@ -50,24 +50,42 @@ export const Settings = (props: ISettingsProps): ReactElement => {
     },
   ];
   return (
-    <section className="container">
-      <div className="columns">
-        <div className="section column is-one-quarter">
-          <h1 className="title">Settings</h1>
-          <aside className="menu">
+    <div>
+      <section>
+        <header className="bg-slate-200 dark:bg-slate-500">
+          <div className="mx-auto max-w-screen-xl px-2 py-2 sm:px-6 sm:py-8 lg:px-8 lg:py-4">
+            <div className="sm:flex sm:items-center sm:justify-between">
+              <div className="text-center sm:text-left">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
+                  Settings
+                </h1>
+
+                <p className="mt-1.5 text-sm text-gray-500 dark:text-white">
+                  Import comics into the ThreeTwo library.
+                </p>
+              </div>
+            </div>
+          </div>
+        </header>
+        <div className="flex flex-cols max-w-screen-xl mx-auto">
+          <aside className="px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
             {map(settingsObject, (settingObject, idx) => {
               return (
-                <div key={idx}>
-                  <p className="menu-label">{settingObject.category}</p>
+                <div className="w-64 py-2 text-slate" key={idx}>
+                  <h3 className="text-l pb-2">
+                    {settingObject.category.toUpperCase()}
+                  </h3>
                   {/* First level children */}
                   {!isUndefined(settingObject.children) ? (
-                    <ul className="menu-list" key={settingObject.id}>
+                    <ul key={settingObject.id}>
                       {map(settingObject.children, (item, idx) => {
                         return (
-                          <li key={idx}>
+                          <li key={idx} className="mb-2">
                             <a
                               className={
-                                item.id.toString() === active ? "is-active" : ""
+                                item.id.toString() === active
+                                  ? "is-active flex items-center"
+                                  : "flex items-center"
                               }
                               onClick={() => setActive(item.id.toString())}
                             >
@@ -75,14 +93,14 @@ export const Settings = (props: ISettingsProps): ReactElement => {
                             </a>
                             {/* Second level children */}
                             {!isUndefined(item.children) ? (
-                              <ul>
+                              <ul className="pl-4">
                                 {map(item.children, (item, idx) => (
-                                  <li key={item.id}>
+                                  <li key={item.id} className="mb-2">
                                     <a
                                       className={
                                         item.id.toString() === active
-                                          ? "is-active"
-                                          : ""
+                                          ? "is-active flex items-center"
+                                          : "flex items-center"
                                       }
                                       onClick={() =>
                                         setActive(item.id.toString())
@@ -103,18 +121,18 @@ export const Settings = (props: ISettingsProps): ReactElement => {
               );
             })}
           </aside>
-        </div>
 
-        {/* content for settings */}
-        <div className="section column is-half mt-6">
-          <div className="content">
-            {map(settingsContent, ({ id, content }) =>
-              active === id ? content : null,
-            )}
+          {/* content for settings */}
+          <div className="max-w-screen-xl">
+            <div className="content">
+              {map(settingsContent, ({ id, content }) =>
+                active === id ? content : null,
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 };
 
