@@ -7,6 +7,7 @@ module.exports = {
   theme: {
     fontFamily: {
       sans: ["PP Object Sans Regular", "sans-serif"],
+      hasklig: ["Hasklig Regular", "monospace"],
     },
     container: {
       center: true,

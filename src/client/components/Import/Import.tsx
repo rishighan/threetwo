@@ -154,25 +154,6 @@ export const Import = (props: IProps): ReactElement => {
             </div>
           </article>
 
-          {/* <p className="buttons">
-            <button
-              className={
-                importJobQueue.status === "drained" ||
-                importJobQueue.status === undefined
-                  ? "button is-medium"
-                  : "button is-loading is-medium"
-              }
-              onClick={() => {
-                initiateImport();
-                importJobQueue.setStatus("running");
-              }}
-            >
-              <span className="icon">
-                <i className="fas fa-file-import"></i>
-              </span>
-              <span>Start Import</span>
-            </button>
-          </p> */}
           <div className="my-4">
             {importJobQueue.status === "drained" ||
               (importJobQueue.status === undefined && (

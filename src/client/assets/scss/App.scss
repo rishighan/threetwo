@@ -8,4 +8,9 @@
     src: url("./src/client/assets/fonts/PPObjectSans-Regular.otf")
       format("opentype");
   }
+
+  @font-face {
+    font-family: "Hasklig Regular";
+    src: url("./src/client/assets/fonts/Hasklig-Regular.otf") format("opentype");
+  }
 }
