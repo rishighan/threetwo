@@ -1,9 +1,10 @@
 import React, { ReactElement } from "react";
 import { ConnectionForm } from "../../shared/ConnectionForm/ConnectionForm";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, QueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
 export const QbittorrentConnectionForm = (): ReactElement => {
+  const queryClient = new QueryClient();
   // fetch settings
   const { data, isLoading, isError } = useQuery({
     queryKey: ["settings"],
@@ -13,7 +14,8 @@ export const QbittorrentConnectionForm = (): ReactElement => {
         method: "GET",
       }),
   });
-  const hostDetails = data?.data.bittorrent.client.host;
+  console.log(data);
+  const hostDetails = data?.data?.bittorrent?.client?.host;
   // connect to qbittorrent client
   const { data: connectionDetails } = useQuery({
     queryKey: [],
@@ -35,7 +37,7 @@ export const QbittorrentConnectionForm = (): ReactElement => {
       }),
     enabled: !!connectionDetails,
   });
-  console.log(qbittorrentClientInfo?.data);
+  console.log(qbittorrentClientInfo);
   // Update action using a mutation
   const { mutate } = useMutation({
     mutationFn: async (values) =>
@@ -44,6 +46,9 @@ export const QbittorrentConnectionForm = (): ReactElement => {
         method: "POST",
         data: { settingsPayload: values, settingsKey: "bittorrent" },
       }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["settings"] });
+    },
   });
 
   if (isError)
@@ -61,9 +66,24 @@ export const QbittorrentConnectionForm = (): ReactElement => {
           submitHandler={mutate}
         />
 
-        <pre className="mt-5">
-          {JSON.stringify(qbittorrentClientInfo?.data, null, 4)}
-        </pre>
+        <span className="flex items-center mt-10 mb-4">
+          <span className="text-xl text-slate-500 dark:text-slate-200 pr-5">
+            qBittorrent Client Information
+          </span>
+          <span className="h-px flex-1 bg-slate-200 dark:bg-slate-400"></span>
+        </span>
+
+        <div className="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-slate-400 dark:border-gray-700">
+          <span className="inline-flex justify-center rounded-full bg-emerald-100 mb-4 px-2 py-0.5 text-emerald-700">
+            <span className="h-5 w-6">
+              <i className="icon-[solar--plug-circle-bold] h-5 w-5"></i>
+            </span>
+            <p className="whitespace-nowrap text-sm">Connected</p>
+          </span>
+          <p className="font-hasklig text-sm text-slate-700 dark:text-slate-700">
+            <pre> {JSON.stringify(qbittorrentClientInfo?.data, null, 4)}</pre>
+          </p>
+        </div>
       </>
     );
   }

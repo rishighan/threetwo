@@ -71,7 +71,7 @@ export const T2Table = (tableOptions): ReactElement => {
 
   return (
     <>
-      <div className="columns table-controls">
+      <div>
         {/* Search bar */}
         <div className="column is-half">
           <SearchBar />
@@ -125,12 +125,16 @@ export const T2Table = (tableOptions): ReactElement => {
           </div>
         </nav>
       </div>
-      <table className="table is-hoverable">
+      <table className="table-auto">
         <thead>
           {table.getHeaderGroups().map((headerGroup, idx) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header, idx) => (
-                <th key={header.id} colSpan={header.colSpan}>
+                <th
+                  key={header.id}
+                  colSpan={header.colSpan}
+                  className="sticky top-0 px-6 py-3"
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
