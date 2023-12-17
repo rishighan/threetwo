@@ -29,9 +29,7 @@ export const AirDCPPSettingsConfirmation = (settingsObject): ReactElement => {
             <dt>Active Sessions: {settings.user.active_sessions}</dt>
             <dt>
               Permissions:{" "}
-              <pre>
-                {JSON.stringify(settings.user.permissions, undefined, 2)}
-              </pre>
+              {JSON.stringify(settings.user.permissions, undefined, 2)}
             </dt>
           </dl>
         </p>

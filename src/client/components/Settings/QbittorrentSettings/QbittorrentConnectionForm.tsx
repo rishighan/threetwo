@@ -37,7 +37,6 @@ export const QbittorrentConnectionForm = (): ReactElement => {
       }),
     enabled: !!connectionDetails,
   });
-  console.log(qbittorrentClientInfo);
   // Update action using a mutation
   const { mutate } = useMutation({
     mutationFn: async (values) =>
@@ -47,7 +46,9 @@ export const QbittorrentConnectionForm = (): ReactElement => {
         data: { settingsPayload: values, settingsKey: "bittorrent" },
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["settings"] });
+      queryClient.invalidateQueries({
+        queryKey: ["settings", "qbittorrentClientInfo"],
+      });
     },
   });
 
@@ -80,9 +81,9 @@ export const QbittorrentConnectionForm = (): ReactElement => {
             </span>
             <p className="whitespace-nowrap text-sm">Connected</p>
           </span>
-          <p className="font-hasklig text-sm text-slate-700 dark:text-slate-700">
-            <pre> {JSON.stringify(qbittorrentClientInfo?.data, null, 4)}</pre>
-          </p>
+          <pre className="font-hasklig text-sm text-slate-700 dark:text-slate-700">
+            {JSON.stringify(qbittorrentClientInfo?.data, null, 4)}
+          </pre>
         </div>
       </>
     );

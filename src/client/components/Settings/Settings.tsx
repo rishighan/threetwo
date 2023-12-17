@@ -71,7 +71,10 @@ export const Settings = (props: ISettingsProps): ReactElement => {
           <aside className="px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
             {map(settingsObject, (settingObject, idx) => {
               return (
-                <div className="w-64 py-2 text-slate" key={idx}>
+                <div
+                  className="w-64 py-2 text-slate-700 dark:text-slate-400"
+                  key={idx}
+                >
                   <h3 className="text-l pb-2">
                     {settingObject.category.toUpperCase()}
                   </h3>
@@ -93,7 +96,7 @@ export const Settings = (props: ISettingsProps): ReactElement => {
                             </a>
                             {/* Second level children */}
                             {!isUndefined(item.children) ? (
-                              <ul className="pl-4">
+                              <ul className="pl-4 mt-2">
                                 {map(item.children, (item, idx) => (
                                   <li key={item.id} className="mb-2">
                                     <a
