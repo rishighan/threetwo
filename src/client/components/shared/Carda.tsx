@@ -141,8 +141,20 @@ const renderCard = (props: ICardProps): ReactElement => {
       return (
         <>
           {/* thumbnail */}
-          <div className="rounded-md overflow-hidden w-fit h-fit">
+          <div className="rounded-lg overflow-hidden w-fit h-fit">
             <img src={props.imageUrl} />
+          </div>
+        </>
+      );
+    case "card-with-info-panel":
+      return (
+        <>
+          <div className="flex flex-row">
+            {/* thumbnail */}
+            <div className="rounded-md overflow-hidden w-fit h-fit">
+              <img src={props.imageUrl} />
+            </div>
+            {/* myata-dyata */}
           </div>
         </>
       );

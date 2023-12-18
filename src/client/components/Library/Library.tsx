@@ -53,39 +53,37 @@ export const Library = (): ReactElement => {
 
   const ComicInfoXML = (value) => {
     return value.data ? (
-      <div className="comicvine-metadata mt-3">
-        <dl>
-          <span className="tags has-addons is-size-7">
-            <span className="tag">Series</span>
-            <span className="tag is-warning is-light">
-              {ellipsize(value.data.series[0], 25)}
-            </span>
+      <dl className="flex flex-col text-md p-4 mx-4 my-3 rounded-lg bg-amber-400 w-max">
+        <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
+          <span className="pr-1 pt-1">
+            <i className="icon-[solar--bookmark-square-minimalistic-bold-duotone] w-5 h-5"></i>
           </span>
-        </dl>
-        <dl>
-          <div className="field is-grouped is-grouped-multiline">
-            <div className="control">
-              <span className="tags has-addons is-size-7  mt-2">
-                <span className="tag">Pages</span>
-                <span className="tag is-info is-light has-text-weight-bold">
-                  {value.data.pagecount[0]}
-                </span>
+          <span className="text-md text-slate-900 dark:text-slate-900">
+            {ellipsize(value.data.series[0], 45)}
+          </span>
+        </span>
+        <div className="field is-grouped is-grouped-multiline">
+          <div className="control">
+            <span className="tags has-addons is-size-7  mt-2">
+              <span className="tag">Pages</span>
+              <span className="tag is-info is-light has-text-weight-bold">
+                {value.data.pagecount[0]}
               </span>
-            </div>
-
-            <div className="control">
-              <span className="tags has-addons is-size-7 mt-2">
-                <span className="tag">Issue</span>
-                {!isNil(value.data.number) && (
-                  <span className="tag has-text-weight-bold is-success is-light">
-                    {parseInt(value.data.number[0], 10)}
-                  </span>
-                )}
-              </span>
-            </div>
+            </span>
           </div>
-        </dl>
-      </div>
+
+          <div className="control">
+            <span className="tags has-addons is-size-7 mt-2">
+              <span className="tag">Issue</span>
+              {!isNil(value.data.number) && (
+                <span className="tag has-text-weight-bold is-success is-light">
+                  {parseInt(value.data.number[0], 10)}
+                </span>
+              )}
+            </span>
+          </div>
+        </div>
+      </dl>
     ) : null;
   };
 
@@ -110,13 +108,11 @@ export const Library = (): ReactElement => {
           {
             header: "ComicInfo.xml",
             accessorKey: "_source.sourcedMetadata.comicInfo",
-            align: "center",
-            minWidth: 250,
             cell: (info) =>
               !isEmpty(info.getValue()) ? (
                 <ComicInfoXML data={info.getValue()} />
               ) : (
-                <span className="tag mt-5">No ComicInfo.xml</span>
+                <span className="text-sm p-4">No ComicInfo.xml</span>
               ),
           },
         ],
@@ -128,12 +124,10 @@ export const Library = (): ReactElement => {
             header: "Publisher",
             accessorKey: "_source.sourcedMetadata.comicvine.volumeInformation",
             cell: (info) => {
-              return (
-                !isNil(info.getValue()) && (
-                  <h6 className="is-size-7 has-text-weight-bold">
-                    {info.getValue().publisher.name}
-                  </h6>
-                )
+              return !isNil(info.getValue()) ? (
+                <h6>{info.getValue().publisher.name}</h6>
+              ) : (
+                "Chimin"
               );
             },
           },

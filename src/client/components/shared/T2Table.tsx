@@ -126,14 +126,14 @@ export const T2Table = (tableOptions): ReactElement => {
         </nav>
       </div>
       <table className="table-auto">
-        <thead>
+        <thead className="sticky top-0 bg-slate-200 dark:bg-slate-500">
           {table.getHeaderGroups().map((headerGroup, idx) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header, idx) => (
                 <th
                   key={header.id}
                   colSpan={header.colSpan}
-                  className="sticky top-0 px-6 py-3"
+                  className="px-3 py-3"
                 >
                   {header.isPlaceholder
                     ? null
@@ -151,11 +151,16 @@ export const T2Table = (tableOptions): ReactElement => {
           {table.getRowModel().rows.map((row, idx) => {
             return (
               <tr key={row.id} onClick={() => rowClickHandler(row)}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
+                {row.getVisibleCells().map((cell) => {
+                  return (
+                    <td key={cell.id} className="align-top">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </td>
+                  );
+                })}
               </tr>
             );
           })}
