@@ -141,7 +141,7 @@ const renderCard = (props: ICardProps): ReactElement => {
       return (
         <>
           {/* thumbnail */}
-          <div className="rounded-lg overflow-hidden w-fit h-fit">
+          <div className="rounded-lg shadow-lg overflow-hidden w-fit h-fit">
             <img src={props.imageUrl} />
           </div>
         </>

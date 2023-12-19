@@ -36,13 +36,17 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
             <p className="text-lg">{issueName}</p>
           </dt>
           <dd className="text-sm">
-            Is a part of <span>{inferredMetadata.issue.name}</span>
+            is a part of{" "}
+            <span className="underline">
+              {inferredMetadata.issue.name}
+              <i className="icon-[solar--arrow-right-up-outline] w-4 h-4" />
+            </span>
           </dd>
 
           {/* Issue number */}
           {inferredMetadata.issue.number && (
             <dd className="my-2">
-              <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
+              <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
                 <span className="pr-1 pt-1">
                   <i className="icon-[solar--hashtag-outline] w-3.5 h-3.5"></i>
                 </span>
@@ -54,7 +58,7 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
           )}
           <dd className="flex flex-row gap-2 w-max">
             {/* File extension */}
-            <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
+            <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
               <span className="pr-1 pt-1">
                 <i className="icon-[solar--zip-file-bold-duotone] w-5 h-5"></i>
               </span>
@@ -65,7 +69,7 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
             </span>
 
             {/* size */}
-            <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
+            <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
               <span className="pr-1 pt-1">
                 <i className="icon-[solar--mirror-right-bold-duotone] w-5 h-5"></i>
               </span>

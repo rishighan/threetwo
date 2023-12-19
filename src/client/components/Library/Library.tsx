@@ -53,8 +53,9 @@ export const Library = (): ReactElement => {
 
   const ComicInfoXML = (value) => {
     return value.data ? (
-      <dl className="flex flex-col text-md p-4 mx-4 my-3 rounded-lg bg-amber-400 w-max">
-        <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
+      <dl className="flex flex-col text-md p-3 mx-4 my-3 rounded-lg bg-yellow-500 w-max">
+        {/* Series Name */}
+        <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
           <span className="pr-1 pt-1">
             <i className="icon-[solar--bookmark-square-minimalistic-bold-duotone] w-5 h-5"></i>
           </span>
@@ -62,26 +63,27 @@ export const Library = (): ReactElement => {
             {ellipsize(value.data.series[0], 45)}
           </span>
         </span>
-        <div className="field is-grouped is-grouped-multiline">
-          <div className="control">
-            <span className="tags has-addons is-size-7  mt-2">
-              <span className="tag">Pages</span>
-              <span className="tag is-info is-light has-text-weight-bold">
-                {value.data.pagecount[0]}
-              </span>
+        <div className="flex flex-row mt-2 gap-2">
+          {/* Pages */}
+          <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+            <span className="pr-1 pt-1">
+              <i className="icon-[solar--notebook-minimalistic-bold-duotone] w-5 h-5"></i>
             </span>
-          </div>
-
-          <div className="control">
-            <span className="tags has-addons is-size-7 mt-2">
-              <span className="tag">Issue</span>
+            <span className="text-md text-slate-900 dark:text-slate-900">
+              Pages: {value.data.pagecount[0]}
+            </span>
+          </span>
+          {/* Issue number */}
+          <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+            <span className="pr-1 pt-1">
+              <i className="icon-[solar--hashtag-outline] w-3.5 h-3.5"></i>
+            </span>
+            <span className="text-slate-900 dark:text-slate-900">
               {!isNil(value.data.number) && (
-                <span className="tag has-text-weight-bold is-success is-light">
-                  {parseInt(value.data.number[0], 10)}
-                </span>
+                <span>{parseInt(value.data.number[0], 10)}</span>
               )}
             </span>
-          </div>
+          </span>
         </div>
       </dl>
     ) : null;
@@ -112,7 +114,7 @@ export const Library = (): ReactElement => {
               !isEmpty(info.getValue()) ? (
                 <ComicInfoXML data={info.getValue()} />
               ) : (
-                <span className="text-sm p-4">No ComicInfo.xml</span>
+                <div className="text-sm mx-4 my-3">No comicinfo.xml</div>
               ),
           },
         ],
@@ -126,9 +128,7 @@ export const Library = (): ReactElement => {
             cell: (info) => {
               return !isNil(info.getValue()) ? (
                 <h6>{info.getValue().publisher.name}</h6>
-              ) : (
-                "Chimin"
-              );
+              ) : null;
             },
           },
           {
