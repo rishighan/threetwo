@@ -73,43 +73,32 @@ export const T2Table = (tableOptions): ReactElement => {
     <>
       <div>
         {/* Search bar */}
-        <div className="column is-half">
+        <div className="flex flex-row gap-2 justify-between">
           <SearchBar />
-        </div>
-        {/* pagination controls */}
-        <nav className="pagination columns">
-          Page {pageIndex} of {Math.ceil(totalPages / pageSize)}
-          <p>{totalPages} comics in all</p>
-          {/* Prev/Next buttons */}
-          <div className="inline-flex flex-row mt-4 mb-4">
-            <button
-              onClick={() => goToPreviousPage()}
-              disabled={pageIndex === 1}
-              className="bg-slate-500 rounded-l border-slate-600 border-r pt-2 px-2"
-            >
-              <i className="icon-[solar--arrow-left-linear] h-6 w-6"></i>
-            </button>
-            <button
-              className="bg-slate-500 rounded-r pt-2 px-2"
-              onClick={() => goToNextPage()}
-              disabled={pageIndex > Math.floor(totalPages / pageSize)}
-            >
-              <i className="icon-[solar--arrow-right-linear] h-6 w-6"></i>
-            </button>
+
+          {/* pagination controls */}
+          <div>
+            Page {pageIndex} of {Math.ceil(totalPages / pageSize)}
+            <p>{totalPages} comics in all</p>
+            {/* Prev/Next buttons */}
+            <div className="inline-flex flex-row mt-4 mb-4">
+              <button
+                onClick={() => goToPreviousPage()}
+                disabled={pageIndex === 1}
+                className="dark:bg-slate-500 bg-slate-400 rounded-l border-slate-600 border-r pt-2 px-2"
+              >
+                <i className="icon-[solar--arrow-left-linear] h-6 w-6"></i>
+              </button>
+              <button
+                className="dark:bg-slate-500 bg-slate-400 rounded-r pt-2 px-2"
+                onClick={() => goToNextPage()}
+                disabled={pageIndex > Math.floor(totalPages / pageSize)}
+              >
+                <i className="icon-[solar--arrow-right-linear] h-6 w-6"></i>
+              </button>
+            </div>
           </div>
-          <button className="button">
-            <span className="icon is-small">
-              <i className="fa-solid fa-list"></i>
-            </span>
-          </button>
-          <button className="button">
-            <Link to="/library-grid">
-              <span className="icon is-small">
-                <i className="fa-solid fa-image"></i>
-              </span>
-            </Link>
-          </button>
-        </nav>
+        </div>
       </div>
       <table className="table-auto border-collapse overflow-auto">
         <thead className="sticky top-0 bg-slate-200 dark:bg-slate-500">

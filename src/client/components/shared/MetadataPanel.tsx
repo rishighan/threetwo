@@ -31,7 +31,7 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
     {
       name: "rawFileDetails",
       content: () => (
-        <dl className="bg-[#647587] p-3 rounded-lg">
+        <dl className="dark:bg-[#647587] bg-slate-200 p-3 rounded-lg">
           <dt>
             <p className="text-lg">{issueName}</p>
           </dt>

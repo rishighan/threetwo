@@ -7,6 +7,7 @@ import T2Table from "../shared/T2Table";
 import ellipsize from "ellipsize";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import axios from "axios";
+import { format, fromUnixTime, parseISO } from "date-fns";
 
 /**
  * Component that tabulates the contents of the user's ThreeTwo Library.
@@ -53,7 +54,7 @@ export const Library = (): ReactElement => {
 
   const ComicInfoXML = (value) => {
     return value.data ? (
-      <dl className="flex flex-col text-md p-3 mx-4 my-3 rounded-lg bg-yellow-500 w-max">
+      <dl className="flex flex-col text-md p-3 ml-4 my-3 rounded-lg dark:bg-yellow-500 bg-yellow-300 w-max">
         {/* Series Name */}
         <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
           <span className="pr-1 pt-1">
@@ -113,9 +114,7 @@ export const Library = (): ReactElement => {
             cell: (info) =>
               !isEmpty(info.getValue()) ? (
                 <ComicInfoXML data={info.getValue()} />
-              ) : (
-                <div className="text-sm mx-4 my-3">No comicinfo.xml</div>
-              ),
+              ) : null,
           },
         ],
       },
@@ -123,24 +122,41 @@ export const Library = (): ReactElement => {
         header: "Additional Metadata",
         columns: [
           {
-            header: "Publisher",
-            accessorKey: "_source.sourcedMetadata.comicvine.volumeInformation",
+            header: "Date of Import",
+            accessorKey: "_source.createdAt",
             cell: (info) => {
               return !isNil(info.getValue()) ? (
-                <h6>{info.getValue().publisher.name}</h6>
+                <div className="text-xs w-max ml-3 my-3 text-slate-400">
+                  <p>{format(parseISO(info.getValue()), "dd MMMM, yyyy")} </p>
+                  {format(parseISO(info.getValue()), "h aaaa")}
+                </div>
               ) : null;
             },
           },
           {
-            header: "Something",
-            accessorKey: "_source.acquisition.source.wanted",
-            cell: (info) => {
-              !isUndefined(info.getValue()) ? (
-                <WantedStatus value={info.getValue().toString()} />
-              ) : (
-                "Nothing"
-              );
-            },
+            header: "Downloads",
+            accessorKey: "_source.acquisition",
+            cell: (info) => (
+              <div className="flex flex-col gap-2 ml-3 my-3">
+                <span className="inline-flex items-center w-fit bg-slate-50 text-slate-800 text-xs px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                  <span className="pr-1 pt-1">
+                    <i className="icon-[solar--folder-path-connect-bold-duotone] w-5 h-5"></i>
+                  </span>
+                  <span className="text-md text-slate-900 dark:text-slate-900">
+                    DC++: {info.getValue().directconnect.downloads.length}
+                  </span>
+                </span>
+
+                <span className="inline-flex w-fit items-center bg-slate-50 text-slate-800 text-xs px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                  <span className="pr-1 pt-1">
+                    <i className="icon-[solar--magnet-bold-duotone] w-5 h-5"></i>
+                  </span>
+                  <span className="text-md text-slate-900 dark:text-slate-900">
+                    Torrent: {info.getValue().torrent.downloads.length}
+                  </span>
+                </span>
+              </div>
+            ),
           },
         ],
       },
