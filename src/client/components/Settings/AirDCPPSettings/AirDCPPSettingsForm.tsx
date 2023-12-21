@@ -71,7 +71,6 @@ export const AirDCPPSettingsForm = (): ReactElement => {
   const initFormData = !isUndefined(airDCPPClientConfiguration)
     ? airDCPPClientConfiguration
     : {};
-  console.log(airDCPPClientConfiguration);
   return (
     <>
       <ConnectionForm

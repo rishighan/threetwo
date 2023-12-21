@@ -47,6 +47,8 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
       inferredMetadata,
       sourcedMetadata: { comicvine, locg, comicInfo },
       acquisition,
+      createdAt,
+      updatedAt,
     },
     userSettings,
   } = data;
@@ -246,67 +248,58 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   // 2. from the CV-scraped version
 
   return (
-    <section className="container">
+    <section className="container mx-auto">
       <div className="section">
         {!isNil(data) && !isEmpty(data) && (
           <>
-            <h1 className="title">{issueName}</h1>
-            <div className="columns is-multiline">
-              <div className="column is-narrow">
+            <div>
+              <div className="flex flex-row mt-5">
                 <Card
                   imageUrl={url}
-                  orientation={"vertical"}
+                  orientation={"cover-only"}
                   hasDetails={false}
-                  cardContainerStyle={{ maxWidth: 275 }}
                 />
-                {/* action dropdown */}
-                <div className="mt-4 is-size-7">
-                  <Menu
-                    data={data.data}
-                    handlers={{ setSlidingPanelContentId, setVisible }}
-                  />
-                </div>
-              </div>
-              {/* raw file details */}
-              <div className="column">
+
+                {/* raw file details */}
                 {!isUndefined(rawFileDetails) &&
                   !isEmpty(rawFileDetails.cover) && (
-                    <>
+                    <div className="grid">
                       <RawFileDetails
                         data={{
                           rawFileDetails: rawFileDetails,
                           inferredMetadata: inferredMetadata,
+                          created_at: createdAt,
+                          updated_at: updatedAt,
                         }}
                       />
-                      {/* Read comic button */}
-                      <button
-                        className="button is-success is-light"
-                        onClick={() => openModal(rawFileDetails.filePath)}
-                      >
-                        <i className="fa-solid fa-book-open mr-2"></i>
-                        Read
-                      </button>
 
                       {/* <Modal
-                        style={{ content: { marginTop: "2rem" } }}
-                        isOpen={modalIsOpen}
-                        onAfterOpen={afterOpenModal}
-                        onRequestClose={closeModal}
-                        contentLabel="Example Modal"
-                      >
-                        <button onClick={closeModal}>close</button>
-                        {extractedComicBook && (
-                          <ComicViewer
-                            pages={extractedComicBook}
-                            direction="ltr"
-                            className={{
-                              closeButton: "border: 1px solid red;",
-                            }}
-                          />
-                        )}
-                      </Modal> */}
-                    </>
+                      style={{ content: { marginTop: "2rem" } }}
+                      isOpen={modalIsOpen}
+                      onAfterOpen={afterOpenModal}
+                      onRequestClose={closeModal}
+                      contentLabel="Example Modal"
+                    >
+                      <button onClick={closeModal}>close</button>
+                      {extractedComicBook && (
+                        <ComicViewer
+                          pages={extractedComicBook}
+                          direction="ltr"
+                          className={{
+                            closeButton: "border: 1px solid red;",
+                          }}
+                        />
+                      )}
+                    </Modal> */}
+                    </div>
                   )}
+                {/* action dropdown */}
+                {/* <div className="mt-4 is-size-7">
+                  <Menu
+                    data={data.data}
+                    handlers={{ setSlidingPanelContentId, setVisible }}
+                  />
+                </div> */}
               </div>
             </div>
 

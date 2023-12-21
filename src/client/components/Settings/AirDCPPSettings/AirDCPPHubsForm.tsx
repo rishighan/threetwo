@@ -35,19 +35,16 @@ export const AirDCPPHubsForm = (): ReactElement => {
    * Get the hubs list from an AirDCPP Socket
    */
   const { data: hubs } = useQuery({
-    queryKey: [],
+    queryKey: ["hubs"],
     queryFn: async () => await airDCPPSocketInstance.get(`hubs`),
-    enabled: !!settings,
   });
   let hubList = {};
-  if (!isEmpty(hubs)) {
-    console.log("hs", hubs);
+  if (!isNil(hubs)) {
     hubList = hubs.map(({ hub_url, identity }) => ({
       value: hub_url,
       label: identity.name,
     }));
   }
-  console.log(hubList);
   const { mutate } = useMutation({
     mutationFn: async (values) =>
       await axios({

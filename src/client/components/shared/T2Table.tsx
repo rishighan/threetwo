@@ -70,67 +70,46 @@ export const T2Table = (tableOptions): ReactElement => {
   });
 
   return (
-    <>
-      <div className="columns table-controls">
+    <div className="container max-w-fit mx-14">
+      <div>
         {/* Search bar */}
-        <div className="column is-half">
+        <div className="flex flex-row gap-2 justify-between mt-5">
           <SearchBar />
-        </div>
-        {/* pagination controls */}
-        <nav className="pagination columns">
-          <div className="mr-4 has-text-weight-semibold has-text-left">
-            <p className="is-size-5">
-              Page {pageIndex} of {Math.ceil(totalPages / pageSize)}
-            </p>
+
+          {/* pagination controls */}
+          <div>
+            Page {pageIndex} of {Math.ceil(totalPages / pageSize)}
             <p>{totalPages} comics in all</p>
-          </div>
-          <div className="field has-addons">
-            <div className="control">
+            {/* Prev/Next buttons */}
+            <div className="inline-flex flex-row mt-4 mb-4">
               <button
-                className="button"
                 onClick={() => goToPreviousPage()}
                 disabled={pageIndex === 1}
+                className="dark:bg-slate-500 bg-slate-400 rounded-l border-slate-600 border-r pt-2 px-2"
               >
-                <i className="fas fa-chevron-left"></i>
+                <i className="icon-[solar--arrow-left-linear] h-6 w-6"></i>
               </button>
-            </div>
-            <div className="control">
               <button
-                className="button"
+                className="dark:bg-slate-500 bg-slate-400 rounded-r pt-2 px-2"
                 onClick={() => goToNextPage()}
                 disabled={pageIndex > Math.floor(totalPages / pageSize)}
               >
-                <i className="fas fa-chevron-right"></i>
+                <i className="icon-[solar--arrow-right-linear] h-6 w-6"></i>
               </button>
             </div>
-
-            <div className="field has-addons ml-5">
-              <p className="control">
-                <button className="button">
-                  <span className="icon is-small">
-                    <i className="fa-solid fa-list"></i>
-                  </span>
-                </button>
-              </p>
-              <p className="control">
-                <button className="button">
-                  <Link to="/library-grid">
-                    <span className="icon is-small">
-                      <i className="fa-solid fa-image"></i>
-                    </span>
-                  </Link>
-                </button>
-              </p>
-            </div>
           </div>
-        </nav>
+        </div>
       </div>
-      <table className="table is-hoverable">
-        <thead>
+      <table className="table-auto overflow-auto">
+        <thead className="sticky top-0 bg-slate-200 dark:bg-slate-500">
           {table.getHeaderGroups().map((headerGroup, idx) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header, idx) => (
-                <th key={header.id} colSpan={header.colSpan}>
+                <th
+                  key={header.id}
+                  colSpan={header.colSpan}
+                  className="px-3 py-3"
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -147,17 +126,22 @@ export const T2Table = (tableOptions): ReactElement => {
           {table.getRowModel().rows.map((row, idx) => {
             return (
               <tr key={row.id} onClick={() => rowClickHandler(row)}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
+                {row.getVisibleCells().map((cell) => {
+                  return (
+                    <td key={cell.id} className="align-top">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </td>
+                  );
+                })}
               </tr>
             );
           })}
         </tbody>
       </table>
-    </>
+    </div>
   );
 };
 

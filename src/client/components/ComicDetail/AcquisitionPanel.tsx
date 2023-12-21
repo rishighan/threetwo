@@ -1,9 +1,5 @@
 import React, { useCallback, ReactElement, useEffect, useState } from "react";
-import {
-  downloadAirDCPPItem,
-  getBundlesForComic,
-  sleep,
-} from "../../actions/airdcpp.actions";
+import { getBundlesForComic, sleep } from "../../actions/airdcpp.actions";
 import { SearchQuery, PriorityEnum, SearchResponse } from "threetwo-ui-typings";
 import { RootState, SearchInstance } from "threetwo-ui-typings";
 import ellipsize from "ellipsize";
@@ -13,6 +9,7 @@ import { isEmpty, isNil, map } from "lodash";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 interface IAcquisitionPanelProps {
   query: any;
@@ -28,13 +25,21 @@ export const AcquisitionPanel = (
     airDCPPSocketInstance,
     airDCPPClientConfiguration,
     airDCPPSessionInformation,
+    airDCPPDownloadTick,
   } = useStore(
     useShallow((state) => ({
       airDCPPSocketInstance: state.airDCPPSocketInstance,
       airDCPPClientConfiguration: state.airDCPPClientConfiguration,
       airDCPPSessionInformation: state.airDCPPSessionInformation,
+      airDCPPDownloadTick: state.airDCPPDownloadTick,
     })),
   );
+
+  interface SearchData {
+    query: Pick<SearchQuery, "pattern"> & Partial<Omit<SearchQuery, "pattern">>;
+    hub_urls: string[] | undefined | null;
+    priority: PriorityEnum;
+  }
 
   /**
    * Get the hubs list from an AirDCPP Socket
@@ -43,34 +48,15 @@ export const AcquisitionPanel = (
     queryKey: ["hubs"],
     queryFn: async () => await airDCPPSocketInstance.get(`hubs`),
   });
-
+  const { comicObjectId } = props;
   const issueName = props.query.issue.name || "";
-  // const { settings } = props;
   const sanitizedIssueName = issueName.replace(/[^a-zA-Z0-9 ]/g, " ");
 
-  // Selectors for picking state
-  // const airDCPPSearchResults = useSelector((state: RootState) => {
-  //   return state.airdcpp.searchResults;
-  // });
-  // const isAirDCPPSearchInProgress = useSelector(
-  //   (state: RootState) => state.airdcpp.isAirDCPPSearchInProgress,
-  // );
-  // const searchInfo = useSelector(
-  //   (state: RootState) => state.airdcpp.searchInfo,
-  // );
-  // const searchInstance: SearchInstance = useSelector(
-  //   (state: RootState) => state.airdcpp.searchInstance,
-  // );
-
-  // const settings = useSelector((state: RootState) => state.settings.data);
-  // const airDCPPConfiguration = useContext(AirDCPPSocketContext);
-  interface SearchData {
-    query: Pick<SearchQuery, "pattern"> & Partial<Omit<SearchQuery, "pattern">>;
-    hub_urls: string[] | undefined | null;
-    priority: PriorityEnum;
-  }
   const [dcppQuery, setDcppQuery] = useState({});
   const [airDCPPSearchResults, setAirDCPPSearchResults] = useState([]);
+  const [airDCPPSearchStatus, setAirDCPPSearchStatus] = useState(false);
+  const [airDCPPSearchInstance, setAirDCPPSearchInstance] = useState({});
+  const [airDCPPSearchInfo, setAirDCPPSearchInfo] = useState({});
 
   // Construct a AirDC++ query based on metadata inferred, upon component mount
   // Pre-populate the search input with the search string, so that
@@ -88,15 +74,18 @@ export const AcquisitionPanel = (
     setDcppQuery(dcppSearchQuery);
   }, []);
 
+  /**
+   * Method to perform a search via an AirDC++ websocket
+   * @param {SearchData} data - a SearchData query
+   * @param {any} ADCPPSocket - an intialized AirDC++ socket instance
+   */
   const search = async (data: SearchData, ADCPPSocket: any) => {
     try {
       if (!ADCPPSocket.isConnected()) {
         await ADCPPSocket();
       }
       const instance: SearchInstance = await ADCPPSocket.post("search");
-      // dispatch({
-      //   type: AIRDCPP_SEARCH_IN_PROGRESS,
-      // });
+      setAirDCPPSearchStatus(true);
 
       // We want to get notified about every new result in order to make the user experience better
       await ADCPPSocket.addListener(
@@ -142,6 +131,9 @@ export const AcquisitionPanel = (
           const currentInstance = await ADCPPSocket.get(
             `search/${instance.id}`,
           );
+          setAirDCPPSearchInstance(currentInstance);
+          setAirDCPPSearchInfo(searchInfo);
+          console.log("Asdas", airDCPPSearchInfo);
           if (currentInstance.result_count === 0) {
             // ...nothing was received, show an informative message to the user
             console.log("No more search results.");
@@ -149,11 +141,8 @@ export const AcquisitionPanel = (
 
           // The search can now be considered to be "complete"
           // If there's an "in progress" indicator in the UI, that could also be disabled here
-          // dispatch({
-          //   type: AIRDCPP_HUB_SEARCHES_SENT,
-          //   searchInfo,
-          //   instance,
-          // });
+          setAirDCPPSearchInstance(instance);
+          setAirDCPPSearchStatus(false);
         },
         instance.id,
       );
@@ -161,6 +150,68 @@ export const AcquisitionPanel = (
       await ADCPPSocket.post(`search/${instance.id}/hub_search`, data);
     } catch (error) {
       console.log(error);
+      throw error;
+    }
+  };
+
+  /**
+   * Method to download a bundle associated with a search result from AirDC++
+   * @param {Number} searchInstanceId - description
+   * @param {String} resultId - description
+   * @param {String} comicObjectId - description
+   * @param {String} name - description
+   * @param {Number} size - description
+   * @param {any} type - description
+   * @param {any} ADCPPSocket - description
+   * @returns {void}  - description
+   */
+  const download = async (
+    searchInstanceId: Number,
+    resultId: String,
+    comicObjectId: String,
+    name: String,
+    size: Number,
+    type: any,
+    ADCPPSocket: any,
+  ): void => {
+    try {
+      if (!ADCPPSocket.isConnected()) {
+        await ADCPPSocket.connect();
+      }
+      let bundleDBImportResult = {};
+      const downloadResult = await ADCPPSocket.post(
+        `search/${searchInstanceId}/results/${resultId}/download`,
+      );
+
+      if (!isNil(downloadResult)) {
+        bundleDBImportResult = await axios({
+          method: "POST",
+          url: `http://localhost:3000/api/library/applyAirDCPPDownloadMetadata`,
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+          },
+          data: {
+            bundleId: downloadResult.bundle_info.id,
+            comicObjectId,
+            name,
+            size,
+            type,
+          },
+        });
+
+        //         dispatch({
+        //           type: AIRDCPP_RESULT_DOWNLOAD_INITIATED,
+        //           downloadResult,
+        //           bundleDBImportResult,
+        //         });
+        //
+        //         dispatch({
+        //           type: IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
+        //           comicBookDetail: bundleDBImportResult.data,
+        //           IMS_inProgress: false,
+        //         });
+      }
+    } catch (error) {
       throw error;
     }
   };
@@ -209,7 +260,6 @@ export const AcquisitionPanel = (
     },
     [],
   );
-  console.log("yaman", airDCPPSearchResults);
   return (
     <>
       <div className="comic-detail columns">
@@ -245,7 +295,7 @@ export const AcquisitionPanel = (
                       <button
                         type="submit"
                         className={
-                          false
+                          airDCPPSearchStatus
                             ? "button is-loading is-warning"
                             : "button is-success is-light"
                         }
@@ -272,6 +322,60 @@ export const AcquisitionPanel = (
           </div>
         )}
       </div>
+
+      {/* AirDC++ search instance details */}
+      {!isNil(airDCPPSearchInstance) &&
+        !isEmpty(airDCPPSearchInfo) &&
+        !isNil(hubs) && (
+          <div className="columns">
+            <div className="column is-one-quarter is-size-7">
+              <div className="card">
+                <div className="card-content">
+                  <dl>
+                    <dt>
+                      <div className="tags mb-1">
+                        {hubs.map((value, idx) => (
+                          <span className="tag is-warning" key={idx}>
+                            {value.identity.name}
+                          </span>
+                        ))}
+                      </div>
+                    </dt>
+                    <dt>
+                      Query:
+                      <span className="has-text-weight-semibold">
+                        {airDCPPSearchInfo.query.pattern}
+                      </span>
+                    </dt>
+                    <dd>
+                      Extensions:
+                      <span className="has-text-weight-semibold">
+                        {airDCPPSearchInfo.query.extensions.join(", ")}
+                      </span>
+                    </dd>
+                    <dd>
+                      File type:
+                      <span className="has-text-weight-semibold">
+                        {airDCPPSearchInfo.query.file_type}
+                      </span>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+            <div className="column is-one-quarter is-size-7">
+              <div className="card">
+                <div className="card-content">
+                  <dl>
+                    <dt>Search Instance: {airDCPPSearchInstance.id}</dt>
+                    <dt>Owned by {airDCPPSearchInstance.owner}</dt>
+                    <dd>Expires in: {airDCPPSearchInstance.expires_in}</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
       {/* AirDC++ results */}
       <div className="columns">
@@ -342,12 +446,14 @@ export const AcquisitionPanel = (
                         <button
                           className="button is-small is-light is-success"
                           onClick={() =>
-                            downloadDCPPResult(
-                              searchInstance.id,
+                            download(
+                              airDCPPSearchInstance.id,
                               result.id,
+                              comicObjectId,
                               result.name,
                               result.size,
                               result.type,
+                              airDCPPSocketInstance,
                             )
                           }
                         >

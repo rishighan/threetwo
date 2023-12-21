@@ -5,6 +5,7 @@ import { SOCKET_BASE_URI } from "../constants/endpoints";
 import { produce } from "immer";
 import AirDCPPSocket from "../services/DcppSearchService";
 import axios from "axios";
+import { QueryClient } from "@tanstack/react-query";
 
 /*  Broadly, this file sets up:
  *    1. The zustand-based global client state
@@ -23,6 +24,7 @@ export const useStore = create((set, get) => ({
       airDCPPSocketConnected: value,
     })),
   airDCPPDownloadTick: {},
+  airDCPPTransfers: {},
   // Socket.io state
   socketIOInstance: {},
 
@@ -68,6 +70,7 @@ export const useStore = create((set, get) => ({
 }));
 
 const { getState, setState } = useStore;
+const queryClient = new QueryClient();
 
 /** Socket.IO initialization **/
 // 1. Fetch sessionId from localStorage
@@ -112,6 +115,42 @@ socketIOInstance.on("RESTORE_JOB_COUNTS_AFTER_SESSION_RESTORATION", (data) => {
       status: queueStatus,
     },
   }));
+});
+
+// 1a.  Act on each comic issue successfully imported/failed, as indicated
+//      by the LS_COVER_EXTRACTED/LS_COVER_EXTRACTION_FAILED events
+socketIOInstance.on("LS_COVER_EXTRACTED", (data) => {
+  const { completedJobCount, importResult } = data;
+  setState((state) => ({
+    importJobQueue: {
+      ...state.importJobQueue,
+      successfulJobCount: completedJobCount,
+      mostRecentImport: importResult.rawFileDetails.name,
+    },
+  }));
+});
+socketIOInstance.on("LS_COVER_EXTRACTION_FAILED", (data) => {
+  const { failedJobCount } = data;
+  setState((state) => ({
+    importJobQueue: {
+      ...state.importJobQueue,
+      failedJobCount,
+    },
+  }));
+});
+
+// 1b.  Clear the localStorage sessionId upon receiving the
+//      LS_IMPORT_QUEUE_DRAINED event
+socketIOInstance.on("LS_IMPORT_QUEUE_DRAINED", (data) => {
+  localStorage.removeItem("sessionId");
+  setState((state) => ({
+    importJobQueue: {
+      ...state.importJobQueue,
+      status: "drained",
+    },
+  }));
+  console.log("a", queryClient);
+  queryClient.invalidateQueries({ queryKey: ["allImportJobResults"] });
 });
 
 /**

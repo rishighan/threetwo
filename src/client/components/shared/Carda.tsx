@@ -4,8 +4,8 @@ import { isEmpty, isNil } from "lodash";
 
 interface ICardProps {
   orientation: string;
-  imageUrl: string;
-  hasDetails: boolean;
+  imageUrl?: string;
+  hasDetails?: boolean;
   title?: PropTypes.ReactElementLike | null;
   children?: PropTypes.ReactNodeLike;
   borderColorClass?: string;
@@ -80,6 +80,85 @@ const renderCard = (props: ICardProps): ReactElement => {
           </div>
         </div>
       );
+
+    case "vertical-2":
+      return (
+        <div className="block rounded-md w-fit h-fit shadow-md shadow-white-400 bg-gray-200 dark:bg-slate-500">
+          <img
+            alt="Home"
+            src={props.imageUrl}
+            className="rounded-t-md object-cover"
+          />
+
+          <div className="mt-2 px-2">
+            <dl>
+              <div>
+                <dd className="text-md text-slate-500 dark:text-black">
+                  {props.title}
+                </dd>
+              </div>
+            </dl>
+
+            {props.hasDetails && <>{props.children}</>}
+          </div>
+        </div>
+      );
+
+    case "horizontal-small":
+      return (
+        <>
+          <div className="flex flex-row justify-start align-top gap-3 bg-slate-200 h-fit rounded-md shadow-md shadow-white-400">
+            {/* thumbnail */}
+            <div className="rounded-md overflow-hidden">
+              <img src={props.imageUrl} className="object-cover h-20 w-20" />
+            </div>
+            {/* details */}
+            <div className="w-fit h-fit pl-1 pr-2 py-1">
+              <p className="text-sm">{props.title}</p>
+            </div>
+          </div>
+        </>
+      );
+
+    case "horizontal-medium":
+      return (
+        <>
+          <div className="flex flex-row items-center align-top gap-3 bg-slate-200 h-fit p-2 rounded-md shadow-md shadow-white-400">
+            {/* thumbnail */}
+            <div className="rounded-md overflow-hidden">
+              <img src={props.imageUrl} />
+            </div>
+            {/* details */}
+            <div className="pl-1 pr-2 py-1">
+              <p className="text-sm">{props.title}</p>
+              {props.hasDetails && <>{props.children}</>}
+            </div>
+          </div>
+        </>
+      );
+
+    case "cover-only":
+      return (
+        <>
+          {/* thumbnail */}
+          <div className="rounded-lg shadow-lg overflow-hidden w-fit h-fit">
+            <img src={props.imageUrl} />
+          </div>
+        </>
+      );
+    case "card-with-info-panel":
+      return (
+        <>
+          <div className="flex flex-row">
+            {/* thumbnail */}
+            <div className="rounded-md overflow-hidden w-fit h-fit">
+              <img src={props.imageUrl} />
+            </div>
+            {/* myata-dyata */}
+          </div>
+        </>
+      );
+
     default:
       return <></>;
   }
