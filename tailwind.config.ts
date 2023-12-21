@@ -20,5 +20,6 @@ module.exports = {
       },
     },
   },
+
   plugins: [addDynamicIconSelectors()],
 };

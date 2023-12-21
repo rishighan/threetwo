@@ -90,9 +90,6 @@ export const Library = (): ReactElement => {
     ) : null;
   };
 
-  const WantedStatus = ({ value }) => {
-    return !value ? <span className="tag is-info is-light">Wanted</span> : null;
-  };
   const columns = useMemo(
     () => [
       {
@@ -126,7 +123,7 @@ export const Library = (): ReactElement => {
             accessorKey: "_source.createdAt",
             cell: (info) => {
               return !isNil(info.getValue()) ? (
-                <div className="text-xs w-max ml-3 my-3 text-slate-400">
+                <div className="text-xs w-max ml-3 my-3 text-slate-600">
                   <p>{format(parseISO(info.getValue()), "dd MMMM, yyyy")} </p>
                   {format(parseISO(info.getValue()), "h aaaa")}
                 </div>
@@ -199,11 +196,23 @@ export const Library = (): ReactElement => {
   //   value: PropTypes.bool.isRequired,
   // };
   return (
-    <section className="container">
-      <div className="section">
-        <div className="header-area">
-          <h1 className="title">Library</h1>
-        </div>
+    <div>
+      <section>
+        <header className="bg-slate-200 dark:bg-slate-500">
+          <div className="mx-auto max-w-screen-xl px-2 py-2 sm:px-6 sm:py-8 lg:px-8 lg:py-4">
+            <div className="sm:flex sm:items-center sm:justify-between">
+              <div className="text-center sm:text-left">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
+                  Library
+                </h1>
+
+                <p className="mt-1.5 text-sm text-gray-500 dark:text-white">
+                  Browse your comic book collection.
+                </p>
+              </div>
+            </div>
+          </div>
+        </header>
         {!isUndefined(searchResults?.hits) ? (
           <div>
             <div className="library">
@@ -220,29 +229,36 @@ export const Library = (): ReactElement => {
             </div>
           </div>
         ) : (
-          <div className="columns">
-            <div className="column is-two-thirds">
-              <article className="message is-link">
-                <div className="message-body">
+          <>
+            <article
+              role="alert"
+              className="rounded-lg max-w-screen-md border-s-4 border-yellow-500 bg-yellow-50 p-4 dark:border-s-4 dark:border-yellow-600 dark:bg-yellow-300 dark:text-slate-600"
+            >
+              <div>
+                <p>
                   No comics were found in the library, Elasticsearch reports no
                   indices. Try importing a few comics into the library and come
                   back.
-                </div>
-              </article>
-              {!isUndefined(searchResults?.data?.meta?.body) ? (
-                <pre>
-                  {JSON.stringify(
-                    searchResults.data.meta.body.error.root_cause,
-                    null,
-                    4,
-                  )}
-                </pre>
-              ) : null}
+                </p>
+              </div>
+            </article>
+            <div className="block max-w-md p-6 bg-white border border-gray-200 my-3 rounded-lg shadow dark:bg-slate-400 dark:border-gray-700">
+              <pre className="text-sm font-hasklig text-slate-700 dark:text-slate-700">
+                {!isUndefined(searchResults?.data?.meta?.body) ? (
+                  <p>
+                    {JSON.stringify(
+                      searchResults.data.meta.body.error.root_cause,
+                      null,
+                      4,
+                    )}
+                  </p>
+                ) : null}
+              </pre>
             </div>
-          </div>
+          </>
         )}
-      </div>
-    </section>
+      </section>
+    </div>
   );
 };
 

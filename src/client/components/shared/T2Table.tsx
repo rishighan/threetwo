@@ -70,10 +70,10 @@ export const T2Table = (tableOptions): ReactElement => {
   });
 
   return (
-    <>
+    <div className="container max-w-fit mx-14">
       <div>
         {/* Search bar */}
-        <div className="flex flex-row gap-2 justify-between">
+        <div className="flex flex-row gap-2 justify-between mt-5">
           <SearchBar />
 
           {/* pagination controls */}
@@ -100,7 +100,7 @@ export const T2Table = (tableOptions): ReactElement => {
           </div>
         </div>
       </div>
-      <table className="table-auto border-collapse overflow-auto">
+      <table className="table-auto overflow-auto">
         <thead className="sticky top-0 bg-slate-200 dark:bg-slate-500">
           {table.getHeaderGroups().map((headerGroup, idx) => (
             <tr key={headerGroup.id}>
@@ -141,7 +141,7 @@ export const T2Table = (tableOptions): ReactElement => {
           })}
         </tbody>
       </table>
-    </>
+    </div>
   );
 };
 
