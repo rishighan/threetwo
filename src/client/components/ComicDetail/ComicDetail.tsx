@@ -181,7 +181,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     {
       id: 2,
       name: "ComicInfo.xml",
-      icon: <i className="fa-solid fa-code"></i>,
+      icon: (
+        <i className="h-5 w-5 icon-[solar--code-file-bold-duotone] text-slate-500 dark:text-slate-300" />
+      ),
       content: (
         <div className="columns" key={2}>
           <div className="column is-three-quarters">
@@ -193,7 +195,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     },
     {
       id: 3,
-      icon: <i className="fa-regular fa-file-archive"></i>,
+      icon: (
+        <i className="h-5 w-5 icon-[solar--winrar-bold-duotone] text-slate-500 dark:text-slate-300" />
+      ),
       name: "Archive Operations",
       content: <></>,
       /*
@@ -202,7 +206,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     },
     {
       id: 4,
-      icon: <i className="fa-solid fa-circle-nodes"></i>,
+      icon: (
+        <i className="h-5 w-5 icon-[solar--folder-path-connect-bold-duotone] text-slate-500 dark:text-slate-300" />
+      ),
       name: "DC++ Search",
       content: (
         <AcquisitionPanel
@@ -217,19 +223,20 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     },
     {
       id: 5,
-      icon: <i className="fa-solid fa-droplet"></i>,
+      icon: (
+        <i className="h-5 w-5 icon-[solar--magnet-bold-duotone] text-slate-500 dark:text-slate-300" />
+      ),
       name: "Torrent Search",
       content: <>Torrents</>,
       shouldShow: true,
     },
     {
       id: 6,
-      icon: null,
-      name: !isEmpty(data.data) ? (
-        <span className="download-tab-name">Downloads</span>
-      ) : (
-        "Downloads"
+      icon: (
+        <i className="h-5 w-5 icon-[solar--download-bold-duotone] text-slate-500 dark:text-slate-300" />
       ),
+      name: "Downloads",
+
       content: !isNil(data.data) && !isEmpty(data.data) && (
         <DownloadsPanel
           data={data.data.acquisition.directconnect}

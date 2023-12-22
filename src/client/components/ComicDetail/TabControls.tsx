@@ -13,13 +13,13 @@ export const TabControls = (props): ReactElement => {
 
   return (
     <>
-      <div className="hidden sm:block mt-7">
+      <div className="hidden sm:block mt-7 mb-3 w-fit">
         <div className="border-b border-gray-200">
-          <nav className="-mb-px flex gap-6" aria-label="Tabs">
+          <nav className="flex gap-6" aria-label="Tabs">
             {filteredTabs.map(({ id, name, icon }) => (
               <a
                 key={id}
-                className="inline-flex shrink-0 items-center gap-2 border-b-2 border-transparent px-1 pb-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                className="inline-flex shrink-0 items-center gap-2 border-b border-transparent px-1 py-1 text-md font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
                 aria-current="page"
                 onClick={() => setActive(id)}
               >
@@ -37,6 +37,7 @@ export const TabControls = (props): ReactElement => {
                 )}
                 {name}
               </a> */}
+                <span className="w-5 h-5">{icon}</span>
                 {name}
               </a>
             ))}
