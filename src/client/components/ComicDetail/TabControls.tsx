@@ -19,7 +19,7 @@ export const TabControls = (props): ReactElement => {
             {filteredTabs.map(({ id, name, icon }) => (
               <a
                 key={id}
-                className="inline-flex shrink-0 items-center gap-2 border-b border-transparent px-1 py-1 text-md font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                className="inline-flex shrink-0 items-center gap-2 border-b border-transparent px-1 py-1 text-md font-medium text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700"
                 aria-current="page"
                 onClick={() => setActive(id)}
               >

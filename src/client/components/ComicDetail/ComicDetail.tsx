@@ -236,14 +236,19 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
         <i className="h-5 w-5 icon-[solar--download-bold-duotone] text-slate-500 dark:text-slate-300" />
       ),
       name: "Downloads",
-
-      content: !isNil(data.data) && !isEmpty(data.data) && (
-        <DownloadsPanel
-          data={data.data.acquisition.directconnect}
-          comicObjectId={comicObjectId}
-          key={5}
-        />
-      ),
+      content:
+        !isNil(data.data) && !isEmpty(data.data) ? (
+          <DownloadsPanel key={5} />
+        ) : (
+          <div className="column is-three-fifths">
+            <article className="message is-info">
+              <div className="message-body is-size-6 is-family-secondary">
+                AirDC++ is not configured. Please configure it in{" "}
+                <code>Settings</code>.
+              </div>
+            </article>
+          </div>
+        ),
       shouldShow: true,
     },
   ];

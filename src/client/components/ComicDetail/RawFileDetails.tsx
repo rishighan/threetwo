@@ -12,17 +12,17 @@ export const RawFileDetails = (props): ReactElement => {
     <>
       <div className="max-w-2xl ml-5">
         <div className="px-4 sm:px-6">
-          <p className="text-gray-500">
+          <p className="text-gray-500 dark:text-gray-400">
             <span className="text-xl">{rawFileDetails.name}</span>
           </p>
         </div>
         <div className="px-4 py-5 sm:px-6">
           <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
             <div className="sm:col-span-1">
-              <dt className="text-sm font-medium text-gray-500">
+              <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
                 Raw File Details
               </dt>
-              <dd className="mt-1 text-sm text-gray-900">
+              <dd className="mt-1 text-sm text-gray-900 dark:text-gray-400">
                 {rawFileDetails.containedIn +
                   "/" +
                   rawFileDetails.name +
@@ -30,10 +30,10 @@ export const RawFileDetails = (props): ReactElement => {
               </dd>
             </div>
             <div className="sm:col-span-1">
-              <dt className="text-sm font-medium text-gray-500">
+              <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
                 Inferred Issue Metadata
               </dt>
-              <dd className="mt-1 text-sm text-gray-900">
+              <dd className="mt-1 text-sm text-gray-900 dark:text-gray-400">
                 Series Name: {inferredMetadata.issue.name}
                 {!isEmpty(inferredMetadata.issue.number) ? (
                   <span className="tag is-primary is-light">
@@ -43,8 +43,10 @@ export const RawFileDetails = (props): ReactElement => {
               </dd>
             </div>
             <div className="sm:col-span-1">
-              <dt className="text-sm font-medium text-gray-500">MIMEType</dt>
-              <dd className="mt-1 text-sm text-gray-900">
+              <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                MIMEType
+              </dt>
+              <dd className="mt-1 text-sm text-gray-500 dark:text-slate-900">
                 {/* File extension */}
                 <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
                   <span className="pr-1 pt-1">
@@ -56,11 +58,12 @@ export const RawFileDetails = (props): ReactElement => {
                   </span>
                 </span>
               </dd>
-              <dd className="text-sm text-gray-900"></dd>
             </div>
             <div className="sm:col-span-1">
-              <dt className="text-sm font-medium text-gray-500">File Size</dt>
-              <dd className="mt-1 text-sm text-gray-900">
+              <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                File Size
+              </dt>
+              <dd className="mt-1 text-sm text-gray-500 dark:text-slate-900">
                 {/* size */}
                 <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
                   <span className="pr-1 pt-1">
@@ -74,16 +77,18 @@ export const RawFileDetails = (props): ReactElement => {
               </dd>
             </div>
             <div className="sm:col-span-2">
-              <dt className="text-sm font-medium text-gray-500">
+              <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
                 Import Details
               </dt>
-              <dd className="mt-1 text-sm text-gray-900">
+              <dd className="mt-1 text-sm text-gray-900 dark:text-gray-400">
                 {format(parseISO(created_at), "dd MMMM, yyyy")},{" "}
                 {format(parseISO(created_at), "h aaaa")}
               </dd>
             </div>
             <div className="sm:col-span-2">
-              <dt className="text-sm font-medium text-gray-500">Attachments</dt>
+              <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Actions
+              </dt>
               <dd className="mt-1 text-sm text-gray-900">
                 <ul
                   role="list"

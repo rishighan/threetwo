@@ -130,7 +130,6 @@ export const Dashboard = (): ReactElement => {
                   hasDetails
                 >
                   <div>
-                    <dt className="sr-only">Address</dt>
                     <dd className="text-sm my-1 flex flex-row gap-1">
                       {/* Issue number */}
                       <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
@@ -154,11 +153,11 @@ export const Dashboard = (): ReactElement => {
                     </dd>
                   </div>
 
-                  <div className="flex flex-row items-center gap-1 my-2">
+                  <div className="flex flex-row items-center gap-1 my-1">
                     <div className="sm:inline-flex sm:shrink-0 sm:items-center sm:gap-2">
                       {/* ComicInfo.xml presence */}
                       {!isNil(comicInfo) && !isEmpty(comicInfo) && (
-                        <i className="h-7 w-7 icon-[solar--code-file-bold-duotone] text-slate-500 dark:text-slate-300"></i>
+                        <i className="h-7 w-7 my-1 icon-[solar--code-file-bold-duotone] text-yellow-500 dark:text-yellow-300"></i>
                       )}
                       {/* ComicVine metadata presence */}
                       {isComicVineMetadataAvailable && (

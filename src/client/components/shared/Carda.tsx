@@ -93,7 +93,7 @@ const renderCard = (props: ICardProps): ReactElement => {
           <div className="mt-2 px-2">
             <dl>
               <div>
-                <dd className="text-md text-slate-500 dark:text-black">
+                <dd className="text-sm text-slate-500 dark:text-black">
                   {props.title}
                 </dd>
               </div>
