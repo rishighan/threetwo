@@ -1,5 +1,4 @@
 import React, { useEffect, useContext, ReactElement, useState } from "react";
-import { getBundlesForComic } from "../../actions/airdcpp.actions";
 import { RootState } from "threetwo-ui-typings";
 import { isArray, isEmpty, isNil, isUndefined, map } from "lodash";
 import prettyBytes from "pretty-bytes";
@@ -19,13 +18,6 @@ interface IDownloadsPanelProps {
 export const DownloadsPanel = (
   props: IDownloadsPanelProps,
 ): ReactElement | null => {
-  //   const bundles = useSelector((state: RootState) => {
-  //     return state.airdcpp.bundles;
-  //   });
-  //
-  //   // AirDCPP Socket initialization
-  //   const userSettings = useSelector((state: RootState) => state.settings.data);
-  //   const airDCPPConfiguration = useContext(AirDCPPSocketContext);
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
   const [bundles, setBundles] = useState([]);
   const { airDCPPSocketInstance } = useStore(
@@ -66,7 +58,7 @@ export const DownloadsPanel = (
     getBundles(comicObject).then((result) => {
       setBundles(result);
     });
-  }, [isSuccess]);
+  }, [comicObject]);
 
   const Bundles = (props) => {
     console.log("asdas", props);
