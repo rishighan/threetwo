@@ -7,7 +7,6 @@ import { format, parseISO } from "date-fns";
 export const RawFileDetails = (props): ReactElement => {
   const { rawFileDetails, inferredMetadata, created_at, updated_at } =
     props.data;
-  const PaperClipIcon = () => <></>;
   return (
     <>
       <div className="max-w-2xl ml-5">
@@ -89,52 +88,7 @@ export const RawFileDetails = (props): ReactElement => {
               <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">
                 Actions
               </dt>
-              <dd className="mt-1 text-sm text-gray-900">
-                <ul
-                  role="list"
-                  className="divide-y divide-gray-200 rounded-md border border-gray-200"
-                >
-                  <li className="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
-                    <div className="flex w-0 flex-1 items-center">
-                      <PaperClipIcon
-                        className="h-5 w-5 flex-shrink-0 text-gray-400"
-                        aria-hidden="true"
-                      />
-                      <span className="ml-2 w-0 flex-1 truncate">
-                        resume_back_end_developer.pdf
-                      </span>
-                    </div>
-                    <div className="ml-4 flex-shrink-0">
-                      <a
-                        href="#"
-                        className="font-medium text-indigo-600 hover:text-indigo-500"
-                      >
-                        Download
-                      </a>
-                    </div>
-                  </li>
-                  <li className="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
-                    <div className="flex w-0 flex-1 items-center">
-                      {/* Read comic button */}
-                      <button
-                        className="button is-success is-light"
-                        onClick={() => {}}
-                      >
-                        <i className="fa-solid fa-book-open mr-2"></i>
-                        Read
-                      </button>
-                    </div>
-                    <div className="ml-4 flex-shrink-0">
-                      <a
-                        href="#"
-                        className="font-medium text-indigo-600 hover:text-indigo-500"
-                      >
-                        Download
-                      </a>
-                    </div>
-                  </li>
-                </ul>
-              </dd>
+              <dd className="mt-1 text-sm text-gray-900">{props.children}</dd>
             </div>
           </dl>
         </div>
@@ -169,4 +123,5 @@ RawFileDetails.propTypes = {
     created_at: PropTypes.string,
     updated_at: PropTypes.string,
   }),
+  children: PropTypes.any,
 };

@@ -1,6 +1,5 @@
 import React, { ReactElement, useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import SearchBar from "../Library/SearchBar";
 import { Link } from "react-router-dom";
 import {
   ColumnDef,
@@ -74,8 +73,6 @@ export const T2Table = (tableOptions): ReactElement => {
       <div>
         {/* Search bar */}
         <div className="flex flex-row gap-2 justify-between mt-5">
-          <SearchBar />
-
           {/* pagination controls */}
           <div>
             Page {pageIndex} of {Math.ceil(totalPages / pageSize)}

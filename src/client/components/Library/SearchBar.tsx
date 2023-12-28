@@ -6,7 +6,6 @@ import { searchIssue } from "../../actions/fileops.actions";
 
 export const SearchBar = (): ReactElement => {
   const handleSubmit = useCallback((e) => {
-    // dispatch(
     //   searchIssue(
     //     {
     //       query: {
@@ -22,7 +21,6 @@ export const SearchBar = (): ReactElement => {
     //       trigger: "libraryPage",
     //     },
     //   ),
-    // );
   }, []);
   return (
     <Form

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { isEmpty, isNil, isUndefined } from "lodash";
 import MetadataPanel from "../shared/MetadataPanel";
 import T2Table from "../shared/T2Table";
+import SearchBar from "../Library/SearchBar";
 import ellipsize from "ellipsize";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import axios from "axios";
@@ -20,6 +21,7 @@ export const Library = (): ReactElement => {
   // Default page state
   // offset: 0
   const [offset, setOffset] = useState(0);
+  const [searchResults, setSearchResults] = useState([]);
 
   // Method to fetch paginated issues
   const fetchIssues = async (searchQuery, offset, type) => {
@@ -216,6 +218,7 @@ export const Library = (): ReactElement => {
         {!isUndefined(searchResults?.hits) ? (
           <div>
             <div className="library">
+              <SearchBar />
               <T2Table
                 totalPages={searchResults.hits.total.value}
                 columns={columns}

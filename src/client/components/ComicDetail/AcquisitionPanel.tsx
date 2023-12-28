@@ -323,52 +323,45 @@ export const AcquisitionPanel = (
       {!isNil(airDCPPSearchInstance) &&
         !isEmpty(airDCPPSearchInfo) &&
         !isNil(hubs) && (
-          <div className="columns">
-            <div className="column is-one-quarter is-size-7">
-              <div className="card">
-                <div className="card-content">
-                  <dl>
-                    <dt>
-                      <div className="tags mb-1">
-                        {hubs.map((value, idx) => (
-                          <span className="tag is-warning" key={idx}>
-                            {value.identity.name}
-                          </span>
-                        ))}
-                      </div>
-                    </dt>
-                    <dt>
-                      Query:
-                      <span className="has-text-weight-semibold">
-                        {airDCPPSearchInfo.query.pattern}
+          <div className="flex flex-row gap-3 my-5 font-hasklig">
+            <div className="block max-w-sm h-fit p-6 text-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-slate-400 dark:border-gray-700">
+              <dl>
+                <dt>
+                  <div className="mb-1">
+                    {hubs.map((value, idx) => (
+                      <span className="tag is-warning" key={idx}>
+                        {value.identity.name}
                       </span>
-                    </dt>
-                    <dd>
-                      Extensions:
-                      <span className="has-text-weight-semibold">
-                        {airDCPPSearchInfo.query.extensions.join(", ")}
-                      </span>
-                    </dd>
-                    <dd>
-                      File type:
-                      <span className="has-text-weight-semibold">
-                        {airDCPPSearchInfo.query.file_type}
-                      </span>
-                    </dd>
-                  </dl>
-                </div>
-              </div>
+                    ))}
+                  </div>
+                </dt>
+
+                <dt>
+                  Query:
+                  <span className="has-text-weight-semibold">
+                    {airDCPPSearchInfo.query.pattern}
+                  </span>
+                </dt>
+                <dd>
+                  Extensions:
+                  <span className="has-text-weight-semibold">
+                    {airDCPPSearchInfo.query.extensions.join(", ")}
+                  </span>
+                </dd>
+                <dd>
+                  File type:
+                  <span className="has-text-weight-semibold">
+                    {airDCPPSearchInfo.query.file_type}
+                  </span>
+                </dd>
+              </dl>
             </div>
-            <div className="column is-one-quarter is-size-7">
-              <div className="card">
-                <div className="card-content">
-                  <dl>
-                    <dt>Search Instance: {airDCPPSearchInstance.id}</dt>
-                    <dt>Owned by {airDCPPSearchInstance.owner}</dt>
-                    <dd>Expires in: {airDCPPSearchInstance.expires_in}</dd>
-                  </dl>
-                </div>
-              </div>
+            <div className="block max-w-sm p-6 h-fit text-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-slate-400 dark:border-gray-700">
+              <dl>
+                <dt>Search Instance: {airDCPPSearchInstance.id}</dt>
+                <dt>Owned by {airDCPPSearchInstance.owner}</dt>
+                <dd>Expires in: {airDCPPSearchInstance.expires_in}</dd>
+              </dl>
             </div>
           </div>
         )}
@@ -376,8 +369,8 @@ export const AcquisitionPanel = (
       {/* AirDC++ results */}
       <div className="columns">
         {!isNil(airDCPPSearchResults) && !isEmpty(airDCPPSearchResults) ? (
-          <div className="overflow-x-auto w-fit mt-4 rounded-lg border border-gray-200">
-            <table className="min-w-full divide-y-2 divide-gray-200 dark:divide-gray-200 text-md">
+          <div className="overflow-x-auto w-fit mt-4 rounded-lg border border-gray-200 dark:border-gray-500">
+            <table className="min-w-full divide-y-2 divide-gray-200 dark:divide-gray-500 text-md">
               <thead>
                 <tr>
                   <th className="whitespace-nowrap px-2 py-2 font-medium text-gray-900 dark:text-slate-200">
@@ -394,13 +387,15 @@ export const AcquisitionPanel = (
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-500">
+              <tbody className="divide-y divide-slate-100 dark:divide-gray-500">
                 {map(airDCPPSearchResults, ({ result }, idx) => {
                   return (
                     <tr
                       key={idx}
                       className={
-                        !isNil(result.dupe) ? "bg-purple-50" : "w-fit text-sm"
+                        !isNil(result.dupe)
+                          ? "bg-gray-100 dark:bg-gray-700"
+                          : "w-fit text-sm"
                       }
                     >
                       <td className="whitespace-nowrap px-3 py-3 text-gray-700 dark:text-slate-300">
@@ -415,7 +410,15 @@ export const AcquisitionPanel = (
                           <dd>
                             <div className="inline-flex flex-row gap-2">
                               {!isNil(result.dupe) ? (
-                                <span className="tag is-warning">Dupe</span>
+                                <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                                  <span className="pr-1 pt-1">
+                                    <i className="icon-[solar--copy-bold-duotone] w-5 h-5"></i>
+                                  </span>
+
+                                  <span className="text-md text-slate-500 dark:text-slate-900">
+                                    Dupe
+                                  </span>
+                                </span>
                               ) : null}
 
                               {/* Nicks */}
@@ -468,9 +471,9 @@ export const AcquisitionPanel = (
                           </span>
                         </span>
                       </td>
-                      <td>
+                      <td className="px-2">
                         <button
-                          className="button is-small is-light is-success"
+                          className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-3 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
                           onClick={() =>
                             download(
                               airDCPPSearchInstance.id,
@@ -483,10 +486,10 @@ export const AcquisitionPanel = (
                             )
                           }
                         >
-                          <span className="icon">
-                            <i className="fas fa-file-download"></i>
+                          <span className="text-xs">Download</span>
+                          <span className="w-5 h-5">
+                            <i className="h-5 w-5 icon-[solar--download-bold-duotone]"></i>
                           </span>
-                          <span>Download </span>
                         </button>
                       </td>
                     </tr>

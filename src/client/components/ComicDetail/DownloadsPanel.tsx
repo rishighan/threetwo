@@ -61,7 +61,6 @@ export const DownloadsPanel = (
   }, [comicObject]);
 
   const Bundles = (props) => {
-    console.log("asdas", props);
     return (
       <div className="overflow-x-auto w-fit mt-4 rounded-lg border border-gray-200">
         <table className="min-w-full divide-y-2 divide-gray-200 dark:divide-gray-200 text-md">

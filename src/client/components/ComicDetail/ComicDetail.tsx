@@ -224,7 +224,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     {
       id: 5,
       icon: (
-        <i className="h-5 w-5 icon-[solar--magnet-bold-duotone] text-slate-500 dark:text-slate-300" />
+        <span className="inline-flex flex-row">
+          <i className="h-5 w-5 icon-[solar--magnet-bold-duotone] text-slate-500 dark:text-slate-300" />
+        </span>
       ),
       name: "Torrent Search",
       content: <>Torrents</>,
@@ -233,7 +235,15 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     {
       id: 6,
       icon: (
-        <i className="h-5 w-5 icon-[solar--download-bold-duotone] text-slate-500 dark:text-slate-300" />
+        <span className="inline-flex flex-row">
+          {/* download count */}
+          <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+            <span className="text-md text-slate-500 dark:text-slate-900">
+              34
+            </span>
+          </span>
+          <i className="h-5 w-5 icon-[solar--download-bold-duotone] text-slate-500 dark:text-slate-300" />
+        </span>
       ),
       name: "Downloads",
       content:
@@ -283,7 +293,15 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                           created_at: createdAt,
                           updated_at: updatedAt,
                         }}
-                      />
+                      >
+                        {/* action dropdown */}
+                        <div className="mt-1 flex flex-row gap-2 w-full">
+                          <Menu
+                            data={data.data}
+                            handlers={{ setSlidingPanelContentId, setVisible }}
+                          />
+                        </div>
+                      </RawFileDetails>
 
                       {/* <Modal
                       style={{ content: { marginTop: "2rem" } }}
@@ -305,13 +323,6 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                     </Modal> */}
                     </div>
                   )}
-                {/* action dropdown */}
-                {/* <div className="mt-4 is-size-7">
-                  <Menu
-                    data={data.data}
-                    handlers={{ setSlidingPanelContentId, setVisible }}
-                  />
-                </div> */}
               </div>
             </div>
 

@@ -24,21 +24,22 @@ export const TabControls = (props): ReactElement => {
                 onClick={() => setActive(id)}
               >
                 {/* Downloads tab and count badge */}
-                {/* <a>
-                {id === 6 && !isNil(acquisition.directconnect) ? (
-                  <span className="download-icon-labels">
-                    <i className="fa-solid fa-download"></i>
-                    <span className="tag downloads-count is-info is-light">
-                      {acquisition.directconnect.downloads.length}
+                <>
+                  {id === 6 && !isNil(acquisition.directconnect) ? (
+                    <span className="inline-flex flex-row">
+                      {/* download count */}
+                      <span className="inline-flex mx-2 items-center bg-slate-200 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                        <span className="text-md text-slate-500 dark:text-slate-900">
+                          {acquisition.directconnect.downloads.length}
+                        </span>
+                      </span>
+                      <i className="h-5 w-5 icon-[solar--download-bold-duotone] text-slate-500 dark:text-slate-300" />
                     </span>
-                  </span>
-                ) : (
-                  <span className="icon is-small">{icon}</span>
-                )}
-                {name}
-              </a> */}
-                <span className="w-5 h-5">{icon}</span>
-                {name}
+                  ) : (
+                    <span className="w-5 h-5">{icon}</span>
+                  )}
+                  {name}
+                </>
               </a>
             ))}
           </nav>
