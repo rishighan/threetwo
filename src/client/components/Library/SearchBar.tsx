@@ -4,7 +4,8 @@ import { Form, Field } from "react-final-form";
 import { Link } from "react-router-dom";
 import { searchIssue } from "../../actions/fileops.actions";
 
-export const SearchBar = (): ReactElement => {
+export const SearchBar = (props): ReactElement => {
+  const { searchHandler } = props;
   const handleSubmit = useCallback((e) => {
     //   searchIssue(
     //     {
@@ -24,7 +25,7 @@ export const SearchBar = (): ReactElement => {
   }, []);
   return (
     <Form
-      onSubmit={handleSubmit}
+      onSubmit={searchHandler}
       initialValues={{}}
       render={({ handleSubmit, form, submitting, pristine, values }) => (
         <form onSubmit={handleSubmit}>

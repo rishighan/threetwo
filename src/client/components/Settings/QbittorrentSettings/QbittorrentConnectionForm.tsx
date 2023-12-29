@@ -14,7 +14,6 @@ export const QbittorrentConnectionForm = (): ReactElement => {
         method: "GET",
       }),
   });
-  console.log(data);
   const hostDetails = data?.data?.bittorrent?.client?.host;
   // connect to qbittorrent client
   const { data: connectionDetails } = useQuery({

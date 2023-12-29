@@ -1,4 +1,4 @@
-import React, { useMemo, ReactElement, useState } from "react";
+import React, { useMemo, ReactElement, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { isEmpty, isNil, isUndefined } from "lodash";
@@ -6,7 +6,11 @@ import MetadataPanel from "../shared/MetadataPanel";
 import T2Table from "../shared/T2Table";
 import SearchBar from "../Library/SearchBar";
 import ellipsize from "ellipsize";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import {
+  useQuery,
+  keepPreviousData,
+  useQueryClient,
+} from "@tanstack/react-query";
 import axios from "axios";
 import { format, fromUnixTime, parseISO } from "date-fns";
 
@@ -21,33 +25,53 @@ export const Library = (): ReactElement => {
   // Default page state
   // offset: 0
   const [offset, setOffset] = useState(0);
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchQuery, setSearchQuery] = useState({
+    query: {},
+
+    pagination: {
+      size: 25,
+      from: offset,
+    },
+    type: "all",
+    trigger: "libraryPage",
+  });
+  const queryClient = useQueryClient();
 
   // Method to fetch paginated issues
-  const fetchIssues = async (searchQuery, offset, type) => {
-    let pagination = {
-      size: 15,
-      from: offset,
-    };
+  const fetchIssues = async (searchQuery) => {
+    const { pagination, query, type } = searchQuery;
     return await axios({
       method: "POST",
       url: "http://localhost:3000/api/search/searchIssue",
       data: {
-        searchQuery,
+        query,
         pagination,
         type,
       },
     });
   };
+  const searchIssues = (e) => {
+    queryClient.invalidateQueries({ queryKey: ["comics"] });
+    setSearchQuery({
+      query: {
+        volumeName: e.search,
+      },
+      pagination: {
+        size: 15,
+        from: 0,
+      },
+      type: "volumeName",
+      trigger: "libraryPage",
+    });
+  };
 
   const { data, isLoading, isError, isPlaceholderData } = useQuery({
-    queryKey: ["comics", offset],
-    queryFn: () => fetchIssues({}, offset, "all"),
+    queryKey: ["comics", offset, searchQuery],
+    queryFn: () => fetchIssues(searchQuery),
     placeholderData: keepPreviousData,
   });
 
   const searchResults = data?.data;
-
   // Programmatically navigate to comic detail
   const navigate = useNavigate();
   const navigateToComicDetail = (row) => {
@@ -217,8 +241,10 @@ export const Library = (): ReactElement => {
         </header>
         {!isUndefined(searchResults?.hits) ? (
           <div>
-            <div className="library">
-              <SearchBar />
+            <div>
+              <div className="grid grid-cols-2">
+                <SearchBar searchHandler={(e) => searchIssues(e)} />
+              </div>
               <T2Table
                 totalPages={searchResults.hits.total.value}
                 columns={columns}
@@ -250,7 +276,7 @@ export const Library = (): ReactElement => {
                 {!isUndefined(searchResults?.data?.meta?.body) ? (
                   <p>
                     {JSON.stringify(
-                      searchResults.data.meta.body.error.root_cause,
+                      searchResults?.data.meta.body.error.root_cause,
                       null,
                       4,
                     )}
