@@ -8,7 +8,7 @@ import { difference } from "../../shared/utils/object.utils";
 import { isEmpty, isNil, map } from "lodash";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
 interface IAcquisitionPanelProps {
@@ -57,6 +57,7 @@ export const AcquisitionPanel = (
   const [airDCPPSearchStatus, setAirDCPPSearchStatus] = useState(false);
   const [airDCPPSearchInstance, setAirDCPPSearchInstance] = useState({});
   const [airDCPPSearchInfo, setAirDCPPSearchInfo] = useState({});
+  const queryClient = useQueryClient();
 
   // Construct a AirDC++ query based on metadata inferred, upon component mount
   // Pre-populate the search input with the search string, so that
@@ -198,6 +199,8 @@ export const AcquisitionPanel = (
             type,
           },
         });
+
+        queryClient.invalidateQueries({ queryKey: ["comicBookMetadata"] });
 
         //         dispatch({
         //           type: AIRDCPP_RESULT_DOWNLOAD_INITIATED,

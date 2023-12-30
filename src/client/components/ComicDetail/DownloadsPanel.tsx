@@ -85,7 +85,9 @@ export const DownloadsPanel = (
               <tr key={bundle.id} className="text-sm">
                 <td className="whitespace-nowrap px-2 py-2 text-gray-700 dark:text-slate-300">
                   <h5>{ellipsize(bundle.name, 58)}</h5>
-                  <span className="is-size-7">{bundle.target}</span>
+                  <span className="is-size-7">
+                    {ellipsize(bundle.target, 68)}
+                  </span>
                 </td>
                 <td className="whitespace-nowrap px-2 py-2 text-gray-700 dark:text-slate-300">
                   {prettyBytes(bundle.size)}

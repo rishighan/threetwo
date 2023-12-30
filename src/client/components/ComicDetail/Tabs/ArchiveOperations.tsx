@@ -7,7 +7,7 @@ import { analyzeImage } from "../../../actions/fileops.actions";
 import { Canvas } from "../../shared/Canvas";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { LIBRARY_SERVICE_BASE_URI } from "../../../constants/endpoints";
+import { LIBRARY_SERVICE_HOST } from "../../../constants/endpoints";
 
 export const ArchiveOperations = (props): ReactElement => {
   const { data } = props;
@@ -28,6 +28,10 @@ export const ArchiveOperations = (props): ReactElement => {
   // current image
   const [currentImage, setCurrentImage] = useState([]);
 
+  const constructImagePaths = (data): Array<string> => {
+    return data?.data.map((path: string) => `${LIBRARY_SERVICE_HOST}/${path}`);
+  };
+
   const {
     data: uncompressedArchive,
     refetch,
@@ -36,7 +40,7 @@ export const ArchiveOperations = (props): ReactElement => {
     queryFn: async () =>
       await axios({
         method: "POST",
-        url: `${LIBRARY_SERVICE_BASE_URI}/uncompressFullArchive`,
+        url: `http://localhost:3000/api/jobqueue/uncompressFullArchive`,
         headers: {
           "Content-Type": "application/json; charset=utf-8",
         },
@@ -52,9 +56,9 @@ export const ArchiveOperations = (props): ReactElement => {
         },
       }),
     queryKey: [""],
+    select: constructImagePaths,
     enabled: false,
   });
-  console.log(uncompressedArchive);
   // sliding panel init
   const contentForSlidingPanel = {
     // imageAnalysis: {

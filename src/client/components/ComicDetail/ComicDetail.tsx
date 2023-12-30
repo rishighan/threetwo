@@ -230,17 +230,6 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     },
     {
       id: 6,
-      icon: (
-        <span className="inline-flex flex-row">
-          {/* download count */}
-          <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-            <span className="text-md text-slate-500 dark:text-slate-900">
-              34
-            </span>
-          </span>
-          <i className="h-5 w-5 icon-[solar--download-bold-duotone] text-slate-500 dark:text-slate-300" />
-        </span>
-      ),
       name: "Downloads",
       content:
         !isNil(data.data) && !isEmpty(data.data) ? (

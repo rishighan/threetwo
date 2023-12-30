@@ -254,5 +254,3 @@ if (!isNil(directConnectConfiguration)) {
 } else {
   console.log("problem");
 }
-
-console.log("connected?", getState());
