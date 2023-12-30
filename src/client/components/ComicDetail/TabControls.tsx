@@ -5,11 +5,11 @@ export const TabControls = (props): ReactElement => {
   // const comicBookDetailData = useSelector(
   //   (state: RootState) => state.comicInfo.comicBookDetail,
   // );
-  const { filteredTabs, acquisition } = props;
+  const { filteredTabs, downloadCount } = props;
   const [active, setActive] = useState(filteredTabs[0].id);
   useEffect(() => {
     setActive(filteredTabs[0].id);
-  }, [acquisition]);
+  }, []);
 
   return (
     <>
@@ -25,12 +25,12 @@ export const TabControls = (props): ReactElement => {
               >
                 {/* Downloads tab and count badge */}
                 <>
-                  {id === 6 && !isNil(acquisition.directconnect) ? (
+                  {id === 6 && !isNil(downloadCount) ? (
                     <span className="inline-flex flex-row">
                       {/* download count */}
                       <span className="inline-flex mx-2 items-center bg-slate-200 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
                         <span className="text-md text-slate-500 dark:text-slate-900">
-                          {acquisition.directconnect.downloads.length}
+                          {icon}
                         </span>
                       </span>
                       <i className="h-5 w-5 icon-[solar--download-bold-duotone] text-slate-500 dark:text-slate-300" />

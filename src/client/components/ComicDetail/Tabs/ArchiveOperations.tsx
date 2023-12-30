@@ -90,17 +90,31 @@ export const ArchiveOperations = (props): ReactElement => {
 
   return (
     <div key={2}>
-      <button
-        className={
-          isLoading ? "button is-loading is-warning" : "button is-warning"
-        }
-        onClick={() => refetch()}
+      <article
+        role="alert"
+        className="mt-4 text-md rounded-lg max-w-screen-md border-s-4 border-blue-500 bg-blue-50 p-4 dark:border-s-4 dark:border-blue-600 dark:bg-blue-300 dark:text-slate-600"
       >
-        <span className="icon is-small">
-          <i className="fa-solid fa-box-open"></i>
-        </span>
-        <span>Unpack comic archive</span>
-      </button>
+        <div>
+          <p>You can perform several operations on your comic book archive.</p>
+          <p>
+            Uncompressing, re-organizing the individual pages, then
+            re-compressing to a different format, for example.
+          </p>
+          <p>You can also analyze color histograms of pages.</p>
+        </div>
+      </article>
+      <div className="mt-5">
+        <button
+          className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-3 py-2 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+          onClick={() => refetch()}
+        >
+          <span className="text-md">Unpack Comic Archive</span>
+          <span className="w-6 h-6">
+            <i className="h-6 w-6 icon-[solar--box-bold-duotone]"></i>
+          </span>
+        </button>
+      </div>
+
       <div className="columns">
         <div className="mt-5">
           {!isEmpty(uncompressedArchive) ? (

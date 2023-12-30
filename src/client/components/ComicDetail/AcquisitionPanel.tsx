@@ -199,8 +199,8 @@ export const AcquisitionPanel = (
             type,
           },
         });
-
-        queryClient.invalidateQueries({ queryKey: ["comicBookMetadata"] });
+        console.log(bundleDBImportResult?.data);
+        // queryClient.invalidateQueries({ queryKey: ["bundles"] });
 
         //         dispatch({
         //           type: AIRDCPP_RESULT_DOWNLOAD_INITIATED,
