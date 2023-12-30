@@ -1,13 +1,63 @@
 import { filter, isEmpty, isNil, isUndefined } from "lodash";
-import React, { ReactElement, useCallback } from "react";
+import React, { ReactElement, useCallback, useState } from "react";
 import Select, { components } from "react-select";
 import { fetchComicVineMatches } from "../../../actions/fileops.actions";
 import { refineQuery } from "filename-parser";
+import { COMICVINE_SERVICE_URI } from "../../../constants/endpoints";
+import axios from "axios";
 
 export const Menu = (props): ReactElement => {
   const { data } = props;
   const { setSlidingPanelContentId, setVisible } = props.handlers;
-  const openDrawerWithCVMatches = useCallback(() => {
+  const [comicVineMatches, setComicVineMatches] = useState([]);
+
+  const fetchComicVineMatches = async (
+    searchPayload,
+    issueSearchQuery,
+    seriesSearchQuery,
+  ) => {
+    try {
+      await axios
+        .request({
+          url: `${COMICVINE_SERVICE_URI}/volumeBasedSearch`,
+          method: "POST",
+          data: {
+            format: "json",
+            // hack
+            query: issueSearchQuery.inferredIssueDetails.name
+              .replace(/[^a-zA-Z0-9 ]/g, "")
+              .trim(),
+            limit: "100",
+            page: 1,
+            resources: "volume",
+            scorerConfiguration: {
+              searchParams: issueSearchQuery.inferredIssueDetails,
+            },
+            rawFileDetails: searchPayload.rawFileDetails,
+          },
+          transformResponse: (r) => {
+            const matches = JSON.parse(r);
+            return matches;
+            // return sortBy(matches, (match) => -match.score);
+          },
+        })
+        .then((response) => {
+          let matches: any = [];
+          if (
+            !isNil(response.data.results) &&
+            response.data.results.length === 1
+          ) {
+            matches = response.data.results;
+          } else {
+            matches = response.data.map((match) => match);
+          }
+          setComicVineMatches(matches);
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const openDrawerWithCVMatches = () => {
     let seriesSearchQuery: IComicVineSearchQuery = {} as IComicVineSearchQuery;
     let issueSearchQuery: IComicVineSearchQuery = {} as IComicVineSearchQuery;
 
@@ -16,10 +66,10 @@ export const Menu = (props): ReactElement => {
     } else if (!isEmpty(data.sourcedMetadata)) {
       issueSearchQuery = refineQuery(data.sourcedMetadata.comicvine.name);
     }
-    // dispatch(fetchComicVineMatches(data, issueSearchQuery, seriesSearchQuery));
+    fetchComicVineMatches(data, issueSearchQuery, seriesSearchQuery);
     setSlidingPanelContentId("CVMatches");
     setVisible(true);
-  }, [data]);
+  };
 
   const openEditMetadataPanel = useCallback(() => {
     setSlidingPanelContentId("editComicBookMetadata");
