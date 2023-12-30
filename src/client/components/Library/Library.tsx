@@ -27,7 +27,6 @@ export const Library = (): ReactElement => {
   const [offset, setOffset] = useState(0);
   const [searchQuery, setSearchQuery] = useState({
     query: {},
-
     pagination: {
       size: 25,
       from: offset,
@@ -37,7 +36,10 @@ export const Library = (): ReactElement => {
   });
   const queryClient = useQueryClient();
 
-  // Method to fetch paginated issues
+  /**
+   * Method that queries the Elasticsearch index "comics" for issues specified by the query
+   * @param searchQuery - A searchQuery object that contains the search term, type, and pagination params.
+   */
   const fetchIssues = async (searchQuery) => {
     const { pagination, query, type } = searchQuery;
     return await axios({
@@ -50,6 +52,7 @@ export const Library = (): ReactElement => {
       },
     });
   };
+
   const searchIssues = (e) => {
     queryClient.invalidateQueries({ queryKey: ["comics"] });
     setSearchQuery({
@@ -242,7 +245,7 @@ export const Library = (): ReactElement => {
         {!isUndefined(searchResults?.hits) ? (
           <div>
             <div>
-              <div className="grid grid-cols-2">
+              <div className="my-5 flex self-start ml-32 w-fit">
                 <SearchBar searchHandler={(e) => searchIssues(e)} />
               </div>
               <T2Table

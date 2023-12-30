@@ -185,10 +185,8 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
         <i className="h-5 w-5 icon-[solar--code-file-bold-duotone] text-slate-500 dark:text-slate-300" />
       ),
       content: (
-        <div className="columns" key={2}>
-          <div className="column is-three-quarters">
-            {!isNil(comicInfo) && <ComicInfoXML json={comicInfo} />}
-          </div>
+        <div key={2}>
+          {!isNil(comicInfo) && <ComicInfoXML json={comicInfo} />}
         </div>
       ),
       shouldShow: !isEmpty(comicInfo),
@@ -199,9 +197,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
         <i className="h-5 w-5 icon-[solar--winrar-bold-duotone] text-slate-500 dark:text-slate-300" />
       ),
       name: "Archive Operations",
-      content: <></>,
-      /*
-      <ArchiveOperations data={data.data} key={3} /> */
+      content: <ArchiveOperations data={data.data} key={3} />,
       shouldShow: areRawFileDetailsAvailable,
     },
     {

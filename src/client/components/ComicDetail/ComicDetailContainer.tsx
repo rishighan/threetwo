@@ -14,7 +14,7 @@ export const ComicDetailContainer = (): ReactElement | null => {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: [],
+    queryKey: ["comicBookMetadata"],
     queryFn: async () =>
       await axios({
         url: `${LIBRARY_SERVICE_BASE_URI}/getComicBookById`,
@@ -25,10 +25,6 @@ export const ComicDetailContainer = (): ReactElement | null => {
       }),
   });
   console.log(comicBookDetailData);
-  useEffect(() => {
-    // dispatch(getComicBookDetailById(comicObjectId));
-    // dispatch(getSettings());
-  }, []);
 
   {
     isError && <>Error</>;

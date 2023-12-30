@@ -1,6 +1,5 @@
 import React, { ReactElement, useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
 import {
   ColumnDef,
   flexRender,

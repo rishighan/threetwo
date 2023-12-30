@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect, useState } from "react";
-import { isEmpty, isNil } from "lodash";
+import { isNil } from "lodash";
 
 export const TabControls = (props): ReactElement => {
   // const comicBookDetailData = useSelector(

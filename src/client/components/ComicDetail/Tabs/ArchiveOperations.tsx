@@ -6,6 +6,9 @@ import SlidingPane from "react-sliding-pane";
 import { extractComicArchive } from "../../../actions/fileops.actions";
 import { analyzeImage } from "../../../actions/fileops.actions";
 import { Canvas } from "../../shared/Canvas";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { LIBRARY_SERVICE_BASE_URI } from "../../../constants/endpoints";
 
 export const ArchiveOperations = (props): ReactElement => {
   const { data } = props;
@@ -20,7 +23,28 @@ export const ArchiveOperations = (props): ReactElement => {
   //     return state.fileOps.imageAnalysisResults;
   //   });
 
-  const unpackComicArchive = useCallback(() => {
+  const unpackComicArchive = () => {
+    const { data } = useQuery({
+      queryFn: async () =>
+        await axios({
+          method: "POST",
+          url: `${LIBRARY_SERVICE_BASE_URI}/uncompressFullArchive`,
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+          },
+          data: {
+            filePath: data.rawFileDetails.filePath,
+            options: {
+              type: "full",
+              purpose: "analysis",
+              imageResizeOptions: {
+                baseWidth: 275,
+              },
+            },
+          },
+        }),
+      queryKey: [""],
+    });
     // dispatch(
     //   extractComicArchive(data.rawFileDetails.filePath, {
     //     type: "full",
@@ -30,7 +54,7 @@ export const ArchiveOperations = (props): ReactElement => {
     //     },
     //   }),
     // );
-  }, []);
+  };
 
   // sliding panel config
   const [visible, setVisible] = useState(false);
@@ -92,22 +116,16 @@ export const ArchiveOperations = (props): ReactElement => {
           ) : null}
         </div>
         {!isEmpty(extractedComicBookArchive) ? (
-          <div className="column mt-5">
-            <Sticky enabled={true} top={70} bottomBoundary={3000}>
-              <div className="card">
-                <div className="card-content">
-                  <span className="has-text-size-4">
-                    {extractedComicBookArchive.length} pages
-                  </span>
-                  <button className="button is-small is-light is-primary is-outlined">
-                    <span className="icon is-small">
-                      <i className="fa-solid fa-compress"></i>
-                    </span>
-                    <span>Convert to CBZ</span>
-                  </button>
-                </div>
-              </div>
-            </Sticky>
+          <div>
+            <span className="has-text-size-4">
+              {extractedComicBookArchive.length} pages
+            </span>
+            <button className="button is-small is-light is-primary is-outlined">
+              <span className="icon is-small">
+                <i className="fa-solid fa-compress"></i>
+              </span>
+              <span>Convert to CBZ</span>
+            </button>
           </div>
         ) : null}
       </div>
