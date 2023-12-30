@@ -3,7 +3,6 @@ import { DnD } from "../../shared/Draggable/DnD";
 import { isEmpty } from "lodash";
 import Sticky from "react-stickynode";
 import SlidingPane from "react-sliding-pane";
-import { extractComicArchive } from "../../../actions/fileops.actions";
 import { analyzeImage } from "../../../actions/fileops.actions";
 import { Canvas } from "../../shared/Canvas";
 import { useQuery } from "@tanstack/react-query";
@@ -23,64 +22,58 @@ export const ArchiveOperations = (props): ReactElement => {
   //     return state.fileOps.imageAnalysisResults;
   //   });
 
-  const unpackComicArchive = () => {
-    const { data } = useQuery({
-      queryFn: async () =>
-        await axios({
-          method: "POST",
-          url: `${LIBRARY_SERVICE_BASE_URI}/uncompressFullArchive`,
-          headers: {
-            "Content-Type": "application/json; charset=utf-8",
-          },
-          data: {
-            filePath: data.rawFileDetails.filePath,
-            options: {
-              type: "full",
-              purpose: "analysis",
-              imageResizeOptions: {
-                baseWidth: 275,
-              },
-            },
-          },
-        }),
-      queryKey: [""],
-    });
-    // dispatch(
-    //   extractComicArchive(data.rawFileDetails.filePath, {
-    //     type: "full",
-    //     purpose: "analysis",
-    //     imageResizeOptions: {
-    //       baseWidth: 275,
-    //     },
-    //   }),
-    // );
-  };
-
   // sliding panel config
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
   // current image
   const [currentImage, setCurrentImage] = useState([]);
 
+  const {
+    data: uncompressedArchive,
+    refetch,
+    isLoading,
+  } = useQuery({
+    queryFn: async () =>
+      await axios({
+        method: "POST",
+        url: `${LIBRARY_SERVICE_BASE_URI}/uncompressFullArchive`,
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        data: {
+          filePath: data.rawFileDetails.filePath,
+          options: {
+            type: "full",
+            purpose: "analysis",
+            imageResizeOptions: {
+              baseWidth: 275,
+            },
+          },
+        },
+      }),
+    queryKey: [""],
+    enabled: false,
+  });
+  console.log(uncompressedArchive);
   // sliding panel init
   const contentForSlidingPanel = {
-    imageAnalysis: {
-      content: () => {
-        return (
-          <div>
-            <pre className="is-size-7">{currentImage}</pre>
-            {!isEmpty(imageAnalysisResult) ? (
-              <pre className="is-size-7 p-2 mt-3">
-                <Canvas data={imageAnalysisResult} />
-              </pre>
-            ) : null}
-            <pre className="is-size-7 mt-3">
-              {JSON.stringify(imageAnalysisResult.analyzedData, null, 2)}
-            </pre>
-          </div>
-        );
-      },
-    },
+    // imageAnalysis: {
+    //   content: () => {
+    //     return (
+    //       <div>
+    //         <pre className="is-size-7">{currentImage}</pre>
+    //         {!isEmpty(imageAnalysisResult) ? (
+    //           <pre className="is-size-7 p-2 mt-3">
+    //             <Canvas data={imageAnalysisResult} />
+    //           </pre>
+    //         ) : null}
+    //         <pre className="is-size-7 mt-3">
+    //           {JSON.stringify(imageAnalysisResult.analyzedData, null, 2)}
+    //         </pre>
+    //       </div>
+    //     );
+    //   },
+    // },
   };
 
   // sliding panel handlers
@@ -95,11 +88,9 @@ export const ArchiveOperations = (props): ReactElement => {
     <div key={2}>
       <button
         className={
-          isComicBookExtractionInProgress
-            ? "button is-loading is-warning"
-            : "button is-warning"
+          isLoading ? "button is-loading is-warning" : "button is-warning"
         }
-        onClick={unpackComicArchive}
+        onClick={() => refetch()}
       >
         <span className="icon is-small">
           <i className="fa-solid fa-box-open"></i>
@@ -108,17 +99,17 @@ export const ArchiveOperations = (props): ReactElement => {
       </button>
       <div className="columns">
         <div className="mt-5">
-          {!isEmpty(extractedComicBookArchive) ? (
+          {!isEmpty(uncompressedArchive) ? (
             <DnD
-              data={extractedComicBookArchive}
+              data={uncompressedArchive}
               onClickHandler={openImageAnalysisPanel}
             />
           ) : null}
         </div>
-        {!isEmpty(extractedComicBookArchive) ? (
+        {!isEmpty(uncompressedArchive) ? (
           <div>
             <span className="has-text-size-4">
-              {extractedComicBookArchive.length} pages
+              {uncompressedArchive?.length} pages
             </span>
             <button className="button is-small is-light is-primary is-outlined">
               <span className="icon is-small">
@@ -129,7 +120,7 @@ export const ArchiveOperations = (props): ReactElement => {
           </div>
         ) : null}
       </div>
-      <SlidingPane
+      {/* <SlidingPane
         isOpen={visible}
         onRequestClose={() => setVisible(false)}
         title={"Image Analysis"}
@@ -137,7 +128,7 @@ export const ArchiveOperations = (props): ReactElement => {
       >
         {slidingPanelContentId !== "" &&
           contentForSlidingPanel[slidingPanelContentId].content()}
-      </SlidingPane>
+      </SlidingPane> */}
     </div>
   );
 };

@@ -70,8 +70,9 @@ export const T2Table = (tableOptions): ReactElement => {
   return (
     <div className="container max-w-fit mx-14">
       <div>
-        {/* Search bar */}
-        <div className="flex flex-row gap-2 justify-between mt-5">
+        <div className="flex flex-row gap-2 justify-between mt-7">
+          {/* Search bar */}
+          {tableOptions.children}
           {/* pagination controls */}
           <div>
             Page {pageIndex} of {Math.ceil(totalPages / pageSize)}
@@ -150,5 +151,6 @@ T2Table.propTypes = {
     previousPage: PropTypes.func,
   }),
   rowClickHandler: PropTypes.func,
+  children: PropTypes.any,
 };
 export default T2Table;

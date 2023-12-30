@@ -85,7 +85,7 @@ export const Library = (): ReactElement => {
     return value.data ? (
       <dl className="flex flex-col text-md p-3 ml-4 my-3 rounded-lg dark:bg-yellow-500 bg-yellow-300 w-max">
         {/* Series Name */}
-        <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+        <span className="inline-flex items-center w-fit bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
           <span className="pr-1 pt-1">
             <i className="icon-[solar--bookmark-square-minimalistic-bold-duotone] w-5 h-5"></i>
           </span>
@@ -152,7 +152,7 @@ export const Library = (): ReactElement => {
             accessorKey: "_source.createdAt",
             cell: (info) => {
               return !isNil(info.getValue()) ? (
-                <div className="text-xs w-max ml-3 my-3 text-slate-600">
+                <div className="text-sm w-max ml-3 my-3 text-slate-600 dark:text-slate-900">
                   <p>{format(parseISO(info.getValue()), "dd MMMM, yyyy")} </p>
                   {format(parseISO(info.getValue()), "h aaaa")}
                 </div>
@@ -245,9 +245,6 @@ export const Library = (): ReactElement => {
         {!isUndefined(searchResults?.hits) ? (
           <div>
             <div>
-              <div className="my-5 flex self-start ml-32 w-fit">
-                <SearchBar searchHandler={(e) => searchIssues(e)} />
-              </div>
               <T2Table
                 totalPages={searchResults.hits.total.value}
                 columns={columns}
@@ -257,7 +254,9 @@ export const Library = (): ReactElement => {
                   nextPage,
                   previousPage,
                 }}
-              />
+              >
+                <SearchBar searchHandler={(e) => searchIssues(e)} />
+              </T2Table>
             </div>
           </div>
         ) : (
