@@ -27,18 +27,27 @@ export const Menu = (props): ReactElement => {
   }, []);
   //  Actions menu options and handler
   const CVMatchLabel = (
-    <span>
-      <i className="fa-solid fa-wand-magic"></i> Match on ComicVine
+    <span className="inline-flex flex-row items-center gap-2">
+      <div className="w-6 h-6">
+        <i className="icon-[solar--magic-stick-3-bold-duotone] w-6 h-6"></i>
+      </div>
+      <div>Match on ComicVine</div>
     </span>
   );
   const editLabel = (
-    <span>
-      <i className="fa-regular fa-pen-to-square"></i> Edit Metadata
+    <span className="inline-flex flex-row items-center gap-2">
+      <div className="w-6 h-6">
+        <i className="icon-[solar--pen-2-bold-duotone] w-6 h-6"></i>
+      </div>
+      <div>Edit Metadata</div>
     </span>
   );
   const deleteLabel = (
-    <span>
-      <i className="fa-regular fa-trash-alt"></i> Delete Comic
+    <span className="inline-flex flex-row items-center gap-2">
+      <div className="w-6 h-6">
+        <i className="icon-[solar--trash-bin-trash-bold-duotone] w-6 h-6"></i>
+      </div>
+      <div>Delete Comic</div>
     </span>
   );
   const Placeholder = (props) => {
@@ -70,16 +79,22 @@ export const Menu = (props): ReactElement => {
     }
   };
   const customStyles = {
+    menu: (base) => ({
+      ...base,
+      backgroundColor: "rgb(156, 163, 175)",
+    }),
     placeholder: (base) => ({
       ...base,
       color: "black",
     }),
-    option: (base, { data, isDisabled, isFocused, isSelected }) => {
-      return {
-        ...base,
-        backgroundColor: isFocused ? "gray" : "rgb(156, 163, 175)",
-      };
-    },
+    option: (base, { data, isDisabled, isFocused, isSelected }) => ({
+      ...base,
+      backgroundColor: isFocused ? "gray" : "rgb(156, 163, 175)",
+    }),
+    singleValue: (base) => ({
+      ...base,
+      paddingTop: "0.4rem",
+    }),
     control: (base) => ({
       ...base,
       backgroundColor: "rgb(156, 163, 175)",
@@ -91,7 +106,14 @@ export const Menu = (props): ReactElement => {
   return (
     <Select
       components={{ Placeholder }}
-      placeholder={<span>Select Action</span>}
+      placeholder={
+        <span className="inline-flex flex-row items-center gap-2 pt-1">
+          <div className="w-6 h-6">
+            <i className="icon-[solar--cursor-bold-duotone] w-6 h-6"></i>
+          </div>
+          <div>Select An Action</div>
+        </span>
+      }
       styles={customStyles}
       name="actions"
       isSearchable={false}
