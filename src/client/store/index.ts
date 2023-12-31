@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { isEmpty, isNil, isUndefined } from "lodash";
+import { isNil } from "lodash";
 import io from "socket.io-client";
 import { SOCKET_BASE_URI } from "../constants/endpoints";
 import { produce } from "immer";
@@ -27,6 +27,11 @@ export const useStore = create((set, get) => ({
   airDCPPTransfers: {},
   // Socket.io state
   socketIOInstance: {},
+
+  // ComicVine Scraping status
+  comicvine: {
+    scrapingStatus: "",
+  },
 
   // Import job queue and associated statuses
   importJobQueue: {
@@ -151,6 +156,16 @@ socketIOInstance.on("LS_IMPORT_QUEUE_DRAINED", (data) => {
   }));
   console.log("a", queryClient);
   queryClient.invalidateQueries({ queryKey: ["allImportJobResults"] });
+});
+
+// ComicVine Scraping status
+socketIOInstance.on("CV_SCRAPING_STATUS", (data) => {
+  setState((state) => ({
+    comicvine: {
+      ...state.comicvine,
+      scrapingStatus: data.message,
+    },
+  }));
 });
 
 /**
