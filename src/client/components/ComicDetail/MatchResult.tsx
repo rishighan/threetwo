@@ -38,49 +38,62 @@ export const MatchResult = (props: MatchResultProps) => {
         }
         return (
           <div className="mb-4" key={idx}>
-            <div className="flex flex-row">
-              <div className="w-full mr-2">
+            <div className="flex flex-row gap-4">
+              <div className="min-w-fit">
                 <img
                   className="rounded-md"
                   src={match.image.thumb_url}
                   onError={handleBrokenImage}
                 />
               </div>
-              <div>
-                <div className="">{match.name}</div>
-                <span>Number</span>
-                <span>{match.issue_number}</span>
-                <span className="tag">Cover Date</span>
-                <span className="tag is-warning">{match.cover_date}</span>
+              <div className="">
+                {match.name ? <p className="text-md">{match.name}</p> : null}
+                <span className="flex flex-row gap-2 mb-2">
+                  <span className="inline-flex items-center bg-slate-50 text-sm text-slate-800 font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                    <span className="pr-1 pt-1">
+                      <i className="icon-[solar--hashtag-outline] w-4 h-4"></i>
+                    </span>
+                    <span className="text-slate-900 dark:text-slate-900">
+                      {parseInt(match.issue_number, 10)}
+                    </span>
+                  </span>
+                  <span className="inline-flex items-center bg-slate-50 text-slate-800 text-sm font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                    <span className="pr-1 pt-1">
+                      <i className="icon-[solar--calendar-mark-bold-duotone] w-5 h-5"></i>
+                    </span>
+                    <span className="text-slate-900 dark:text-slate-900">
+                      Cover Date: {match.cover_date}
+                    </span>
+                  </span>
+                </span>
                 <div className="text-sm">
                   {ellipsize(issueDescription, 300)}
                 </div>
               </div>
             </div>
 
-            <div className="">
+            <div className="flex flex-row gap-2 my-4 ml-10">
               <div className="">
                 <img
                   src={match.volumeInformation.results.image.icon_url}
-                  className="cover-image"
+                  className="rounded-md w-full"
                   onError={handleBrokenImage}
                 />
               </div>
 
               <div className="">
-                <div className="">{match.volume.name}</div>
-                <div className="">
-                  <span className="">Total Issues</span>
-                  <span className="">
+                <span>{match.volume.name}</span>
+                <div className="text-sm">
+                  <p>
+                    Total Issues:
                     {match.volumeInformation.results.count_of_issues}
-                  </span>
+                  </p>
+                  <p>
+                    Publisher:
+                    {match.volumeInformation.results.publisher.name}
+                  </p>
                 </div>
               </div>
-
-              <span className="tag">Publisher</span>
-              <span className="tag is-warning">
-                {match.volumeInformation.results.publisher.name}
-              </span>
             </div>
             <button
               className="button is-normal is-outlined is-primary is-light is-pulled-right"

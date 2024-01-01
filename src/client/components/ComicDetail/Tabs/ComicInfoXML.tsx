@@ -20,11 +20,11 @@ export const ComicInfoXML = (data): ReactElement => {
           {/* Issue number */}
           {!isUndefined(json.number) && (
             <dd className="my-2">
-              <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+              <span className="inline-flex items-center bg-slate-50 text-sm text-slate-800 font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
                 <span className="pr-1 pt-1">
                   <i className="icon-[solar--hashtag-outline] w-4 h-4"></i>
                 </span>
-                <span className="text-md text-slate-900 dark:text-slate-900">
+                <span className="text-slate-900 dark:text-slate-900">
                   {parseInt(json.number[0], 10)}
                 </span>
               </span>
@@ -32,12 +32,12 @@ export const ComicInfoXML = (data): ReactElement => {
           )}
           <dd className="my-2">
             {/* Genre */}
-            <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+            <span className="inline-flex items-center bg-slate-50 text-slate-800 text-sm font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
               <span className="pr-1 pt-1">
                 <i className="icon-[solar--sticker-smile-circle-bold-duotone] w-5 h-5"></i>
               </span>
 
-              <span className="text-md text-slate-500 dark:text-slate-900">
+              <span className="text-slate-500 dark:text-slate-900">
                 {json.genre[0]}
               </span>
             </span>

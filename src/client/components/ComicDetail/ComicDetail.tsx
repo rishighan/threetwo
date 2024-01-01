@@ -29,6 +29,7 @@ import ComicViewer from "react-comic-viewer";
 import { extractComicArchive } from "../../actions/fileops.actions";
 import { determineCoverFile } from "../../shared/utils/metadata.utils";
 import axios from "axios";
+import { styled } from "styled-components";
 import { COMICVINE_SERVICE_URI } from "../../constants/endpoints";
 import { refineQuery } from "filename-parser";
 
@@ -92,6 +93,10 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     // );
   }, []);
 
+  // overridden <SlidingPanel> with some styles
+  const StyledSlidingPanel = styled(SlidingPane)`
+    background: #ccc;
+  `;
   const afterOpenModal = useCallback((things) => {
     // references are now sync'd and can be accessed.
     // subtitle.style.color = "#f00";
@@ -108,9 +113,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
       content: (props) => (
         <>
           <div>
-            <div className="card-content">
-              <ComicVineSearchForm data={rawFileDetails} />
-            </div>
+            <ComicVineSearchForm data={rawFileDetails} />
           </div>
           <p className="is-size-5 mt-3 mb-2 ml-3">Searching for:</p>
           {inferredMetadata.issue ? (
@@ -460,7 +463,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
               downloadCount={acquisition?.directconnect?.downloads?.length}
             />
 
-            <SlidingPane
+            <StyledSlidingPanel
               isOpen={visible}
               onRequestClose={() => setVisible(false)}
               title={"Comic Vine Search Matches"}
@@ -468,7 +471,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
             >
               {slidingPanelContentId !== "" &&
                 contentForSlidingPanel[slidingPanelContentId].content()}
-            </SlidingPane>
+            </StyledSlidingPanel>
           </>
         )}
       </div>
