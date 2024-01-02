@@ -200,7 +200,17 @@ export const Library = (): ReactElement => {
    **/
   const nextPage = (pageIndex: number, pageSize: number) => {
     if (!isPlaceholderData) {
-      setOffset(pageSize * pageIndex + 1);
+      queryClient.invalidateQueries({ queryKey: ["comics"] });
+      setSearchQuery({
+        query: {},
+        pagination: {
+          size: 15,
+          from: pageSize * pageIndex + 1,
+        },
+        type: "all",
+        trigger: "libraryPage",
+      });
+      // setOffset(pageSize * pageIndex + 1);
     }
   };
 
@@ -218,7 +228,17 @@ export const Library = (): ReactElement => {
     } else {
       from = (pageIndex - 1) * pageSize + 2 - (pageSize + 1);
     }
-    setOffset(from);
+    queryClient.invalidateQueries({ queryKey: ["comics"] });
+    setSearchQuery({
+      query: {},
+      pagination: {
+        size: 15,
+        from,
+      },
+      type: "all",
+      trigger: "libraryPage",
+    });
+    // setOffset(from);
   };
 
   // ImportStatus.propTypes = {

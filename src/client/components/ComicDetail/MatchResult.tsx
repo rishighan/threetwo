@@ -46,8 +46,24 @@ export const MatchResult = (props: MatchResultProps) => {
                   onError={handleBrokenImage}
                 />
               </div>
-              <div className="">
-                {match.name ? <p className="text-md">{match.name}</p> : null}
+              <div>
+                <div className="flex flex-row mb-1 justify-end">
+                  {match.name ? (
+                    <p className="text-md w-full">{match.name}</p>
+                  ) : null}
+
+                  <div className="flex">
+                    {/* score */}
+                    <span className="inline-flex items-center bg-green-50 text-sm text-slate-800 font-medium px-2 rounded-md dark:text-slate-900 dark:bg-green-400">
+                      <span className="pr-1 pt-1">
+                        <i className="icon-[solar--course-up-line-duotone] w-4 h-4"></i>
+                      </span>
+                      <span className="text-slate-900 dark:text-slate-900">
+                        {parseInt(match.score, 10)}
+                      </span>
+                    </span>
+                  </div>
+                </div>
                 <span className="flex flex-row gap-2 mb-2">
                   <span className="inline-flex items-center bg-slate-50 text-sm text-slate-800 font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
                     <span className="pr-1 pt-1">
@@ -89,7 +105,7 @@ export const MatchResult = (props: MatchResultProps) => {
                     {match.volumeInformation.results.count_of_issues}
                   </p>
                   <p>
-                    Publisher:
+                    Published by{" "}
                     {match.volumeInformation.results.publisher.name}
                   </p>
                 </div>

@@ -162,7 +162,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
             scorerConfiguration: {
               searchParams: issueSearchQuery.inferredIssueDetails,
             },
-            rawFileDetails: searchPayload.rawFileDetails,
+            rawFileDetails: searchPayload,
           },
           transformResponse: (r) => {
             const matches = JSON.parse(r);
@@ -181,7 +181,8 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
           } else {
             matches = response.data.map((match) => match);
           }
-          setComicVineMatches(matches);
+          const scoredMatches = matches.sort((a, b) => b.score - a.score);
+          setComicVineMatches(scoredMatches);
         });
     } catch (err) {
       console.log(err);
@@ -198,7 +199,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     } else if (!isEmpty(comicvine)) {
       issueSearchQuery = refineQuery(comicvine.name);
     }
-    fetchComicVineMatches(data, issueSearchQuery, seriesSearchQuery);
+    fetchComicVineMatches(rawFileDetails, issueSearchQuery, seriesSearchQuery);
     setSlidingPanelContentId("CVMatches");
     setVisible(true);
   };
