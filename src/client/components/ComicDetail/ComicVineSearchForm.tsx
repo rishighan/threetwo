@@ -64,25 +64,26 @@ export const ComicVineSearchForm = (data) => {
               </Field>
             </div>
             <div>
-              <label className="block py-1">Issue Number</label>
+              <label className="block py-1">Year</label>
               <Field name="issueYear">
                 {(props) => (
                   <input
                     {...props.input}
-                    className="appearance-none dark:bg-slate-400 bg-slate-100 h-10 rounded-md border-none text-gray-700 dark:text-slate-200 py-1 pr-7 pl-3 sm:text-md sm:leading-5 focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
+                    className="appearance-none dark:bg-slate-400 bg-slate-100 h-10 w-20 rounded-md border-none text-gray-700 dark:text-slate-200 py-1 pr-7 pl-3 sm:text-md sm:leading-5 focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
                     placeholder="Type the issue year"
                   />
                 )}
               </Field>
             </div>
-          </div>
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className="flex space-x-1 sm:mt-3 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-4 py-2 text-gray-500 hover:bg-transparent hover:text-red-600 focus:outline-none focus:ring active:text-indigo-500"
-            >
-              Search
-            </button>
+
+            <div className="flex justify-end mt-5">
+              <button
+                type="submit"
+                className="flex h-10 sm:mt-3 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-4 py-2 text-gray-500 hover:bg-transparent hover:text-red-600 focus:outline-none focus:ring active:text-indigo-500"
+              >
+                Search
+              </button>
+            </div>
           </div>
         </form>
       )}
