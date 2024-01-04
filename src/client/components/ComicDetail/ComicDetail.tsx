@@ -148,44 +148,37 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     seriesSearchQuery,
   ) => {
     try {
-      await axios
-        .request({
-          url: `${COMICVINE_SERVICE_URI}/volumeBasedSearch`,
-          method: "POST",
-          data: {
-            format: "json",
-            // hack
-            query: issueSearchQuery.inferredIssueDetails.name
-              .replace(/[^a-zA-Z0-9 ]/g, "")
-              .trim(),
-            limit: "100",
-            page: 1,
-            resources: "volume",
-            scorerConfiguration: {
-              searchParams: issueSearchQuery.inferredIssueDetails,
-            },
-            rawFileDetails: searchPayload,
+      const response = await axios({
+        url: `${COMICVINE_SERVICE_URI}/volumeBasedSearch`,
+        method: "POST",
+        data: {
+          format: "json",
+          // hack
+          query: issueSearchQuery.inferredIssueDetails.name
+            .replace(/[^a-zA-Z0-9 ]/g, "")
+            .trim(),
+          limit: "100",
+          page: 1,
+          resources: "volume",
+          scorerConfiguration: {
+            searchParams: issueSearchQuery.inferredIssueDetails,
           },
-          transformResponse: (r) => {
-            const matches = JSON.parse(r);
-            return matches;
-            // return sortBy(matches, (match) => -match.score);
-          },
-        })
-        .then((response) => {
-          console.log(response);
-          let matches: any = [];
-          if (
-            !isNil(response.data.results) &&
-            response.data.results.length === 1
-          ) {
-            matches = response.data.results;
-          } else {
-            matches = response.data.map((match) => match);
-          }
-          const scoredMatches = matches.sort((a, b) => b.score - a.score);
-          setComicVineMatches(scoredMatches);
-        });
+          rawFileDetails: searchPayload,
+        },
+        transformResponse: (r) => {
+          const matches = JSON.parse(r);
+          return matches;
+          // return sortBy(matches, (match) => -match.score);
+        },
+      });
+      let matches: any = [];
+      if (!isNil(response.data.results) && response.data.results.length === 1) {
+        matches = response.data.results;
+      } else {
+        matches = response.data.map((match) => match);
+      }
+      const scoredMatches = matches.sort((a, b) => b.score - a.score);
+      setComicVineMatches(scoredMatches);
     } catch (err) {
       console.log(err);
     }

@@ -24,7 +24,7 @@ export const ComicVineMatchPanel = (comicVineData): ReactElement => {
           <>
             <article
               role="alert"
-              className="mt-4 rounded-lg max-w-screen-md border-s-4 border-blue-500 bg-blue-50 p-4 dark:border-s-4 dark:border-blue-600 dark:bg-blue-300 dark:text-slate-600 text-sm"
+              className="mt-4 rounded-lg max-w-screen-md border-s-4 border-yellow-500 bg-yellow-50 p-4 dark:border-s-4 dark:border-yellow-600 dark:bg-yellow-300 dark:text-slate-600 text-sm"
             >
               <div>
                 <p>ComicVine match results are an approximation.</p>
