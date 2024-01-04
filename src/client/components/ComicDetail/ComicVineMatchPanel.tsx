@@ -21,7 +21,7 @@ export const ComicVineMatchPanel = (comicVineData): ReactElement => {
             comicObjectId={comicObjectId}
           />
         ) : (
-          <>{comicvine.scrapingStatus}</>
+          <div className="text-md my-5">{comicvine.scrapingStatus}</div>
         )}
       </div>
     </>

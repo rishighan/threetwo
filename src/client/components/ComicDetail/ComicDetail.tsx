@@ -115,14 +115,16 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
           <div>
             <ComicVineSearchForm data={rawFileDetails} />
           </div>
-          <p className="is-size-5 mt-3 mb-2 ml-3">Searching for:</p>
-          {inferredMetadata.issue ? (
-            <div className="ml-3">
-              <span className="tag mr-3">{inferredMetadata.issue.name} </span>
-              <span className="tag"> # {inferredMetadata.issue.number} </span>
-            </div>
-          ) : null}
 
+          <div className="border-slate-500 border rounded-lg p-2 mt-3">
+            <p className="">Searching for:</p>
+            {inferredMetadata.issue ? (
+              <>
+                <span className="">{inferredMetadata.issue.name} </span>
+                <span className=""> # {inferredMetadata.issue.number} </span>
+              </>
+            ) : null}
+          </div>
           <ComicVineMatchPanel
             props={{
               comicVineMatches,
