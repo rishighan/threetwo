@@ -45,7 +45,7 @@ export const ComicVineSearchForm = (data) => {
             {(props) => (
               <input
                 {...props.input}
-                className="appearance-none dark:bg-slate-400 bg-slate-100 h-10 w-full rounded-md border-none text-gray-700 dark:text-slate-200 py-1 pr-7 pl-3 sm:text-md sm:leading-5 focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
+                className="appearance-none dark:bg-slate-100 bg-slate-100 h-10 w-full rounded-md border-none text-gray-700 dark:text-slate-200 py-1 pr-7 pl-3 sm:text-md sm:leading-5 focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
                 placeholder="Type the issue name"
               />
             )}
@@ -57,8 +57,8 @@ export const ComicVineSearchForm = (data) => {
                 {(props) => (
                   <input
                     {...props.input}
-                    className="appearance-none dark:bg-slate-400 bg-slate-100 h-10 w-14 rounded-md border-none text-gray-700 dark:text-slate-200 py-1 pr-7 pl-3 sm:text-md sm:leading-5 focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
-                    placeholder="Type the issue number"
+                    className="appearance-none dark:bg-slate-100 bg-slate-100 h-10 w-14 rounded-md border-none text-gray-700 dark:text-slate-200 py-1 pr-7 pl-3 sm:text-md sm:leading-5 focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
+                    placeholder="#"
                   />
                 )}
               </Field>
@@ -69,8 +69,8 @@ export const ComicVineSearchForm = (data) => {
                 {(props) => (
                   <input
                     {...props.input}
-                    className="appearance-none dark:bg-slate-400 bg-slate-100 h-10 w-20 rounded-md border-none text-gray-700 dark:text-slate-200 py-1 pr-7 pl-3 sm:text-md sm:leading-5 focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
-                    placeholder="Type the issue year"
+                    className="appearance-none dark:bg-slate-100 bg-slate-100 h-10 w-20 rounded-md border-none text-gray-700 dark:text-slate-200 py-1 pr-7 pl-3 sm:text-md sm:leading-5 focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
+                    placeholder="1984"
                   />
                 )}
               </Field>
