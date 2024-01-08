@@ -183,15 +183,17 @@ export const ArchiveOperations = (props): ReactElement => {
         ) : null}
 
         <div className="flex flex-row gap-2 mt-4">
-          <button
-            className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-3 py-2 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
-            onClick={() => refetch()}
-          >
-            <span className="text-md">Unpack Comic Archive</span>
-            <span className="w-6 h-6">
-              <i className="h-6 w-6 icon-[solar--box-bold-duotone]"></i>
-            </span>
-          </button>
+          {!data.rawFileDetails?.archive?.uncompressed ? (
+            <button
+              className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-3 py-2 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+              onClick={() => refetch()}
+            >
+              <span className="text-md">Unpack Comic Archive</span>
+              <span className="w-6 h-6">
+                <i className="h-6 w-6 icon-[solar--box-bold-duotone]"></i>
+              </span>
+            </button>
+          ) : null}
 
           {!isEmpty(uncompressedArchive) ? (
             <div>
@@ -216,9 +218,7 @@ export const ArchiveOperations = (props): ReactElement => {
               data={uncompressedArchive}
               onClickHandler={openImageAnalysisPanel}
             />
-          ) : (
-            "asdas"
-          )}
+          ) : null}
         </div>
       </div>
       <SlidingPane
