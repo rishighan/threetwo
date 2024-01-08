@@ -12,6 +12,7 @@ import {
 } from "../../../constants/endpoints";
 import { useStore } from "../../../store";
 import { useShallow } from "zustand/react/shallow";
+import { escapePoundSymbol } from "../../../shared/utils/formatting.utils";
 
 export const ArchiveOperations = (props): ReactElement => {
   const { data } = props;
@@ -30,7 +31,7 @@ export const ArchiveOperations = (props): ReactElement => {
   const [imageAnalysisResult, setImageAnalysisResult] = useState({});
   const constructImagePaths = (data): Array<string> => {
     return data?.map((path: string) =>
-      encodeURIComponent(`${LIBRARY_SERVICE_HOST}/${path}`),
+      escapePoundSymbol(encodeURI(`${LIBRARY_SERVICE_HOST}/${path}`)),
     );
   };
 
