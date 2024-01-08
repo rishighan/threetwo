@@ -21,6 +21,7 @@ import { Cover } from "./Cover";
 import { map } from "lodash";
 
 export const DnD = (data) => {
+  console.log(data.data);
   const [items, setItems] = useState(data.data);
   const [activeId, setActiveId] = useState(null);
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));

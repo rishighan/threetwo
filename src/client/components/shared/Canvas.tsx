@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from "react";
 
-export const Canvas = (data) => {
-  const { colorHistogramData } = data.data;
-  console.log(data);
+export const Canvas = ({ data }) => {
+  const { colorHistogramData } = data;
   const width = 559;
   const height = 200;
   const pixelRatio = window.devicePixelRatio;
@@ -10,7 +9,11 @@ export const Canvas = (data) => {
   const canvas = useRef(null);
 
   useEffect(() => {
-    const context = canvas.current.getContext("2d");
+    const context = canvas.current?.getContext("2d");
+    if (!context) {
+      return;
+    }
+
     context.scale(pixelRatio, pixelRatio);
     const guideHeight = 8;
     const startY = height - guideHeight;
@@ -46,18 +49,24 @@ export const Canvas = (data) => {
       context.stroke();
 
       // Guide
-      context.strokeStyle = "rgb(" + i + ", " + i + ", " + i + ")";
+      context.strokeStyle = `rgb(${i}, ${i}, ${i})`;
       context.beginPath();
       context.moveTo(x, startY);
       context.lineTo(x, height);
       context.closePath();
       context.stroke();
     }
-  });
+
+    // Cleanup function
+    return () => {
+      // Perform cleanup actions here
+    };
+  }, [colorHistogramData, pixelRatio]);
 
   const dw = Math.floor(pixelRatio * width);
   const dh = Math.floor(pixelRatio * height);
   const style = { width, height };
+
   return <canvas ref={canvas} width={dw} height={dh} style={style} />;
 };
 

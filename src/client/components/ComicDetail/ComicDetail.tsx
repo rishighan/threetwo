@@ -63,19 +63,6 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [comicVineMatches, setComicVineMatches] = useState([]);
 
-  //   const comicVineSearchResults = useSelector(
-  //     (state: RootState) => state.comicInfo.searchResults,
-  //   );
-  //   const comicVineSearchQueryObject = useSelector(
-  //     (state: RootState) => state.comicInfo.searchQuery,
-  //   );
-  //   const comicVineAPICallProgress = useSelector(
-  //     (state: RootState) => state.comicInfo.inProgress,
-  //   );
-  //
-  //   const extractedComicBook = useSelector(
-  //     (state: RootState) => state.fileOps.extractedComicBookArchive.reading,
-  //   );
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
 
   // const dispatch = useDispatch();
@@ -288,7 +275,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
 
   // check for the availability of rawFileDetails
   const areRawFileDetailsAvailable =
-    !isUndefined(rawFileDetails) && !isEmpty(rawFileDetails.cover);
+    !isUndefined(rawFileDetails) && !isEmpty(rawFileDetails);
 
   const { issueName, url } = determineCoverFile({
     rawFileDetails,
