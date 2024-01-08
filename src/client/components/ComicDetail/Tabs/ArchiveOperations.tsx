@@ -30,7 +30,7 @@ export const ArchiveOperations = (props): ReactElement => {
   const [imageAnalysisResult, setImageAnalysisResult] = useState({});
   const constructImagePaths = (data): Array<string> => {
     return data?.map((path: string) =>
-      encodeURI(`${LIBRARY_SERVICE_HOST}/${path}`),
+      encodeURIComponent(`${LIBRARY_SERVICE_HOST}/${path}`),
     );
   };
 

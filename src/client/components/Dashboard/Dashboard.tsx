@@ -151,7 +151,7 @@ export const Dashboard = (): ReactElement => {
                         </span>
                       </span>
                       {/* Uncompressed status  */}
-                      {rawFileDetails.archive.uncompressed ? (
+                      {rawFileDetails?.archive?.uncompressed ? (
                         <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
                           <span className="pr-1 pt-1">
                             <i className="icon-[solar--bookmark-bold-duotone] w-4 h-4"></i>
