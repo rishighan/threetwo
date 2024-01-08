@@ -9,6 +9,8 @@ export const EditMetadataPanel = (props): ReactElement => {
   const validate = async () => {};
   const onSubmit = async () => {};
 
+  const { data } = props;
+
   const AsyncSelectPaginateAdapter = ({ input, ...rest }) => {
     return (
       <AsyncSelectPaginate
@@ -62,7 +64,7 @@ export const EditMetadataPanel = (props): ReactElement => {
                       name="issue_name"
                       component="input"
                       className="input"
-                      initialValue={rawFileDetails}
+                      initialValue={data.name}
                       placeholder={"Issue Name"}
                     />
                     <span className="icon is-small is-left">

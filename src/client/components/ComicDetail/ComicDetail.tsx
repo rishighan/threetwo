@@ -123,7 +123,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     },
 
     editComicBookMetadata: {
-      content: () => <EditMetadataPanel />,
+      content: () => <EditMetadataPanel data={rawFileDetails} />,
     },
   };
 

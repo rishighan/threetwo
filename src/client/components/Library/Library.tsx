@@ -248,7 +248,7 @@ export const Library = (): ReactElement => {
     <div>
       <section>
         <header className="bg-slate-200 dark:bg-slate-500">
-          <div className="mx-auto max-w-screen-xl px-2 py-2 sm:px-6 sm:py-8 lg:px-8 lg:py-4">
+          <div className="px-2 py-2 sm:px-6 sm:py-8 lg:px-8 lg:py-4">
             <div className="sm:flex sm:items-center sm:justify-between">
               <div className="text-center sm:text-left">
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
@@ -280,7 +280,7 @@ export const Library = (): ReactElement => {
             </div>
           </div>
         ) : (
-          <>
+          <div className="mx-auto max-w-screen-xl mt-5">
             <article
               role="alert"
               className="rounded-lg max-w-screen-md border-s-4 border-yellow-500 bg-yellow-50 p-4 dark:border-s-4 dark:border-yellow-600 dark:bg-yellow-300 dark:text-slate-600"
@@ -306,7 +306,7 @@ export const Library = (): ReactElement => {
                 ) : null}
               </pre>
             </div>
-          </>
+          </div>
         )}
       </section>
     </div>
