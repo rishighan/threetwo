@@ -44,7 +44,16 @@ export const Dashboard = (): ReactElement => {
     queryKey: ["recentComics"],
   });
 
-  console.log("hari om", recentComics);
+  const { data: volumeGroups } = useQuery({
+    queryFn: async () =>
+      await axios({
+        url: `${LIBRARY_SERVICE_BASE_URI}/getComicBookGroups`,
+        method: "GET",
+      }),
+    queryKey: ["volumeGroups"],
+  });
+
+  console.log("hari om", volumeGroups);
   //   useEffect(() => {
   //     dispatch(fetchVolumeGroups());
   //     dispatch(
@@ -190,6 +199,10 @@ export const Dashboard = (): ReactElement => {
           )}
         </div>
       </section>
+
+      {/* Volume groups */}
+
+      <VolumeGroups volumeGroups={volumeGroups?.data.docs} />
     </div>
   );
 };

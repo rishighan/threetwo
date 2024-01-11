@@ -18,6 +18,7 @@ export const VolumeGroups = (props): ReactElement => {
     navigate(`/volumes/all`);
   };
 
+  console.log(props);
   return (
     <section className="volumes-container mt-4">
       <div className="content">

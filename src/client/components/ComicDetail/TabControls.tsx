@@ -7,9 +7,9 @@ export const TabControls = (props): ReactElement => {
   // );
   const { filteredTabs, downloadCount } = props;
   const [active, setActive] = useState(filteredTabs[0].id);
-  useEffect(() => {
-    setActive(filteredTabs[0].id);
-  }, [filteredTabs]);
+  // useEffect(() => {
+  //   setActive(filteredTabs[0].id);
+  // }, [filteredTabs]);
 
   return (
     <>

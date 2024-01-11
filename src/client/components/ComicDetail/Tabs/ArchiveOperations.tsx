@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback, useEffect, useState } from "react";
 import { DnD } from "../../shared/Draggable/DnD";
-import { isEmpty, isUndefined } from "lodash";
+import { isEmpty } from "lodash";
 import SlidingPane from "react-sliding-pane";
 import { Canvas } from "../../shared/Canvas";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -16,12 +16,13 @@ import { escapePoundSymbol } from "../../../shared/utils/formatting.utils";
 
 export const ArchiveOperations = (props): ReactElement => {
   const { data } = props;
-  const queryClient = useQueryClient();
+
   const { socketIOInstance } = useStore(
     useShallow((state) => ({
       socketIOInstance: state.socketIOInstance,
     })),
   );
+  const queryClient = useQueryClient();
   // sliding panel config
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
@@ -70,7 +71,6 @@ export const ArchiveOperations = (props): ReactElement => {
           // Handle error if necessary
         }
       };
-
       fetchUncompressedArchive();
     }
 
@@ -97,6 +97,7 @@ export const ArchiveOperations = (props): ReactElement => {
     data: uncompressionResult,
     refetch,
     isLoading,
+    isSuccess,
   } = useQuery({
     queryFn: async () =>
       await axios({
@@ -120,6 +121,10 @@ export const ArchiveOperations = (props): ReactElement => {
     queryKey: ["uncompressedArchive"],
     enabled: false,
   });
+
+  if (isSuccess) {
+    queryClient.invalidateQueries({ queryKey: ["comicBookMetadata"] });
+  }
 
   // sliding panel init
   const contentForSlidingPanel = {
@@ -150,7 +155,6 @@ export const ArchiveOperations = (props): ReactElement => {
     setVisible(true);
   }, []);
 
-  console.log(uncompressedArchive);
   return (
     <div key={2}>
       <article
@@ -212,7 +216,7 @@ export const ArchiveOperations = (props): ReactElement => {
       </div>
 
       <div>
-        <div className="mt-5">
+        <div className="mt-10">
           {!isEmpty(uncompressedArchive) ? (
             <DnD
               data={uncompressedArchive}

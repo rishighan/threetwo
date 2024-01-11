@@ -21,7 +21,6 @@ import { Cover } from "./Cover";
 import { map } from "lodash";
 
 export const DnD = (data) => {
-  console.log(data.data);
   const [items, setItems] = useState(data.data);
   const [activeId, setActiveId] = useState(null);
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
@@ -65,7 +64,7 @@ export const DnD = (data) => {
                   className="mt-2 mb-2"
                   onClick={(e) => data.onClickHandler(url)}
                 >
-                  <div className="box p-2 pl-3 control-palette">
+                  <div className="box p-2 control-palette">
                     <span className="tag is-warning mr-2">{index}</span>
                     <span className="icon is-small mr-2">
                       <i className="fa-solid fa-vial"></i>
