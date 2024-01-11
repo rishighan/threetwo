@@ -11,6 +11,7 @@ interface ISettingsProps {}
 
 export const Settings = (props: ISettingsProps): ReactElement => {
   const [active, setActive] = useState("gen-db");
+  console.log(active);
   const settingsContent = [
     {
       id: "adc-hubs",
@@ -67,67 +68,69 @@ export const Settings = (props: ISettingsProps): ReactElement => {
             </div>
           </div>
         </header>
-        <div className="flex flex-cols max-w-screen-xl mx-auto">
-          <aside className="px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
-            {map(settingsObject, (settingObject, idx) => {
-              return (
-                <div
-                  className="w-64 py-2 text-slate-700 dark:text-slate-400"
-                  key={idx}
-                >
-                  <h3 className="text-l pb-2">
-                    {settingObject.category.toUpperCase()}
-                  </h3>
-                  {/* First level children */}
-                  {!isUndefined(settingObject.children) ? (
-                    <ul key={settingObject.id}>
-                      {map(settingObject.children, (item, idx) => {
-                        return (
-                          <li key={idx} className="mb-2">
-                            <a
-                              className={
-                                item.id.toString() === active
-                                  ? "is-active flex items-center"
-                                  : "flex items-center"
-                              }
-                              onClick={() => setActive(item.id.toString())}
-                            >
-                              {item.displayName}
-                            </a>
-                            {/* Second level children */}
-                            {!isUndefined(item.children) ? (
-                              <ul className="pl-4 mt-2">
-                                {map(item.children, (item, idx) => (
-                                  <li key={item.id} className="mb-2">
-                                    <a
-                                      className={
-                                        item.id.toString() === active
-                                          ? "is-active flex items-center"
-                                          : "flex items-center"
-                                      }
-                                      onClick={() =>
-                                        setActive(item.id.toString())
-                                      }
-                                    >
-                                      {item.displayName}
-                                    </a>
-                                  </li>
-                                ))}
-                              </ul>
-                            ) : null}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  ) : null}
-                </div>
-              );
-            })}
-          </aside>
+        <div className="flex flex-row">
+          <div className="inset-y-0 w-80 bg-gray-800 text-white  h-screen overflow-y-auto">
+            <aside className="px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
+              {map(settingsObject, (settingObject, idx) => {
+                return (
+                  <div
+                    className="w-64 py-2 text-slate-700 dark:text-slate-400"
+                    key={idx}
+                  >
+                    <h3 className="text-l pb-2">
+                      {settingObject.category.toUpperCase()}
+                    </h3>
+                    {/* First level children */}
+                    {!isUndefined(settingObject.children) ? (
+                      <ul key={settingObject.id}>
+                        {map(settingObject.children, (item, idx) => {
+                          return (
+                            <li key={idx} className="mb-2">
+                              <a
+                                className={
+                                  item.id.toString() === active
+                                    ? "is-active flex items-center"
+                                    : "flex items-center"
+                                }
+                                onClick={() => setActive(item.id.toString())}
+                              >
+                                {item.displayName}
+                              </a>
+                              {/* Second level children */}
+                              {!isUndefined(item.children) ? (
+                                <ul className="pl-4 mt-2">
+                                  {map(item.children, (item, idx) => (
+                                    <li key={item.id} className="mb-2">
+                                      <a
+                                        className={
+                                          item.id.toString() === active
+                                            ? "is-active flex items-center"
+                                            : "flex items-center"
+                                        }
+                                        onClick={() =>
+                                          setActive(item.id.toString())
+                                        }
+                                      >
+                                        {item.displayName}
+                                      </a>
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : null}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </aside>
+          </div>
 
           {/* content for settings */}
-          <div className="max-w-screen-xl">
-            <div className="content">
+          <div className="flex mx-12">
+            <div className="">
               {map(settingsContent, ({ id, content }) =>
                 active === id ? content : null,
               )}

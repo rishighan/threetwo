@@ -58,90 +58,59 @@ export const EditMetadataPanel = (props): ReactElement => {
                 <label className="label">Issue Details</label>
               </div>
               <div className="field-body">
-                <div className="field">
-                  <p className="control is-expanded has-icons-left">
-                    <Field
-                      name="issue_name"
-                      component="input"
-                      className="input"
-                      initialValue={data.name}
-                      placeholder={"Issue Name"}
-                    />
-                    <span className="icon is-small is-left">
-                      <i className="fa-solid fa-user-ninja"></i>
-                    </span>
-                  </p>
-                </div>
+                <Field
+                  name="issue_name"
+                  component="input"
+                  className="appearance-none w-full dark:bg-slate-400 bg-slate-100 h-10 rounded-md border-none text-gray-700 dark:text-slate-200 py-1 pr-7 pl-3 sm:text-md sm:leading-5 focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
+                  initialValue={data.name}
+                  placeholder={"Issue Name"}
+                />
               </div>
             </div>
             {/* Issue Number and year */}
-            <div className="field is-horizontal">
-              <div className="field-label"></div>
-              <div className="field-body">
-                <div className="field">
-                  <p className="control has-icons-left">
-                    <Field
-                      name="issue_number"
-                      component="input"
-                      className="input"
-                      placeholder="Issue Number"
-                    />
-                    <span className="icon is-small is-left">
-                      <i className="fa-solid fa-hashtag"></i>
-                    </span>
-                  </p>
-                  <p className="help">Do not enter the first zero</p>
-                </div>
+            <div className="mt-4 flex flex-row gap-2">
+              <div>
+                <div className="text-sm">Issue Number</div>
+                <Field
+                  name="issue_number"
+                  component="input"
+                  className="dark:bg-slate-400 w-20 bg-slate-100 py-2 px-2 rounded-md border-gray-300 h-10 dark:text-slate-200 sm:text-md sm:leading-5 focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
+                  placeholder="Issue Number"
+                />
+                <p className="text-xs">Do not enter the first zero</p>
+              </div>
+              <div>
                 {/* year */}
-                <div className="field">
-                  <p className="control">
-                    <Field
-                      name="issue_year"
-                      component="input"
-                      className="input"
-                    />
-                  </p>
-                </div>
+                <div className="text-sm">Issue Year</div>
+                <Field
+                  name="issue_year"
+                  component="input"
+                  className="dark:bg-slate-400 w-20 bg-slate-100 py-2 px-2 rounded-md border-gray-300 h-10 dark:text-slate-200 sm:text-md sm:leading-5 focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
+                />
+              </div>
+
+              <div>
+                <div className="text-sm">Page Count</div>
+                <Field
+                  name="page_count"
+                  component="input"
+                  className="dark:bg-slate-400 w-20 bg-slate-100 py-2 px-2 rounded-md border-gray-300 h-10 dark:text-slate-200 sm:text-md sm:leading-5 focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
+                  placeholder="Page Count"
+                />
               </div>
             </div>
 
             {/* page count */}
-            <div className="field is-horizontal">
-              <div className="field-label"></div>
-              <div className="field-body">
-                <div className="field">
-                  <p className="control has-icons-left">
-                    <Field
-                      name="page_count"
-                      component="input"
-                      className="input"
-                      placeholder="Page Count"
-                    />
-                    <span className="icon is-small is-left">
-                      <i className="fa-solid fa-note-sticky"></i>
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
 
             {/* Description */}
-            <div className="field is-horizontal">
-              <div className="field-label is-normal">
-                <label className="label">Description</label>
-              </div>
-              <div className="field-body">
-                <div className="field">
-                  <p className="control is-expanded has-icons-left">
-                    <Field
-                      name={"description"}
-                      className="textarea"
-                      component={TextareaAutosizeAdapter}
-                      placeholder={"Description"}
-                    />
-                  </p>
-                </div>
-              </div>
+            <div className="mt-2">
+              <label className="text-sm">Description</label>
+              <Field
+                name={"description"}
+                className="dark:bg-slate-400 w-full min-h-24 bg-slate-100 py-2 px-2 rounded-md border-gray-300 h-10 dark:text-slate-200 sm:text-md sm:leading-5 focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
+                component={TextareaAutosizeAdapter}
+                placeholder={"Description"}
+              />
             </div>
 
             <hr size="1" />
