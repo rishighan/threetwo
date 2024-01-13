@@ -200,7 +200,7 @@ export const AcquisitionPanel = (
           },
         });
         console.log(bundleDBImportResult?.data);
-        // queryClient.invalidateQueries({ queryKey: ["bundles"] });
+        queryClient.invalidateQueries({ queryKey: ["comicBookMetadata"] });
 
         //         dispatch({
         //           type: AIRDCPP_RESULT_DOWNLOAD_INITIATED,

@@ -25,7 +25,6 @@ export const ComicDetailContainer = (): ReactElement | null => {
       }),
   });
 
-  console.log(comicBookDetailData);
   {
     isError && <>Error</>;
   }
