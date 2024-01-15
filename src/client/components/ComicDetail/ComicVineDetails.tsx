@@ -2,105 +2,105 @@ import React, { ReactElement } from "react";
 import PropTypes from "prop-types";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
 import dayjs from "dayjs";
-import { isUndefined } from "lodash";
+import { isEmpty, isUndefined } from "lodash";
 import Card from "../shared/Carda";
+import { convert } from "html-to-text";
+
 export const ComicVineDetails = (props): ReactElement => {
   const { data, updatedAt } = props;
   return (
-    <div className="column is-half">
-      <div className="comic-detail comicvine-metadata">
-        <dl>
-          <dt>ComicVine Metadata</dt>
-          <dd className="is-size-7">
-            Last scraped on {dayjs(updatedAt).format("MMM D YYYY [at] h:mm a")}
-          </dd>
-
-          <dd>
-            <div className="columns mt-2">
-              <div className="column is-2">
-                <Card
-                  imageUrl={data.volumeInformation.image.thumb_url}
-                  orientation={"vertical"}
-                  hasDetails={false}
-                  // cardContainerStyle={{ maxWidth: 200 }}
-                />
-              </div>
-              <div className="column is-10">
-                <dl>
-                  <dt>
-                    <h6 className="has-text-weight-bold mb-2">{data.name}</h6>
-                  </dt>
-                  <dd>
-                    Is a part of{" "}
-                    <span className="has-text-info">
-                      {data.volumeInformation.name}
-                    </span>
-                  </dd>
-
-                  <dd>
-                    Published by
-                    <span className="has-text-weight-semibold">
-                      {" "}
-                      {data.volumeInformation.publisher.name}
-                    </span>
-                  </dd>
-                  <dd>
-                    Total issues in this volume:
-                    {data.volumeInformation.count_of_issues}
-                  </dd>
-
-                  <dd>
-                    <div className="field is-grouped mt-2">
-                      {data.issue_number && (
-                        <div className="control">
-                          <div className="tags has-addons">
-                            <span className="tag is-light">Issue Number</span>
-                            <span className="tag is-warning">
-                              {data.issue_number}
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                      {!isUndefined(
-                        detectIssueTypes(data.volumeInformation.description),
-                      ) ? (
-                        <div className="control">
-                          <div className="tags has-addons">
-                            <span className="tag is-light">Detected Type</span>
-                            <span className="tag is-warning">
-                              {
-                                detectIssueTypes(
-                                  data.volumeInformation.description,
-                                ).displayName
-                              }
-                            </span>
-                          </div>
-                        </div>
-                      ) : data.resource_type ? (
-                        <div className="control">
-                          <div className="tags has-addons">
-                            <span className="tag is-light">Type</span>
-                            <span className="tag is-warning">
-                              {data.resource_type}
-                            </span>
-                          </div>
-                        </div>
-                      ) : null}
-                      <div className="control">
-                        <div className="tags has-addons">
-                          <span className="tag is-light">
-                            ComicVine Issue ID
-                          </span>
-                          <span className="tag is-success">{data.id}</span>
-                        </div>
-                      </div>
+    <div className="text-slate-500 dark:text-gray-400">
+      <div className="">
+        <div>
+          <div className="flex flex-row gap-4">
+            <div className="min-w-fit">
+              <Card
+                imageUrl={data.volumeInformation.image.thumb_url}
+                orientation={"vertical-2"}
+                hasDetails={false}
+                // cardContainerStyle={{ maxWidth: 200 }}
+              />
+            </div>
+            <div className="flex flex-col">
+              <div className="flex flex-row">
+                <div>
+                  {/* Title */}
+                  <div>
+                    <div className="text-lg">{data.name}</div>
+                    <div className="text-sm">
+                      Is a part of{" "}
+                      <span className="has-text-info">
+                        {data.volumeInformation.name}
+                      </span>
                     </div>
-                  </dd>
-                </dl>
+                  </div>
+
+                  {/* Comicvine metadata */}
+                  <div className="mt-2">
+                    <div className="text-md">ComicVine Metadata</div>
+                    <div className="text-sm">
+                      Last scraped on{" "}
+                      {dayjs(updatedAt).format("MMM D YYYY [at] h:mm a")}
+                    </div>
+                    <div className="text-sm">
+                      ComicVine Issue ID
+                      <span>{data.id}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Publisher details */}
+                <div className="">
+                  Published by{" "}
+                  <span>{data.volumeInformation.publisher.name}</span>
+                  <div>
+                    Total issues in this volume{" "}
+                    <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                      <span className="text-md text-slate-900 dark:text-slate-900">
+                        {data.volumeInformation.count_of_issues}
+                      </span>
+                    </span>
+                  </div>
+                  <div>
+                    {data.issue_number && (
+                      <div className="">
+                        <span>Issue Number</span>
+                        <span>{data.issue_number}</span>
+                      </div>
+                    )}
+                    {!isUndefined(
+                      detectIssueTypes(data.volumeInformation.description),
+                    ) ? (
+                      <div>
+                        <span>Detected Type</span>
+                        <span>
+                          {
+                            detectIssueTypes(data.volumeInformation.description)
+                              .displayName
+                          }
+                        </span>
+                      </div>
+                    ) : data.resource_type ? (
+                      <div>
+                        <span>Type</span>
+                        <span>{data.resource_type}</span>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+              {/* Description */}
+              <div className="mt-3 w-3/4">
+                {!isEmpty(data.description) &&
+                  convert(data.description, {
+                    baseElements: {
+                      selectors: ["p"],
+                    },
+                  })}
               </div>
             </div>
-          </dd>
-        </dl>
+          </div>
+        </div>
       </div>
     </div>
   );

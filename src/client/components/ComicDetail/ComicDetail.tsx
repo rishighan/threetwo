@@ -295,7 +295,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     {
       id: 1,
       name: "Volume Information",
-      icon: <i className="fa-solid fa-layer-group"></i>,
+      icon: (
+        <i className="h-5 w-5 icon-[solar--book-2-bold] text-slate-500 dark:text-slate-300"></i>
+      ),
       content: isComicBookMetadataAvailable ? (
         <VolumeInformation data={data.data} key={1} />
       ) : null,
