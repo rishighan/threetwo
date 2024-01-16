@@ -2,7 +2,7 @@ import { map, unionBy } from "lodash";
 import React, { ReactElement } from "react";
 import ellipsize from "ellipsize";
 import { Link, useNavigate } from "react-router-dom";
-import Masonry from "react-masonry-css";
+import Card from "../shared/Carda";
 
 export const VolumeGroups = (props): ReactElement => {
   const breakpointColumnsObj = {
@@ -18,7 +18,6 @@ export const VolumeGroups = (props): ReactElement => {
     navigate(`/volumes/all`);
   };
 
-  console.log(props);
   return (
     <section className="volumes-container mt-4">
       <div className="content">
@@ -32,32 +31,39 @@ export const VolumeGroups = (props): ReactElement => {
         </a>
         <p className="subtitle is-7">Based on ComicVine Volume information</p>
       </div>
-      <Masonry
-        breakpointCols={breakpointColumnsObj}
-        className="volumes-grid"
-        columnClassName="volumes-grid-column"
-      >
+      <div className="grid grid-cols-5 gap-6">
         {map(deduplicatedGroups, (data) => {
           return (
-            <div className="stack" key={data._id}>
-              <img src={data.volumes.image.small_url} />
-              <div className="content">
-                <div className="stack-title is-size-8">
-                  <Link to={`/volume/details/${data._id}`}>
-                    {ellipsize(data.volumes.name, 18)}
-                  </Link>
+            <div className="max-w-sm py-8 mx-auto" key={data._id}>
+              <Card
+                orientation="vertical-2"
+                key={data._id}
+                imageUrl={data.volumes.image.small_url}
+                hasDetails
+              >
+                <div className="content">
+                  <div className="stack-title is-size-8">
+                    <Link to={`/volume/details/${data._id}`}>
+                      {ellipsize(data.volumes.name, 18)}
+                    </Link>
+                  </div>
+                  <div className="control">
+                    <span className="tags has-addons">
+                      <span className="tag is-primary is-light">Issues</span>
+                      <span className="tag">
+                        {data.volumes.count_of_issues}
+                      </span>
+                    </span>
+                  </div>
                 </div>
-                <div className="control">
-                  <span className="tags has-addons">
-                    <span className="tag is-primary is-light">Issues</span>
-                    <span className="tag">{data.volumes.count_of_issues}</span>
-                  </span>
-                </div>
-              </div>
+              </Card>
+              <div className="w-11/12 h-2 mx-auto bg-gray-900 rounded-b opacity-75"></div>
+              <div className="w-10/12 h-2 mx-auto bg-gray-900 rounded-b opacity-50"></div>
+              <div className="w-9/12 h-2 mx-auto bg-gray-900 rounded-b opacity-25"></div>
             </div>
           );
         })}
-      </Masonry>
+      </div>
     </section>
   );
 };

@@ -202,7 +202,7 @@ export const Dashboard = (): ReactElement => {
 
       {/* Volume groups */}
 
-      <VolumeGroups volumeGroups={volumeGroups?.data.docs} />
+      <VolumeGroups volumeGroups={volumeGroups?.data} />
     </div>
   );
 };
