@@ -1,8 +1,7 @@
-import React, { useCallback, ReactElement } from "react";
+import React, { useCallback, ReactElement, useState } from "react";
 import { isNil, isEmpty } from "lodash";
 import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";
 import { importToDB } from "../../actions/fileops.actions";
-import { useSelector, useDispatch } from "react-redux";
 import { comicinfoAPICall } from "../../actions/comicinfo.actions";
 import { search } from "../../services/api/SearchApi";
 import { Form, Field } from "react-final-form";
@@ -10,6 +9,9 @@ import Card from "../shared/Carda";
 import ellipsize from "ellipsize";
 import { convert } from "html-to-text";
 import dayjs from "dayjs";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { COMICVINE_SERVICE_URI } from "../../constants/endpoints";
+import axios from "axios";
 
 interface ISearchProps {}
 
@@ -17,38 +19,47 @@ export const Search = ({}: ISearchProps): ReactElement => {
   const formData = {
     search: "",
   };
-  const dispatch = useDispatch();
-  const getCVSearchResults = useCallback(
-    (searchQuery) => {
-      dispatch(
-        comicinfoAPICall({
-          callURIAction: "search",
-          callMethod: "GET",
-          callParams: {
-            api_key: "a5fa0663683df8145a85d694b5da4b87e1c92c69",
-            query: searchQuery.search,
-            format: "json",
-            limit: "10",
-            offset: "0",
-            field_list:
-              "id,name,deck,api_detail_url,image,description,volume,cover_date",
-            resources: "issue",
-          },
-        }),
-      );
-    },
-    [dispatch],
-  );
+  const queryClient = useQueryClient();
+  const [searchQuery, setSearchQuery] = useState("");
+  const getCVSearchResults = (searchQuery) => {
+    console.log(searchQuery);
+    setSearchQuery(searchQuery.search);
+    // queryClient.invalidateQueries({ queryKey: ["comicvineSearchResults"] });
+  };
 
+  const {
+    data: comicVineSearchResults,
+    isLoading,
+    isSuccess,
+  } = useQuery({
+    queryFn: async () =>
+      await axios({
+        url: `${COMICVINE_SERVICE_URI}/search`,
+        method: "GET",
+        params: {
+          api_key: "a5fa0663683df8145a85d694b5da4b87e1c92c69",
+          query: searchQuery,
+          format: "json",
+          limit: "10",
+          offset: "0",
+          field_list:
+            "id,name,deck,api_detail_url,image,description,volume,cover_date",
+          resources: "issue",
+        },
+      }),
+    queryKey: ["comicvineSearchResults", searchQuery],
+    enabled: !isNil(searchQuery),
+  });
+  console.log(comicVineSearchResults);
   const addToLibrary = useCallback(
     (sourceName: string, comicData) =>
-      dispatch(importToDB(sourceName, { comicvine: comicData })),
+      importToDB(sourceName, { comicvine: comicData }),
     [],
   );
 
-  const comicVineSearchResults = useSelector(
-    (state: RootState) => state.comicInfo.searchResults,
-  );
+  // const comicVineSearchResults = useSelector(
+  //   (state: RootState) => state.comicInfo.searchResults,
+  // );
   const createDescriptionMarkup = (html) => {
     return { __html: html };
   };
@@ -87,29 +98,26 @@ export const Search = ({}: ISearchProps): ReactElement => {
               </form>
             )}
           />
-          {!isNil(comicVineSearchResults.results) &&
-          !isEmpty(comicVineSearchResults.results) ? (
-            <div className="columns is-multiline">
-              {comicVineSearchResults.results.map((result) => {
-                return (
-                  <div
-                    key={result.id}
-                    className="comicvine-metadata column is-10 mb-3"
-                  >
-                    <div className="columns">
-                      <div className="column is-one-quarter">
+          {!isNil(comicVineSearchResults?.data.results) &&
+          !isEmpty(comicVineSearchResults?.data.results) ? (
+            <div className="">
+              {comicVineSearchResults.data.results.map((result) => {
+                return isSuccess ? (
+                  <div key={result.id} className="">
+                    <div className="flex flex-row">
+                      <div className="max-w-150 mr-5">
                         <Card
                           key={result.id}
-                          orientation={"vertical"}
+                          orientation={"vertical-2"}
                           imageUrl={result.image.small_url}
                           title={result.name}
                           hasDetails={false}
                         ></Card>
                       </div>
                       <div className="column">
-                        <div className="is-size-3">
-                          {!isEmpty(result.name) ? (
-                            result.name
+                        <div className="text-xl">
+                          {!isEmpty(result.volume.name) ? (
+                            result.volume.name
                           ) : (
                             <span className="is-size-3">No Name</span>
                           )}
@@ -140,21 +148,26 @@ export const Search = ({}: ISearchProps): ReactElement => {
                           {ellipsize(
                             convert(result.description, {
                               baseElements: {
-                                selectors: ["p"],
+                                selectors: ["p", "div"],
                               },
                             }),
                             320,
                           )}
                         </p>
-                        <button
-                          className="button is-success is-light is-outlined mt-2"
-                          onClick={() => addToLibrary("comicvine", result)}
-                        >
-                          <i className="fa-solid fa-plus mr-2"></i> Want 
-                        </button>
+                        <div className="mt-2">
+                          <button
+                            className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-2 py-2 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+                            onClick={() => addToLibrary("comicvine", result)}
+                          >
+                            <i className="icon-[solar--add-square-bold-duotone] w-6 h-6 mr-2"></i>{" "}
+                            Mark as Wanted
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
+                ) : (
+                  <div>Loading</div>
                 );
               })}
             </div>

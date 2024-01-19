@@ -41,25 +41,27 @@ export const VolumeGroups = (props): ReactElement => {
                 imageUrl={data.volumes.image.small_url}
                 hasDetails
               >
-                <div className="content">
-                  <div className="stack-title is-size-8">
+                <div className="py-2">
+                  <div className="text-sm">
                     <Link to={`/volume/details/${data._id}`}>
-                      {ellipsize(data.volumes.name, 18)}
+                      {ellipsize(data.volumes.name, 48)}
                     </Link>
                   </div>
-                  <div className="control">
-                    <span className="tags has-addons">
-                      <span className="tag is-primary is-light">Issues</span>
-                      <span className="tag">
-                        {data.volumes.count_of_issues}
-                      </span>
+
+                  <span className="inline-flex mt-1 items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-600 dark:bg-slate-400">
+                    <span className="pr-1 pt-1">
+                      <i className="icon-[solar--documents-minimalistic-bold-duotone] w-5 h-5"></i>
                     </span>
-                  </div>
+
+                    <span className="text-md text-slate-500 dark:text-slate-900">
+                      {data.volumes.count_of_issues} issues
+                    </span>
+                  </span>
                 </div>
               </Card>
-              <div className="w-11/12 h-2 mx-auto bg-gray-900 rounded-b opacity-75"></div>
-              <div className="w-10/12 h-2 mx-auto bg-gray-900 rounded-b opacity-50"></div>
-              <div className="w-9/12 h-2 mx-auto bg-gray-900 rounded-b opacity-25"></div>
+              <div className="w-11/12 h-2 mx-auto bg-slate-900 rounded-b opacity-75"></div>
+              <div className="w-10/12 h-2 mx-auto bg-slate-900 rounded-b opacity-50"></div>
+              <div className="w-9/12 h-2 mx-auto bg-slate-900 rounded-b opacity-25"></div>
             </div>
           );
         })}

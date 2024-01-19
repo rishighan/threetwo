@@ -11,6 +11,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Import from "./components/Import/Import";
 import Dashboard from "./components/Dashboard/Dashboard";
+import Search from "./components/Search/Search";
 import TabulatedContentContainer from "./components/Library/TabulatedContentContainer";
 import { ComicDetailContainer } from "./components/ComicDetail/ComicDetailContainer";
 
@@ -33,6 +34,7 @@ const router = createBrowserRouter([
         element: <ComicDetailContainer />,
       },
       { path: "import", element: <Import path={"./comics"} /> },
+      { path: "search", element: <Search /> },
     ],
   },
 ]);

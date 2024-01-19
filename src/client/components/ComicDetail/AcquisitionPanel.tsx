@@ -134,7 +134,6 @@ export const AcquisitionPanel = (
           );
           setAirDCPPSearchInstance(currentInstance);
           setAirDCPPSearchInfo(searchInfo);
-          console.log("Asdas", airDCPPSearchInfo);
           if (currentInstance.result_count === 0) {
             // ...nothing was received, show an informative message to the user
             console.log("No more search results.");
@@ -231,38 +230,6 @@ export const AcquisitionPanel = (
     search(manualQuery, airDCPPSocketInstance);
   };
 
-  // download via AirDC++
-  const downloadDCPPResult = useCallback(
-    (searchInstanceId, resultId, name, size, type) => {
-      // dispatch(
-      //   downloadAirDCPPItem(
-      //     searchInstanceId,
-      //     resultId,
-      //     props.comicObjectId,
-      //     name,
-      //     size,
-      //     type,
-      //     airDCPPConfiguration.airDCPPState.socket,
-      //     {
-      //       username: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.username}`,
-      //       password: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.password}`,
-      //     },
-      //   ),
-      // );
-      // this is to update the download count badge on the downloads tab
-      // dispatch(
-      //   getBundlesForComic(
-      //     props.comicObjectId,
-      //     airDCPPConfiguration.airDCPPState.socket,
-      //     {
-      //       username: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.username}`,
-      //       password: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.password}`,
-      //     },
-      //   ),
-      // );
-    },
-    [],
-  );
   return (
     <>
       <div className="mt-5">

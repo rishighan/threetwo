@@ -170,11 +170,13 @@ export const Dashboard = (): ReactElement => {
                     </dd>
                   </div>
 
-                  <div className="flex flex-row items-center gap-1 my-1">
+                  <div className="flex flex-row items-center gap-1 mt-2 pb-1">
                     <div className="sm:inline-flex sm:shrink-0 sm:items-center sm:gap-2">
                       {/* ComicInfo.xml presence */}
                       {!isNil(comicInfo) && !isEmpty(comicInfo) && (
-                        <i className="h-7 w-7 my-1 icon-[solar--code-file-bold-duotone] text-yellow-500 dark:text-yellow-300"></i>
+                        <div mt-1>
+                          <i className="h-7 w-7 icon-[solar--code-file-bold-duotone] text-yellow-500 dark:text-yellow-300"></i>
+                        </div>
                       )}
                       {/* ComicVine metadata presence */}
                       {isComicVineMetadataAvailable && (
