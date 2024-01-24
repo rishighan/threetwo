@@ -90,17 +90,19 @@ const renderCard = (props: ICardProps): ReactElement => {
             className="rounded-t-md object-cover"
           />
 
-          <div className="mt-2 px-2">
-            <dl>
-              <div>
-                <dd className="text-sm text-slate-500 dark:text-black">
-                  {props.title}
-                </dd>
-              </div>
-            </dl>
+          {props.title ? (
+            <div className="px-3 pt-3 mb-2">
+              <dd className="text-sm text-slate-500 dark:text-black">
+                {props.title}
+              </dd>
+            </div>
+          ) : null}
 
-            {props.hasDetails && <>{props.children}</>}
-          </div>
+          {props.hasDetails ? (
+            <div className="px-2">
+              <>{props.children}</>
+            </div>
+          ) : null}
         </div>
       );
 

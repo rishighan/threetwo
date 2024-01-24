@@ -44,6 +44,22 @@ export const Dashboard = (): ReactElement => {
     queryKey: ["recentComics"],
   });
 
+  const { data: wantedComics } = useQuery({
+    queryFn: async () =>
+      await axios({
+        url: `${LIBRARY_SERVICE_BASE_URI}/getComicBooks`,
+        method: "POST",
+        data: {
+          paginationOptions: {
+            page: 0,
+            limit: 5,
+            sort: { updatedAt: "-1" },
+          },
+          predicate: { "acquisition.source.wanted": true },
+        },
+      }),
+    queryKey: ["wantedComics"],
+  });
   const { data: volumeGroups } = useQuery({
     queryFn: async () =>
       await axios({
@@ -201,9 +217,9 @@ export const Dashboard = (): ReactElement => {
           )}
         </div>
       </section>
-
+      {/* Wanted comics */}
+      <WantedComicsList comics={wantedComics?.data?.docs} />
       {/* Volume groups */}
-
       <VolumeGroups volumeGroups={volumeGroups?.data} />
     </div>
   );

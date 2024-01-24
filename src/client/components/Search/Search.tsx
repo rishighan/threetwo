@@ -10,7 +10,10 @@ import ellipsize from "ellipsize";
 import { convert } from "html-to-text";
 import dayjs from "dayjs";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { COMICVINE_SERVICE_URI } from "../../constants/endpoints";
+import {
+  COMICVINE_SERVICE_URI,
+  LIBRARY_SERVICE_BASE_URI,
+} from "../../constants/endpoints";
 import axios from "axios";
 
 interface ISearchProps {}
@@ -21,6 +24,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
   };
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
+  const [comicVineMetadata, setComicVineMetadata] = useState({});
   const getCVSearchResults = (searchQuery) => {
     console.log(searchQuery);
     setSearchQuery(searchQuery.search);
@@ -50,16 +54,40 @@ export const Search = ({}: ISearchProps): ReactElement => {
     queryKey: ["comicvineSearchResults", searchQuery],
     enabled: !isNil(searchQuery),
   });
-  console.log(comicVineSearchResults);
-  const addToLibrary = useCallback(
-    (sourceName: string, comicData) =>
-      importToDB(sourceName, { comicvine: comicData }),
-    [],
-  );
 
-  // const comicVineSearchResults = useSelector(
-  //   (state: RootState) => state.comicInfo.searchResults,
-  // );
+  // add to library
+  const { data: additionResult } = useQuery({
+    queryFn: async () =>
+      await axios({
+        url: `${LIBRARY_SERVICE_BASE_URI}/rawImportToDb`,
+        method: "POST",
+        data: {
+          importType: "new",
+          payload: {
+            rawFileDetails: {
+              name: "",
+            },
+            importStatus: {
+              isImported: true,
+              tagged: false,
+              matchedResult: {
+                score: "0",
+              },
+            },
+            sourcedMetadata:
+              { comicvine: comicVineMetadata?.comicData } || null,
+            acquisition: { source: { wanted: true, name: "comicvine" } },
+          },
+        },
+      }),
+    queryKey: ["additionResult"],
+    enabled: !isNil(comicVineMetadata.comicData),
+  });
+
+  console.log(comicVineMetadata);
+  const addToLibrary = (sourceName: string, comicData) =>
+    setComicVineMetadata({ sourceName, comicData });
+
   const createDescriptionMarkup = (html) => {
     return { __html: html };
   };
@@ -67,8 +95,8 @@ export const Search = ({}: ISearchProps): ReactElement => {
   return (
     <>
       <section className="container">
-        <div className="section search">
-          <h1 className="title">Search</h1>
+        <div className="">
+          <h1 className="">Search</h1>
 
           <Form
             onSubmit={getCVSearchResults}
@@ -76,8 +104,8 @@ export const Search = ({}: ISearchProps): ReactElement => {
               ...formData,
             }}
             render={({ handleSubmit, form, submitting, pristine, values }) => (
-              <form onSubmit={handleSubmit} className="form columns search">
-                <div className="column is-three-quarters search">
+              <form onSubmit={handleSubmit}>
+                <div>
                   <Field name="search">
                     {({ input, meta }) => {
                       return (
@@ -103,16 +131,15 @@ export const Search = ({}: ISearchProps): ReactElement => {
             <div className="">
               {comicVineSearchResults.data.results.map((result) => {
                 return isSuccess ? (
-                  <div key={result.id} className="">
+                  <div key={result.id} className="mb-5">
                     <div className="flex flex-row">
-                      <div className="max-w-150 mr-5">
+                      <div className="mr-5">
                         <Card
                           key={result.id}
-                          orientation={"vertical-2"}
+                          orientation={"cover-only"}
                           imageUrl={result.image.small_url}
-                          title={result.name}
                           hasDetails={false}
-                        ></Card>
+                        />
                       </div>
                       <div className="column">
                         <div className="text-xl">

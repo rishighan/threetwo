@@ -5,12 +5,6 @@ import { Link, useNavigate } from "react-router-dom";
 import Card from "../shared/Carda";
 
 export const VolumeGroups = (props): ReactElement => {
-  const breakpointColumnsObj = {
-    default: 5,
-    1100: 4,
-    700: 2,
-    500: 1,
-  };
   // Till mongo gives us back the deduplicated results with the ObjectId
   const deduplicatedGroups = unionBy(props.volumeGroups, "volumes.id");
   const navigate = useNavigate();
@@ -19,29 +13,29 @@ export const VolumeGroups = (props): ReactElement => {
   };
 
   return (
-    <section className="volumes-container mt-4">
-      <div className="content">
-        <a className="mb-1" onClick={navigateToVolumes}>
-          <span className="is-size-4 has-text-weight-semibold">
+    <section className="mt-7">
+      <div className="">
+        <a className="" onClick={navigateToVolumes}>
+          <span className="text-xl">
             <i className="fa-solid fa-layer-group"></i> Volumes
           </span>
           <span className="icon mt-1">
             <i className="fa-solid fa-angle-right"></i>
           </span>
         </a>
-        <p className="subtitle is-7">Based on ComicVine Volume information</p>
+        <p className="">Based on ComicVine Volume information</p>
       </div>
-      <div className="grid grid-cols-5 gap-6">
+      <div className="grid grid-cols-5 gap-6 mt-3">
         {map(deduplicatedGroups, (data) => {
           return (
-            <div className="max-w-sm py-8 mx-auto" key={data._id}>
+            <div className="max-w-sm mx-auto" key={data._id}>
               <Card
                 orientation="vertical-2"
                 key={data._id}
                 imageUrl={data.volumes.image.small_url}
                 hasDetails
               >
-                <div className="py-2">
+                <div className="py-3">
                   <div className="text-sm">
                     <Link to={`/volume/details/${data._id}`}>
                       {ellipsize(data.volumes.name, 48)}

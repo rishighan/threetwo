@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import ellipsize from "ellipsize";
 import { isEmpty, isNil, isUndefined, map } from "lodash";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
-import Masonry from "react-masonry-css";
 import { determineCoverFile } from "../../shared/utils/metadata.utils";
 
 type WantedComicsListProps = {
@@ -14,37 +13,25 @@ type WantedComicsListProps = {
 export const WantedComicsList = ({
   comics,
 }: WantedComicsListProps): ReactElement => {
-  const breakpointColumnsObj = {
-    default: 5,
-    1100: 4,
-    700: 2,
-    500: 1,
-  };
-
+  console.log("yolo", comics);
   const navigate = useNavigate();
   const navigateToWantedComics = (row) => {
     navigate(`/wanted/all`);
   };
   return (
     <>
-      <div className="content mt-6">
-        <a className="mb-1" onClick={navigateToWantedComics}>
-          <span className="is-size-4 has-text-weight-semibold">
-            <i className="fa-solid fa-asterisk"></i> Wanted Comics
+      <div className="mt-7">
+        <a className="" onClick={navigateToWantedComics}>
+          <span className="text-xl">
+            <i className=""></i> Wanted Comics
           </span>
-          <span className="icon mt-1">
-            <i className="fa-solid fa-angle-right"></i>
+          <span className="">
+            <i className=""></i>
           </span>
         </a>
-        <p className="subtitle is-7">
-          Comics marked as wanted from various sources.
-        </p>
+        <p className="">Comics marked as wanted from various sources.</p>
       </div>
-      <Masonry
-        breakpointCols={breakpointColumnsObj}
-        className="recent-comics-container"
-        columnClassName="recent-comics-column"
-      >
+      <div className="grid grid-cols-5 gap-6 mt-3">
         {map(
           comics,
           ({
@@ -73,29 +60,32 @@ export const WantedComicsList = ({
             return (
               <Card
                 key={_id}
-                orientation={"vertical"}
+                orientation={"vertical-2"}
                 imageUrl={url}
                 hasDetails
                 title={issueName ? titleElement : <span>No Name</span>}
               >
-                <div className="content is-flex is-flex-direction-row">
+                <div className="pb-1">
                   {/* comicVine metadata presence */}
                   {isComicBookMetadataAvailable && (
-                    <span className="icon custom-icon">
-                      <img src="/src/client/assets/img/cvlogo.svg" />
-                    </span>
+                    <img
+                      src="/src/client/assets/img/cvlogo.svg"
+                      alt={"ComicVine metadata detected."}
+                      className="w-7 h-7"
+                    />
                   )}
                   {!isEmpty(locg) && (
-                    <span className="icon custom-icon">
-                      <img src="/src/client/assets/img/locglogo.svg" />
-                    </span>
+                    <img
+                      src="/src/client/assets/img/locglogo.svg"
+                      className="w-7 h-7"
+                    />
                   )}
                   {/* Issue type */}
                   {isComicBookMetadataAvailable &&
                   !isNil(
                     detectIssueTypes(comicvine.volumeInformation.description),
                   ) ? (
-                    <span className="tag is-warning">
+                    <span className="">
                       {
                         detectIssueTypes(
                           comicvine.volumeInformation.description,
@@ -108,7 +98,7 @@ export const WantedComicsList = ({
             );
           },
         )}
-      </Masonry>
+      </div>
     </>
   );
 };
