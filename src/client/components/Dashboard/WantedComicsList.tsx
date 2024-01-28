@@ -13,7 +13,6 @@ type WantedComicsListProps = {
 export const WantedComicsList = ({
   comics,
 }: WantedComicsListProps): ReactElement => {
-  console.log("yolo", comics);
   const navigate = useNavigate();
   const navigateToWantedComics = (row) => {
     navigate(`/wanted/all`);
@@ -66,6 +65,28 @@ export const WantedComicsList = ({
                 title={issueName ? titleElement : <span>No Name</span>}
               >
                 <div className="pb-1">
+                  {/* Issue type */}
+                  {isComicBookMetadataAvailable &&
+                  !isNil(
+                    detectIssueTypes(comicvine.volumeInformation.description),
+                  ) ? (
+                    <div className="my-2">
+                      <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                        <span className="pr-1 pt-1">
+                          <i className="icon-[solar--book-2-line-duotone] w-5 h-5"></i>
+                        </span>
+
+                        <span className="text-md text-slate-500 dark:text-slate-900">
+                          {
+                            detectIssueTypes(
+                              comicvine.volumeInformation.description,
+                            ).displayName
+                          }
+                        </span>
+                      </span>
+                    </div>
+                  ) : null}
+
                   {/* comicVine metadata presence */}
                   {isComicBookMetadataAvailable && (
                     <img
@@ -80,19 +101,6 @@ export const WantedComicsList = ({
                       className="w-7 h-7"
                     />
                   )}
-                  {/* Issue type */}
-                  {isComicBookMetadataAvailable &&
-                  !isNil(
-                    detectIssueTypes(comicvine.volumeInformation.description),
-                  ) ? (
-                    <span className="">
-                      {
-                        detectIssueTypes(
-                          comicvine.volumeInformation.description,
-                        ).displayName
-                      }
-                    </span>
-                  ) : null}
                 </div>
               </Card>
             );

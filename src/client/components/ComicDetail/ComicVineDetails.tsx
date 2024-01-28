@@ -21,7 +21,7 @@ export const ComicVineDetails = (props): ReactElement => {
                 // cardContainerStyle={{ maxWidth: 200 }}
               />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-5">
               <div className="flex flex-row">
                 <div>
                   {/* Title */}
@@ -50,7 +50,7 @@ export const ComicVineDetails = (props): ReactElement => {
                 </div>
 
                 {/* Publisher details */}
-                <div className="">
+                <div className="ml-8">
                   Published by{" "}
                   <span>{data.volumeInformation.publisher.name}</span>
                   <div>

@@ -69,7 +69,7 @@ export const Settings = (props: ISettingsProps): ReactElement => {
           </div>
         </header>
         <div className="flex flex-row">
-          <div className="inset-y-0 w-80 bg-gray-800 text-white h-full overflow-y-auto">
+          <div className="inset-y-0 w-80 dark:bg-gray-800 bg-slate-300 text-white overflow-y-auto">
             <aside className="px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
               {map(settingsObject, (settingObject, idx) => {
                 return (

@@ -2,7 +2,6 @@ import { isNil, map } from "lodash";
 import React, { createRef, ReactElement, useCallback, useEffect } from "react";
 import Card from "../shared/Carda";
 import Header from "../shared/Header";
-import Masonry from "react-masonry-css";
 import { useDispatch, useSelector } from "react-redux";
 import { getWeeklyPullList } from "../../actions/comicinfo.actions";
 import { importToDB } from "../../actions/fileops.actions";
@@ -89,9 +88,11 @@ export const PullList = ({ issues }: PullListProps): ReactElement => {
   return (
     <>
       <div className="content">
-        <Header headerContent="Discover"
-                subHeaderContent="Pull List aggregated for the week from League Of Comic Geeks"
-                iconClassNames="fa-solid fa-binoculars mr-2"/>
+        <Header
+          headerContent="Discover"
+          subHeaderContent="Pull List aggregated for the week from League Of Comic Geeks"
+          iconClassNames="fa-solid fa-binoculars mr-2"
+        />
         <div className="field is-grouped">
           {/* select week */}
           <div className="control">

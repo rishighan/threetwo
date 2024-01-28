@@ -4,6 +4,7 @@ comics/
 docs/
 userdata/
 dist/
+storybook-static/*
 src/client/assets/scss/App.css
 /server/
 node_modules/
