@@ -2,35 +2,64 @@ import { isNil, map } from "lodash";
 import React, { createRef, ReactElement, useCallback, useEffect } from "react";
 import Card from "../shared/Carda";
 import Header from "../shared/Header";
-import { useDispatch, useSelector } from "react-redux";
-import { getWeeklyPullList } from "../../actions/comicinfo.actions";
 import { importToDB } from "../../actions/fileops.actions";
 import ellipsize from "ellipsize";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import rateLimiter from "axios-rate-limit";
+import { setupCache } from "axios-cache-interceptor";
+import { useQuery } from "@tanstack/react-query";
+import "keen-slider/keen-slider.min.css";
+import { useKeenSlider } from "keen-slider/react";
+import { COMICVINE_SERVICE_URI } from "../../constants/endpoints";
 
 type PullListProps = {
   issues: any;
 };
 
-export const PullList = ({ issues }: PullListProps): ReactElement => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(
-      getWeeklyPullList({
-        startDate: "2023-9-9",
-        pageSize: "15",
-        currentPage: "1",
-      }),
-    );
-  }, []);
-  const addToLibrary = useCallback(
-    (sourceName: string, locgMetadata) =>
-      dispatch(importToDB(sourceName, { locg: locgMetadata })),
-    [],
+const http = rateLimiter(axios.create(), {
+  maxRequests: 1,
+  perMilliseconds: 1000,
+  maxRPS: 1,
+});
+const cachedAxios = setupCache(axios);
+export const PullList = (): ReactElement => {
+  // blaze slider
+  const [sliderRef, instanceRef] = useKeenSlider(
+    {
+      loop: true,
+      slides: {
+        origin: "auto",
+        number: 15,
+        perView: 5,
+        spacing: 15,
+      },
+
+      slideChanged() {
+        console.log("slide changed");
+      },
+    },
+    [
+      // add plugins here
+    ],
   );
+
+  const {
+    data: pullList,
+    isSuccess,
+    isLoading,
+  } = useQuery({
+    queryFn: async () =>
+      await cachedAxios(`${COMICVINE_SERVICE_URI}/getWeeklyPullList`, {
+        method: "get",
+        params: { startDate: "2023-9-9", pageSize: "15", currentPage: "1" },
+      }),
+    queryKey: ["pullList"],
+  });
+  console.log(pullList?.data.result);
+  const addToLibrary = (sourceName: string, locgMetadata) =>
+    importToDB(sourceName, { locg: locgMetadata });
+
   /*
   const foo = {
     coverFile: {}, // pointer to which cover file to use
@@ -43,47 +72,13 @@ export const PullList = ({ issues }: PullListProps): ReactElement => {
   };
   */
 
-  const pullList = useSelector((state: RootState) => state.comicInfo.pullList);
-  let sliderRef = createRef();
-  const settings = {
-    dots: false,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 5,
-    initialSlide: 0,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 3,
-          infinite: false,
-        },
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
-          initialSlide: 0,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        },
-      },
-    ],
-  };
+  // const pullList = useSelector((state: RootState) => state.comicInfo.pullList);
 
   const next = () => {
-    sliderRef.slickNext();
+    // sliderRef.slickNext();
   };
   const previous = () => {
-    sliderRef.slickPrev();
+    // sliderRef.slickPrev();
   };
   return (
     <>
@@ -109,53 +104,35 @@ export const PullList = ({ issues }: PullListProps): ReactElement => {
               <button className="button is-small">View all issues</button>
             </Link>
           </div>
-          <div className="field has-addons">
-            <div className="control">
-              <button className="button is-rounded is-small" onClick={previous}>
-                <i className="fa-solid fa-caret-left"></i>
-              </button>
-            </div>
-            <div className="control">
-              <button className="button is-rounded is-small" onClick={next}>
-                <i className="fa-solid fa-caret-right"></i>
-              </button>
-            </div>
-          </div>
         </div>
       </div>
-      <Slider {...settings} ref={(c) => (sliderRef = c)}>
-        {!isNil(pullList) &&
-          pullList &&
-          map(pullList, ({ issue }, idx) => {
+
+      {isSuccess && !isLoading && (
+        <div ref={sliderRef} className="keen-slider flex flex-row">
+          {map(pullList?.data.result, (issue, idx) => {
             return (
-              <Card
-                key={idx}
-                orientation={"vertical"}
-                imageUrl={issue.cover}
-                hasDetails
-                title={ellipsize(issue.name, 18)}
-                cardContainerStyle={{
-                  marginRight: 22,
-                  boxShadow: "-2px 4px 15px -6px rgba(0,0,0,0.57)",
-                }}
-              >
-                <div className="content">
-                  <div className="control">
-                    <span className="tag">{issue.publisher}</span>
-                  </div>
-                  <div className="mt-2">
+              <div key={idx} className="keen-slider__slide">
+                <Card
+                  orientation={"vertical-2"}
+                  imageUrl={issue.cover}
+                  hasDetails
+                  title={ellipsize(issue.name, 18)}
+                >
+                  <div className="">
+                    <span className="">{issue.publisher}</span>
                     <button
-                      className="button is-small is-success is-outlined is-light"
+                      className=""
                       onClick={() => addToLibrary("locg", issue)}
                     >
-                      <i className="fa-solid fa-plus"></i> Want
+                      Want
                     </button>
                   </div>
-                </div>
-              </Card>
+                </Card>
+              </div>
             );
           })}
-      </Slider>
+        </div>
+      )}
     </>
   );
 };
