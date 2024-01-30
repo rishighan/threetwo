@@ -5,6 +5,7 @@ import ellipsize from "ellipsize";
 import { isEmpty, isNil, isUndefined, map } from "lodash";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
 import { determineCoverFile } from "../../shared/utils/metadata.utils";
+import Header from "../shared/Header";
 
 type WantedComicsListProps = {
   comics: any;
@@ -19,17 +20,11 @@ export const WantedComicsList = ({
   };
   return (
     <>
-      <div className="mt-7">
-        <a className="" onClick={navigateToWantedComics}>
-          <span className="text-xl">
-            <i className=""></i> Wanted Comics
-          </span>
-          <span className="">
-            <i className=""></i>
-          </span>
-        </a>
-        <p className="">Comics marked as wanted from various sources.</p>
-      </div>
+      <Header
+        headerContent="Wanted Comics"
+        subHeaderContent="Comics marked as wanted from various sources"
+        iconClassNames="fa-solid fa-binoculars mr-2"
+      />
       <div className="grid grid-cols-5 gap-6 mt-3">
         {map(
           comics,

@@ -1,5 +1,5 @@
-import { isNil, map } from "lodash";
-import React, { createRef, ReactElement, useCallback, useEffect } from "react";
+import React, { ReactElement } from "react";
+import { map } from "lodash";
 import Card from "../shared/Carda";
 import Header from "../shared/Header";
 import { importToDB } from "../../actions/fileops.actions";
@@ -24,7 +24,7 @@ const http = rateLimiter(axios.create(), {
 });
 const cachedAxios = setupCache(axios);
 export const PullList = (): ReactElement => {
-  // blaze slider
+  // keen slider
   const [sliderRef, instanceRef] = useKeenSlider(
     {
       loop: true,
@@ -34,7 +34,6 @@ export const PullList = (): ReactElement => {
         perView: 5,
         spacing: 15,
       },
-
       slideChanged() {
         console.log("slide changed");
       },
@@ -52,27 +51,13 @@ export const PullList = (): ReactElement => {
     queryFn: async () =>
       await cachedAxios(`${COMICVINE_SERVICE_URI}/getWeeklyPullList`, {
         method: "get",
-        params: { startDate: "2023-9-9", pageSize: "15", currentPage: "1" },
+        params: { startDate: "2024-2-15", pageSize: "15", currentPage: "1" },
       }),
     queryKey: ["pullList"],
   });
   console.log(pullList?.data.result);
   const addToLibrary = (sourceName: string, locgMetadata) =>
     importToDB(sourceName, { locg: locgMetadata });
-
-  /*
-  const foo = {
-    coverFile: {}, // pointer to which cover file to use
-    rawFileDetails: {}, // #1
-    sourcedMetadata: {
-      comicInfo: {},
-      comicvine: {}, // #2
-      locg: {}, // #2
-    },
-  };
-  */
-
-  // const pullList = useSelector((state: RootState) => state.comicInfo.pullList);
 
   const next = () => {
     // sliderRef.slickNext();
@@ -116,10 +101,10 @@ export const PullList = (): ReactElement => {
                   orientation={"vertical-2"}
                   imageUrl={issue.cover}
                   hasDetails
-                  title={ellipsize(issue.name, 18)}
+                  title={ellipsize(issue.name, 25)}
                 >
-                  <div className="">
-                    <span className="">{issue.publisher}</span>
+                  <div className="px-1 py-1">
+                    <span className="text-xs ">{issue.publisher}</span>
                     <button
                       className=""
                       onClick={() => addToLibrary("locg", issue)}

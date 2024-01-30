@@ -9,6 +9,7 @@ import {
   determineExternalMetadata,
 } from "../../shared/utils/metadata.utils";
 import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
+import Header from "../shared/Header";
 
 type RecentlyImportedProps = {
   comics: any;
@@ -17,19 +18,13 @@ type RecentlyImportedProps = {
 export const RecentlyImported = (
   comics: RecentlyImportedProps,
 ): ReactElement => {
-  console.log(comics);
   return (
-    <div className="mt-7">
-      <div className="">
-        <a className="" onClick={() => {}}>
-          <span className="text-xl">
-            <i className=""></i> Recently Imported
-          </span>
-        </a>
-        <p className="">
-          Recent Library activity such as imports, tagging, etc.
-        </p>
-      </div>
+    <div>
+      <Header
+        headerContent="Recently Imported"
+        subHeaderContent="Recent Library activity such as imports, tagging, etc."
+        iconClassNames="fa-solid fa-binoculars mr-2"
+      />
       <div className="grid grid-cols-5 gap-6 mt-3">
         {comics?.comics.map(
           (

@@ -3,6 +3,7 @@ import React, { ReactElement } from "react";
 import ellipsize from "ellipsize";
 import { Link, useNavigate } from "react-router-dom";
 import Card from "../shared/Carda";
+import Header from "../shared/Header";
 
 export const VolumeGroups = (props): ReactElement => {
   // Till mongo gives us back the deduplicated results with the ObjectId
@@ -13,18 +14,12 @@ export const VolumeGroups = (props): ReactElement => {
   };
 
   return (
-    <section className="mt-7">
-      <div className="">
-        <a className="" onClick={navigateToVolumes}>
-          <span className="text-xl">
-            <i className="fa-solid fa-layer-group"></i> Volumes
-          </span>
-          <span className="icon mt-1">
-            <i className="fa-solid fa-angle-right"></i>
-          </span>
-        </a>
-        <p className="">Based on ComicVine Volume information</p>
-      </div>
+    <section>
+      <Header
+        headerContent="Volumes"
+        subHeaderContent="Based on ComicVine Volume information"
+        iconClassNames="fa-solid fa-binoculars mr-2"
+      />
       <div className="grid grid-cols-5 gap-6 mt-3">
         {map(deduplicatedGroups, (data) => {
           return (

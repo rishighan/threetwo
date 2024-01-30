@@ -8,12 +8,16 @@ type IHeaderProps = {
 
 export const Header = (props: IHeaderProps): ReactElement => {
   return (
-    <>
-      <h4 className="title is-4">
-        <i className={props.iconClassNames}></i> {props.headerContent}
-      </h4>
-      <p className="subtitle is-7">{props.subHeaderContent}</p>
-    </>
+    <div className="mt-7">
+      <div className="">
+        <a className="" onClick={() => {}}>
+          <span className="text-xl">
+            <i className=""></i> {props.headerContent}
+          </span>
+        </a>
+        <p className="">{props.subHeaderContent}</p>
+      </div>
+    </div>
   );
 };
 
