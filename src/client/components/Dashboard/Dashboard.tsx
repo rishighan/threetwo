@@ -6,14 +6,9 @@ import { VolumeGroups } from "./VolumeGroups";
 import { LibraryStatistics } from "./LibraryStatistics";
 import { PullList } from "./PullList";
 import { getLibraryStatistics } from "../../actions/comicinfo.actions";
-import { isEmpty, isNil, isUndefined } from "lodash";
-import Header from "../shared/Header";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import {
-  LIBRARY_SERVICE_BASE_URI,
-  LIBRARY_SERVICE_HOST,
-} from "../../constants/endpoints";
+import { LIBRARY_SERVICE_BASE_URI } from "../../constants/endpoints";
 
 export const Dashboard = (): ReactElement => {
   const { data: recentComics } = useQuery({
@@ -65,9 +60,7 @@ export const Dashboard = (): ReactElement => {
   //   );
   return (
     <div className="container mx-auto max-w-full">
-      <h1>Dashboard</h1>
       <PullList />
-
       {recentComics && <RecentlyImported comics={recentComics?.data.docs} />}
       {/* Wanted comics */}
       <WantedComicsList comics={wantedComics?.data?.docs} />

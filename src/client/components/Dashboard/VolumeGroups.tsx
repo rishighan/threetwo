@@ -19,6 +19,7 @@ export const VolumeGroups = (props): ReactElement => {
         headerContent="Volumes"
         subHeaderContent="Based on ComicVine Volume information"
         iconClassNames="fa-solid fa-binoculars mr-2"
+        link={"/volumes"}
       />
       <div className="grid grid-cols-5 gap-6 mt-3">
         {map(deduplicatedGroups, (data) => {
@@ -36,7 +37,7 @@ export const VolumeGroups = (props): ReactElement => {
                       {ellipsize(data.volumes.name, 48)}
                     </Link>
                   </div>
-
+                  {/* issue count */}
                   <span className="inline-flex mt-1 items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-600 dark:bg-slate-400">
                     <span className="pr-1 pt-1">
                       <i className="icon-[solar--documents-minimalistic-bold-duotone] w-5 h-5"></i>

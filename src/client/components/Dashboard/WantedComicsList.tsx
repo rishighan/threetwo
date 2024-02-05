@@ -15,15 +15,14 @@ export const WantedComicsList = ({
   comics,
 }: WantedComicsListProps): ReactElement => {
   const navigate = useNavigate();
-  const navigateToWantedComics = (row) => {
-    navigate(`/wanted/all`);
-  };
+
   return (
     <>
       <Header
         headerContent="Wanted Comics"
         subHeaderContent="Comics marked as wanted from various sources"
         iconClassNames="fa-solid fa-binoculars mr-2"
+        link={"/wanted"}
       />
       <div className="grid grid-cols-5 gap-6 mt-3">
         {map(
