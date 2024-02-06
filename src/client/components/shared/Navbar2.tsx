@@ -52,12 +52,12 @@ export const Navbar2 = (): ReactElement => {
               </li>
 
               <li>
-                <a
+                <Link
+                  to="/volumes"
                   className="text-gray-500 transition hover:text-gray-500/75 dark:text-white dark:hover:text-white/75"
-                  href="/"
                 >
                   Volumes
-                </a>
+                </Link>
               </li>
 
               <li>
@@ -67,6 +67,14 @@ export const Navbar2 = (): ReactElement => {
                 >
                   Downloads
                 </a>
+              </li>
+              <li>
+                <Link
+                  className="text-gray-500 transition hover:text-gray-500/75 dark:text-white dark:hover:text-white/75"
+                  to="/search"
+                >
+                  Comicvine Search
+                </Link>
               </li>
             </ul>
           </nav>

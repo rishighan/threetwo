@@ -11,8 +11,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Import from "./components/Import/Import";
 import Dashboard from "./components/Dashboard/Dashboard";
+import Search from "./components/Search/Search";
 import TabulatedContentContainer from "./components/Library/TabulatedContentContainer";
 import { ComicDetailContainer } from "./components/ComicDetail/ComicDetailContainer";
+import Volumes from "./components/Volumes/Volumes";
+import WantedComics from "./components/WantedComics/WantedComics";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +25,7 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <ErrorPage />,
     children: [
+      { path: "/", element: <Dashboard /> },
       { path: "dashboard", element: <Dashboard /> },
       { path: "settings", element: <Settings /> },
       {
@@ -33,6 +37,9 @@ const router = createBrowserRouter([
         element: <ComicDetailContainer />,
       },
       { path: "import", element: <Import path={"./comics"} /> },
+      { path: "search", element: <Search /> },
+      { path: "volumes", element: <Volumes /> },
+      { path: "wanted", element: <WantedComics /> },
     ],
   },
 ]);

@@ -83,24 +83,26 @@ const renderCard = (props: ICardProps): ReactElement => {
 
     case "vertical-2":
       return (
-        <div className="block rounded-md w-fit h-fit shadow-md shadow-white-400 bg-gray-200 dark:bg-slate-500">
+        <div className="block rounded-md w-64 h-fit shadow-md shadow-white-400 bg-gray-200 dark:bg-slate-500">
           <img
             alt="Home"
             src={props.imageUrl}
             className="rounded-t-md object-cover"
           />
 
-          <div className="mt-2 px-2">
-            <dl>
-              <div>
-                <dd className="text-md text-slate-500 dark:text-black">
-                  {props.title}
-                </dd>
-              </div>
-            </dl>
+          {props.title ? (
+            <div className="px-3 pt-3 mb-2">
+              <dd className="text-sm text-slate-500 dark:text-black">
+                {props.title}
+              </dd>
+            </div>
+          ) : null}
 
-            {props.hasDetails && <>{props.children}</>}
-          </div>
+          {props.hasDetails ? (
+            <div className="px-2">
+              <>{props.children}</>
+            </div>
+          ) : null}
         </div>
       );
 

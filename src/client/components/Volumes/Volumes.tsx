@@ -4,124 +4,82 @@ import Card from "../shared/Carda";
 import T2Table from "../shared/T2Table";
 import ellipsize from "ellipsize";
 import { convert } from "html-to-text";
-import { isUndefined } from "lodash";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { SEARCH_SERVICE_BASE_URI } from "../../constants/endpoints";
 
 export const Volumes = (props): ReactElement => {
   // const volumes = useSelector((state: RootState) => state.fileOps.volumes);
-  useEffect(() => {
-    // dispatch(
-    //   searchIssue(
-    //     {
-    //       query: {},
-    //     },
-    //     {
-    //       pagination: {
-    //         size: 25,
-    //         from: 0,
-    //       },
-    //       type: "volumes",
-    //       trigger: "volumesPage",
-    //     },
-    //   ),
-    // );
-  }, []);
+  const {
+    data: volumes,
+    isSuccess,
+    isError,
+    isLoading,
+  } = useQuery({
+    queryFn: async () =>
+      await axios({
+        url: `${SEARCH_SERVICE_BASE_URI}/searchIssue`,
+        method: "POST",
+        data: {
+          query: {},
+          pagination: {
+            size: 25,
+            from: 0,
+          },
+          type: "volumes",
+          trigger: "volumesPage",
+        },
+      }),
+    queryKey: ["volumes"],
+  });
+  console.log(volumes);
   const columnData = useMemo(
-    () => [
+    (): any => [
       {
         header: "Volume Details",
         id: "volumeDetails",
         minWidth: 450,
         accessorKey: "_source",
-        cell: (row) => {
+        cell: (row): any => {
           const foo = row.getValue();
           return (
-            <div className="columns">
-              <div className="column">
-                <div className="comic-detail issue-metadata">
-                  <dl>
-                    <dd>
-                      <div className="columns mt-2">
-                        <div className="">
-                          <Card
-                            imageUrl={
-                              foo.sourcedMetadata.comicvine.volumeInformation
-                                .image.thumb_url
-                            }
-                            orientation={"vertical"}
-                            hasDetails={false}
-                            // cardContainerStyle={{ maxWidth: 200 }}
-                          />
-                        </div>
-                        <div className="column">
-                          <dl>
-                            <dt>
-                              <h6 className="name has-text-weight-medium mb-1">
-                                {
-                                  foo.sourcedMetadata.comicvine
-                                    .volumeInformation.name
-                                }
-                              </h6>
-                            </dt>
-                            <dd className="is-size-7">
-                              published by{" "}
-                              <span className="has-text-weight-semibold">
-                                {
-                                  foo.sourcedMetadata.comicvine
-                                    .volumeInformation.publisher.name
-                                }
-                              </span>
-                            </dd>
-
-                            <dd className="is-size-7">
-                              <span>
-                                {ellipsize(
-                                  convert(
-                                    foo.sourcedMetadata.comicvine
-                                      .volumeInformation.description,
-                                    {
-                                      baseElements: {
-                                        selectors: ["p"],
-                                      },
-                                    },
-                                  ),
-                                  120,
-                                )}
-                              </span>
-                            </dd>
-
-                            <dd className="is-size-7 mt-2">
-                              <div className="field is-grouped is-grouped-multiline">
-                                <div className="control">
-                                  <span className="tags">
-                                    <span className="tag is-success is-light has-text-weight-semibold">
-                                      Total Issues
-                                    </span>
-                                    <span className="tag is-success is-light">
-                                      {
-                                        foo.sourcedMetadata.comicvine
-                                          .volumeInformation.count_of_issues
-                                      }
-                                    </span>
-                                  </span>
-                                </div>
-                              </div>
-                            </dd>
-                          </dl>
-                        </div>
-                      </div>
-                    </dd>
-                  </dl>
-                </div>
+            <div className="flex flex-row gap-3 mt-5">
+              <Card
+                imageUrl={
+                  foo.sourcedMetadata.comicvine.volumeInformation.image
+                    .small_url
+                }
+                orientation={"cover-only"}
+                hasDetails={false}
+              />
+              <div className="dark:bg-[#647587] bg-slate-200 p-3 rounded-lg h-fit">
+                <span className="text-xl mb-1">
+                  {foo.sourcedMetadata.comicvine.volumeInformation.name}
+                </span>
+                <p>
+                  {ellipsize(
+                    convert(
+                      foo.sourcedMetadata.comicvine.volumeInformation
+                        .description,
+                      {
+                        baseElements: {
+                          selectors: ["p"],
+                        },
+                      },
+                    ),
+                    120,
+                  )}
+                </p>
               </div>
             </div>
           );
         },
       },
       {
-        header: "Download Status",
+        header: "Other Details",
         columns: [
           {
-            header: "Files",
+            header: "Downloads",
             accessorKey: "_source.acquisition.directconnect",
             align: "right",
             cell: (props) => {
@@ -142,12 +100,34 @@ export const Volumes = (props): ReactElement => {
             },
           },
           {
-            header: "Type",
-            id: "Air",
+            header: "Publisher",
+            accessorKey: "_source.sourcedMetadata.comicvine.volumeInformation",
+            cell: (props): any => {
+              const row = props.getValue();
+              return <div className="mt-5 text-md">{row.publisher.name}</div>;
+            },
           },
           {
-            header: "Type",
-            id: "dcc",
+            header: "Issue Count",
+            accessorKey:
+              "_source.sourcedMetadata.comicvine.volumeInformation.count_of_issues",
+            cell: (props): any => {
+              const row = props.getValue();
+              return (
+                <div className="mt-5">
+                  {/* issue count */}
+                  <span className="inline-flex items-center bg-slate-50 text-slate-800 font-medium px-2.5 py-0.5 rounded-md dark:text-slate-600 dark:bg-slate-400">
+                    <span className="pr-1 pt-1">
+                      <i className="icon-[solar--documents-minimalistic-bold-duotone] w-6 h-6"></i>
+                    </span>
+
+                    <span className="text-lg text-slate-500 dark:text-slate-900">
+                      {row}
+                    </span>
+                  </span>
+                </div>
+              );
+            },
           },
         ],
       },
@@ -155,17 +135,29 @@ export const Volumes = (props): ReactElement => {
     [],
   );
   return (
-    <section className="container">
-      <div className="section">
-        <div className="header-area">
-          <h1 className="title">Volumes</h1>
-        </div>
-        {!isUndefined(volumes.hits) && (
+    <div>
+      <section className="">
+        <header className="bg-slate-200 dark:bg-slate-500">
+          <div className="mx-auto max-w-screen-xl px-2 py-2 sm:px-6 sm:py-8 lg:px-8 lg:py-4">
+            <div className="sm:flex sm:items-center sm:justify-between">
+              <div className="text-center sm:text-left">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
+                  Volumes
+                </h1>
+
+                <p className="mt-1.5 text-sm text-gray-500 dark:text-white">
+                  Browse your collection of volumes.
+                </p>
+              </div>
+            </div>
+          </div>
+        </header>
+        {isSuccess ? (
           <div>
             <div className="library">
               <T2Table
-                sourceData={volumes?.hits}
-                totalPages={volumes.hits.length}
+                sourceData={volumes?.data.hits.hits}
+                totalPages={volumes?.data.hits.hits.length}
                 paginationHandlers={{
                   nextPage: () => {},
                   previousPage: () => {},
@@ -174,9 +166,13 @@ export const Volumes = (props): ReactElement => {
               />
             </div>
           </div>
-        )}
-      </div>
-    </section>
+        ) : null}
+        {isError ? (
+          <div>An error was encountered while retrieving volumes</div>
+        ) : null}
+        {isLoading ? <>Loading...</> : null}
+      </section>
+    </div>
   );
 };
 

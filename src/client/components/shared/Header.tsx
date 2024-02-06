@@ -1,19 +1,32 @@
 import React, { ReactElement } from "react";
+import { Link } from "react-router-dom";
 
 type IHeaderProps = {
   headerContent: string;
   subHeaderContent: string;
   iconClassNames: string;
+  link?: string;
 };
 
 export const Header = (props: IHeaderProps): ReactElement => {
   return (
-    <>
-      <h4 className="title is-4">
-        <i className={props.iconClassNames}></i> {props.headerContent}
-      </h4>
-      <p className="subtitle is-7">{props.subHeaderContent}</p>
-    </>
+    <div className="mt-7">
+      <div className="">
+        {props.link ? (
+          <Link to={props.link}>
+            <span className="text-xl">
+              <span className="underline">
+                {props.headerContent}{" "}
+                <i className="icon-[solar--arrow-right-up-outline] w-4 h-4" />
+              </span>
+            </span>
+          </Link>
+        ) : (
+          <div className="text-xl">{props.headerContent}</div>
+        )}
+        <p className="">{props.subHeaderContent}</p>
+      </div>
+    </div>
   );
 };
 
