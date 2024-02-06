@@ -1,11 +1,16 @@
-import React, { useMemo, ReactElement, useState } from "react";
+import React, { useMemo, ReactElement, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { isEmpty, isNil, isUndefined } from "lodash";
 import MetadataPanel from "../shared/MetadataPanel";
 import T2Table from "../shared/T2Table";
+import SearchBar from "../Library/SearchBar";
 import ellipsize from "ellipsize";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import {
+  useQuery,
+  keepPreviousData,
+  useQueryClient,
+} from "@tanstack/react-query";
 import axios from "axios";
 import { format, fromUnixTime, parseISO } from "date-fns";
 
@@ -20,32 +25,56 @@ export const Library = (): ReactElement => {
   // Default page state
   // offset: 0
   const [offset, setOffset] = useState(0);
-
-  // Method to fetch paginated issues
-  const fetchIssues = async (searchQuery, offset, type) => {
-    let pagination = {
-      size: 15,
+  const [searchQuery, setSearchQuery] = useState({
+    query: {},
+    pagination: {
+      size: 25,
       from: offset,
-    };
+    },
+    type: "all",
+    trigger: "libraryPage",
+  });
+  const queryClient = useQueryClient();
+
+  /**
+   * Method that queries the Elasticsearch index "comics" for issues specified by the query
+   * @param searchQuery - A searchQuery object that contains the search term, type, and pagination params.
+   */
+  const fetchIssues = async (searchQuery) => {
+    const { pagination, query, type } = searchQuery;
     return await axios({
       method: "POST",
       url: "http://localhost:3000/api/search/searchIssue",
       data: {
-        searchQuery,
+        query,
         pagination,
         type,
       },
     });
   };
 
+  const searchIssues = (e) => {
+    queryClient.invalidateQueries({ queryKey: ["comics"] });
+    setSearchQuery({
+      query: {
+        volumeName: e.search,
+      },
+      pagination: {
+        size: 15,
+        from: 0,
+      },
+      type: "volumeName",
+      trigger: "libraryPage",
+    });
+  };
+
   const { data, isLoading, isError, isPlaceholderData } = useQuery({
-    queryKey: ["comics", offset],
-    queryFn: () => fetchIssues({}, offset, "all"),
+    queryKey: ["comics", offset, searchQuery],
+    queryFn: () => fetchIssues(searchQuery),
     placeholderData: keepPreviousData,
   });
 
   const searchResults = data?.data;
-
   // Programmatically navigate to comic detail
   const navigate = useNavigate();
   const navigateToComicDetail = (row) => {
@@ -56,7 +85,7 @@ export const Library = (): ReactElement => {
     return value.data ? (
       <dl className="flex flex-col text-md p-3 ml-4 my-3 rounded-lg dark:bg-yellow-500 bg-yellow-300 w-max">
         {/* Series Name */}
-        <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+        <span className="inline-flex items-center w-fit bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
           <span className="pr-1 pt-1">
             <i className="icon-[solar--bookmark-square-minimalistic-bold-duotone] w-5 h-5"></i>
           </span>
@@ -123,7 +152,7 @@ export const Library = (): ReactElement => {
             accessorKey: "_source.createdAt",
             cell: (info) => {
               return !isNil(info.getValue()) ? (
-                <div className="text-xs w-max ml-3 my-3 text-slate-600">
+                <div className="text-sm w-max ml-3 my-3 text-slate-600 dark:text-slate-900">
                   <p>{format(parseISO(info.getValue()), "dd MMMM, yyyy")} </p>
                   {format(parseISO(info.getValue()), "h aaaa")}
                 </div>
@@ -171,7 +200,17 @@ export const Library = (): ReactElement => {
    **/
   const nextPage = (pageIndex: number, pageSize: number) => {
     if (!isPlaceholderData) {
-      setOffset(pageSize * pageIndex + 1);
+      queryClient.invalidateQueries({ queryKey: ["comics"] });
+      setSearchQuery({
+        query: {},
+        pagination: {
+          size: 15,
+          from: pageSize * pageIndex + 1,
+        },
+        type: "all",
+        trigger: "libraryPage",
+      });
+      // setOffset(pageSize * pageIndex + 1);
     }
   };
 
@@ -189,7 +228,17 @@ export const Library = (): ReactElement => {
     } else {
       from = (pageIndex - 1) * pageSize + 2 - (pageSize + 1);
     }
-    setOffset(from);
+    queryClient.invalidateQueries({ queryKey: ["comics"] });
+    setSearchQuery({
+      query: {},
+      pagination: {
+        size: 15,
+        from,
+      },
+      type: "all",
+      trigger: "libraryPage",
+    });
+    // setOffset(from);
   };
 
   // ImportStatus.propTypes = {
@@ -215,7 +264,7 @@ export const Library = (): ReactElement => {
         </header>
         {!isUndefined(searchResults?.hits) ? (
           <div>
-            <div className="library">
+            <div>
               <T2Table
                 totalPages={searchResults.hits.total.value}
                 columns={columns}
@@ -225,11 +274,13 @@ export const Library = (): ReactElement => {
                   nextPage,
                   previousPage,
                 }}
-              />
+              >
+                <SearchBar searchHandler={(e) => searchIssues(e)} />
+              </T2Table>
             </div>
           </div>
         ) : (
-          <>
+          <div className="mx-auto max-w-screen-xl mt-5">
             <article
               role="alert"
               className="rounded-lg max-w-screen-md border-s-4 border-yellow-500 bg-yellow-50 p-4 dark:border-s-4 dark:border-yellow-600 dark:bg-yellow-300 dark:text-slate-600"
@@ -247,7 +298,7 @@ export const Library = (): ReactElement => {
                 {!isUndefined(searchResults?.data?.meta?.body) ? (
                   <p>
                     {JSON.stringify(
-                      searchResults.data.meta.body.error.root_cause,
+                      searchResults?.data.meta.body.error.root_cause,
                       null,
                       4,
                     )}
@@ -255,7 +306,7 @@ export const Library = (): ReactElement => {
                 ) : null}
               </pre>
             </div>
-          </>
+          </div>
         )}
       </section>
     </div>

@@ -16,6 +16,7 @@ interface IMetadatPanelProps {
   containerStyle: any;
 }
 export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
+  console.log(props);
   const {
     rawFileDetails,
     inferredMetadata,
@@ -78,6 +79,15 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
                 {prettyBytes(rawFileDetails.fileSize)}
               </span>
             </span>
+
+            {/* Uncompressed version available? */}
+            {rawFileDetails.archive?.uncompressed && (
+              <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                <span className="pr-1 pt-1">
+                  <i className="icon-[solar--bookmark-bold-duotone] w-3.5 h-3.5"></i>
+                </span>
+              </span>
+            )}
           </dd>
         </dl>
       ),
@@ -105,7 +115,6 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
                 </span>
               </span>
             </dd>
-
             <dd className="is-size-7">
               <span>
                 {ellipsize(
@@ -118,42 +127,13 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
                 )}
               </span>
             </dd>
-
             <dd className="is-size-7 mt-2">
-              <div className="field is-grouped is-grouped-multiline">
-                <div className="control">
-                  <span className="tags">
-                    <span
-                      className="tag is-success is-light has-text-weight-semibold"
-                      style={props.tagsStyle}
-                    >
-                      {comicvine.volumeInformation.start_year}
-                    </span>
-                    <span
-                      className="tag is-success is-light"
-                      style={props.tagsStyle}
-                    >
-                      {comicvine.volumeInformation.count_of_issues}
-                    </span>
-                  </span>
-                </div>
-                <div className="control">
-                  <div className="tags has-addons">
-                    <span
-                      className="tag is-primary is-light"
-                      style={props.tagsStyle}
-                    >
-                      ComicVine ID
-                    </span>
-                    <span
-                      className="tag is-info is-light"
-                      style={props.tagsStyle}
-                    >
-                      {comicvine.id}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <span className="my-3 mx-2">
+                {comicvine.volumeInformation.start_year}
+              </span>
+              {comicvine.volumeInformation.count_of_issues}
+              ComicVine ID
+              {comicvine.id}
             </dd>
           </dl>
         ),

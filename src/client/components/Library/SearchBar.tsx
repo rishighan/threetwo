@@ -1,32 +1,13 @@
-import React, { ReactElement, useCallback } from "react";
+import React, { ReactElement } from "react";
 import PropTypes from "prop-types";
 import { Form, Field } from "react-final-form";
 import { Link } from "react-router-dom";
-import { searchIssue } from "../../actions/fileops.actions";
 
-export const SearchBar = (): ReactElement => {
-  const handleSubmit = useCallback((e) => {
-    // dispatch(
-    //   searchIssue(
-    //     {
-    //       query: {
-    //         volumeName: e.search,
-    //       },
-    //     },
-    //     {
-    //       pagination: {
-    //         size: 25,
-    //         from: 0,
-    //       },
-    //       type: "volumeName",
-    //       trigger: "libraryPage",
-    //     },
-    //   ),
-    // );
-  }, []);
+export const SearchBar = (props): ReactElement => {
+  const { searchHandler } = props;
   return (
     <Form
-      onSubmit={handleSubmit}
+      onSubmit={searchHandler}
       initialValues={{}}
       render={({ handleSubmit, form, submitting, pristine, values }) => (
         <form onSubmit={handleSubmit}>

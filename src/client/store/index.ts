@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { isEmpty, isNil, isUndefined } from "lodash";
+import { isNil } from "lodash";
 import io from "socket.io-client";
 import { SOCKET_BASE_URI } from "../constants/endpoints";
 import { produce } from "immer";
@@ -27,6 +27,11 @@ export const useStore = create((set, get) => ({
   airDCPPTransfers: {},
   // Socket.io state
   socketIOInstance: {},
+
+  // ComicVine Scraping status
+  comicvine: {
+    scrapingStatus: "",
+  },
 
   // Import job queue and associated statuses
   importJobQueue: {
@@ -153,6 +158,16 @@ socketIOInstance.on("LS_IMPORT_QUEUE_DRAINED", (data) => {
   queryClient.invalidateQueries({ queryKey: ["allImportJobResults"] });
 });
 
+// ComicVine Scraping status
+socketIOInstance.on("CV_SCRAPING_STATUS", (data) => {
+  setState((state) => ({
+    comicvine: {
+      ...state.comicvine,
+      scrapingStatus: data.message,
+    },
+  }));
+});
+
 /**
  * Method to init AirDC++ Socket with supplied settings
  * @param configuration - credentials, and hostname details to init AirDC++ connection
@@ -254,5 +269,3 @@ if (!isNil(directConnectConfiguration)) {
 } else {
   console.log("problem");
 }
-
-console.log("connected?", getState());

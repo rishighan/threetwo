@@ -6,8 +6,8 @@ interface ZeroStateProps {
 }
 const ZeroState: React.FunctionComponent<ZeroStateProps> = (props) => {
   return (
-    <article className="message is-info">
-      <div className="message-body">
+    <article className="">
+      <div className="">
         <p>{props.header}</p>
         {props.message}
       </div>

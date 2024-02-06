@@ -8,7 +8,7 @@ import { difference } from "../../shared/utils/object.utils";
 import { isEmpty, isNil, map } from "lodash";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
 interface IAcquisitionPanelProps {
@@ -57,6 +57,7 @@ export const AcquisitionPanel = (
   const [airDCPPSearchStatus, setAirDCPPSearchStatus] = useState(false);
   const [airDCPPSearchInstance, setAirDCPPSearchInstance] = useState({});
   const [airDCPPSearchInfo, setAirDCPPSearchInfo] = useState({});
+  const queryClient = useQueryClient();
 
   // Construct a AirDC++ query based on metadata inferred, upon component mount
   // Pre-populate the search input with the search string, so that
@@ -133,7 +134,6 @@ export const AcquisitionPanel = (
           );
           setAirDCPPSearchInstance(currentInstance);
           setAirDCPPSearchInfo(searchInfo);
-          console.log("Asdas", airDCPPSearchInfo);
           if (currentInstance.result_count === 0) {
             // ...nothing was received, show an informative message to the user
             console.log("No more search results.");
@@ -198,6 +198,8 @@ export const AcquisitionPanel = (
             type,
           },
         });
+        console.log(bundleDBImportResult?.data);
+        queryClient.invalidateQueries({ queryKey: ["comicBookMetadata"] });
 
         //         dispatch({
         //           type: AIRDCPP_RESULT_DOWNLOAD_INITIATED,
@@ -228,41 +230,9 @@ export const AcquisitionPanel = (
     search(manualQuery, airDCPPSocketInstance);
   };
 
-  // download via AirDC++
-  const downloadDCPPResult = useCallback(
-    (searchInstanceId, resultId, name, size, type) => {
-      // dispatch(
-      //   downloadAirDCPPItem(
-      //     searchInstanceId,
-      //     resultId,
-      //     props.comicObjectId,
-      //     name,
-      //     size,
-      //     type,
-      //     airDCPPConfiguration.airDCPPState.socket,
-      //     {
-      //       username: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.username}`,
-      //       password: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.password}`,
-      //     },
-      //   ),
-      // );
-      // this is to update the download count badge on the downloads tab
-      // dispatch(
-      //   getBundlesForComic(
-      //     props.comicObjectId,
-      //     airDCPPConfiguration.airDCPPState.socket,
-      //     {
-      //       username: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.username}`,
-      //       password: `${airDCPPConfiguration.airDCPPState.settings.directConnect.client.host.password}`,
-      //     },
-      //   ),
-      // );
-    },
-    [],
-  );
   return (
     <>
-      <div className="comic-detail columns">
+      <div className="mt-5">
         {!isEmpty(airDCPPSocketInstance) ? (
           <Form
             onSubmit={getDCPPSearchResults}
@@ -270,44 +240,40 @@ export const AcquisitionPanel = (
               issueName,
             }}
             render={({ handleSubmit, form, submitting, pristine, values }) => (
-              <form
-                onSubmit={handleSubmit}
-                className="column is-three-quarters"
-              >
-                <div className="box search">
-                  <div className="columns">
-                    <Field name="issueName">
-                      {({ input, meta }) => {
-                        return (
-                          <div className="column is-two-thirds">
-                            <input
-                              {...input}
-                              className="input main-search-bar is-medium"
-                              placeholder="Type an issue/volume name"
-                            />
-                            <span className="help is-clearfix is-light is-info"></span>
+              <form onSubmit={handleSubmit}>
+                <Field name="issueName">
+                  {({ input, meta }) => {
+                    return (
+                      <div className="max-w-fit">
+                        <div className="flex flex-row bg-slate-300 dark:bg-slate-400 rounded-l-lg">
+                          <div className="w-10 pl-2 pt-1 text-gray-400 dark:text-gray-200">
+                            <i className="icon-[solar--magnifer-bold-duotone] h-7 w-7" />
                           </div>
-                        );
-                      }}
-                    </Field>
+                          <input
+                            {...input}
+                            className="dark:bg-slate-400 bg-slate-300 py-2 px-2 rounded-l-md border-gray-300 h-10 min-w-full dark:text-slate-800 sm:text-md sm:leading-5 focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
+                            placeholder="Type an issue/volume name"
+                          />
 
-                    <div className="column">
-                      <button
-                        type="submit"
-                        className={
-                          airDCPPSearchStatus
-                            ? "button is-loading is-warning"
-                            : "button is-success is-light"
-                        }
-                      >
-                        <span className="icon is-small">
-                          <img src="/src/client/assets/img/airdcpp_logo.svg" />
-                        </span>
-                        <span className="airdcpp-text">Search on AirDC++</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                          <button
+                            className="sm:mt-0 min-w-fit rounded-r-lg border border-green-400 dark:border-green-200 bg-green-200 px-3 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+                            type="submit"
+                          >
+                            <div className="flex flex-row">
+                              Search DC++
+                              <div className="h-5 w-5 ml-2">
+                                <img
+                                  src="/src/client/assets/img/airdcpp_logo.svg"
+                                  className="h-5 w-5"
+                                />
+                              </div>
+                            </div>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  }}
+                </Field>
               </form>
             )}
           />
@@ -327,52 +293,45 @@ export const AcquisitionPanel = (
       {!isNil(airDCPPSearchInstance) &&
         !isEmpty(airDCPPSearchInfo) &&
         !isNil(hubs) && (
-          <div className="columns">
-            <div className="column is-one-quarter is-size-7">
-              <div className="card">
-                <div className="card-content">
-                  <dl>
-                    <dt>
-                      <div className="tags mb-1">
-                        {hubs.map((value, idx) => (
-                          <span className="tag is-warning" key={idx}>
-                            {value.identity.name}
-                          </span>
-                        ))}
-                      </div>
-                    </dt>
-                    <dt>
-                      Query:
-                      <span className="has-text-weight-semibold">
-                        {airDCPPSearchInfo.query.pattern}
+          <div className="flex flex-row gap-3 my-5 font-hasklig">
+            <div className="block max-w-sm h-fit p-6 text-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-slate-400 dark:border-gray-700">
+              <dl>
+                <dt>
+                  <div className="mb-1">
+                    {hubs.map((value, idx) => (
+                      <span className="tag is-warning" key={idx}>
+                        {value.identity.name}
                       </span>
-                    </dt>
-                    <dd>
-                      Extensions:
-                      <span className="has-text-weight-semibold">
-                        {airDCPPSearchInfo.query.extensions.join(", ")}
-                      </span>
-                    </dd>
-                    <dd>
-                      File type:
-                      <span className="has-text-weight-semibold">
-                        {airDCPPSearchInfo.query.file_type}
-                      </span>
-                    </dd>
-                  </dl>
-                </div>
-              </div>
+                    ))}
+                  </div>
+                </dt>
+
+                <dt>
+                  Query:
+                  <span className="has-text-weight-semibold">
+                    {airDCPPSearchInfo.query.pattern}
+                  </span>
+                </dt>
+                <dd>
+                  Extensions:
+                  <span className="has-text-weight-semibold">
+                    {airDCPPSearchInfo.query.extensions.join(", ")}
+                  </span>
+                </dd>
+                <dd>
+                  File type:
+                  <span className="has-text-weight-semibold">
+                    {airDCPPSearchInfo.query.file_type}
+                  </span>
+                </dd>
+              </dl>
             </div>
-            <div className="column is-one-quarter is-size-7">
-              <div className="card">
-                <div className="card-content">
-                  <dl>
-                    <dt>Search Instance: {airDCPPSearchInstance.id}</dt>
-                    <dt>Owned by {airDCPPSearchInstance.owner}</dt>
-                    <dd>Expires in: {airDCPPSearchInstance.expires_in}</dd>
-                  </dl>
-                </div>
-              </div>
+            <div className="block max-w-sm p-6 h-fit text-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-slate-400 dark:border-gray-700">
+              <dl>
+                <dt>Search Instance: {airDCPPSearchInstance.id}</dt>
+                <dt>Owned by {airDCPPSearchInstance.owner}</dt>
+                <dd>Expires in: {airDCPPSearchInstance.expires_in}</dd>
+              </dl>
             </div>
           </div>
         )}
@@ -380,26 +339,36 @@ export const AcquisitionPanel = (
       {/* AirDC++ results */}
       <div className="columns">
         {!isNil(airDCPPSearchResults) && !isEmpty(airDCPPSearchResults) ? (
-          <div className="column">
-            <table className="table">
+          <div className="overflow-x-auto w-fit mt-4 rounded-lg border border-gray-200 dark:border-gray-500">
+            <table className="min-w-full divide-y-2 divide-gray-200 dark:divide-gray-500 text-md">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Type</th>
-                  <th>Slots</th>
-                  <th>Actions</th>
+                  <th className="whitespace-nowrap px-2 py-2 font-medium text-gray-900 dark:text-slate-200">
+                    Name
+                  </th>
+                  <th className="whitespace-nowrap py-2 font-medium text-gray-900 dark:text-slate-200">
+                    Type
+                  </th>
+                  <th className="whitespace-nowrap py-2 font-medium text-gray-900 dark:text-slate-200">
+                    Slots
+                  </th>
+                  <th className="whitespace-nowrap py-2 font-medium text-gray-900 dark:text-slate-200">
+                    Actions
+                  </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100 dark:divide-gray-500">
                 {map(airDCPPSearchResults, ({ result }, idx) => {
                   return (
                     <tr
                       key={idx}
                       className={
-                        !isNil(result.dupe) ? "dupe-search-result" : ""
+                        !isNil(result.dupe)
+                          ? "bg-gray-100 dark:bg-gray-700"
+                          : "w-fit text-sm"
                       }
                     >
-                      <td>
+                      <td className="whitespace-nowrap px-3 py-3 text-gray-700 dark:text-slate-300">
                         <p className="mb-2">
                           {result.type.id === "directory" ? (
                             <i className="fas fa-folder"></i>
@@ -409,16 +378,39 @@ export const AcquisitionPanel = (
 
                         <dl>
                           <dd>
-                            <div className="tags">
+                            <div className="inline-flex flex-row gap-2">
                               {!isNil(result.dupe) ? (
-                                <span className="tag is-warning">Dupe</span>
+                                <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                                  <span className="pr-1 pt-1">
+                                    <i className="icon-[solar--copy-bold-duotone] w-5 h-5"></i>
+                                  </span>
+
+                                  <span className="text-md text-slate-500 dark:text-slate-900">
+                                    Dupe
+                                  </span>
+                                </span>
                               ) : null}
-                              <span className="tag is-light is-info">
-                                {result.users.user.nicks}
+
+                              {/* Nicks */}
+                              <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                                <span className="pr-1 pt-1">
+                                  <i className="icon-[solar--user-rounded-bold-duotone] w-5 h-5"></i>
+                                </span>
+
+                                <span className="text-md text-slate-500 dark:text-slate-900">
+                                  {result.users.user.nicks}
+                                </span>
                               </span>
+                              {/* Flags */}
                               {result.users.user.flags.map((flag, idx) => (
-                                <span className="tag is-light" key={idx}>
-                                  {flag}
+                                <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                                  <span className="pr-1 pt-1">
+                                    <i className="icon-[solar--tag-horizontal-bold-duotone] w-5 h-5"></i>
+                                  </span>
+
+                                  <span className="text-md text-slate-500 dark:text-slate-900">
+                                    {flag}
+                                  </span>
                                 </span>
                               ))}
                             </div>
@@ -426,25 +418,32 @@ export const AcquisitionPanel = (
                         </dl>
                       </td>
                       <td>
-                        <span className="tag is-light is-info">
-                          {result.type.id === "directory"
-                            ? "directory"
-                            : result.type.str}
+                        {/* Extension */}
+                        <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                          <span className="pr-1 pt-1">
+                            <i className="icon-[solar--zip-file-bold-duotone] w-5 h-5"></i>
+                          </span>
+
+                          <span className="text-md text-slate-500 dark:text-slate-900">
+                            {result.type.str}
+                          </span>
                         </span>
                       </td>
-                      <td>
-                        <div className="tags has-addons">
-                          <span className="tag is-success">
-                            {result.slots.free} free
+                      <td className="px-2">
+                        {/* Slots */}
+                        <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                          <span className="pr-1 pt-1">
+                            <i className="icon-[solar--settings-minimalistic-bold-duotone] w-5 h-5"></i>
                           </span>
-                          <span className="tag is-light">
-                            {result.slots.total}
+
+                          <span className="text-md text-slate-500 dark:text-slate-900">
+                            {result.slots.total} slots; {result.slots.free} free
                           </span>
-                        </div>
+                        </span>
                       </td>
-                      <td>
+                      <td className="px-2">
                         <button
-                          className="button is-small is-light is-success"
+                          className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-3 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
                           onClick={() =>
                             download(
                               airDCPPSearchInstance.id,
@@ -457,10 +456,10 @@ export const AcquisitionPanel = (
                             )
                           }
                         >
-                          <span className="icon">
-                            <i className="fas fa-file-download"></i>
+                          <span className="text-xs">Download</span>
+                          <span className="w-5 h-5">
+                            <i className="h-5 w-5 icon-[solar--download-bold-duotone]"></i>
                           </span>
-                          <span>Download </span>
                         </button>
                       </td>
                     </tr>
@@ -470,25 +469,28 @@ export const AcquisitionPanel = (
             </table>
           </div>
         ) : (
-          <div className="column is-three-fifths">
-            <article className="message is-info">
-              <div className="message-body is-size-6 is-family-secondary">
-                <p>
-                  The default search term is an auto-detected title; you may
-                  need to change it to get better matches if the auto-detected
-                  one doesn't work.
-                </p>
+          <div className="">
+            <article
+              role="alert"
+              className="mt-4 rounded-lg text-sm max-w-screen-md border-s-4 border-blue-500 bg-blue-50 p-4 dark:border-s-4 dark:border-blue-600 dark:bg-blue-300 dark:text-slate-600"
+            >
+              <div>
+                The default search term is an auto-detected title; you may need
+                to change it to get better matches if the auto-detected one
+                doesn't work.
               </div>
             </article>
 
-            <article className="message is-warning">
-              <div className="message-body is-size-6 is-family-secondary">
-                <p className="content">
-                  Searching via <strong>AirDC++</strong> is still in
-                  <strong>alpha</strong>. Some searches may take arbitrarily
-                  long, or may not work at all. Searches from <code>ADCS</code>
-                  hubs are more reliable than <code>NMDCS</code> ones.
-                </p>
+            <article
+              role="alert"
+              className="mt-4 rounded-lg text-sm max-w-screen-md border-s-4 border-blue-500 bg-blue-50 p-4 dark:border-s-4 dark:border-blue-600 dark:bg-blue-300 dark:text-slate-600"
+            >
+              <div>
+                Searching via <strong>AirDC++</strong> is still in{" "}
+                <strong>alpha</strong>. Some searches may take arbitrarily long,
+                or may not work at all. Searches from{" "}
+                <code className="font-hasklig">ADCS</code> hubs are more
+                reliable than <code className="font-hasklig">NMDCS</code> ones.
               </div>
             </article>
           </div>

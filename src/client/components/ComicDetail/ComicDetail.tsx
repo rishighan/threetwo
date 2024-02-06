@@ -15,7 +15,8 @@ import AcquisitionPanel from "./AcquisitionPanel";
 import DownloadsPanel from "./DownloadsPanel";
 import { VolumeInformation } from "./Tabs/VolumeInformation";
 
-import { isEmpty, isUndefined, isNil } from "lodash";
+import { isEmpty, isUndefined, isNil, filter } from "lodash";
+import { components } from "react-select";
 import { RootState } from "threetwo-ui-typings";
 
 import "react-sliding-pane/dist/react-sliding-pane.css";
@@ -27,6 +28,10 @@ import ComicViewer from "react-comic-viewer";
 
 import { extractComicArchive } from "../../actions/fileops.actions";
 import { determineCoverFile } from "../../shared/utils/metadata.utils";
+import axios from "axios";
+import { styled } from "styled-components";
+import { COMICVINE_SERVICE_URI } from "../../constants/endpoints";
+import { refineQuery } from "filename-parser";
 
 type ComicDetailProps = {};
 /**
@@ -56,20 +61,8 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
   const [modalIsOpen, setIsOpen] = useState(false);
+  const [comicVineMatches, setComicVineMatches] = useState([]);
 
-  //   const comicVineSearchResults = useSelector(
-  //     (state: RootState) => state.comicInfo.searchResults,
-  //   );
-  //   const comicVineSearchQueryObject = useSelector(
-  //     (state: RootState) => state.comicInfo.searchQuery,
-  //   );
-  //   const comicVineAPICallProgress = useSelector(
-  //     (state: RootState) => state.comicInfo.inProgress,
-  //   );
-  //
-  //   const extractedComicBook = useSelector(
-  //     (state: RootState) => state.fileOps.extractedComicBookArchive.reading,
-  //   );
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
 
   // const dispatch = useDispatch();
@@ -87,6 +80,10 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     // );
   }, []);
 
+  // overridden <SlidingPanel> with some styles
+  const StyledSlidingPanel = styled(SlidingPane)`
+    background: #ccc;
+  `;
   const afterOpenModal = useCallback((things) => {
     // references are now sync'd and can be accessed.
     // subtitle.style.color = "#f00";
@@ -102,48 +99,174 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     CVMatches: {
       content: (props) => (
         <>
-          {/* <div className="card search-criteria-card">
-            <div className="card-content">
-              <ComicVineSearchForm data={rawFileDetails} />
-            </div>
+          <div>
+            <ComicVineSearchForm data={rawFileDetails} />
           </div>
-          <p className="is-size-5 mt-3 mb-2 ml-3">Searching for:</p>
-          {inferredMetadata.issue ? (
-            <div className="ml-3">
-              <span className="tag mr-3">{inferredMetadata.issue.name} </span>
-              <span className="tag"> # {inferredMetadata.issue.number} </span>
-            </div>
-          ) : null}
-          {!comicVineAPICallProgress ? (
-            <ComicVineMatchPanel
-              props={{
-                comicVineSearchQueryObject,
-                comicVineAPICallProgress,
-                comicVineSearchResults,
-                comicObjectId,
-              }}
-            />
-          ) : (
-            <div className="progress-indicator-container">
-              <div className="indicator">
-                <Loader
-                  type="MutatingDots"
-                  color="#CCC"
-                  secondaryColor="#999"
-                  height={100}
-                  width={100}
-                  visible={comicVineAPICallProgress}
-                />
-              </div>
-            </div>
-          )} */}
+
+          <div className="border-slate-500 border rounded-lg p-2 mt-3">
+            <p className="">Searching for:</p>
+            {inferredMetadata.issue ? (
+              <>
+                <span className="">{inferredMetadata.issue.name} </span>
+                <span className=""> # {inferredMetadata.issue.number} </span>
+              </>
+            ) : null}
+          </div>
+          <ComicVineMatchPanel
+            props={{
+              comicVineMatches,
+              comicObjectId,
+            }}
+          />
         </>
       ),
     },
 
     editComicBookMetadata: {
-      content: () => <EditMetadataPanel />,
+      content: () => <EditMetadataPanel data={rawFileDetails} />,
     },
+  };
+
+  // Actions
+
+  const fetchComicVineMatches = async (
+    searchPayload,
+    issueSearchQuery,
+    seriesSearchQuery,
+  ) => {
+    try {
+      const response = await axios({
+        url: `${COMICVINE_SERVICE_URI}/volumeBasedSearch`,
+        method: "POST",
+        data: {
+          format: "json",
+          // hack
+          query: issueSearchQuery.inferredIssueDetails.name
+            .replace(/[^a-zA-Z0-9 ]/g, "")
+            .trim(),
+          limit: "100",
+          page: 1,
+          resources: "volume",
+          scorerConfiguration: {
+            searchParams: issueSearchQuery.inferredIssueDetails,
+          },
+          rawFileDetails: searchPayload,
+        },
+        transformResponse: (r) => {
+          const matches = JSON.parse(r);
+          return matches;
+          // return sortBy(matches, (match) => -match.score);
+        },
+      });
+      let matches: any = [];
+      if (!isNil(response.data.results) && response.data.results.length === 1) {
+        matches = response.data.results;
+      } else {
+        matches = response.data.map((match) => match);
+      }
+      const scoredMatches = matches.sort((a, b) => b.score - a.score);
+      setComicVineMatches(scoredMatches);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // Action event handlers
+  const openDrawerWithCVMatches = () => {
+    let seriesSearchQuery: IComicVineSearchQuery = {} as IComicVineSearchQuery;
+    let issueSearchQuery: IComicVineSearchQuery = {} as IComicVineSearchQuery;
+
+    if (!isUndefined(rawFileDetails)) {
+      issueSearchQuery = refineQuery(rawFileDetails.name);
+    } else if (!isEmpty(comicvine)) {
+      issueSearchQuery = refineQuery(comicvine.name);
+    }
+    fetchComicVineMatches(rawFileDetails, issueSearchQuery, seriesSearchQuery);
+    setSlidingPanelContentId("CVMatches");
+    setVisible(true);
+  };
+
+  const openEditMetadataPanel = useCallback(() => {
+    setSlidingPanelContentId("editComicBookMetadata");
+    setVisible(true);
+  }, []);
+
+  //  Actions menu options and handler
+  const CVMatchLabel = (
+    <span className="inline-flex flex-row items-center gap-2">
+      <div className="w-6 h-6">
+        <i className="icon-[solar--magic-stick-3-bold-duotone] w-6 h-6"></i>
+      </div>
+      <div>Match on ComicVine</div>
+    </span>
+  );
+  const editLabel = (
+    <span className="inline-flex flex-row items-center gap-2">
+      <div className="w-6 h-6">
+        <i className="icon-[solar--pen-2-bold-duotone] w-6 h-6"></i>
+      </div>
+      <div>Edit Metadata</div>
+    </span>
+  );
+  const deleteLabel = (
+    <span className="inline-flex flex-row items-center gap-2">
+      <div className="w-6 h-6">
+        <i className="icon-[solar--trash-bin-trash-bold-duotone] w-6 h-6"></i>
+      </div>
+      <div>Delete Comic</div>
+    </span>
+  );
+  const Placeholder = (props) => {
+    return <components.Placeholder {...props} />;
+  };
+  const actionOptions = [
+    { value: "match-on-comic-vine", label: CVMatchLabel },
+    { value: "edit-metdata", label: editLabel },
+    { value: "delete-comic", label: deleteLabel },
+  ];
+
+  const filteredActionOptions = filter(actionOptions, (item) => {
+    if (isUndefined(rawFileDetails)) {
+      return item.value !== "match-on-comic-vine";
+    }
+    return item;
+  });
+  const handleActionSelection = (action) => {
+    switch (action.value) {
+      case "match-on-comic-vine":
+        openDrawerWithCVMatches();
+        break;
+      case "edit-metdata":
+        openEditMetadataPanel();
+        break;
+      default:
+        console.log("No valid action selected.");
+        break;
+    }
+  };
+  const customStyles = {
+    menu: (base) => ({
+      ...base,
+      backgroundColor: "rgb(156, 163, 175)",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "black",
+    }),
+    option: (base, { data, isDisabled, isFocused, isSelected }) => ({
+      ...base,
+      backgroundColor: isFocused ? "gray" : "rgb(156, 163, 175)",
+    }),
+    singleValue: (base) => ({
+      ...base,
+      paddingTop: "0.4rem",
+    }),
+    control: (base) => ({
+      ...base,
+      backgroundColor: "rgb(156, 163, 175)",
+      color: "black",
+      border: "1px solid rgb(156, 163, 175)",
+    }),
   };
 
   // check for the availability of CV metadata
@@ -152,7 +275,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
 
   // check for the availability of rawFileDetails
   const areRawFileDetailsAvailable =
-    !isUndefined(rawFileDetails) && !isEmpty(rawFileDetails.cover);
+    !isUndefined(rawFileDetails) && !isEmpty(rawFileDetails);
 
   const { issueName, url } = determineCoverFile({
     rawFileDetails,
@@ -172,7 +295,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     {
       id: 1,
       name: "Volume Information",
-      icon: <i className="fa-solid fa-layer-group"></i>,
+      icon: (
+        <i className="h-5 w-5 icon-[solar--book-2-bold] text-slate-500 dark:text-slate-300"></i>
+      ),
       content: isComicBookMetadataAvailable ? (
         <VolumeInformation data={data.data} key={1} />
       ) : null,
@@ -181,28 +306,30 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     {
       id: 2,
       name: "ComicInfo.xml",
-      icon: <i className="fa-solid fa-code"></i>,
+      icon: (
+        <i className="h-5 w-5 icon-[solar--code-file-bold-duotone] text-slate-500 dark:text-slate-300" />
+      ),
       content: (
-        <div className="columns" key={2}>
-          <div className="column is-three-quarters">
-            {!isNil(comicInfo) && <ComicInfoXML json={comicInfo} />}
-          </div>
+        <div key={2}>
+          {!isNil(comicInfo) && <ComicInfoXML json={comicInfo} />}
         </div>
       ),
       shouldShow: !isEmpty(comicInfo),
     },
     {
       id: 3,
-      icon: <i className="fa-regular fa-file-archive"></i>,
+      icon: (
+        <i className="h-5 w-5 icon-[solar--winrar-bold-duotone] text-slate-500 dark:text-slate-300" />
+      ),
       name: "Archive Operations",
-      content: <></>,
-      /*
-      <ArchiveOperations data={data.data} key={3} /> */
+      content: <ArchiveOperations data={data.data} key={3} />,
       shouldShow: areRawFileDetailsAvailable,
     },
     {
       id: 4,
-      icon: <i className="fa-solid fa-circle-nodes"></i>,
+      icon: (
+        <i className="h-5 w-5 icon-[solar--folder-path-connect-bold-duotone] text-slate-500 dark:text-slate-300" />
+      ),
       name: "DC++ Search",
       content: (
         <AcquisitionPanel
@@ -217,26 +344,32 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     },
     {
       id: 5,
-      icon: <i className="fa-solid fa-droplet"></i>,
+      icon: (
+        <span className="inline-flex flex-row">
+          <i className="h-5 w-5 icon-[solar--magnet-bold-duotone] text-slate-500 dark:text-slate-300" />
+        </span>
+      ),
       name: "Torrent Search",
       content: <>Torrents</>,
       shouldShow: true,
     },
     {
       id: 6,
-      icon: null,
-      name: !isEmpty(data.data) ? (
-        <span className="download-tab-name">Downloads</span>
-      ) : (
-        "Downloads"
-      ),
-      content: !isNil(data.data) && !isEmpty(data.data) && (
-        <DownloadsPanel
-          data={data.data.acquisition.directconnect}
-          comicObjectId={comicObjectId}
-          key={5}
-        />
-      ),
+      name: "Downloads",
+      icon: <>{acquisition?.directconnect?.downloads?.length}</>,
+      content:
+        !isNil(data.data) && !isEmpty(data.data) ? (
+          <DownloadsPanel key={5} />
+        ) : (
+          <div className="column is-three-fifths">
+            <article className="message is-info">
+              <div className="message-body is-size-6 is-family-secondary">
+                AirDC++ is not configured. Please configure it in{" "}
+                <code>Settings</code>.
+              </div>
+            </article>
+          </div>
+        ),
       shouldShow: true,
     },
   ];
@@ -271,7 +404,21 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                           created_at: createdAt,
                           updated_at: updatedAt,
                         }}
-                      />
+                      >
+                        {/* action dropdown */}
+                        <div className="mt-1 flex flex-row gap-2 w-full">
+                          <Menu
+                            data={data.data}
+                            handlers={{ setSlidingPanelContentId, setVisible }}
+                            configuration={{
+                              filteredActionOptions,
+                              customStyles,
+                              handleActionSelection,
+                              Placeholder,
+                            }}
+                          />
+                        </div>
+                      </RawFileDetails>
 
                       {/* <Modal
                       style={{ content: { marginTop: "2rem" } }}
@@ -293,22 +440,15 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                     </Modal> */}
                     </div>
                   )}
-                {/* action dropdown */}
-                {/* <div className="mt-4 is-size-7">
-                  <Menu
-                    data={data.data}
-                    handlers={{ setSlidingPanelContentId, setVisible }}
-                  />
-                </div> */}
               </div>
             </div>
 
             <TabControls
               filteredTabs={filteredTabs}
-              acquisition={acquisition}
+              downloadCount={acquisition?.directconnect?.downloads?.length}
             />
 
-            <SlidingPane
+            <StyledSlidingPanel
               isOpen={visible}
               onRequestClose={() => setVisible(false)}
               title={"Comic Vine Search Matches"}
@@ -316,7 +456,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
             >
               {slidingPanelContentId !== "" &&
                 contentForSlidingPanel[slidingPanelContentId].content()}
-            </SlidingPane>
+            </StyledSlidingPanel>
           </>
         )}
       </div>

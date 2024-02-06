@@ -1,160 +1,152 @@
-import { isNil, map } from "lodash";
-import React, { createRef, ReactElement, useCallback, useEffect } from "react";
+import React, { ReactElement, useState } from "react";
+import { map } from "lodash";
 import Card from "../shared/Carda";
 import Header from "../shared/Header";
-import Masonry from "react-masonry-css";
-import { useDispatch, useSelector } from "react-redux";
-import { getWeeklyPullList } from "../../actions/comicinfo.actions";
 import { importToDB } from "../../actions/fileops.actions";
 import ellipsize from "ellipsize";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import { Link } from "react-router-dom";
+
+import axios from "axios";
+import rateLimiter from "axios-rate-limit";
+import { setupCache } from "axios-cache-interceptor";
+import { useQuery } from "@tanstack/react-query";
+import "keen-slider/keen-slider.min.css";
+import { useKeenSlider } from "keen-slider/react";
+import { COMICVINE_SERVICE_URI } from "../../constants/endpoints";
+import { Field, Form } from "react-final-form";
+import DatePickerDialog from "../shared/DatePicker";
+import { format } from "date-fns";
 
 type PullListProps = {
   issues: any;
 };
 
-export const PullList = ({ issues }: PullListProps): ReactElement => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(
-      getWeeklyPullList({
-        startDate: "2023-9-9",
-        pageSize: "15",
-        currentPage: "1",
-      }),
-    );
-  }, []);
-  const addToLibrary = useCallback(
-    (sourceName: string, locgMetadata) =>
-      dispatch(importToDB(sourceName, { locg: locgMetadata })),
-    [],
+const http = rateLimiter(axios.create(), {
+  maxRequests: 1,
+  perMilliseconds: 1000,
+  maxRPS: 1,
+});
+const cachedAxios = setupCache(axios);
+export const PullList = (): ReactElement => {
+  // datepicker
+  const date = new Date();
+  const [inputValue, setInputValue] = useState<string>(
+    format(date, "M-dd-yyyy"),
   );
-  /*
-  const foo = {
-    coverFile: {}, // pointer to which cover file to use
-    rawFileDetails: {}, // #1
-    sourcedMetadata: {
-      comicInfo: {},
-      comicvine: {}, // #2
-      locg: {}, // #2
-    },
-  };
-  */
 
-  const pullList = useSelector((state: RootState) => state.comicInfo.pullList);
-  let sliderRef = createRef();
-  const settings = {
-    dots: false,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 5,
-    initialSlide: 0,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 3,
-          infinite: false,
-        },
+  // keen slider
+  const [sliderRef, instanceRef] = useKeenSlider(
+    {
+      loop: true,
+      slides: {
+        origin: "auto",
+        number: 15,
+        perView: 5,
+        spacing: 15,
       },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
-          initialSlide: 0,
-        },
+      slideChanged() {
+        console.log("slide changed");
       },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        },
-      },
+    },
+    [
+      // add plugins here
     ],
-  };
+  );
+
+  const {
+    data: pullList,
+    refetch,
+    isSuccess,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryFn: async (): any =>
+      await cachedAxios(`${COMICVINE_SERVICE_URI}/getWeeklyPullList`, {
+        method: "get",
+        params: { startDate: inputValue, pageSize: "15", currentPage: "1" },
+      }),
+    queryKey: ["pullList", inputValue],
+  });
+  const addToLibrary = (sourceName: string, locgMetadata) =>
+    importToDB(sourceName, { locg: locgMetadata });
 
   const next = () => {
-    sliderRef.slickNext();
+    // sliderRef.slickNext();
   };
   const previous = () => {
-    sliderRef.slickPrev();
+    // sliderRef.slickPrev();
   };
+
   return (
     <>
       <div className="content">
-        <Header headerContent="Discover"
-                subHeaderContent="Pull List aggregated for the week from League Of Comic Geeks"
-                iconClassNames="fa-solid fa-binoculars mr-2"/>
-        <div className="field is-grouped">
+        <Header
+          headerContent="Discover"
+          subHeaderContent="Pull List aggregated for the week from League Of Comic Geeks"
+          iconClassNames="fa-solid fa-binoculars mr-2"
+          link="/pull-list/all/"
+        />
+        <div className="flex flex-row gap-5 mb-3">
           {/* select week */}
-          <div className="control">
-            <div className="select is-small">
-              <select>
-                <option>Select Week</option>
-                <option>With options</option>
-              </select>
-            </div>
-          </div>
-          {/* See all pull list issues */}
-          <div className="control">
-            <Link to={"/pull-list/all/"}>
-              <button className="button is-small">View all issues</button>
-            </Link>
-          </div>
-          <div className="field has-addons">
-            <div className="control">
-              <button className="button is-rounded is-small" onClick={previous}>
-                <i className="fa-solid fa-caret-left"></i>
-              </button>
-            </div>
-            <div className="control">
-              <button className="button is-rounded is-small" onClick={next}>
-                <i className="fa-solid fa-caret-right"></i>
-              </button>
-            </div>
+          <div className="flex flex-row gap-4 my-3">
+            <Form
+              onSubmit={() => {}}
+              render={({ handleSubmit }) => (
+                <form>
+                  <div className="flex flex-col gap-2">
+                    {/* week selection for pull list */}
+                    <DatePickerDialog
+                      inputValue={inputValue}
+                      setter={setInputValue}
+                    />
+                    {inputValue && (
+                      <div className="text-sm">
+                        Showing pull list for <span>{inputValue}</span>
+                      </div>
+                    )}
+                  </div>
+                </form>
+              )}
+            />
           </div>
         </div>
       </div>
-      <Slider {...settings} ref={(c) => (sliderRef = c)}>
-        {!isNil(pullList) &&
-          pullList &&
-          map(pullList, ({ issue }, idx) => {
+
+      {isSuccess && !isLoading && (
+        <div ref={sliderRef} className="keen-slider flex flex-row">
+          {map(pullList?.data.result, (issue, idx) => {
             return (
-              <Card
-                key={idx}
-                orientation={"vertical"}
-                imageUrl={issue.cover}
-                hasDetails
-                title={ellipsize(issue.name, 18)}
-                cardContainerStyle={{
-                  marginRight: 22,
-                  boxShadow: "-2px 4px 15px -6px rgba(0,0,0,0.57)",
-                }}
-              >
-                <div className="content">
-                  <div className="control">
-                    <span className="tag">{issue.publisher}</span>
+              <div key={idx} className="keen-slider__slide">
+                <Card
+                  orientation={"vertical-2"}
+                  imageUrl={issue.cover}
+                  hasDetails
+                  title={ellipsize(issue.name, 25)}
+                >
+                  <div className="px-1">
+                    <span className="inline-flex mb-2 items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-1 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                      {issue.publisher}
+                    </span>
+                    <div className="flex flex-row justify-end">
+                      <button
+                        className="flex space-x-1 mb-2 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-2 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+                        onClick={() => addToLibrary("locg", issue)}
+                      >
+                        <i className="icon-[solar--add-square-bold-duotone] w-5 h-5 mr-2"></i>{" "}
+                        Want
+                      </button>
+                    </div>
                   </div>
-                  <div className="mt-2">
-                    <button
-                      className="button is-small is-success is-outlined is-light"
-                      onClick={() => addToLibrary("locg", issue)}
-                    >
-                      <i className="fa-solid fa-plus"></i> Want
-                    </button>
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </div>
             );
           })}
-      </Slider>
+        </div>
+      )}
+      {isLoading ? <div>Loading...</div> : null}
+      {isError ? (
+        <div>An error occurred while retrieving the pull list.</div>
+      ) : null}
     </>
   );
 };

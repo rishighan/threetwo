@@ -8,7 +8,6 @@ export function Grid({ children, columns }) {
         gridTemplateColumns: `repeat(${columns}, 200px)`,
         columnGap: 1,
         gridGap: 10,
-        padding: 10,
       }}
     >
       {children}

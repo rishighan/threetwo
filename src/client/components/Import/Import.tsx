@@ -226,7 +226,7 @@ export const Import = (props: IProps): ReactElement => {
                 <span className="h-px flex-1 bg-slate-200 dark:bg-slate-400"></span>
               </span>
 
-              <div className="overflow-x-auto mt-4 rounded-lg border border-gray-200">
+              <div className="overflow-x-auto w-fit mt-4 rounded-lg border border-gray-200">
                 <table className="min-w-full divide-y-2 divide-gray-200 dark:divide-gray-200 text-md">
                   <thead className="ltr:text-left rtl:text-right">
                     <tr>

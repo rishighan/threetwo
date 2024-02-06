@@ -4,8 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import ellipsize from "ellipsize";
 import { isEmpty, isNil, isUndefined, map } from "lodash";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
-import Masonry from "react-masonry-css";
 import { determineCoverFile } from "../../shared/utils/metadata.utils";
+import Header from "../shared/Header";
 
 type WantedComicsListProps = {
   comics: any;
@@ -14,37 +14,17 @@ type WantedComicsListProps = {
 export const WantedComicsList = ({
   comics,
 }: WantedComicsListProps): ReactElement => {
-  const breakpointColumnsObj = {
-    default: 5,
-    1100: 4,
-    700: 2,
-    500: 1,
-  };
-
   const navigate = useNavigate();
-  const navigateToWantedComics = (row) => {
-    navigate(`/wanted/all`);
-  };
+
   return (
     <>
-      <div className="content mt-6">
-        <a className="mb-1" onClick={navigateToWantedComics}>
-          <span className="is-size-4 has-text-weight-semibold">
-            <i className="fa-solid fa-asterisk"></i> Wanted Comics
-          </span>
-          <span className="icon mt-1">
-            <i className="fa-solid fa-angle-right"></i>
-          </span>
-        </a>
-        <p className="subtitle is-7">
-          Comics marked as wanted from various sources.
-        </p>
-      </div>
-      <Masonry
-        breakpointCols={breakpointColumnsObj}
-        className="recent-comics-container"
-        columnClassName="recent-comics-column"
-      >
+      <Header
+        headerContent="Wanted Comics"
+        subHeaderContent="Comics marked as wanted from various sources"
+        iconClassNames="fa-solid fa-binoculars mr-2"
+        link={"/wanted"}
+      />
+      <div className="grid grid-cols-5 gap-6 mt-3">
         {map(
           comics,
           ({
@@ -73,42 +53,54 @@ export const WantedComicsList = ({
             return (
               <Card
                 key={_id}
-                orientation={"vertical"}
+                orientation={"vertical-2"}
                 imageUrl={url}
                 hasDetails
                 title={issueName ? titleElement : <span>No Name</span>}
               >
-                <div className="content is-flex is-flex-direction-row">
-                  {/* comicVine metadata presence */}
-                  {isComicBookMetadataAvailable && (
-                    <span className="icon custom-icon">
-                      <img src="/src/client/assets/img/cvlogo.svg" />
-                    </span>
-                  )}
-                  {!isEmpty(locg) && (
-                    <span className="icon custom-icon">
-                      <img src="/src/client/assets/img/locglogo.svg" />
-                    </span>
-                  )}
+                <div className="pb-1">
                   {/* Issue type */}
                   {isComicBookMetadataAvailable &&
                   !isNil(
                     detectIssueTypes(comicvine.volumeInformation.description),
                   ) ? (
-                    <span className="tag is-warning">
-                      {
-                        detectIssueTypes(
-                          comicvine.volumeInformation.description,
-                        ).displayName
-                      }
-                    </span>
+                    <div className="my-2">
+                      <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                        <span className="pr-1 pt-1">
+                          <i className="icon-[solar--book-2-line-duotone] w-5 h-5"></i>
+                        </span>
+
+                        <span className="text-md text-slate-500 dark:text-slate-900">
+                          {
+                            detectIssueTypes(
+                              comicvine.volumeInformation.description,
+                            ).displayName
+                          }
+                        </span>
+                      </span>
+                    </div>
                   ) : null}
+
+                  {/* comicVine metadata presence */}
+                  {isComicBookMetadataAvailable && (
+                    <img
+                      src="/src/client/assets/img/cvlogo.svg"
+                      alt={"ComicVine metadata detected."}
+                      className="w-7 h-7"
+                    />
+                  )}
+                  {!isEmpty(locg) && (
+                    <img
+                      src="/src/client/assets/img/locglogo.svg"
+                      className="w-7 h-7"
+                    />
+                  )}
                 </div>
               </Card>
             );
           },
         )}
-      </Masonry>
+      </div>
     </>
   );
 };
