@@ -15,6 +15,7 @@ import { useKeenSlider } from "keen-slider/react";
 import { COMICVINE_SERVICE_URI } from "../../constants/endpoints";
 import { Field, Form } from "react-final-form";
 import DatePickerDialog from "../shared/DatePicker";
+import { format } from "date-fns";
 
 type PullListProps = {
   issues: any;
@@ -28,11 +29,10 @@ const http = rateLimiter(axios.create(), {
 const cachedAxios = setupCache(axios);
 export const PullList = (): ReactElement => {
   // datepicker
-  const [selected, setSelected] = useState<Date>();
-  let footer = <p>Please pick a day.</p>;
-  if (selected) {
-    footer = <p>You picked {format(selected, "PP")}.</p>;
-  }
+  const date = new Date();
+  const [inputValue, setInputValue] = useState<string>(
+    format(date, "M-dd-yyyy"),
+  );
 
   // keen slider
   const [sliderRef, instanceRef] = useKeenSlider(
@@ -55,6 +55,7 @@ export const PullList = (): ReactElement => {
 
   const {
     data: pullList,
+    refetch,
     isSuccess,
     isLoading,
     isError,
@@ -62,9 +63,9 @@ export const PullList = (): ReactElement => {
     queryFn: async (): any =>
       await cachedAxios(`${COMICVINE_SERVICE_URI}/getWeeklyPullList`, {
         method: "get",
-        params: { startDate: "2024-2-20", pageSize: "15", currentPage: "1" },
+        params: { startDate: inputValue, pageSize: "15", currentPage: "1" },
       }),
-    queryKey: ["pullList"],
+    queryKey: ["pullList", inputValue],
   });
   const addToLibrary = (sourceName: string, locgMetadata) =>
     importToDB(sourceName, { locg: locgMetadata });
@@ -83,28 +84,30 @@ export const PullList = (): ReactElement => {
           headerContent="Discover"
           subHeaderContent="Pull List aggregated for the week from League Of Comic Geeks"
           iconClassNames="fa-solid fa-binoculars mr-2"
+          link="/pull-list/all/"
         />
-        <div className="flex flex-row gap-5 mb-5">
+        <div className="flex flex-row gap-5 mb-3">
           {/* select week */}
           <div className="flex flex-row gap-4 my-3">
             <Form
               onSubmit={() => {}}
               render={({ handleSubmit }) => (
                 <form>
-                  {/* week selection for pull list */}
-
-                  <DatePickerDialog />
+                  <div className="flex flex-col gap-2">
+                    {/* week selection for pull list */}
+                    <DatePickerDialog
+                      inputValue={inputValue}
+                      setter={setInputValue}
+                    />
+                    {inputValue && (
+                      <div className="text-sm">
+                        Showing pull list for <span>{inputValue}</span>
+                      </div>
+                    )}
+                  </div>
                 </form>
               )}
             />
-            <div>
-              {/* See all pull list issues */}
-              <Link to={"/pull-list/all/"}>
-                <button className="flex space-x-1 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-3 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500">
-                  View all issues
-                </button>
-              </Link>
-            </div>
           </div>
         </div>
       </div>
