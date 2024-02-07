@@ -82,7 +82,17 @@ export const PullList = (): ReactElement => {
       <div className="content">
         <Header
           headerContent="Discover"
-          subHeaderContent="Pull List aggregated for the week from League Of Comic Geeks"
+          subHeaderContent={
+            <span className="text-md">
+              Pull List aggregated for the week from{" "}
+              <span className="underline">
+                <a href="https://leagueofcomicgeeks.com/comics/new-comics">
+                  League Of Comic Geeks
+                </a>
+                <i className="icon-[solar--arrow-right-up-outline] w-4 h-4" />
+              </span>
+            </span>
+          }
           iconClassNames="fa-solid fa-binoculars mr-2"
           link="/pull-list/all/"
         />
@@ -101,7 +111,10 @@ export const PullList = (): ReactElement => {
                     />
                     {inputValue && (
                       <div className="text-sm">
-                        Showing pull list for <span>{inputValue}</span>
+                        Showing pull list for{" "}
+                        <span className="inline-flex mb-2 items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-1 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                          {inputValue}
+                        </span>
                       </div>
                     )}
                   </div>
