@@ -5,9 +5,9 @@ import axios from "axios";
 
 export const ProwlarrSettingsForm = (props) => {
   const { data } = useQuery({
-    queryFn: async () => {
+    queryFn: async (): any => {
       return await axios({
-        url: `${PROWLARR_SERVICE_BASE_URI}/indexers`,
+        url: `${PROWLARR_SERVICE_BASE_URI}/getIndexers`,
         method: "POST",
         data: {
           host: "localhost",
@@ -19,7 +19,12 @@ export const ProwlarrSettingsForm = (props) => {
     queryKey: ["prowlarrConnectionResult"],
   });
   console.log(data);
-  return <>Prowlarr Settings.</>;
+  return (
+    <>
+      Prowlarr Settings.
+      <form></form>
+    </>
+  );
 };
 
 export default ProwlarrSettingsForm;
