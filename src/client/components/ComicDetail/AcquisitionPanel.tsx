@@ -278,9 +278,9 @@ export const AcquisitionPanel = (
             )}
           />
         ) : (
-          <div className="column is-three-fifths">
-            <article className="message is-info">
-              <div className="message-body is-size-6 is-family-secondary">
+          <div className="">
+            <article className="">
+              <div className="">
                 AirDC++ is not configured. Please configure it in{" "}
                 <code>Settings &gt; AirDC++ &gt; Connection</code>.
               </div>

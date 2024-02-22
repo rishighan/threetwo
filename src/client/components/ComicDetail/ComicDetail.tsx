@@ -12,6 +12,7 @@ import { Menu } from "./ActionMenu/Menu";
 import { ArchiveOperations } from "./Tabs/ArchiveOperations";
 import { ComicInfoXML } from "./Tabs/ComicInfoXML";
 import AcquisitionPanel from "./AcquisitionPanel";
+import TorrentSearchPanel from "./TorrentSearchPanel";
 import DownloadsPanel from "./DownloadsPanel";
 import { VolumeInformation } from "./Tabs/VolumeInformation";
 
@@ -350,7 +351,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
         </span>
       ),
       name: "Torrent Search",
-      content: <>Torrents</>,
+      content: <TorrentSearchPanel />,
       shouldShow: true,
     },
     {
