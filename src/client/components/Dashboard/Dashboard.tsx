@@ -5,7 +5,6 @@ import { WantedComicsList } from "./WantedComicsList";
 import { VolumeGroups } from "./VolumeGroups";
 import { LibraryStatistics } from "./LibraryStatistics";
 import { PullList } from "./PullList";
-import { getLibraryStatistics } from "../../actions/comicinfo.actions";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { LIBRARY_SERVICE_BASE_URI } from "../../constants/endpoints";
@@ -54,16 +53,23 @@ export const Dashboard = (): ReactElement => {
     queryKey: ["volumeGroups"],
   });
 
-  //
-  //   const libraryStatistics = useSelector(
-  //     (state: RootState) => state.comicInfo.libraryStatistics,
-  //   );
+  const { data: statistics } = useQuery({
+    queryFn: async () =>
+      await axios({
+        url: `${LIBRARY_SERVICE_BASE_URI}/libraryStatistics`,
+        method: "GET",
+      }),
+    queryKey: ["libraryStatistics"],
+  });
+
   return (
     <div className="container mx-auto max-w-full">
       <PullList />
       {recentComics && <RecentlyImported comics={recentComics?.data.docs} />}
       {/* Wanted comics */}
       <WantedComicsList comics={wantedComics?.data?.docs} />
+      {/* Library Statistics */}
+      {statistics && <LibraryStatistics stats={statistics?.data} />}
       {/* Volume groups */}
       <VolumeGroups volumeGroups={volumeGroups?.data} />
     </div>
