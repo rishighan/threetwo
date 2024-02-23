@@ -3,8 +3,31 @@ import React, { useCallback, ReactElement, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { Form, Field } from "react-final-form";
+import { PROWLARR_SERVICE_BASE_URI } from "../../constants/endpoints";
 
 export const TorrentSearchPanel = (props): ReactElement => {
+  const [prowlarrSettingsData, setProwlarrSettingsData] = useState({});
+
+  const { data } = useQuery({
+    queryFn: async () =>
+      axios({
+        url: `${PROWLARR_SERVICE_BASE_URI}/search`,
+        method: "POST",
+        data: {
+          port: "9696",
+          apiKey: "c4f42e265fb044dc81f7e88bd41c3367",
+          offset: 0,
+          categories: [7030],
+          query: "the darkness",
+          host: "localhost",
+          limit: 100,
+          type: "search",
+          indexerIds: [2],
+        },
+      }),
+    queryKey: ["prowlarrSettingsData"],
+  });
+  console.log(data?.data);
   return (
     <>
       <div className="mt-5">
