@@ -90,3 +90,10 @@ export const QBITTORRENT_SERVICE_BASE_URI = hostURIBuilder({
   port: "3060",
   apiPath: `/api/qbittorrent`,
 });
+
+export const PROWLARR_SERVICE_BASE_URI = hostURIBuilder({
+  protocol: "http",
+  host: import.meta.env.UNDERLYING_HOSTNAME || "localhost",
+  port: "3060",
+  apiPath: `/api/prowlarr`,
+});

@@ -3,6 +3,7 @@ import { AirDCPPSettingsForm } from "./AirDCPPSettings/AirDCPPSettingsForm";
 import { AirDCPPHubsForm } from "./AirDCPPSettings/AirDCPPHubsForm";
 import { QbittorrentConnectionForm } from "./QbittorrentSettings/QbittorrentConnectionForm";
 import { SystemSettingsForm } from "./SystemSettings/SystemSettingsForm";
+import ProwlarrSettingsForm from "./ProwlarrSettings/ProwlarrSettingsForm";
 import { ServiceStatuses } from "../ServiceStatuses/ServiceStatuses";
 import settingsObject from "../../constants/settings/settingsMenu.json";
 import { isUndefined, map } from "lodash";
@@ -35,6 +36,14 @@ export const Settings = (props: ISettingsProps): ReactElement => {
         <div key="qbt-connection">
           <QbittorrentConnectionForm />
         </div>
+      ),
+    },
+    {
+      id: "prwlr-connection",
+      content: (
+        <>
+          <ProwlarrSettingsForm />
+        </>
       ),
     },
     {

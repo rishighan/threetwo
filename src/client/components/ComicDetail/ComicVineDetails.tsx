@@ -16,7 +16,7 @@ export const ComicVineDetails = (props): ReactElement => {
             <div className="min-w-fit">
               <Card
                 imageUrl={data.volumeInformation.image.thumb_url}
-                orientation={"vertical-2"}
+                orientation={"cover-only"}
                 hasDetails={false}
                 // cardContainerStyle={{ maxWidth: 200 }}
               />

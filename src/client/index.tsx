@@ -8,7 +8,6 @@ import { ErrorPage } from "./components/shared/ErrorPage";
 const rootEl = document.getElementById("root");
 const root = createRoot(rootEl);
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Import from "./components/Import/Import";
 import Dashboard from "./components/Dashboard/Dashboard";
 import Search from "./components/Search/Search";
@@ -47,6 +46,5 @@ const router = createBrowserRouter([
 root.render(
   <QueryClientProvider client={queryClient}>
     <RouterProvider router={router} />
-    <ReactQueryDevtools initialIsOpen={true} />
   </QueryClientProvider>,
 );

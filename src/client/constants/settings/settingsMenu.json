@@ -57,7 +57,7 @@
         "displayName": "Prowlarr",
         "children": [
           {
-            "id": "prowlarr-connection",
+            "id": "prwlr-connection",
             "displayName": "Connection"
           },
           {
