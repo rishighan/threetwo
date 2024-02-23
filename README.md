@@ -6,14 +6,15 @@ ThreeTwo! _aims to be_ a comic book curation app.
 
 ### Screenshots
 
-![](https://github.com/rishighan/threetwo-visual-updates/raw/67e56878eb0381c73c1dea746a45253d3dcaa184/update_december_2022/Dashboard.png)
+![](https://raw.githubusercontent.com/rishighan/threetwo/ef05dee6005f683f1e4547631217681def9ebe86/screenshots/Dashboard.jpg)
 
-![](https://github.com/rishighan/threetwo-visual-updates/raw/67e56878eb0381c73c1dea746a45253d3dcaa184/update_december_2022/Library.png)
+![](https://raw.githubusercontent.com/rishighan/threetwo/ef05dee6005f683f1e4547631217681def9ebe86/screenshots/ComicDetail.jpg)
 
-![](https://github.com/rishighan/threetwo-visual-updates/raw/67e56878eb0381c73c1dea746a45253d3dcaa184/update_december_2022/DC%2B%2B%20integration.png)
+![](https://raw.githubusercontent.com/rishighan/threetwo/ef05dee6005f683f1e4547631217681def9ebe86/screenshots/DC%2B%2BSearching.jpg)
 
-![](https://github.com/rishighan/threetwo-visual-updates/raw/67e56878eb0381c73c1dea746a45253d3dcaa184/update_december_2022/ComicVine%20Matching.png)
+![](https://raw.githubusercontent.com/rishighan/threetwo/ef05dee6005f683f1e4547631217681def9ebe86/screenshots/Import.jpg)
 
+![](https://raw.githubusercontent.com/rishighan/threetwo/ef05dee6005f683f1e4547631217681def9ebe86/screenshots/CVMatching.jpg)
 
 ### 🦄 Early Development Support Channel
 
@@ -43,20 +44,18 @@ For debugging and troubleshooting, you can run this app locally using these step
 3. This will open `http://localhost:5173` in your default browser
 4. Note that this is simply the UI layer and won't offer anything beyond a scaffold. You have to spin up the microservices locally to get it to work.
 
-
 ## Troubleshooting
+
 ### Docker
 
 1. `docker-compose up` is taking a long time
-   
+
    This is primarily because `threetwo-import-service` pulls `calibre` from the CDN and it has been known to be extremely slow. I can't find a more reliable alternative, so give it some time to finish downloading.
 
 2. What folder do my comics go in?
-   
+
    Your comics go in the `comics` directory at the root of this project.
-   
 
 ## Contribution Guidelines
 
 See [contribution guidelines](https://github.com/rishighan/threetwo/blob/master/contributing.md)
-
