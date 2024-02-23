@@ -6,13 +6,23 @@ ThreeTwo! _aims to be_ a comic book curation app.
 
 ### Screenshots
 
+#### Dashboard
+
 ![](https://raw.githubusercontent.com/rishighan/threetwo/ef05dee6005f683f1e4547631217681def9ebe86/screenshots/Dashboard.jpg)
+
+#### Issue View
 
 ![](https://raw.githubusercontent.com/rishighan/threetwo/ef05dee6005f683f1e4547631217681def9ebe86/screenshots/ComicDetail.jpg)
 
+#### DC++ Search
+
 ![](https://raw.githubusercontent.com/rishighan/threetwo/ef05dee6005f683f1e4547631217681def9ebe86/screenshots/DC%2B%2BSearching.jpg)
 
+#### Import
+
 ![](https://raw.githubusercontent.com/rishighan/threetwo/ef05dee6005f683f1e4547631217681def9ebe86/screenshots/Import.jpg)
+
+#### Comic Vine Matching, Metadata Scraping
 
 ![](https://raw.githubusercontent.com/rishighan/threetwo/ef05dee6005f683f1e4547631217681def9ebe86/screenshots/CVMatching.jpg)
 
@@ -29,7 +39,8 @@ ThreeTwo! currently is set up as:
 1. The UI, this repo.
 2. [threetwo-core-service](https://github.com/rishighan/threetwo-core-service)
 3. [threetwo-metadata-service](https://github.com/rishighan/threetwo-metadata-service)
-4. [threetwo-ui-typings](https://github.com/rishighan/threetwo-frontend-types) which are the types used across the UI, installable as an `npm` dependency.
+4. [threetwo-acquisition-service](https://github.com/rishighan/threetwo-acquisition-service)
+5. [threetwo-ui-typings](https://github.com/rishighan/threetwo-frontend-types) which are the types used across the UI, installable as an `npm` dependency.
 
 ## Docker Instructions
 
