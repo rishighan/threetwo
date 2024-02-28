@@ -3,12 +3,33 @@ import React, { useCallback, ReactElement, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { Form, Field } from "react-final-form";
-import { PROWLARR_SERVICE_BASE_URI } from "../../constants/endpoints";
+import {
+  PROWLARR_SERVICE_BASE_URI,
+  QBITTORRENT_SERVICE_BASE_URI,
+} from "../../constants/endpoints";
+import { isEmpty, isNil } from "lodash";
 
 export const TorrentSearchPanel = (props): ReactElement => {
   const [prowlarrSettingsData, setProwlarrSettingsData] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [torrentToDownload, setTorrentToDownload] = useState([]);
 
-  const { data } = useQuery({
+  const { data: qbittorrentConnectionResult } = useQuery({
+    queryFn: async () =>
+      axios({
+        url: `${QBITTORRENT_SERVICE_BASE_URI}/connect`,
+        method: "POST",
+        data: {
+          hostname: "localhost",
+          protocol: "http",
+          port: "8080",
+          username: "admin",
+          password: "password",
+        },
+      }),
+    queryKey: ["qbittorrentConnection"],
+  });
+  const { data, isSuccess } = useQuery({
     queryFn: async () =>
       axios({
         url: `${PROWLARR_SERVICE_BASE_URI}/search`,
@@ -18,25 +39,46 @@ export const TorrentSearchPanel = (props): ReactElement => {
           apiKey: "c4f42e265fb044dc81f7e88bd41c3367",
           offset: 0,
           categories: [7030],
-          query: "the darkness",
+          query: searchTerm,
           host: "localhost",
           limit: 100,
           type: "search",
           indexerIds: [2],
         },
       }),
-    queryKey: ["prowlarrSettingsData"],
+    queryKey: ["prowlarrSettingsData", searchTerm],
+    enabled: searchTerm !== "",
   });
-  console.log(data?.data);
+
+  const { data: addTorrentResult } = useQuery({
+    queryFn: async () =>
+      axios({
+        url: `${QBITTORRENT_SERVICE_BASE_URI}/addTorrent`,
+        method: "POST",
+        data: {
+          torrentToDownload,
+        },
+      }),
+    queryKey: ["addTorrentResult", torrentToDownload],
+    enabled: !isEmpty(torrentToDownload),
+  });
+  console.log(addTorrentResult);
+  const searchProwlarrIndexer = (evt) => {
+    setSearchTerm(evt.searchTerm);
+  };
+  const downloadTorrent = (evt) => {
+    console.log(evt);
+    setTorrentToDownload(evt);
+  };
   return (
     <>
       <div className="mt-5">
         <Form
-          onSubmit={() => {}}
+          onSubmit={searchProwlarrIndexer}
           initialValues={{}}
           render={({ handleSubmit, form, submitting, pristine, values }) => (
             <form onSubmit={handleSubmit}>
-              <Field name="issueName">
+              <Field name="searchTerm">
                 {({ input, meta }) => {
                   return (
                     <div className="max-w-fit">
@@ -70,6 +112,24 @@ export const TorrentSearchPanel = (props): ReactElement => {
           )}
         />
       </div>
+      {/* results */}
+      <ul>
+        {isSuccess &&
+          data?.data.map((result, idx) => {
+            return (
+              <li key={idx}>
+                <p>{result.fileName}</p>
+                <p>{result.indexer}</p>
+                <button
+                  className="sm:mt-0 min-w-fit rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-3 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+                  onClick={() => downloadTorrent(result.downloadUrl)}
+                >
+                  Download
+                </button>
+              </li>
+            );
+          })}
+      </ul>
     </>
   );
 };

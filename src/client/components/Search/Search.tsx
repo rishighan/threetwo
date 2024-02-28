@@ -1,9 +1,7 @@
 import React, { useCallback, ReactElement, useState } from "react";
 import { isNil, isEmpty } from "lodash";
 import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";
-import { importToDB } from "../../actions/fileops.actions";
-import { comicinfoAPICall } from "../../actions/comicinfo.actions";
-import { search } from "../../services/api/SearchApi";
+
 import { Form, Field } from "react-final-form";
 import Card from "../shared/Carda";
 import ellipsize from "ellipsize";
@@ -27,7 +25,6 @@ export const Search = ({}: ISearchProps): ReactElement => {
   const [comicVineMetadata, setComicVineMetadata] = useState({});
   const getCVSearchResults = (searchQuery) => {
     setSearchQuery(searchQuery.search);
-    // queryClient.invalidateQueries({ queryKey: ["comicvineSearchResults"] });
   };
 
   const {
@@ -146,6 +143,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
             )}
           />
         </div>
+        {isLoading && <>Loading kaka...</>}
         {!isNil(comicVineSearchResults?.data.results) &&
         !isEmpty(comicVineSearchResults?.data.results) ? (
           <div className="mx-auto max-w-screen-xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
