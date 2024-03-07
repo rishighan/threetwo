@@ -1,12 +1,14 @@
 import React, { useEffect, useContext, ReactElement, useState } from "react";
 import { RootState } from "threetwo-ui-typings";
 import { isEmpty, map } from "lodash";
-import prettyBytes from "pretty-bytes";
-import dayjs from "dayjs";
-import ellipsize from "ellipsize";
+import { AirDCPPBundles } from "./AirDCPPBundles";
+import { TorrentDownloads } from "./TorrentDownloads";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { LIBRARY_SERVICE_BASE_URI } from "../../constants/endpoints";
+import {
+  LIBRARY_SERVICE_BASE_URI,
+  QBITTORRENT_SERVICE_BASE_URI,
+} from "../../constants/endpoints";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
 import { useParams } from "react-router-dom";
@@ -20,6 +22,8 @@ export const DownloadsPanel = (
 ): ReactElement | null => {
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
   const [bundles, setBundles] = useState([]);
+  const [infoHashes, setInfoHashes] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState("torrents");
   const { airDCPPSocketInstance } = useStore(
     useShallow((state) => ({
       airDCPPSocketInstance: state.airDCPPSocketInstance,
@@ -42,6 +46,36 @@ export const DownloadsPanel = (
       }),
   });
 
+  const { data: qbittorrentConnectionResult } = useQuery({
+    queryFn: async () =>
+      axios({
+        url: `${QBITTORRENT_SERVICE_BASE_URI}/connect`,
+        method: "POST",
+        data: {
+          hostname: "localhost",
+          protocol: "http",
+          port: "8080",
+          username: "admin",
+          password: "password",
+        },
+      }),
+    queryKey: ["qbittorrentConnection"],
+  });
+
+  const {
+    data: torrentProperties,
+    isSuccess: torrentPropertiesFetched,
+    isFetching: torrentPropertiesFetching,
+  } = useQuery({
+    queryFn: async () =>
+      await axios({
+        url: `${QBITTORRENT_SERVICE_BASE_URI}/getTorrentDetails`,
+        method: "POST",
+        data: infoHashes,
+      }),
+    queryKey: ["torrentProperties", infoHashes],
+  });
+
   const getBundles = async (comicObject) => {
     if (comicObject?.data.acquisition.directconnect) {
       const filteredBundles =
@@ -58,60 +92,65 @@ export const DownloadsPanel = (
     getBundles(comicObject).then((result) => {
       setBundles(result);
     });
-  }, [comicObject]);
 
-  const Bundles = (props) => {
-    return (
-      <div className="overflow-x-auto w-fit mt-4 rounded-lg border border-gray-200">
-        <table className="min-w-full divide-y-2 divide-gray-200 dark:divide-gray-200 text-md">
-          <thead>
-            <tr>
-              <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 dark:text-slate-200">
-                Filename
-              </th>
-              <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 dark:text-slate-200">
-                Size
-              </th>
-              <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 dark:text-slate-200">
-                Download Time
-              </th>
-              <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 dark:text-slate-200">
-                Bundle ID
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {map(props.data, (bundle) => (
-              <tr key={bundle.id} className="text-sm">
-                <td className="whitespace-nowrap px-2 py-2 text-gray-700 dark:text-slate-300">
-                  <h5>{ellipsize(bundle.name, 58)}</h5>
-                  <span className="text-xs">
-                    {ellipsize(bundle.target, 88)}
-                  </span>
-                </td>
-                <td className="whitespace-nowrap px-2 py-2 text-gray-700 dark:text-slate-300">
-                  {prettyBytes(bundle.size)}
-                </td>
-                <td className="whitespace-nowrap px-2 py-2 text-gray-700 dark:text-slate-300">
-                  {dayjs
-                    .unix(bundle.time_finished)
-                    .format("h:mm on ddd, D MMM, YYYY")}
-                </td>
-                <td className="whitespace-nowrap px-2 py-2 text-gray-700 dark:text-slate-300">
-                  <span className="tag is-warning">{bundle.id}</span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  };
+    if (comicObject?.data.acquisition.torrent.length !== 0) {
+      // Use the functional form of setInfoHashes to avoid race conditions
+      setInfoHashes(() => {
+        // Extract infoHashes from torrents and remove duplicates
+        const newInfoHashes: any = [
+          ...new Set(
+            comicObject?.data.acquisition.torrent.map(
+              (torrent) => torrent.infoHash,
+            ),
+          ),
+        ];
+        return newInfoHashes;
+      });
+    }
+  }, [comicObject]);
 
   return (
     <div className="columns is-multiline">
-      {!isEmpty(airDCPPSocketInstance) && !isEmpty(bundles) && (
-        <Bundles data={bundles} />
+      {!isEmpty(airDCPPSocketInstance) &&
+        !isEmpty(bundles) &&
+        activeTab === "directconnect" && <AirDCPPBundles data={bundles} />}
+
+      <div>
+        <div className="sm:hidden">
+          <label htmlFor="Download Type" className="sr-only">
+            Download Type
+          </label>
+
+          <select id="Tab" className="w-full rounded-md border-gray-200">
+            <option>DC++ Downloads</option>
+            <option>Torrents</option>
+          </select>
+        </div>
+
+        <div className="hidden sm:block">
+          <nav className="flex gap-6" aria-label="Tabs">
+            <a
+              href="#"
+              className="shrink-0 rounded-lg p-2 text-sm font-medium text-slate-200 hover:bg-gray-50 hover:text-gray-700"
+              aria-current="page"
+              onClick={() => setActiveTab("directconnect")}
+            >
+              DC++ Downloads
+            </a>
+
+            <a
+              href="#"
+              className="shrink-0 rounded-lg p-2 text-sm font-medium text-slate-200 hover:bg-gray-50 hover:text-gray-700"
+              onClick={() => setActiveTab("torrents")}
+            >
+              Torrents
+            </a>
+          </nav>
+        </div>
+      </div>
+
+      {activeTab === "torrents" && torrentPropertiesFetched && (
+        <TorrentDownloads data={torrentProperties?.data} />
       )}
     </div>
   );

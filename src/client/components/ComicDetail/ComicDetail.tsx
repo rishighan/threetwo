@@ -351,7 +351,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
         </span>
       ),
       name: "Torrent Search",
-      content: <TorrentSearchPanel />,
+      content: <TorrentSearchPanel comicObjectId={_id} />,
       shouldShow: true,
     },
     {

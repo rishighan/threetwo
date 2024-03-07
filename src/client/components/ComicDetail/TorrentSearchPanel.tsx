@@ -10,9 +10,10 @@ import {
 import { isEmpty, isNil } from "lodash";
 
 export const TorrentSearchPanel = (props): ReactElement => {
+  const { comicObjectId } = props;
   const [prowlarrSettingsData, setProwlarrSettingsData] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
-  const [torrentToDownload, setTorrentToDownload] = useState([]);
+  const [torrentToDownload, setTorrentToDownload] = useState("");
 
   const { data: qbittorrentConnectionResult } = useQuery({
     queryFn: async () =>
@@ -29,6 +30,7 @@ export const TorrentSearchPanel = (props): ReactElement => {
       }),
     queryKey: ["qbittorrentConnection"],
   });
+
   const { data, isSuccess } = useQuery({
     queryFn: async () =>
       axios({
@@ -57,12 +59,13 @@ export const TorrentSearchPanel = (props): ReactElement => {
         method: "POST",
         data: {
           torrentToDownload,
+          comicObjectId,
         },
       }),
-    queryKey: ["addTorrentResult", torrentToDownload],
-    enabled: !isEmpty(torrentToDownload),
+    queryKey: ["addTorrentResult"],
+    enabled: !isNil(torrentToDownload) && searchTerm !== "",
   });
-  console.log(addTorrentResult);
+  console.log(torrentToDownload);
   const searchProwlarrIndexer = (evt) => {
     setSearchTerm(evt.searchTerm);
   };
