@@ -46,22 +46,6 @@ export const DownloadsPanel = (
       }),
   });
 
-  const { data: qbittorrentConnectionResult } = useQuery({
-    queryFn: async () =>
-      axios({
-        url: `${QBITTORRENT_SERVICE_BASE_URI}/connect`,
-        method: "POST",
-        data: {
-          hostname: "localhost",
-          protocol: "http",
-          port: "8080",
-          username: "admin",
-          password: "password",
-        },
-      }),
-    queryKey: ["qbittorrentConnection"],
-  });
-
   const {
     data: torrentProperties,
     isSuccess: torrentPropertiesFetched,
