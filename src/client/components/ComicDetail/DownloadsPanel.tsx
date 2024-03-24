@@ -53,9 +53,9 @@ export const DownloadsPanel = (
   } = useQuery({
     queryFn: async () =>
       await axios({
-        url: `${QBITTORRENT_SERVICE_BASE_URI}/getTorrentDetails`,
+        url: `${QBITTORRENT_SERVICE_BASE_URI}/getTorrentProperties`,
         method: "POST",
-        data: infoHashes,
+        data: { infoHashes },
       }),
     queryKey: ["torrentProperties", infoHashes],
   });
@@ -88,6 +88,7 @@ export const DownloadsPanel = (
             ),
           ),
         ];
+        console.log(infoHashes);
         return newInfoHashes;
       });
     }

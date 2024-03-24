@@ -13,8 +13,7 @@ export const TorrentDownloads = (props) => {
             <dt className="text-lg">{torrent.name}</dt>
             <p className="text-sm">{torrent.hash}</p>
             <p className="text-sm">
-              Added on{" "}
-              {dayjs.unix(torrent.addition_date).format("ddd, D MMM, YYYY")}
+              Added on {dayjs.unix(torrent.added_on).format("ddd, D MMM, YYYY")}
             </p>
             <div className="flex gap-4 mt-2">
               {/* Peers */}

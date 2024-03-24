@@ -357,7 +357,12 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     {
       id: 6,
       name: "Downloads",
-      icon: <>{acquisition?.directconnect?.downloads?.length}</>,
+      icon: (
+        <>
+          {acquisition?.directconnect?.downloads?.length +
+            acquisition?.torrent.length}
+        </>
+      ),
       content:
         !isNil(data.data) && !isEmpty(data.data) ? (
           <DownloadsPanel key={5} />

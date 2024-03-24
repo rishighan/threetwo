@@ -30,6 +30,8 @@ export const ArchiveOperations = (props): ReactElement => {
   const [currentImage, setCurrentImage] = useState([]);
   const [uncompressedArchive, setUncompressedArchive] = useState([]);
   const [imageAnalysisResult, setImageAnalysisResult] = useState({});
+  const [shouldRefetchComicBookData, setShouldRefetchComicBookData] =
+    useState(false);
   const constructImagePaths = (data): Array<string> => {
     return data?.map((path: string) =>
       escapePoundSymbol(encodeURI(`${LIBRARY_SERVICE_HOST}/${path}`)),
@@ -63,6 +65,7 @@ export const ArchiveOperations = (props): ReactElement => {
 
               if (isMounted) {
                 setUncompressedArchive(uncompressedArchive);
+                setShouldRefetchComicBookData(true);
               }
             },
           });
@@ -122,8 +125,9 @@ export const ArchiveOperations = (props): ReactElement => {
     enabled: false,
   });
 
-  if (isSuccess) {
+  if (isSuccess && shouldRefetchComicBookData) {
     queryClient.invalidateQueries({ queryKey: ["comicBookMetadata"] });
+    setShouldRefetchComicBookData(false);
   }
 
   // sliding panel init
@@ -171,7 +175,8 @@ export const ArchiveOperations = (props): ReactElement => {
         </div>
       </article>
       <div className="mt-5">
-        {data.rawFileDetails.archive?.uncompressed ? (
+        {data.rawFileDetails.archive?.uncompressed &&
+        !isEmpty(uncompressedArchive) ? (
           <article
             role="alert"
             className="mt-4 text-md rounded-lg max-w-screen-md border-s-4 border-yellow-500 bg-yellow-50 p-4 dark:border-s-4 dark:border-yellow-600 dark:bg-yellow-300 dark:text-slate-600"
@@ -187,7 +192,7 @@ export const ArchiveOperations = (props): ReactElement => {
         ) : null}
 
         <div className="flex flex-row gap-2 mt-4">
-          {!data.rawFileDetails?.archive?.uncompressed ? (
+          {isEmpty(uncompressedArchive) ? (
             <button
               className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-3 py-2 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
               onClick={() => refetch()}
