@@ -178,7 +178,7 @@ export const Library = (): ReactElement => {
                     <i className="icon-[solar--magnet-bold-duotone] w-5 h-5"></i>
                   </span>
                   <span className="text-md text-slate-900 dark:text-slate-900">
-                    Torrent: {info.getValue().torrent.downloads.length}
+                    Torrent: {info.getValue().torrent.length}
                   </span>
                 </span>
               </div>

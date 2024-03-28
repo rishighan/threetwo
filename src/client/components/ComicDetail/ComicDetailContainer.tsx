@@ -1,7 +1,5 @@
-import { isEmpty, isNil, isUndefined } from "lodash";
-import React, { ReactElement, useContext, useEffect, useState } from "react";
+import React, { ReactElement } from "react";
 import { useParams } from "react-router-dom";
-import { getComicBookDetailById } from "../../actions/comicinfo.actions";
 import { ComicDetail } from "../ComicDetail/ComicDetail";
 import { useQuery } from "@tanstack/react-query";
 import { LIBRARY_SERVICE_BASE_URI } from "../../constants/endpoints";
