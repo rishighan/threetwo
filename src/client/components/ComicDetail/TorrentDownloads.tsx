@@ -4,10 +4,10 @@ import prettyBytes from "pretty-bytes";
 
 export const TorrentDownloads = (props) => {
   const { data } = props;
-  console.log(data);
+  console.log(Object.values(data));
   return (
     <>
-      {data.map((torrent) => {
+      {data.map(({ torrent }) => {
         return (
           <dl>
             <dt className="text-lg">{torrent.name}</dt>
@@ -15,6 +15,7 @@ export const TorrentDownloads = (props) => {
             <p className="text-sm">
               Added on {dayjs.unix(torrent.added_on).format("ddd, D MMM, YYYY")}
             </p>
+            <p>{torrent.progress}</p>
             <div className="flex gap-4 mt-2">
               {/* Peers */}
               <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">

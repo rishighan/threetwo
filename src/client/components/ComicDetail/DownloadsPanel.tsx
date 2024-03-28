@@ -8,6 +8,7 @@ import axios from "axios";
 import {
   LIBRARY_SERVICE_BASE_URI,
   QBITTORRENT_SERVICE_BASE_URI,
+  JOB_QUEUE_SERVICE_BASE_URI,
 } from "../../constants/endpoints";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
@@ -23,13 +24,26 @@ export const DownloadsPanel = (
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
   const [bundles, setBundles] = useState([]);
   const [infoHashes, setInfoHashes] = useState<string[]>([]);
+  const [torrentDetails, setTorrentDetails] = useState([]);
   const [activeTab, setActiveTab] = useState("torrents");
-  const { airDCPPSocketInstance } = useStore(
-    useShallow((state) => ({
+  const { airDCPPSocketInstance, socketIOInstance } = useStore(
+    useShallow((state: any) => ({
       airDCPPSocketInstance: state.airDCPPSocketInstance,
+      socketIOInstance: state.socketIOInstance,
     })),
   );
 
+  // React to torrent progress data sent over websockets
+  socketIOInstance.on("AS_TORRENT_DATA", (data) => {
+    const torrents = data.torrents
+      .flatMap(({ _id, details }) => {
+        if (_id === comicObjectId) {
+          return details;
+        }
+      })
+      .filter((item) => item !== undefined);
+    setTorrentDetails(torrents);
+  });
   // Fetch the downloaded files and currently-downloading file(s) from AirDC++
   const { data: comicObject, isSuccess } = useQuery({
     queryKey: ["bundles"],
@@ -46,19 +60,19 @@ export const DownloadsPanel = (
       }),
   });
 
-  const {
-    data: torrentProperties,
-    isSuccess: torrentPropertiesFetched,
-    isFetching: torrentPropertiesFetching,
-  } = useQuery({
-    queryFn: async () =>
-      await axios({
-        url: `${QBITTORRENT_SERVICE_BASE_URI}/getTorrentProperties`,
-        method: "POST",
-        data: { infoHashes },
-      }),
-    queryKey: ["torrentProperties", infoHashes],
-  });
+  // const {
+  //   data: torrentProperties,
+  //   isSuccess: torrentPropertiesFetched,
+  //   isFetching: torrentPropertiesFetching,
+  // } = useQuery({
+  //   queryFn: async () =>
+  //     await axios({
+  //       url: `${QBITTORRENT_SERVICE_BASE_URI}/getTorrentProperties`,
+  //       method: "POST",
+  //       data: { infoHashes },
+  //     }),
+  //   queryKey: ["torrentProperties", infoHashes],
+  // });
 
   const getBundles = async (comicObject) => {
     if (comicObject?.data.acquisition.directconnect) {
@@ -72,26 +86,24 @@ export const DownloadsPanel = (
     }
   };
 
+  // Call the scheduled job for fetching torrent data
+  // triggered by the active tab been set to "torrents"
+  const { data: torrentData } = useQuery({
+    queryFn: () =>
+      axios({
+        url: `${JOB_QUEUE_SERVICE_BASE_URI}/getTorrentData`,
+        method: "GET",
+        params: {
+          trigger: activeTab,
+        },
+      }),
+    queryKey: [activeTab],
+  });
+
   useEffect(() => {
     getBundles(comicObject).then((result) => {
       setBundles(result);
     });
-
-    if (comicObject?.data.acquisition.torrent.length !== 0) {
-      // Use the functional form of setInfoHashes to avoid race conditions
-      setInfoHashes(() => {
-        // Extract infoHashes from torrents and remove duplicates
-        const newInfoHashes: any = [
-          ...new Set(
-            comicObject?.data.acquisition.torrent.map(
-              (torrent) => torrent.infoHash,
-            ),
-          ),
-        ];
-        console.log(infoHashes);
-        return newInfoHashes;
-      });
-    }
   }, [comicObject]);
 
   return (
@@ -116,7 +128,11 @@ export const DownloadsPanel = (
           <nav className="flex gap-6" aria-label="Tabs">
             <a
               href="#"
-              className="shrink-0 rounded-lg p-2 text-sm font-medium text-slate-200 hover:bg-gray-50 hover:text-gray-700"
+              className={`shrink-0 rounded-lg p-2 text-sm font-medium hover:bg-gray-50 hover:text-gray-700 ${
+                activeTab === "directconnect"
+                  ? "bg-slate-200 text-slate-800"
+                  : "text-slate-200"
+              }`}
               aria-current="page"
               onClick={() => setActiveTab("directconnect")}
             >
@@ -125,7 +141,11 @@ export const DownloadsPanel = (
 
             <a
               href="#"
-              className="shrink-0 rounded-lg p-2 text-sm font-medium text-slate-200 hover:bg-gray-50 hover:text-gray-700"
+              className={`shrink-0 rounded-lg p-2 text-sm font-medium hover:bg-gray-50 hover:text-gray-700 ${
+                activeTab === "torrents"
+                  ? "bg-slate-200 text-slate-800"
+                  : "text-slate-200"
+              }`}
               onClick={() => setActiveTab("torrents")}
             >
               Torrents
@@ -134,9 +154,7 @@ export const DownloadsPanel = (
         </div>
       </div>
 
-      {activeTab === "torrents" && torrentPropertiesFetched && (
-        <TorrentDownloads data={torrentProperties?.data} />
-      )}
+      {activeTab === "torrents" && <TorrentDownloads data={torrentDetails} />}
     </div>
   );
 };
