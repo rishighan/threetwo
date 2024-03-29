@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Form, Field } from "react-final-form";
 import {
@@ -37,25 +37,22 @@ export const TorrentSearchPanel = (props) => {
     },
     enabled: !isNil(searchTerm.issueName) && searchTerm.issueName.trim() !== "", // Make sure searchTerm is not empty
   });
-  const { data: addTorrentResult } = useQuery({
-    queryFn: async () =>
-      axios({
-        url: `${QBITTORRENT_SERVICE_BASE_URI}/addTorrent`,
-        method: "POST",
-        data: {
-          comicObjectId,
-          torrentToDownload,
-        },
-      }),
-    queryKey: ["addTorrentResult", torrentToDownload],
-    enabled: !isEmpty(torrentToDownload),
+  const mutation = useMutation({
+    mutationFn: async (newTorrent) =>
+      axios.post(`${QBITTORRENT_SERVICE_BASE_URI}/addTorrent`, newTorrent),
+    onSuccess: async (data) => {
+      console.log(data);
+    },
   });
   const searchIndexer = (values) => {
     setSearchTerm({ issueName: values.issueName }); // Update searchTerm based on the form submission
   };
   const downloadTorrent = (evt) => {
-    console.log(evt);
-    setTorrentToDownload(evt);
+    const newTorrent = {
+      comicObjectId,
+      torrentToDownload: evt,
+    };
+    mutation.mutate(newTorrent);
   };
   return (
     <>

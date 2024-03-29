@@ -97,3 +97,10 @@ export const PROWLARR_SERVICE_BASE_URI = hostURIBuilder({
   port: "3060",
   apiPath: `/api/prowlarr`,
 });
+
+export const TORRENT_JOB_SERVICE_BASE_URI = hostURIBuilder({
+  protocol: "http",
+  host: import.meta.env.UNDERLYING_HOSTNAME || "localhost",
+  port: "3000",
+  apiPath: `/api/torrentjobs`,
+});

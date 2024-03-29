@@ -8,7 +8,7 @@ import axios from "axios";
 import {
   LIBRARY_SERVICE_BASE_URI,
   QBITTORRENT_SERVICE_BASE_URI,
-  JOB_QUEUE_SERVICE_BASE_URI,
+  TORRENT_JOB_SERVICE_BASE_URI,
 } from "../../constants/endpoints";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
@@ -60,20 +60,6 @@ export const DownloadsPanel = (
       }),
   });
 
-  // const {
-  //   data: torrentProperties,
-  //   isSuccess: torrentPropertiesFetched,
-  //   isFetching: torrentPropertiesFetching,
-  // } = useQuery({
-  //   queryFn: async () =>
-  //     await axios({
-  //       url: `${QBITTORRENT_SERVICE_BASE_URI}/getTorrentProperties`,
-  //       method: "POST",
-  //       data: { infoHashes },
-  //     }),
-  //   queryKey: ["torrentProperties", infoHashes],
-  // });
-
   const getBundles = async (comicObject) => {
     if (comicObject?.data.acquisition.directconnect) {
       const filteredBundles =
@@ -91,7 +77,7 @@ export const DownloadsPanel = (
   const { data: torrentData } = useQuery({
     queryFn: () =>
       axios({
-        url: `${JOB_QUEUE_SERVICE_BASE_URI}/getTorrentData`,
+        url: `${TORRENT_JOB_SERVICE_BASE_URI}/getTorrentData`,
         method: "GET",
         params: {
           trigger: activeTab,

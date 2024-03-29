@@ -9,21 +9,52 @@ export const TorrentDownloads = (props) => {
     <>
       {data.map(({ torrent }) => {
         return (
-          <dl>
+          <dl className="mt-5">
             <dt className="text-lg">{torrent.name}</dt>
             <p className="text-sm">{torrent.hash}</p>
             <p className="text-sm">
               Added on {dayjs.unix(torrent.added_on).format("ddd, D MMM, YYYY")}
             </p>
-            <p>{torrent.progress}</p>
+
+            <p className="flex gap-2 mt-1">
+              {torrent.progress > 0 ? (
+                <>
+                  <progress
+                    className="w-80 mt-2 [&::-webkit-progress-bar]:rounded-lg [&::-webkit-progress-value]:rounded-lg [&::-webkit-progress-bar]:bg-slate-300 [&::-webkit-progress-value]:bg-orange-400 [&::-moz-progress-bar]:bg-orange-400 h-2"
+                    value={Math.floor(torrent.progress * 100).toString()}
+                    max="100"
+                  ></progress>
+
+                  <span>{Math.floor(torrent.progress * 100)}%</span>
+
+                  {/* downloaded/left */}
+                  <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                    <span className="pr-1 pt-1">
+                      <i className="icon-[solar--arrow-to-down-left-outline] h-4 w-4"></i>
+                    </span>
+                    <span className="text-md text-slate-900">
+                      {prettyBytes(torrent.downloaded)}
+                    </span>
+
+                    {/* uploaded */}
+                    <span className="pr-1 pt-1">
+                      <i className="icon-[solar--arrow-to-top-left-outline] h-4 w-4"></i>
+                    </span>
+                    <span className="text-md text-slate-900">
+                      {prettyBytes(torrent.uploaded)}
+                    </span>
+                  </span>
+                </>
+              ) : null}
+            </p>
             <div className="flex gap-4 mt-2">
               {/* Peers */}
               <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                <span className="pr-1 pt-1">
-                  <i className="icon-[solar--user-hand-up-bold-duotone] h-4 w-4"></i>
+                <span className="pr-1">
+                  <i className="icon-[solar--station-minimalistic-line-duotone] h-5 w-5"></i>
                 </span>
                 <span className="text-md text-slate-900">
-                  {torrent.peers_total}
+                  {torrent.trackers_count}
                 </span>
               </span>
 
