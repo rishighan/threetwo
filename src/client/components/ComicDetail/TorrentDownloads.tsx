@@ -20,7 +20,7 @@ export const TorrentDownloads = (props) => {
               {torrent.progress > 0 ? (
                 <>
                   <progress
-                    className="w-80 mt-2 [&::-webkit-progress-bar]:rounded-lg [&::-webkit-progress-value]:rounded-lg [&::-webkit-progress-bar]:bg-slate-300 [&::-webkit-progress-value]:bg-orange-400 [&::-moz-progress-bar]:bg-orange-400 h-2"
+                    className="w-80 mt-2 [&::-webkit-progress-bar]:rounded-lg [&::-webkit-progress-value]:rounded-lg [&::-webkit-progress-bar]:bg-slate-300 [&::-webkit-progress-value]:bg-green-400 [&::-moz-progress-bar]:bg-green-400 h-2"
                     value={Math.floor(torrent.progress * 100).toString()}
                     max="100"
                   ></progress>
@@ -28,22 +28,21 @@ export const TorrentDownloads = (props) => {
                   <span>{Math.floor(torrent.progress * 100)}%</span>
 
                   {/* downloaded/left */}
-                  <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                    <span className="pr-1 pt-1">
+                  <p className="inline-flex items-center bg-slate-50 text-green-800 dark:text-green-900 text-xs font-medium px-2.5 py-1 rounded-md dark:bg-slate-400">
+                    <span className="pr-1">
                       <i className="icon-[solar--arrow-to-down-left-outline] h-4 w-4"></i>
                     </span>
-                    <span className="text-md text-slate-900">
+                    <span className="text-md">
                       {prettyBytes(torrent.downloaded)}
                     </span>
-
                     {/* uploaded */}
-                    <span className="pr-1 pt-1">
+                    <span className="pr-1 text-orange-800 dark:text-orange-900 ml-2">
                       <i className="icon-[solar--arrow-to-top-left-outline] h-4 w-4"></i>
                     </span>
-                    <span className="text-md text-slate-900">
+                    <span className="text-md text-orange-800 dark:text-orange-900">
                       {prettyBytes(torrent.uploaded)}
                     </span>
-                  </span>
+                  </p>
                 </>
               ) : null}
             </p>

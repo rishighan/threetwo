@@ -6,7 +6,6 @@ import { DayPicker, SelectSingleEventHandler } from "react-day-picker";
 import { usePopper } from "react-popper";
 
 export const DatePickerDialog = (props) => {
-  console.log(props);
   const { setter, apiAction } = props;
   const [selected, setSelected] = useState<Date>();
   const [isPopperOpen, setIsPopperOpen] = useState(false);
