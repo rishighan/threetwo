@@ -9,7 +9,7 @@ export const TorrentDownloads = (props) => {
     <>
       {data.map(({ torrent }) => {
         return (
-          <dl className="mt-5">
+          <dl className="mt-5 dark:text-slate-200 text-slate-600">
             <dt className="text-lg">{torrent.name}</dt>
             <p className="text-sm">{torrent.hash}</p>
             <p className="text-sm">
@@ -28,7 +28,7 @@ export const TorrentDownloads = (props) => {
                   <span>{Math.floor(torrent.progress * 100)}%</span>
 
                   {/* downloaded/left */}
-                  <p className="inline-flex items-center bg-slate-50 text-green-800 dark:text-green-900 text-xs font-medium px-2.5 py-1 rounded-md dark:bg-slate-400">
+                  <p className="inline-flex items-center bg-slate-200 text-green-800 dark:text-green-900 text-xs font-medium px-2.5 py-1 rounded-md dark:bg-slate-400">
                     <span className="pr-1">
                       <i className="icon-[solar--arrow-to-down-left-outline] h-4 w-4"></i>
                     </span>
@@ -48,7 +48,7 @@ export const TorrentDownloads = (props) => {
             </p>
             <div className="flex gap-4 mt-2">
               {/* Peers */}
-              <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
+              <span className="inline-flex items-center bg-slate-200 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
                 <span className="pr-1">
                   <i className="icon-[solar--station-minimalistic-line-duotone] h-5 w-5"></i>
                 </span>
@@ -58,7 +58,7 @@ export const TorrentDownloads = (props) => {
               </span>
 
               {/* Size */}
-              <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
+              <span className="inline-flex items-center bg-slate-200 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
                 <span className="pr-1 pt-1">
                   <i className="icon-[solar--mirror-right-bold-duotone] h-4 w-4"></i>
                 </span>

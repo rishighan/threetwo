@@ -13,9 +13,9 @@ export const TabControls = (props): ReactElement => {
             {filteredTabs.map(({ id, name, icon }) => (
               <a
                 key={id}
-                className={`inline-flex shrink-0 items-center gap-2 px-1 py-1 text-md font-medium text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 ${
+                className={`inline-flex shrink-0 items-center gap-2 px-1 py-1 text-md font-medium text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:border-b hover:dark:text-slate-200 ${
                   active === id
-                    ? "border-b-2 border-700 dark:text-slate-200"
+                    ? "border-b border-cyan-50 dark:text-slate-200"
                     : "border-b border-transparent"
                 }`}
                 aria-current="page"

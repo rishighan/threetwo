@@ -10,6 +10,7 @@ export const WantedComics = (props): ReactElement => {
   const {
     data: wantedComics,
     isSuccess,
+    isFetched,
     isError,
     isLoading,
   } = useQuery({
@@ -41,6 +42,7 @@ export const WantedComics = (props): ReactElement => {
           minWidth: 350,
           accessorFn: (data) => data,
           cell: (value) => {
+            console.log("ASDASd", value);
             const row = value.getValue()._source;
             return row && <MetadataPanel data={row} />;
           },
@@ -172,7 +174,7 @@ export const WantedComics = (props): ReactElement => {
             </div>
           </div>
         </header>
-        {isSuccess ? (
+        {isSuccess && wantedComics?.data.hits?.hits ? (
           <div>
             <div className="library">
               <T2Table

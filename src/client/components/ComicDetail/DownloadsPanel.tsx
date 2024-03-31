@@ -116,8 +116,8 @@ export const DownloadsPanel = (
               href="#"
               className={`shrink-0 rounded-lg p-2 text-sm font-medium hover:bg-gray-50 hover:text-gray-700 ${
                 activeTab === "directconnect"
-                  ? "bg-slate-200 text-slate-800"
-                  : "text-slate-200"
+                  ? "bg-slate-200 dark:text-slate-200 dark:bg-slate-400 text-slate-800"
+                  : "dark:text-slate-400 text-slate-800"
               }`}
               aria-current="page"
               onClick={() => setActiveTab("directconnect")}
@@ -130,7 +130,7 @@ export const DownloadsPanel = (
               className={`shrink-0 rounded-lg p-2 text-sm font-medium hover:bg-gray-50 hover:text-gray-700 ${
                 activeTab === "torrents"
                   ? "bg-slate-200 text-slate-800"
-                  : "text-slate-200"
+                  : "dark:text-slate-400 text-slate-800"
               }`}
               onClick={() => setActiveTab("torrents")}
             >
