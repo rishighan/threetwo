@@ -16,16 +16,7 @@ export const QbittorrentConnectionForm = (): ReactElement => {
   });
   const hostDetails = data?.data?.bittorrent?.client?.host;
   // connect to qbittorrent client
-  const { data: connectionDetails } = useQuery({
-    queryKey: [],
-    queryFn: async () =>
-      await axios({
-        url: "http://localhost:3060/api/qbittorrent/connect",
-        method: "POST",
-        data: hostDetails,
-      }),
-    enabled: !!hostDetails,
-  });
+
   // get qbittorrent client info
   const { data: qbittorrentClientInfo } = useQuery({
     queryKey: ["qbittorrentClientInfo"],
@@ -34,7 +25,6 @@ export const QbittorrentConnectionForm = (): ReactElement => {
         url: "http://localhost:3060/api/qbittorrent/getClientInfo",
         method: "GET",
       }),
-    enabled: !!connectionDetails,
   });
   // Update action using a mutation
   const { mutate } = useMutation({

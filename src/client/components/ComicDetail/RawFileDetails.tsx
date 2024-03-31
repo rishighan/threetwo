@@ -48,7 +48,7 @@ export const RawFileDetails = (props): ReactElement => {
               <dd className="mt-1 text-sm text-gray-500 dark:text-slate-900">
                 {/* File extension */}
                 <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                  <span className="pr-1 pt-1">
+                  <span className="pt-1">
                     <i className="icon-[solar--zip-file-bold-duotone] w-5 h-5"></i>
                   </span>
 
