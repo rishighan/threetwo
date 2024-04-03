@@ -1,26 +1,24 @@
 import { isEmpty, isUndefined, map, partialRight, pick } from "lodash";
 import React, { useEffect, ReactElement, useState, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import {
   getComicBookDetailById,
   getIssuesForSeries,
   analyzeLibrary,
 } from "../../actions/comicinfo.actions";
+import { useQuery, useMutation, QueryClient } from "@tanstack/react-query";
 import PotentialLibraryMatches from "./PotentialLibraryMatches";
-import Masonry from "react-masonry-css";
 import { Card } from "../shared/Carda";
 import SlidingPane from "react-sliding-pane";
 import { convert } from "html-to-text";
 import ellipsize from "ellipsize";
+import {
+  COMICVINE_SERVICE_URI,
+  LIBRARY_SERVICE_BASE_URI,
+} from "../../constants/endpoints";
+import axios from "axios";
 
 const VolumeDetails = (props): ReactElement => {
-  const breakpointColumnsObj = {
-    default: 6,
-    1100: 4,
-    700: 3,
-    500: 2,
-  };
   // sliding panel config
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
@@ -33,7 +31,9 @@ const VolumeDetails = (props): ReactElement => {
       content: () => {
         const ids = map(matches, partialRight(pick, "_id"));
         const matchIds = ids.map((id: any) => id._id);
-        return <PotentialLibraryMatches matches={matchIds} />;
+        {
+          /* return <PotentialLibraryMatches matches={matchIds} />; */
+        }
       },
     },
   };
@@ -45,68 +45,85 @@ const VolumeDetails = (props): ReactElement => {
     setVisible(true);
   }, []);
 
-  const analyzeIssues = useCallback((issues) => {
-    dispatch(analyzeLibrary(issues));
-  }, []);
+  //   const analyzeIssues = useCallback((issues) => {
+  //     dispatch(analyzeLibrary(issues));
+  //   }, []);
+  //
+  //   const comicObject = useSelector(
+  //     (state: RootState) => state.comicInfo.comicBookDetail,
+  //   );
 
-  const comicBookDetails = useSelector(
-    (state: RootState) => state.comicInfo.comicBookDetail,
-  );
-  const issuesForVolume = useSelector(
-    (state: RootState) => state.comicInfo.issuesForVolume,
-  );
-
-  const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(getIssuesForSeries(comicObjectId));
-    dispatch(getComicBookDetailById(comicObjectId));
+    // dispatch(getIssuesForSeries(comicObjectId));
+    // dispatch(getComicBookDetailById(comicObjectId));
   }, []);
 
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
 
+  const { data: comicObject, isSuccess: isComicObjectFetchedSuccessfully } =
+    useQuery({
+      queryFn: async () =>
+        axios({
+          url: `${LIBRARY_SERVICE_BASE_URI}/getComicBookById`,
+          method: "POST",
+          data: {
+            id: comicObjectId,
+          },
+        }),
+      queryKey: ["comicObject"],
+    });
+
+  // get issues for a series
+  const {
+    data: issuesForSeries,
+    isSuccess,
+    isFetching,
+  } = useQuery({
+    queryFn: async () =>
+      await axios({
+        url: `${COMICVINE_SERVICE_URI}/getIssuesForSeries`,
+        method: "POST",
+        data: {
+          comicObjectId,
+        },
+      }),
+    queryKey: ["issuesForSeries"],
+    enabled: false,
+  });
+
+  console.log("jihya", issuesForSeries);
   const IssuesInVolume = () => (
     <>
-      {!isUndefined(issuesForVolume) ? (
-        <div className="button" onClick={() => analyzeIssues(issuesForVolume)}>
+      {!isUndefined(issuesForSeries) ? (
+        <div className="button" onClick={() => analyzeIssues(issuesForSeries)}>
           Analyze Library
         </div>
       ) : null}
-      <Masonry
-        breakpointCols={breakpointColumnsObj}
-        className="issues-container"
-        columnClassName="issues-column"
-      >
-        {!isUndefined(issuesForVolume) && !isEmpty(issuesForVolume)
-          ? issuesForVolume.map((issue) => {
-              return (
+      <>
+        {isSuccess &&
+          issuesForSeries.data.map((issue) => {
+            return (
+              <>
                 <Card
                   key={issue.id}
-                  imageUrl={issue.image.thumb_url}
-                  orientation={"vertical"}
-                  hasDetails
-                  borderColorClass={
-                    !isEmpty(issue.matches) ? "green-border" : ""
-                  }
-                  backgroundColor={!isEmpty(issue.matches) ? "beige" : ""}
-                  onClick={() =>
-                    openPotentialLibraryMatchesPanel(issue.matches)
-                  }
-                >
-                  <span className="tag is-warning mr-1">
-                    {issue.issue_number}
-                  </span>
-                  {!isEmpty(issue.matches) ? (
-                    <>
-                      <span className="icon has-text-success">
-                        <i className="fa-regular fa-asterisk"></i>
-                      </span>
-                    </>
-                  ) : null}
-                </Card>
-              );
-            })
-          : "loading"}
-      </Masonry>
+                  imageUrl={issue.image.small_url}
+                  orientation={"cover-only"}
+                  hasDetails={false}
+                />
+                <span className="tag is-warning mr-1">
+                  {issue.issue_number}
+                </span>
+                {!isEmpty(issue.matches) ? (
+                  <>
+                    <span className="icon has-text-success">
+                      <i className="fa-regular fa-asterisk"></i>
+                    </span>
+                  </>
+                ) : null}
+              </>
+            );
+          })}
+      </>
     </>
   );
 
@@ -122,13 +139,13 @@ const VolumeDetails = (props): ReactElement => {
       id: 2,
       icon: <i className="fa-regular fa-mask"></i>,
       name: "Characters",
-      content: <div key={2}>asdasd</div>,
+      content: <div key={2}>Characters</div>,
     },
     {
       id: 3,
       icon: <i className="fa-solid fa-scroll"></i>,
-      name: "Arcs",
-      content: <div key={3}>asdasd</div>,
+      name: "Story Arcs",
+      content: <div key={3}>Story Arcs</div>,
     },
   ];
 
@@ -136,21 +153,26 @@ const VolumeDetails = (props): ReactElement => {
   const MetadataTabGroup = () => {
     return (
       <>
-        <div className="tabs">
-          <ul>
-            {tabGroup.map(({ id, name, icon }) => (
-              <li
-                key={id}
-                className={id === active ? "is-active" : ""}
-                onClick={() => setActive(id)}
-              >
-                <a>
-                  <span className="icon is-small">{icon}</span>
+        <div className="hidden sm:block mt-7 mb-3 w-fit">
+          <div className="border-b border-gray-200">
+            <nav className="flex gap-6" aria-label="Tabs">
+              {tabGroup.map(({ id, name, icon }) => (
+                <a
+                  key={id}
+                  className={`inline-flex shrink-0 items-center gap-2 px-1 py-1 text-md font-medium text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:border-b hover:dark:text-slate-200 ${
+                    active === id
+                      ? "border-b border-cyan-50 dark:text-slate-200"
+                      : "border-b border-transparent"
+                  }`}
+                  aria-current="page"
+                  onClick={() => setActive(id)}
+                >
+                  <span className="w-5 h-5">{icon}</span>
                   {name}
                 </a>
-              </li>
-            ))}
-          </ul>
+              ))}
+            </nav>
+          </div>
         </div>
         {tabGroup.map(({ id, content }) => {
           return active === id ? content : null;
@@ -158,43 +180,33 @@ const VolumeDetails = (props): ReactElement => {
       </>
     );
   };
-
-  if (
-    !isUndefined(comicBookDetails.sourcedMetadata) &&
-    !isUndefined(comicBookDetails.sourcedMetadata.comicvine.volumeInformation)
-  ) {
+  if (isComicObjectFetchedSuccessfully && !isUndefined(comicObject.data)) {
+    const { sourcedMetadata } = comicObject.data;
     return (
-      <div className="container volume-details">
-        <div className="section">
-          {/* Title */}
-          <h1 className="title">
-            {comicBookDetails.sourcedMetadata.comicvine.volumeInformation.name}
-          </h1>
-          <div className="columns is-multiline">
+      <div className="container mx-auto">
+        <div>
+          <div className="flex flex-row gap-4">
             {/* Volume cover */}
-            <div className="column is-narrow">
-              <Card
-                imageUrl={
-                  comicBookDetails.sourcedMetadata.comicvine.volumeInformation
-                    .image.small_url
-                }
-                cardContainerStyle={{ maxWidth: 275 }}
-                orientation={"vertical"}
-                hasDetails={false}
-              />
-            </div>
+            <Card
+              imageUrl={
+                sourcedMetadata.comicvine.volumeInformation.image.small_url
+              }
+              orientation={"cover-only"}
+              hasDetails={false}
+            />
 
-            <div className="column is-three-fifths">
+            <div>
               <div className="field is-grouped mt-2">
+                {/* Title */}
+                <span className="text-xl">
+                  {sourcedMetadata.comicvine.volumeInformation.name}
+                </span>
                 {/* Comicvine Id */}
                 <div className="control">
                   <div className="tags has-addons">
                     <span className="tag">ComicVine Id</span>
                     <span className="tag is-info is-light">
-                      {
-                        comicBookDetails.sourcedMetadata.comicvine
-                          .volumeInformation.id
-                      }
+                      {sourcedMetadata.comicvine.volumeInformation.id}
                     </span>
                   </div>
                 </div>
@@ -204,8 +216,8 @@ const VolumeDetails = (props): ReactElement => {
                     <span className="tag is-warning is-light">Publisher</span>
                     <span className="tag is-volume-related">
                       {
-                        comicBookDetails.sourcedMetadata.comicvine
-                          .volumeInformation.publisher.name
+                        sourcedMetadata.comicvine.volumeInformation.publisher
+                          .name
                       }
                     </span>
                   </div>
@@ -215,13 +227,11 @@ const VolumeDetails = (props): ReactElement => {
               {/* Deck */}
               <div>
                 {!isEmpty(
-                  comicBookDetails.sourcedMetadata.comicvine.volumeInformation
-                    .description,
+                  sourcedMetadata.comicvine.volumeInformation.description,
                 )
                   ? ellipsize(
                       convert(
-                        comicBookDetails.sourcedMetadata.comicvine
-                          .volumeInformation.description,
+                        sourcedMetadata.comicvine.volumeInformation.description,
                         {
                           baseElements: {
                             selectors: ["p"],

@@ -4,6 +4,7 @@ import Card from "../shared/Carda";
 import T2Table from "../shared/T2Table";
 import ellipsize from "ellipsize";
 import { convert } from "html-to-text";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { SEARCH_SERVICE_BASE_URI } from "../../constants/endpoints";
@@ -39,28 +40,32 @@ export const Volumes = (props): ReactElement => {
         header: "Volume Details",
         id: "volumeDetails",
         minWidth: 450,
-        accessorKey: "_source",
+        accessorFn: (row) => row,
         cell: (row): any => {
-          const foo = row.getValue();
+          const comicObject = row.getValue();
+          const {
+            _source: { sourcedMetadata },
+          } = comicObject;
+          console.log("jaggu", row.getValue());
           return (
             <div className="flex flex-row gap-3 mt-5">
-              <Card
-                imageUrl={
-                  foo.sourcedMetadata.comicvine.volumeInformation.image
-                    .small_url
-                }
-                orientation={"cover-only"}
-                hasDetails={false}
-              />
+              <Link to={`/volume/details/${comicObject._id}`}>
+                <Card
+                  imageUrl={
+                    sourcedMetadata.comicvine.volumeInformation.image.small_url
+                  }
+                  orientation={"cover-only"}
+                  hasDetails={false}
+                />
+              </Link>
               <div className="dark:bg-[#647587] bg-slate-200 p-3 rounded-lg h-fit">
                 <span className="text-xl mb-1">
-                  {foo.sourcedMetadata.comicvine.volumeInformation.name}
+                  {sourcedMetadata.comicvine.volumeInformation.name}
                 </span>
                 <p>
                   {ellipsize(
                     convert(
-                      foo.sourcedMetadata.comicvine.volumeInformation
-                        .description,
+                      sourcedMetadata.comicvine.volumeInformation.description,
                       {
                         baseElements: {
                           selectors: ["p"],
@@ -162,6 +167,7 @@ export const Volumes = (props): ReactElement => {
                   nextPage: () => {},
                   previousPage: () => {},
                 }}
+                rowClickHandler={() => {}}
                 columns={columnData}
               />
             </div>
