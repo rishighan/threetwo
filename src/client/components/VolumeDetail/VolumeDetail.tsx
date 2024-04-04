@@ -80,19 +80,30 @@ const VolumeDetails = (props): ReactElement => {
     enabled: false,
   });
   // get story arcs
-  const getStoryArcs = useMutation({
-    mutationFn: async (comicObject) =>
-      axios({
-        url: `${COMICVINE_SERVICE_URI}/getStoryArcs`,
-        method: "POST",
-        data: {
-          comicObject,
-        },
-      }),
-    onSuccess: (data) => {
-      setStoryArcsData(data?.data.results);
-    },
-  });
+  const useGetStoryArcs = () => {
+    return useMutation({
+      mutationFn: async (comicObject) =>
+        axios({
+          url: `${COMICVINE_SERVICE_URI}/getStoryArcs`,
+          method: "POST",
+          data: {
+            comicObject,
+          },
+        }),
+      onSuccess: (data) => {
+        setStoryArcsData(data?.data.results);
+      },
+    });
+  };
+
+  const {
+    mutate: getStoryArcs,
+    isIdle,
+    isError,
+    data,
+    error,
+    status,
+  } = useGetStoryArcs();
 
   console.log("jihya", issuesForSeries);
   const IssuesInVolume = () => (
@@ -154,18 +165,19 @@ const VolumeDetails = (props): ReactElement => {
       name: "Story Arcs",
       content: (
         <div key={3}>
-          <button
-            className=""
-            onClick={() => getStoryArcs.mutate(comicObject?.data)}
-          >
+          <button className="" onClick={() => getStoryArcs(comicObject?.data)}>
             Get story arcs
           </button>
-
-          {!isEmpty(storyArcsData) && (
+          {status === "pending" && <>{status}</>}
+          {!isEmpty(storyArcsData) && status === "success" && (
             <>
               <ul>
                 {storyArcsData.map((storyArc) => {
-                  return <li>{storyArc?.name}</li>;
+                  return (
+                    <li>
+                      <span className="text-lg">{storyArc?.name}</span>
+                    </li>
+                  );
                 })}
               </ul>
             </>
