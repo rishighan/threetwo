@@ -1,11 +1,7 @@
 import { isEmpty, isUndefined, map, partialRight, pick } from "lodash";
 import React, { useEffect, ReactElement, useState, useCallback } from "react";
 import { useParams } from "react-router";
-import {
-  getComicBookDetailById,
-  getIssuesForSeries,
-  analyzeLibrary,
-} from "../../actions/comicinfo.actions";
+import { analyzeLibrary } from "../../actions/comicinfo.actions";
 import { useQuery, useMutation, QueryClient } from "@tanstack/react-query";
 import PotentialLibraryMatches from "./PotentialLibraryMatches";
 import { Card } from "../shared/Carda";
@@ -132,18 +128,22 @@ const VolumeDetails = (props): ReactElement => {
     {
       id: 1,
       name: "Issues in Volume",
-      icon: <i className="fa-solid fa-layer-group"></i>,
+      icon: <i className="icon-[solar--documents-bold-duotone] w-6 h-6"></i>,
       content: <IssuesInVolume key={1} />,
     },
     {
       id: 2,
-      icon: <i className="fa-regular fa-mask"></i>,
+      icon: (
+        <i className="icon-[solar--users-group-rounded-bold-duotone] w-6 h-6"></i>
+      ),
       name: "Characters",
       content: <div key={2}>Characters</div>,
     },
     {
       id: 3,
-      icon: <i className="fa-solid fa-scroll"></i>,
+      icon: (
+        <i className="icon-[solar--book-bookmark-bold-duotone] w-6 h-6"></i>
+      ),
       name: "Story Arcs",
       content: <div key={3}>Story Arcs</div>,
     },
@@ -155,7 +155,7 @@ const VolumeDetails = (props): ReactElement => {
       <>
         <div className="hidden sm:block mt-7 mb-3 w-fit">
           <div className="border-b border-gray-200">
-            <nav className="flex gap-6" aria-label="Tabs">
+            <nav className="flex gap-4" aria-label="Tabs">
               {tabGroup.map(({ id, name, icon }) => (
                 <a
                   key={id}
@@ -167,7 +167,7 @@ const VolumeDetails = (props): ReactElement => {
                   aria-current="page"
                   onClick={() => setActive(id)}
                 >
-                  <span className="w-5 h-5">{icon}</span>
+                  <span className="pt-1">{icon}</span>
                   {name}
                 </a>
               ))}
@@ -183,82 +183,100 @@ const VolumeDetails = (props): ReactElement => {
   if (isComicObjectFetchedSuccessfully && !isUndefined(comicObject.data)) {
     const { sourcedMetadata } = comicObject.data;
     return (
-      <div className="container mx-auto">
-        <div>
-          <div className="flex flex-row gap-4">
-            {/* Volume cover */}
-            <Card
-              imageUrl={
-                sourcedMetadata.comicvine.volumeInformation.image.small_url
-              }
-              orientation={"cover-only"}
-              hasDetails={false}
-            />
+      <>
+        <header className="bg-slate-200 dark:bg-slate-500">
+          <div className="mx-auto max-w-screen-xl px-2 py-2 sm:px-6 sm:py-8 lg:px-8 lg:py-4">
+            <div className="sm:flex sm:items-center sm:justify-between">
+              <div className="text-center sm:text-left">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
+                  Volumes
+                </h1>
 
-            <div>
-              <div className="field is-grouped mt-2">
-                {/* Title */}
-                <span className="text-xl">
-                  {sourcedMetadata.comicvine.volumeInformation.name}
-                </span>
-                {/* Comicvine Id */}
-                <div className="control">
-                  <div className="tags has-addons">
-                    <span className="tag">ComicVine Id</span>
-                    <span className="tag is-info is-light">
-                      {sourcedMetadata.comicvine.volumeInformation.id}
-                    </span>
-                  </div>
-                </div>
-                {/* Publisher */}
-                <div className="control">
-                  <div className="tags has-addons">
-                    <span className="tag is-warning is-light">Publisher</span>
-                    <span className="tag is-volume-related">
-                      {
-                        sourcedMetadata.comicvine.volumeInformation.publisher
-                          .name
-                      }
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Deck */}
-              <div>
-                {!isEmpty(
-                  sourcedMetadata.comicvine.volumeInformation.description,
-                )
-                  ? ellipsize(
-                      convert(
-                        sourcedMetadata.comicvine.volumeInformation.description,
-                        {
-                          baseElements: {
-                            selectors: ["p"],
-                          },
-                        },
-                      ),
-                      300,
-                    )
-                  : null}
+                <p className="mt-1.5 text-sm text-gray-500 dark:text-white">
+                  Browse your collection of volumes.
+                </p>
               </div>
             </div>
-
-            {/* <pre>{JSON.stringify(issuesForVolume, undefined, 2)}</pre> */}
           </div>
-          <MetadataTabGroup />
-        </div>
+        </header>
+        <div className="container mx-auto mt-4">
+          <div>
+            <div className="flex flex-row gap-4">
+              {/* Volume cover */}
+              <Card
+                imageUrl={
+                  sourcedMetadata.comicvine.volumeInformation.image.small_url
+                }
+                orientation={"cover-only"}
+                hasDetails={false}
+              />
 
-        <SlidingPane
-          isOpen={visible}
-          onRequestClose={() => setVisible(false)}
-          title={"Potential Matches in Library"}
-          width={"600px"}
-        >
-          {slidingPanelContentId !== "" &&
-            contentForSlidingPanel[slidingPanelContentId].content()}
-        </SlidingPane>
-      </div>
+              <div>
+                <div className="field is-grouped mt-2">
+                  {/* Title */}
+                  <span className="text-xl">
+                    {sourcedMetadata.comicvine.volumeInformation.name}
+                  </span>
+                  {/* Comicvine Id */}
+                  <div className="control">
+                    <div className="tags has-addons">
+                      <span className="tag">ComicVine Id</span>
+                      <span className="tag is-info is-light">
+                        {sourcedMetadata.comicvine.volumeInformation.id}
+                      </span>
+                    </div>
+                  </div>
+                  {/* Publisher */}
+                  <div className="control">
+                    <div className="tags has-addons">
+                      <span className="tag is-warning is-light">Publisher</span>
+                      <span className="tag is-volume-related">
+                        {
+                          sourcedMetadata.comicvine.volumeInformation.publisher
+                            .name
+                        }
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Deck */}
+                <div>
+                  {!isEmpty(
+                    sourcedMetadata.comicvine.volumeInformation.description,
+                  )
+                    ? ellipsize(
+                        convert(
+                          sourcedMetadata.comicvine.volumeInformation
+                            .description,
+                          {
+                            baseElements: {
+                              selectors: ["p"],
+                            },
+                          },
+                        ),
+                        300,
+                      )
+                    : null}
+                </div>
+              </div>
+
+              {/* <pre>{JSON.stringify(issuesForVolume, undefined, 2)}</pre> */}
+            </div>
+            <MetadataTabGroup />
+          </div>
+
+          <SlidingPane
+            isOpen={visible}
+            onRequestClose={() => setVisible(false)}
+            title={"Potential Matches in Library"}
+            width={"600px"}
+          >
+            {slidingPanelContentId !== "" &&
+              contentForSlidingPanel[slidingPanelContentId].content()}
+          </SlidingPane>
+        </div>
+      </>
     );
   } else {
     return <></>;
