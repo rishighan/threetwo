@@ -1,5 +1,5 @@
 import { isEmpty, isUndefined, map, partialRight, pick } from "lodash";
-import React, { useEffect, ReactElement, useState, useCallback } from "react";
+import React, { ReactElement, useState, useCallback } from "react";
 import { useParams } from "react-router";
 import { analyzeLibrary } from "../../actions/comicinfo.actions";
 import { useQuery, useMutation, QueryClient } from "@tanstack/react-query";
@@ -19,6 +19,7 @@ const VolumeDetails = (props): ReactElement => {
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
   const [matches, setMatches] = useState([]);
+  const [storyArcsData, setStoryArcsData] = useState([]);
   const [active, setActive] = useState(1);
 
   // sliding panel init
@@ -45,14 +46,6 @@ const VolumeDetails = (props): ReactElement => {
   //     dispatch(analyzeLibrary(issues));
   //   }, []);
   //
-  //   const comicObject = useSelector(
-  //     (state: RootState) => state.comicInfo.comicBookDetail,
-  //   );
-
-  useEffect(() => {
-    // dispatch(getIssuesForSeries(comicObjectId));
-    // dispatch(getComicBookDetailById(comicObjectId));
-  }, []);
 
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
 
@@ -85,6 +78,20 @@ const VolumeDetails = (props): ReactElement => {
       }),
     queryKey: ["issuesForSeries"],
     enabled: false,
+  });
+  // get story arcs
+  const getStoryArcs = useMutation({
+    mutationFn: async (comicObject) =>
+      axios({
+        url: `${COMICVINE_SERVICE_URI}/getStoryArcs`,
+        method: "POST",
+        data: {
+          comicObject,
+        },
+      }),
+    onSuccess: (data) => {
+      setStoryArcsData(data?.data.results);
+    },
   });
 
   console.log("jihya", issuesForSeries);
@@ -145,7 +152,26 @@ const VolumeDetails = (props): ReactElement => {
         <i className="icon-[solar--book-bookmark-bold-duotone] w-6 h-6"></i>
       ),
       name: "Story Arcs",
-      content: <div key={3}>Story Arcs</div>,
+      content: (
+        <div key={3}>
+          <button
+            className=""
+            onClick={() => getStoryArcs.mutate(comicObject?.data)}
+          >
+            Get story arcs
+          </button>
+
+          {!isEmpty(storyArcsData) && (
+            <>
+              <ul>
+                {storyArcsData.map((storyArc) => {
+                  return <li>{storyArc?.name}</li>;
+                })}
+              </ul>
+            </>
+          )}
+        </div>
+      ),
     },
   ];
 
