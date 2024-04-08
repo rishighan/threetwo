@@ -1,4 +1,4 @@
-import { isEmpty, isUndefined, map, partialRight, pick } from "lodash";
+import { isEmpty, isNil, isUndefined, map, partialRight, pick } from "lodash";
 import React, { ReactElement, useState, useCallback } from "react";
 import { useParams } from "react-router";
 import { analyzeLibrary } from "../../actions/comicinfo.actions";
@@ -61,7 +61,7 @@ const VolumeDetails = (props): ReactElement => {
         }),
       queryKey: ["comicObject"],
     });
-
+  console.log(comicObject);
   // get issues for a series
   const {
     data: issuesForSeries,
@@ -70,24 +70,27 @@ const VolumeDetails = (props): ReactElement => {
   } = useQuery({
     queryFn: async () =>
       await axios({
-        url: `${COMICVINE_SERVICE_URI}/getIssuesForSeries`,
+        url: `${COMICVINE_SERVICE_URI}/getIssuesForVolume`,
         method: "POST",
         data: {
-          comicObjectId,
+          volumeId:
+            comicObject?.data?.sourcedMetadata.comicvine.volumeInformation.id,
         },
       }),
-    queryKey: ["issuesForSeries"],
-    enabled: false,
+    queryKey: ["issuesForSeries", comicObject?.data],
+    enabled: !isUndefined(comicObject?.data),
   });
   // get story arcs
   const useGetStoryArcs = () => {
     return useMutation({
       mutationFn: async (comicObject) =>
         axios({
-          url: `${COMICVINE_SERVICE_URI}/getStoryArcs`,
+          url: `${COMICVINE_SERVICE_URI}/getResource`,
           method: "POST",
           data: {
             comicObject,
+            resource: "issue",
+            filter: `id:${comicObject?.sourcedMetadata.comicvine.id}`,
           },
         }),
       onSuccess: (data) => {
@@ -141,13 +144,25 @@ const VolumeDetails = (props): ReactElement => {
     </>
   );
 
+  const Issues = () => (
+    <>
+      as
+      <ul>
+        {isSuccess &&
+          issuesForSeries?.data.map((issue) => {
+            return <li>{JSON.stringify(issue, null, 2)}</li>;
+          })}
+      </ul>
+    </>
+  );
+
   // Tab content and header details
   const tabGroup = [
     {
       id: 1,
       name: "Issues in Volume",
       icon: <i className="icon-[solar--documents-bold-duotone] w-6 h-6"></i>,
-      content: <IssuesInVolume key={1} />,
+      content: <Issues />,
     },
     {
       id: 2,
