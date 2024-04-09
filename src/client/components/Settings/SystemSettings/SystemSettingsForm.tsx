@@ -48,13 +48,11 @@ export const SystemSettingsForm = (): ReactElement => {
         </article>
 
         <button
-          className={
-            isLoading ? "button is-danger is-loading" : "button is-danger"
-          }
+          className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-red-400 dark:border-red-200 bg-red-200 px-4 py-2 text-gray-500 hover:bg-transparent hover:text-red-600 focus:outline-none focus:ring active:text-indigo-500"
           onClick={() => flushDb()}
         >
-          <span className="icon">
-            <i className="fas fa-eraser"></i>
+          <span className="pt-1 px-1">
+            <i className="icon-[solar--trash-bin-trash-bold-duotone] w-7 h-7"></i>
           </span>
           <span>Flush DB & Temporary Folders</span>
         </button>

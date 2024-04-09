@@ -7,7 +7,7 @@ import Card from "../shared/Carda";
 import ellipsize from "ellipsize";
 import { convert } from "html-to-text";
 import dayjs from "dayjs";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   COMICVINE_SERVICE_URI,
   LIBRARY_SERVICE_BASE_URI,
@@ -23,32 +23,31 @@ export const Search = ({}: ISearchProps): ReactElement => {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [comicVineMetadata, setComicVineMetadata] = useState({});
-  const getCVSearchResults = (searchQuery) => {
-    setSearchQuery(searchQuery.search);
-  };
 
   const {
+    mutate,
     data: comicVineSearchResults,
-    isLoading,
+    isPending,
     isSuccess,
-  } = useQuery({
-    queryFn: async () =>
-      await axios({
+  } = useMutation({
+    mutationFn: async (data: { search: string; resource: string }) => {
+      const { search, resource } = data;
+      console.log(data);
+      return await axios({
         url: `${COMICVINE_SERVICE_URI}/search`,
         method: "GET",
         params: {
           api_key: "a5fa0663683df8145a85d694b5da4b87e1c92c69",
-          query: searchQuery,
+          query: search,
           format: "json",
           limit: "10",
           offset: "0",
           field_list:
-            "id,name,deck,api_detail_url,image,description,volume,cover_date",
-          resources: "issue",
+            "id,name,deck,api_detail_url,image,description,volume,cover_date,count_of_issues",
+          resources: resource,
         },
-      }),
-    queryKey: ["comicvineSearchResults", searchQuery],
-    enabled: !isNil(searchQuery),
+      });
+    },
   });
 
   // add to library
@@ -107,7 +106,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
         </header>
         <div className="mx-auto max-w-screen-sm px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
           <Form
-            onSubmit={getCVSearchResults}
+            onSubmit={mutate}
             initialValues={{
               ...formData,
             }}
@@ -139,19 +138,62 @@ export const Search = ({}: ISearchProps): ReactElement => {
                     Search
                   </button>
                 </div>
+                {/* resource type selection: volume, issue etc. */}
+                <div className="flex flex-row gap-3 mt-4">
+                  <Field name="resource" type="radio" value="volume">
+                    {({ input: volumesInput, meta }) => (
+                      <div className="w-fit rounded-xl">
+                        <div>
+                          <input
+                            {...volumesInput}
+                            type="radio"
+                            id="volume"
+                            className="peer hidden"
+                          />
+                          <label
+                            htmlFor="volume"
+                            className="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white"
+                          >
+                            Volumes
+                          </label>
+                        </div>
+                      </div>
+                    )}
+                  </Field>
+
+                  <Field name="resource" type="radio" value="issue">
+                    {({ input: issuesInput, meta }) => (
+                      <div className="w-fit rounded-xl">
+                        <div>
+                          <input
+                            {...issuesInput}
+                            type="radio"
+                            id="issue"
+                            className="peer hidden"
+                          />
+                          <label
+                            htmlFor="issue"
+                            className="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white"
+                          >
+                            Issues
+                          </label>
+                        </div>
+                      </div>
+                    )}
+                  </Field>
+                </div>
               </form>
             )}
           />
         </div>
-        {isLoading && <>Loading kaka...</>}
-        {!isNil(comicVineSearchResults?.data.results) &&
-        !isEmpty(comicVineSearchResults?.data.results) ? (
+        {isPending && <>Loading results...</>}
+        {!isEmpty(comicVineSearchResults?.data?.results) ? (
           <div className="mx-auto max-w-screen-xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
             {comicVineSearchResults.data.results.map((result) => {
-              return isSuccess ? (
+              return result.resource_type === "issue" ? (
                 <div key={result.id} className="mb-5">
                   <div className="flex flex-row">
-                    <div className="mr-5">
+                    <div className="mr-5 min-w-[200px] max-w-[25%]">
                       <Card
                         key={result.id}
                         orientation={"cover-only"}
@@ -159,7 +201,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
                         hasDetails={false}
                       />
                     </div>
-                    <div className="column">
+                    <div className="w-3/4">
                       <div className="text-xl">
                         {!isEmpty(result.volume.name) ? (
                           result.volume.name
@@ -167,22 +209,14 @@ export const Search = ({}: ISearchProps): ReactElement => {
                           <span className="is-size-3">No Name</span>
                         )}
                       </div>
-                      <div className="field is-grouped mt-1">
-                        <div className="control">
-                          <div className="tags has-addons">
-                            <span className="tag is-light">Cover date</span>
-                            <span className="tag is-info is-light">
-                              {dayjs(result.cover_date).format("MMM D, YYYY")}
-                            </span>
-                          </div>
-                        </div>
+                      {result.cover_date && (
+                        <p>
+                          <span className="tag is-light">Cover date</span>
+                          {dayjs(result.cover_date).format("MMM D, YYYY")}
+                        </p>
+                      )}
 
-                        <div className="control">
-                          <div className="tags has-addons">
-                            <span className="tag is-warning">{result.id}</span>
-                          </div>
-                        </div>
-                      </div>
+                      <p className="tag is-warning">{result.id}</p>
 
                       <a href={result.api_detail_url}>
                         {result.api_detail_url}
@@ -210,7 +244,72 @@ export const Search = ({}: ISearchProps): ReactElement => {
                   </div>
                 </div>
               ) : (
-                <div>Loading</div>
+                result.resource_type === "volume" && (
+                  <div key={result.id} className="mb-5">
+                    <div className="flex flex-row">
+                      <div className="mr-5">
+                        <Card
+                          key={result.id}
+                          orientation={"cover-only"}
+                          imageUrl={result.image.small_url}
+                          hasDetails={false}
+                        />
+                      </div>
+                      <div className="column">
+                        <div className="text-xl">
+                          {!isEmpty(result.name) ? (
+                            result.name
+                          ) : (
+                            <span className="is-size-3">No Name</span>
+                          )}
+                        </div>
+                        <div className="field is-grouped mt-1">
+                          <div className="control">
+                            <div className="tags has-addons">
+                              <span className="tag is-light">
+                                Number of issues
+                              </span>
+                              <span className="tag is-info is-light">
+                                {result.count_of_issues}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="control">
+                            <div className="tags has-addons">
+                              <span className="tag is-warning">
+                                {result.id}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <a href={result.api_detail_url}>
+                          {result.api_detail_url}
+                        </a>
+                        <p>
+                          {ellipsize(
+                            convert(result.description, {
+                              baseElements: {
+                                selectors: ["p", "div"],
+                              },
+                            }),
+                            320,
+                          )}
+                        </p>
+                        <div className="mt-2">
+                          <button
+                            className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-2 py-2 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+                            onClick={() => addToLibrary("comicvine", result)}
+                          >
+                            <i className="icon-[solar--add-square-bold-duotone] w-6 h-6 mr-2"></i>{" "}
+                            Mark as Wanted
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )
               );
             })}
           </div>

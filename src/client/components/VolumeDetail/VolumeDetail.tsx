@@ -61,7 +61,7 @@ const VolumeDetails = (props): ReactElement => {
         }),
       queryKey: ["comicObject"],
     });
-  console.log(comicObject);
+
   // get issues for a series
   const {
     data: issuesForSeries,
@@ -108,7 +108,6 @@ const VolumeDetails = (props): ReactElement => {
     status,
   } = useGetStoryArcs();
 
-  console.log("jihya", issuesForSeries);
   const IssuesInVolume = () => (
     <>
       {!isUndefined(issuesForSeries) ? (
@@ -146,13 +145,42 @@ const VolumeDetails = (props): ReactElement => {
 
   const Issues = () => (
     <>
-      as
-      <ul>
+      <article
+        role="alert"
+        className="mt-4 rounded-lg text-sm max-w-screen-md border-s-4 border-blue-500 bg-blue-50 p-4 dark:border-s-4 dark:border-blue-600 dark:bg-blue-300 dark:text-slate-600"
+      >
+        <div>
+          You can add a single issue or the whole volume, and it will be added
+          to the list of `Wanted` items.
+        </div>
+      </article>
+      <div className="flex flex-wrap">
         {isSuccess &&
           issuesForSeries?.data.map((issue) => {
-            return <li>{JSON.stringify(issue, null, 2)}</li>;
+            return (
+              <div className="my-3 dark:bg-slate-400 bg-slate-300 p-4 rounded-lg w-3/4">
+                <div className="flex flex-row gap-4 mb-2">
+                  <div className="w-fit">
+                    <img
+                      src={issue.image.thumb_url}
+                      className="w-full rounded-md"
+                    />
+                  </div>
+                  <div className="w-3/4">
+                    <p className="text-xl">{issue.name}</p>
+                    <p className="text-sm">
+                      {convert(issue.description, {
+                        baseElements: {
+                          selectors: ["p"],
+                        },
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
           })}
-      </ul>
+      </div>
     </>
   );
 
@@ -265,9 +293,9 @@ const VolumeDetails = (props): ReactElement => {
               />
 
               <div>
-                <div className="field is-grouped mt-2">
+                <div className="field is-grouped">
                   {/* Title */}
-                  <span className="text-xl">
+                  <span className="text-2xl">
                     {sourcedMetadata.comicvine.volumeInformation.name}
                   </span>
                   {/* Comicvine Id */}

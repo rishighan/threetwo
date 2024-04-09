@@ -58,10 +58,10 @@ export const Volumes = (props): ReactElement => {
                   hasDetails={false}
                 />
               </Link>
-              <div className="dark:bg-[#647587] bg-slate-200 p-3 rounded-lg h-fit">
-                <span className="text-xl mb-1">
+              <div className="dark:bg-[#647587] bg-slate-200 rounded-lg w-3/4 h-fit p-3">
+                <div className="text-xl mb-1 w-fit">
                   {sourcedMetadata.comicvine.volumeInformation.name}
-                </span>
+                </div>
                 <p>
                   {ellipsize(
                     convert(
@@ -72,7 +72,7 @@ export const Volumes = (props): ReactElement => {
                         },
                       },
                     ),
-                    120,
+                    180,
                   )}
                 </p>
               </div>
