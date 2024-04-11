@@ -1,13 +1,14 @@
-import React, { useCallback, ReactElement, useState } from "react";
-import { isNil, isEmpty } from "lodash";
+import React, { ReactElement, useState } from "react";
+import { isNil, isEmpty, isUndefined } from "lodash";
 import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";
-
+import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
 import { Form, Field } from "react-final-form";
 import Card from "../shared/Carda";
 import ellipsize from "ellipsize";
 import { convert } from "html-to-text";
+import PopoverButton from "../shared/PopoverButton";
 import dayjs from "dayjs";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   COMICVINE_SERVICE_URI,
   LIBRARY_SERVICE_BASE_URI,
@@ -20,9 +21,12 @@ export const Search = ({}: ISearchProps): ReactElement => {
   const formData = {
     search: "",
   };
-  const queryClient = useQueryClient();
-  const [searchQuery, setSearchQuery] = useState("");
   const [comicVineMetadata, setComicVineMetadata] = useState({});
+  const [selectedResource, setSelectedResource] = useState("volume");
+
+  const handleResourceChange = (value) => {
+    setSelectedResource(value);
+  };
 
   const {
     mutate,
@@ -43,7 +47,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
           limit: "10",
           offset: "0",
           field_list:
-            "id,name,deck,api_detail_url,image,description,volume,cover_date,count_of_issues",
+            "id,name,deck,api_detail_url,image,description,volume,cover_date,start_year,count_of_issues",
           resources: resource,
         },
       });
@@ -86,6 +90,17 @@ export const Search = ({}: ISearchProps): ReactElement => {
     return { __html: html };
   };
 
+  const onSubmit = async (values) => {
+    // Include the selected resource value in the form data
+    const formData = { ...values, resource: selectedResource };
+    try {
+      mutate(formData);
+      // Handle response
+    } catch (error) {
+      // Handle error
+    }
+  };
+
   return (
     <div>
       <section>
@@ -106,7 +121,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
         </header>
         <div className="mx-auto max-w-screen-sm px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
           <Form
-            onSubmit={mutate}
+            onSubmit={onSubmit}
             initialValues={{
               ...formData,
             }}
@@ -148,6 +163,8 @@ export const Search = ({}: ISearchProps): ReactElement => {
                             {...volumesInput}
                             type="radio"
                             id="volume"
+                            checked={selectedResource === "volume"}
+                            onChange={() => handleResourceChange("volume")}
                             className="peer hidden"
                           />
                           <label
@@ -169,6 +186,8 @@ export const Search = ({}: ISearchProps): ReactElement => {
                             {...issuesInput}
                             type="radio"
                             id="issue"
+                            checked={selectedResource === "issue"}
+                            onChange={() => handleResourceChange("issue")}
                             className="peer hidden"
                           />
                           <label
@@ -186,14 +205,21 @@ export const Search = ({}: ISearchProps): ReactElement => {
             )}
           />
         </div>
-        {isPending && <>Loading results...</>}
+        {isPending && (
+          <div className="max-w-screen-xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
+            Loading results...
+          </div>
+        )}
         {!isEmpty(comicVineSearchResults?.data?.results) ? (
           <div className="mx-auto max-w-screen-xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
             {comicVineSearchResults.data.results.map((result) => {
               return result.resource_type === "issue" ? (
-                <div key={result.id} className="mb-5">
+                <div
+                  key={result.id}
+                  className="mb-5 dark:bg-slate-400 p-4 rounded-lg"
+                >
                   <div className="flex flex-row">
-                    <div className="mr-5 min-w-[200px] max-w-[25%]">
+                    <div className="mr-5 min-w-[80px] max-w-[13%]">
                       <Card
                         key={result.id}
                         orientation={"cover-only"}
@@ -221,7 +247,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
                       <a href={result.api_detail_url}>
                         {result.api_detail_url}
                       </a>
-                      <p>
+                      <p className="text-sm">
                         {ellipsize(
                           convert(result.description, {
                             baseElements: {
@@ -245,9 +271,12 @@ export const Search = ({}: ISearchProps): ReactElement => {
                 </div>
               ) : (
                 result.resource_type === "volume" && (
-                  <div key={result.id} className="mb-5">
+                  <div
+                    key={result.id}
+                    className="mb-5 dark:bg-slate-500 p-4 rounded-lg"
+                  >
                     <div className="flex flex-row">
-                      <div className="mr-5">
+                      <div className="mr-5 min-w-[80px] max-w-[13%]">
                         <Card
                           key={result.id}
                           orientation={"cover-only"}
@@ -255,39 +284,63 @@ export const Search = ({}: ISearchProps): ReactElement => {
                           hasDetails={false}
                         />
                       </div>
-                      <div className="column">
+                      <div className="w-3/4">
                         <div className="text-xl">
                           {!isEmpty(result.name) ? (
                             result.name
                           ) : (
-                            <span className="is-size-3">No Name</span>
+                            <span className="text-xl">No Name</span>
                           )}
+                          {result.start_year && <> ({result.start_year})</>}
                         </div>
-                        <div className="field is-grouped mt-1">
-                          <div className="control">
-                            <div className="tags has-addons">
-                              <span className="tag is-light">
-                                Number of issues
+                        <div className="flex flex-row gap-2">
+                          {/* issue count */}
+                          <div className="my-2">
+                            <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                              <span className="pr-1 pt-1">
+                                <i className="icon-[solar--documents-minimalistic-bold-duotone] w-5 h-5"></i>
                               </span>
-                              <span className="tag is-info is-light">
-                                {result.count_of_issues}
-                              </span>
-                            </div>
-                          </div>
 
-                          <div className="control">
-                            <div className="tags has-addons">
-                              <span className="tag is-warning">
-                                {result.id}
+                              <span className="text-md text-slate-500 dark:text-slate-900">
+                                {result.count_of_issues} issues
                               </span>
-                            </div>
+                            </span>
                           </div>
+                          {/* type: TPB, one-shot, graphic novel etc. */}
+                          {!isNil(result.description) &&
+                            !isUndefined(result.description) && (
+                              <>
+                                {!isEmpty(
+                                  detectIssueTypes(result.description),
+                                ) && (
+                                  <div className="my-2">
+                                    <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                                      <span className="pr-1 pt-1">
+                                        <i className="icon-[solar--book-2-line-duotone] w-5 h-5"></i>
+                                      </span>
+
+                                      <span className="text-md text-slate-500 dark:text-slate-900">
+                                        {
+                                          detectIssueTypes(result.description)
+                                            .displayName
+                                        }
+                                      </span>
+                                    </span>
+                                  </div>
+                                )}
+                              </>
+                            )}
                         </div>
 
-                        <a href={result.api_detail_url}>
-                          {result.api_detail_url}
-                        </a>
+                        <span className="tag is-warning">{result.id}</span>
                         <p>
+                          <a href={result.api_detail_url}>
+                            {result.api_detail_url}
+                          </a>
+                        </p>
+
+                        {/* description */}
+                        <p className="text-sm">
                           {ellipsize(
                             convert(result.description, {
                               baseElements: {
@@ -298,13 +351,8 @@ export const Search = ({}: ISearchProps): ReactElement => {
                           )}
                         </p>
                         <div className="mt-2">
-                          <button
-                            className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-2 py-2 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
-                            onClick={() => addToLibrary("comicvine", result)}
-                          >
-                            <i className="icon-[solar--add-square-bold-duotone] w-6 h-6 mr-2"></i>{" "}
-                            Mark as Wanted
-                          </button>
+                          <PopoverButton issuesCount={result.count_of_issues} />
+                          {/* onClick={() => addToLibrary("comicvine", result) */}
                         </div>
                       </div>
                     </div>

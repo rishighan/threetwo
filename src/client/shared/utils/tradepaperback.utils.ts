@@ -16,6 +16,7 @@ export const detectIssueTypes = (deck: string): any => {
   const matches = map(issueTypeMatchers, (matcher) => {
     return getIssueTypeDisplayName(deck, matcher.regex, matcher.displayName);
   });
+
   return compact(matches)[0];
 };
 
