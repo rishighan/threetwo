@@ -1,0 +1,4 @@
+{
+  "issueWithCount_one": "{{count}} issue",
+  "issueWithCount_other": "{{count}} issues"
+}

@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useFloating, offset, flip } from "@floating-ui/react-dom";
+import { useTranslation } from "react-i18next";
+import "../../shared/utils/i18n.util"; // Ensure you import your i18n configuration
 
-const PopoverButton = ({ issuesCount }) => {
+const PopoverButton = ({ content }) => {
   const [isVisible, setIsVisible] = useState(false);
   // Use destructuring to obtain the reference and floating setters, among other values.
   const { x, y, refs, strategy, floatingStyles } = useFloating({
@@ -9,6 +11,7 @@ const PopoverButton = ({ issuesCount }) => {
     middleware: [offset(8), flip()],
     strategy: "absolute",
   });
+  const { t } = useTranslation();
   return (
     <div>
       {/* Apply the reference setter directly to the ref prop */}
@@ -31,8 +34,7 @@ const PopoverButton = ({ issuesCount }) => {
           className="text-sm bg-slate-400 p-2 rounded-md"
           role="tooltip"
         >
-          Adding this volume will add all {issuesCount} issues to your wanted
-          list.
+          {content}
         </div>
       )}
     </div>

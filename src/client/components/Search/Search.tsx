@@ -6,6 +6,8 @@ import { Form, Field } from "react-final-form";
 import Card from "../shared/Carda";
 import ellipsize from "ellipsize";
 import { convert } from "html-to-text";
+import { useTranslation } from "react-i18next";
+import "../../shared/utils/i18n.util"; // Ensure you import your i18n configuration
 import PopoverButton from "../shared/PopoverButton";
 import dayjs from "dayjs";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -23,7 +25,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
   };
   const [comicVineMetadata, setComicVineMetadata] = useState({});
   const [selectedResource, setSelectedResource] = useState("volume");
-
+  const { t } = useTranslation();
   const handleResourceChange = (value) => {
     setSelectedResource(value);
   };
@@ -293,19 +295,24 @@ export const Search = ({}: ISearchProps): ReactElement => {
                           )}
                           {result.start_year && <> ({result.start_year})</>}
                         </div>
+
                         <div className="flex flex-row gap-2">
                           {/* issue count */}
-                          <div className="my-2">
-                            <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                              <span className="pr-1 pt-1">
-                                <i className="icon-[solar--documents-minimalistic-bold-duotone] w-5 h-5"></i>
-                              </span>
+                          {result.count_of_issues && (
+                            <div className="my-2">
+                              <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                                <span className="pr-1 pt-1">
+                                  <i className="icon-[solar--documents-minimalistic-bold-duotone] w-5 h-5"></i>
+                                </span>
 
-                              <span className="text-md text-slate-500 dark:text-slate-900">
-                                {result.count_of_issues} issues
+                                <span className="text-md text-slate-500 dark:text-slate-900">
+                                  {t("issueWithCount", {
+                                    count: result.count_of_issues,
+                                  })}
+                                </span>
                               </span>
-                            </span>
-                          </div>
+                            </div>
+                          )}
                           {/* type: TPB, one-shot, graphic novel etc. */}
                           {!isNil(result.description) &&
                             !isUndefined(result.description) && (
@@ -351,7 +358,14 @@ export const Search = ({}: ISearchProps): ReactElement => {
                           )}
                         </p>
                         <div className="mt-2">
-                          <PopoverButton issuesCount={result.count_of_issues} />
+                          <PopoverButton
+                            content={`Adding this volume will add ${t(
+                              "issueWithCount",
+                              {
+                                count: result.count_of_issues,
+                              },
+                            )} to your wanted list.`}
+                          />
                           {/* onClick={() => addToLibrary("comicvine", result) */}
                         </div>
                       </div>

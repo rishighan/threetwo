@@ -7,6 +7,7 @@ import Settings from "./components/Settings/Settings";
 import { ErrorPage } from "./components/shared/ErrorPage";
 const rootEl = document.getElementById("root");
 const root = createRoot(rootEl);
+import i18n from "./shared/utils/i18n.util";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Import from "./components/Import/Import";
 import Dashboard from "./components/Dashboard/Dashboard";
