@@ -21,13 +21,15 @@ export const Dashboard = (): ReactElement => {
             limit: 5,
             sort: { updatedAt: "-1" },
           },
-          predicate: { "acquisition.source.wanted": false },
+          predicate: {
+            wanted: { $exists: false },
+          },
           comicStatus: "recent",
         },
       }),
     queryKey: ["recentComics"],
   });
-
+  // Wanted Comics
   const { data: wantedComics } = useQuery({
     queryFn: async () =>
       await axios({
@@ -39,7 +41,9 @@ export const Dashboard = (): ReactElement => {
             limit: 5,
             sort: { updatedAt: "-1" },
           },
-          predicate: { "acquisition.source.wanted": true },
+          predicate: {
+            wanted: { $exists: true, $ne: null },
+          },
         },
       }),
     queryKey: ["wantedComics"],

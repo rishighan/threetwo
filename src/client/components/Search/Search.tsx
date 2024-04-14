@@ -49,7 +49,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
           limit: "10",
           offset: "0",
           field_list:
-            "id,name,deck,api_detail_url,image,description,volume,cover_date,start_year,count_of_issues",
+            "id,name,deck,api_detail_url,image,description,volume,cover_date,start_year,count_of_issues,publisher",
           resources: resource,
         },
       });
@@ -57,17 +57,49 @@ export const Search = ({}: ISearchProps): ReactElement => {
   });
 
   // add to library
-  const { data: additionResult } = useQuery({
-    queryFn: async () =>
-      await axios({
+  const { data: additionResult, mutate: addToWantedList } = useMutation({
+    mutationFn: async ({
+      source,
+      comicObject,
+      markEntireVolumeWanted,
+      resourceType,
+    }) => {
+      console.log("jigni", comicObject);
+      let volumeInformation = {};
+      let issues = [];
+      switch (resourceType) {
+        case "issue":
+          const { id, api_detail_url, image } = comicObject;
+          // Add issue metadata
+          issues.push({ id, api_detail_url, image });
+          // Get volume metadata from CV
+          console.log("volume", comicObject.volume.id);
+          const response = await axios({
+            url: `${COMICVINE_SERVICE_URI}/getVolumes`,
+            method: "POST",
+            data: {
+              volumeURI: comicObject.volume.api_detail_url,
+              fieldList:
+                "id,name,deck,api_detail_url,image,description,start_year,count_of_issues,publisher,first_issue,last_issue",
+            },
+          });
+          console.log("boogie", response.data);
+          volumeInformation = response.data?.results;
+          break;
+
+        case "volume":
+          volumeInformation = comicObject;
+          break;
+
+        default:
+          break;
+      }
+      return await axios({
         url: `${LIBRARY_SERVICE_BASE_URI}/rawImportToDb`,
         method: "POST",
         data: {
           importType: "new",
           payload: {
-            rawFileDetails: {
-              name: "",
-            },
             importStatus: {
               isImported: true,
               tagged: false,
@@ -75,14 +107,17 @@ export const Search = ({}: ISearchProps): ReactElement => {
                 score: "0",
               },
             },
-            sourcedMetadata:
-              { comicvine: comicVineMetadata?.comicData } || null,
-            acquisition: { source: { wanted: true, name: "comicvine" } },
+            wanted: {
+              source,
+              markEntireVolumeWanted,
+              issues,
+              volume: {},
+            },
+            sourcedMetadata: { comicvine: volumeInformation } || null,
           },
         },
-      }),
-    queryKey: ["additionResult"],
-    enabled: !isNil(comicVineMetadata.comicData),
+      });
+    },
   });
 
   const addToLibrary = (sourceName: string, comicData) =>
@@ -93,11 +128,9 @@ export const Search = ({}: ISearchProps): ReactElement => {
   };
 
   const onSubmit = async (values) => {
-    // Include the selected resource value in the form data
     const formData = { ...values, resource: selectedResource };
     try {
       mutate(formData);
-      // Handle response
     } catch (error) {
       // Handle error
     }
@@ -260,13 +293,17 @@ export const Search = ({}: ISearchProps): ReactElement => {
                         )}
                       </p>
                       <div className="mt-2">
-                        <button
-                          className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-2 py-2 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
-                          onClick={() => addToLibrary("comicvine", result)}
-                        >
-                          <i className="icon-[solar--add-square-bold-duotone] w-6 h-6 mr-2"></i>{" "}
-                          Mark as Wanted
-                        </button>
+                        <PopoverButton
+                          content={`This will add ${result.volume.name} to your wanted list.`}
+                          clickHandler={() =>
+                            addToWantedList({
+                              source: "comicvine",
+                              comicObject: result,
+                              markEntireVolumeWanted: false,
+                              resourceType: "issue",
+                            })
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -365,8 +402,15 @@ export const Search = ({}: ISearchProps): ReactElement => {
                                 count: result.count_of_issues,
                               },
                             )} to your wanted list.`}
+                            clickHandler={() =>
+                              addToWantedList({
+                                source: "comicvine",
+                                comicObject: result,
+                                markEntireVolumeWanted: true,
+                                resourceType: "volume",
+                              })
+                            }
                           />
-                          {/* onClick={() => addToLibrary("comicvine", result) */}
                         </div>
                       </div>
                     </div>
