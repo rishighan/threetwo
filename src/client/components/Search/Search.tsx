@@ -73,7 +73,6 @@ export const Search = ({}: ISearchProps): ReactElement => {
           // Add issue metadata
           issues.push({ id, api_detail_url, image });
           // Get volume metadata from CV
-          console.log("volume", comicObject.volume.id);
           const response = await axios({
             url: `${COMICVINE_SERVICE_URI}/getVolumes`,
             method: "POST",
@@ -83,17 +82,32 @@ export const Search = ({}: ISearchProps): ReactElement => {
                 "id,name,deck,api_detail_url,image,description,start_year,count_of_issues,publisher,first_issue,last_issue",
             },
           });
-          console.log("boogie", response.data);
+          // set volume metadata key
           volumeInformation = response.data?.results;
           break;
 
         case "volume":
-          volumeInformation = comicObject;
+          const {
+            id: volumeId,
+            api_detail_url: apiUrl,
+            image: volumeImage,
+            name,
+            publisher,
+          } = comicObject;
+          volumeInformation = {
+            id: volumeId,
+            url: apiUrl,
+            image: volumeImage,
+            name,
+            publisher,
+          };
           break;
 
         default:
+          console.log("Invalid resource type.");
           break;
       }
+      // Add to wanted list
       return await axios({
         url: `${LIBRARY_SERVICE_BASE_URI}/rawImportToDb`,
         method: "POST",
@@ -101,7 +115,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
           importType: "new",
           payload: {
             importStatus: {
-              isImported: true,
+              isImported: false, // wanted, but not acquired yet.
               tagged: false,
               matchedResult: {
                 score: "0",
@@ -111,9 +125,9 @@ export const Search = ({}: ISearchProps): ReactElement => {
               source,
               markEntireVolumeWanted,
               issues,
-              volume: {},
+              volume: volumeInformation,
             },
-            sourcedMetadata: { comicvine: volumeInformation } || null,
+            sourcedMetadata: { comicvine: volumeInformation },
           },
         },
       });
