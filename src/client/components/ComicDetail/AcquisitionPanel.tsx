@@ -21,17 +21,10 @@ interface IAcquisitionPanelProps {
 export const AcquisitionPanel = (
   props: IAcquisitionPanelProps,
 ): ReactElement => {
-  const {
-    airDCPPSocketInstance,
-    airDCPPClientConfiguration,
-    airDCPPSessionInformation,
-    airDCPPDownloadTick,
-  } = useStore(
+  const { airDCPPSocketInstance, socketIOInstance } = useStore(
     useShallow((state) => ({
       airDCPPSocketInstance: state.airDCPPSocketInstance,
-      airDCPPClientConfiguration: state.airDCPPClientConfiguration,
-      airDCPPSessionInformation: state.airDCPPSessionInformation,
-      airDCPPDownloadTick: state.airDCPPDownloadTick,
+      socketIOInstance: state.socketIOInstance,
     })),
   );
 
@@ -40,7 +33,18 @@ export const AcquisitionPanel = (
     hub_urls: string[] | undefined | null;
     priority: PriorityEnum;
   }
+  interface SearchResult {
+    result: {
+      id: number;
+    };
+    search_id: number;
+    // Add other properties as needed
+  }
 
+  const handleSearch = (searchQuery) => {
+    // Use the already connected socket instance to emit events
+    socketIOInstance.emit("initiateSearch", searchQuery);
+  };
   /**
    * Get the hubs list from an AirDCPP Socket
    */
@@ -53,7 +57,9 @@ export const AcquisitionPanel = (
   const sanitizedIssueName = issueName.replace(/[^a-zA-Z0-9 ]/g, " ");
 
   const [dcppQuery, setDcppQuery] = useState({});
-  const [airDCPPSearchResults, setAirDCPPSearchResults] = useState([]);
+  const [airDCPPSearchResults, setAirDCPPSearchResults] = useState<
+    SearchResult[]
+  >([]);
   const [airDCPPSearchStatus, setAirDCPPSearchStatus] = useState(false);
   const [airDCPPSearchInstance, setAirDCPPSearchInstance] = useState({});
   const [airDCPPSearchInfo, setAirDCPPSearchInfo] = useState({});
@@ -61,7 +67,7 @@ export const AcquisitionPanel = (
 
   // Construct a AirDC++ query based on metadata inferred, upon component mount
   // Pre-populate the search input with the search string, so that
-  // All the user has to do is hit "Search AirDC++"
+  // all the user has to do is hit "Search AirDC++" to perform a search
   useEffect(() => {
     // AirDC++ search query
     const dcppSearchQuery = {
@@ -80,79 +86,54 @@ export const AcquisitionPanel = (
    * @param {SearchData} data - a SearchData query
    * @param {any} ADCPPSocket - an intialized AirDC++ socket instance
    */
-  const search = async (data: SearchData, ADCPPSocket: any) => {
-    try {
-      if (!ADCPPSocket.isConnected()) {
-        await ADCPPSocket();
-      }
-      const instance: SearchInstance = await ADCPPSocket.post("search");
-      setAirDCPPSearchStatus(true);
-
-      // We want to get notified about every new result in order to make the user experience better
-      await ADCPPSocket.addListener(
-        `search`,
-        "search_result_added",
-        async (groupedResult) => {
-          // ...add the received result in the UI
-          // (it's probably a good idea to have some kind of throttling for the UI updates as there can be thousands of results)
-          setAirDCPPSearchResults((state) => [...state, groupedResult]);
+  const search = async (searchData: any) => {
+    setAirDCPPSearchResults([]);
+    socketIOInstance.emit(
+      "call",
+      "socket.search",
+      {
+        query: searchData,
+        config: {
+          protocol: `ws`,
+          hostname: `localhost:5600`,
+          username: `user`,
+          password: `pass`,
         },
-        instance.id,
-      );
-
-      // We also want to update the existing items in our list when new hits arrive for the previously listed files/directories
-      await ADCPPSocket.addListener(
-        `search`,
-        "search_result_updated",
-        async (groupedResult) => {
-          // ...update properties of the existing result in the UI
-          const bundleToUpdateIndex = airDCPPSearchResults?.findIndex(
-            (bundle) => bundle.result.id === groupedResult.result.id,
-          );
-          const updatedState = [...airDCPPSearchResults];
-          if (
-            !isNil(difference(updatedState[bundleToUpdateIndex], groupedResult))
-          ) {
-            updatedState[bundleToUpdateIndex] = groupedResult;
-          }
-          setAirDCPPSearchResults((state) => [...state, ...updatedState]);
-        },
-        instance.id,
-      );
-
-      // We need to show something to the user in case the search won't yield any results so that he won't be waiting forever)
-      // Wait for 5 seconds for any results to arrive after the searches were sent to the hubs
-      await ADCPPSocket.addListener(
-        `search`,
-        "search_hub_searches_sent",
-        async (searchInfo) => {
-          await sleep(5000);
-
-          // Check the number of received results (in real use cases we should know that even without calling the API)
-          const currentInstance = await ADCPPSocket.get(
-            `search/${instance.id}`,
-          );
-          setAirDCPPSearchInstance(currentInstance);
-          setAirDCPPSearchInfo(searchInfo);
-          if (currentInstance.result_count === 0) {
-            // ...nothing was received, show an informative message to the user
-            console.log("No more search results.");
-          }
-
-          // The search can now be considered to be "complete"
-          // If there's an "in progress" indicator in the UI, that could also be disabled here
-          setAirDCPPSearchInstance(instance);
-          setAirDCPPSearchStatus(false);
-        },
-        instance.id,
-      );
-      // Finally, perform the actual search
-      await ADCPPSocket.post(`search/${instance.id}/hub_search`, data);
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
+      },
+      (data: any) => console.log(data),
+    );
   };
+
+  socketIOInstance.on("searchResultAdded", (data: SearchResult) => {
+    setAirDCPPSearchResults((previousState) => {
+      const exists = previousState.some(
+        (item) => data.result.id === item.result.id,
+      );
+      if (!exists) {
+        return [...previousState, data];
+      }
+      return previousState;
+    });
+  });
+
+  socketIOInstance.on("searchResultUpdated", (groupedResult) => {
+    // ...update properties of the existing result in the UI
+    const bundleToUpdateIndex = airDCPPSearchResults?.findIndex(
+      (bundle) => bundle.result.id === groupedResult.result.id,
+    );
+    const updatedState = [...airDCPPSearchResults];
+    if (!isNil(difference(updatedState[bundleToUpdateIndex], groupedResult))) {
+      updatedState[bundleToUpdateIndex] = groupedResult;
+    }
+    setAirDCPPSearchResults((state) => [...state, ...updatedState]);
+  });
+
+  socketIOInstance.on("searchInitiated", (data) => {
+    setAirDCPPSearchInstance(data.instance);
+  });
+  socketIOInstance.on("searchesSent", (data) => {
+    setAirDCPPSearchInfo(data.searchInfo);
+  });
 
   /**
    * Method to download a bundle associated with a search result from AirDC++
@@ -162,7 +143,7 @@ export const AcquisitionPanel = (
    * @param {String} name - description
    * @param {Number} size - description
    * @param {any} type - description
-   * @param {any} ADCPPSocket - description
+   * @param {any} config - description
    * @returns {void}  - description
    */
   const download = async (
@@ -172,50 +153,22 @@ export const AcquisitionPanel = (
     name: String,
     size: Number,
     type: any,
-    ADCPPSocket: any,
+    config: any,
   ): void => {
-    try {
-      if (!ADCPPSocket.isConnected()) {
-        await ADCPPSocket.connect();
-      }
-      let bundleDBImportResult = {};
-      const downloadResult = await ADCPPSocket.post(
-        `search/${searchInstanceId}/results/${resultId}/download`,
-      );
-
-      if (!isNil(downloadResult)) {
-        bundleDBImportResult = await axios({
-          method: "POST",
-          url: `http://localhost:3000/api/library/applyAirDCPPDownloadMetadata`,
-          headers: {
-            "Content-Type": "application/json; charset=utf-8",
-          },
-          data: {
-            bundleId: downloadResult.bundle_info.id,
-            comicObjectId,
-            name,
-            size,
-            type,
-          },
-        });
-        console.log(bundleDBImportResult?.data);
-        queryClient.invalidateQueries({ queryKey: ["comicBookMetadata"] });
-
-        //         dispatch({
-        //           type: AIRDCPP_RESULT_DOWNLOAD_INITIATED,
-        //           downloadResult,
-        //           bundleDBImportResult,
-        //         });
-        //
-        //         dispatch({
-        //           type: IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
-        //           comicBookDetail: bundleDBImportResult.data,
-        //           IMS_inProgress: false,
-        //         });
-      }
-    } catch (error) {
-      throw error;
-    }
+    socketIOInstance.emit(
+      "call",
+      "socket.download",
+      {
+        searchInstanceId,
+        resultId,
+        comicObjectId,
+        name,
+        size,
+        type,
+        config,
+      },
+      (data: any) => console.log(data),
+    );
   };
   const getDCPPSearchResults = async (searchQuery) => {
     const manualQuery = {
@@ -227,7 +180,7 @@ export const AcquisitionPanel = (
       priority: 5,
     };
 
-    search(manualQuery, airDCPPSocketInstance);
+    search(manualQuery);
   };
 
   return (
@@ -358,7 +311,7 @@ export const AcquisitionPanel = (
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-gray-500">
-                {map(airDCPPSearchResults, ({ result }, idx) => {
+                {map(airDCPPSearchResults, ({ result, search_id }, idx) => {
                   return (
                     <tr
                       key={idx}
@@ -452,7 +405,12 @@ export const AcquisitionPanel = (
                               result.name,
                               result.size,
                               result.type,
-                              airDCPPSocketInstance,
+                              {
+                                protocol: `ws`,
+                                hostname: `localhost:5600`,
+                                username: `user`,
+                                password: `pass`,
+                              },
                             )
                           }
                         >
