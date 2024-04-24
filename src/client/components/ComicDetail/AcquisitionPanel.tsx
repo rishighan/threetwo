@@ -10,6 +10,7 @@ import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { AIRDCPP_SERVICE_BASE_URI } from "../../constants/endpoints";
 
 interface IAcquisitionPanelProps {
   query: any;
@@ -21,9 +22,8 @@ interface IAcquisitionPanelProps {
 export const AcquisitionPanel = (
   props: IAcquisitionPanelProps,
 ): ReactElement => {
-  const { airDCPPSocketInstance, socketIOInstance } = useStore(
+  const { socketIOInstance } = useStore(
     useShallow((state) => ({
-      airDCPPSocketInstance: state.airDCPPSocketInstance,
       socketIOInstance: state.socketIOInstance,
     })),
   );
@@ -45,12 +45,33 @@ export const AcquisitionPanel = (
     // Use the already connected socket instance to emit events
     socketIOInstance.emit("initiateSearch", searchQuery);
   };
+
+  const {
+    data: settings,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["settings"],
+    queryFn: async () =>
+      await axios({
+        url: "http://localhost:3000/api/settings/getAllSettings",
+        method: "GET",
+      }),
+  });
   /**
    * Get the hubs list from an AirDCPP Socket
    */
   const { data: hubs } = useQuery({
     queryKey: ["hubs"],
-    queryFn: async () => await airDCPPSocketInstance.get(`hubs`),
+    queryFn: async () =>
+      await axios({
+        url: `${AIRDCPP_SERVICE_BASE_URI}/getHubs`,
+        method: "POST",
+        data: {
+          host: settings?.data.directConnect?.client?.host,
+        },
+      }),
+    enabled: !isEmpty(settings?.data.directConnect?.client?.host),
   });
   const { comicObjectId } = props;
   const issueName = props.query.issue.name || "";
@@ -75,7 +96,7 @@ export const AcquisitionPanel = (
         pattern: `${sanitizedIssueName.replace(/#/g, "")}`,
         extensions: ["cbz", "cbr", "cb7"],
       },
-      hub_urls: map(hubs, (item) => item.value),
+      hub_urls: map(hubs?.data, (item) => item.value),
       priority: 5,
     };
     setDcppQuery(dcppSearchQuery);
@@ -116,7 +137,7 @@ export const AcquisitionPanel = (
     });
   });
 
-  socketIOInstance.on("searchResultUpdated", (groupedResult) => {
+  socketIOInstance.on("searchResultUpdated", (groupedResult: SearchResult) => {
     // ...update properties of the existing result in the UI
     const bundleToUpdateIndex = airDCPPSearchResults?.findIndex(
       (bundle) => bundle.result.id === groupedResult.result.id,
@@ -176,7 +197,7 @@ export const AcquisitionPanel = (
         pattern: `${searchQuery.issueName}`,
         extensions: ["cbz", "cbr", "cb7"],
       },
-      hub_urls: map(hubs, (hub) => hub.hub_url),
+      hub_urls: map(hubs?.data, (hub) => hub.hub_url),
       priority: 5,
     };
 
@@ -186,7 +207,7 @@ export const AcquisitionPanel = (
   return (
     <>
       <div className="mt-5">
-        {!isEmpty(airDCPPSocketInstance) ? (
+        {!isEmpty(hubs?.data) ? (
           <Form
             onSubmit={getDCPPSearchResults}
             initialValues={{
@@ -251,7 +272,7 @@ export const AcquisitionPanel = (
               <dl>
                 <dt>
                   <div className="mb-1">
-                    {hubs.map((value, idx) => (
+                    {hubs?.data.map((value, idx) => (
                       <span className="tag is-warning" key={idx}>
                         {value.identity.name}
                       </span>

@@ -104,3 +104,10 @@ export const TORRENT_JOB_SERVICE_BASE_URI = hostURIBuilder({
   port: "3000",
   apiPath: `/api/torrentjobs`,
 });
+
+export const AIRDCPP_SERVICE_BASE_URI = hostURIBuilder({
+  protocol: "http",
+  host: import.meta.env.UNDERLYING_HOSTNAME || "localhost",
+  port: "3000",
+  apiPath: `/api/airdcpp`,
+});

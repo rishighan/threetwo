@@ -3,20 +3,11 @@ import { Form, Field } from "react-final-form";
 import { isEmpty, isNil, isUndefined } from "lodash";
 import Select from "react-select";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useStore } from "../../../store";
 import axios from "axios";
+import { AIRDCPP_SERVICE_BASE_URI } from "../../../constants/endpoints";
 
 export const AirDCPPHubsForm = (): ReactElement => {
   const queryClient = useQueryClient();
-  const {
-    airDCPPSocketInstance,
-    airDCPPClientConfiguration,
-    airDCPPSessionInformation,
-  } = useStore((state) => ({
-    airDCPPSocketInstance: state.airDCPPSocketInstance,
-    airDCPPClientConfiguration: state.airDCPPClientConfiguration,
-    airDCPPSessionInformation: state.airDCPPSessionInformation,
-  }));
 
   const {
     data: settings,
@@ -36,11 +27,19 @@ export const AirDCPPHubsForm = (): ReactElement => {
    */
   const { data: hubs } = useQuery({
     queryKey: ["hubs"],
-    queryFn: async () => await airDCPPSocketInstance.get(`hubs`),
+    queryFn: async () =>
+      await axios({
+        url: `${AIRDCPP_SERVICE_BASE_URI}/getHubs`,
+        method: "POST",
+        data: {
+          host: settings?.data.directConnect?.client?.host,
+        },
+      }),
+    enabled: !isEmpty(settings?.data.directConnect?.client?.host),
   });
   let hubList = {};
   if (!isNil(hubs)) {
-    hubList = hubs.map(({ hub_url, identity }) => ({
+    hubList = hubs?.data.map(({ hub_url, identity }) => ({
       value: hub_url,
       label: identity.name,
     }));
@@ -101,7 +100,10 @@ export const AirDCPPHubsForm = (): ReactElement => {
         />
       ) : (
         <>
-          <article className="message">
+          <article
+            role="alert"
+            className="mt-4 rounded-lg max-w-screen-md border-s-4 border-yellow-500 bg-yellow-50 p-4 dark:border-s-4 dark:border-yellow-600 dark:bg-yellow-300 dark:text-slate-600"
+          >
             <div className="message-body">
               No configured hubs detected in AirDC++. <br />
               Configure to a hub in AirDC++ and then select a default hub here.

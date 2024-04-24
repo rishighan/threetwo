@@ -43,7 +43,7 @@ export const determineCoverFile = (data): any => {
     },
   };
   // comicvine
-  if (!isUndefined(data.comicvine)) {
+  if (!isEmpty(data.comicvine)) {
     coverFile.comicvine.url = data?.comicvine?.image.small_url;
     coverFile.comicvine.issueName = data.comicvine.name;
     coverFile.comicvine.publisher = data.comicvine.publisher.name;
