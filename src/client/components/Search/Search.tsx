@@ -7,10 +7,10 @@ import Card from "../shared/Carda";
 import ellipsize from "ellipsize";
 import { convert } from "html-to-text";
 import { useTranslation } from "react-i18next";
-import "../../shared/utils/i18n.util"; // Ensure you import your i18n configuration
+import "../../shared/utils/i18n.util";
 import PopoverButton from "../shared/PopoverButton";
 import dayjs from "dayjs";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
   COMICVINE_SERVICE_URI,
   LIBRARY_SERVICE_BASE_URI,
@@ -38,7 +38,6 @@ export const Search = ({}: ISearchProps): ReactElement => {
   } = useMutation({
     mutationFn: async (data: { search: string; resource: string }) => {
       const { search, resource } = data;
-      console.log(data);
       return await axios({
         url: `${COMICVINE_SERVICE_URI}/search`,
         method: "GET",
@@ -49,7 +48,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
           limit: "10",
           offset: "0",
           field_list:
-            "id,name,deck,api_detail_url,image,description,volume,cover_date,start_year,count_of_issues,publisher",
+            "id,name,deck,api_detail_url,image,description,volume,cover_date,start_year,count_of_issues,publisher,issue_number",
           resources: resource,
         },
       });
@@ -69,9 +68,16 @@ export const Search = ({}: ISearchProps): ReactElement => {
       let issues = [];
       switch (resourceType) {
         case "issue":
-          const { id, api_detail_url, image } = comicObject;
+          const { id, api_detail_url, image, cover_date, issue_number } =
+            comicObject;
           // Add issue metadata
-          issues.push({ id, api_detail_url, image });
+          issues.push({
+            id,
+            api_detail_url,
+            image,
+            coverDate: cover_date,
+            issueNumber: issue_number,
+          });
           // Get volume metadata from CV
           const response = await axios({
             url: `${COMICVINE_SERVICE_URI}/getVolumes`,
@@ -79,7 +85,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
             data: {
               volumeURI: comicObject.volume.api_detail_url,
               fieldList:
-                "id,name,deck,api_detail_url,image,description,start_year,count_of_issues,publisher,first_issue,last_issue",
+                "id,name,deck,api_detail_url,image,description,start_year,year,count_of_issues,publisher,first_issue,last_issue",
             },
           });
           // set volume metadata key
