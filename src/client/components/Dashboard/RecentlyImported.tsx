@@ -18,6 +18,7 @@ type RecentlyImportedProps = {
 export const RecentlyImported = (
   comics: RecentlyImportedProps,
 ): ReactElement => {
+  console.log(comics);
   return (
     <div>
       <Header
@@ -33,9 +34,7 @@ export const RecentlyImported = (
               rawFileDetails,
               sourcedMetadata: { comicvine, comicInfo, locg },
               inferredMetadata,
-              acquisition: {
-                source: { name },
-              },
+              wanted: { source } = {},
             },
             idx,
           ) => {
@@ -45,11 +44,14 @@ export const RecentlyImported = (
               comicInfo,
               locg,
             });
-            const { issue, coverURL, icon } = determineExternalMetadata(name, {
-              comicvine,
-              comicInfo,
-              locg,
-            });
+            const { issue, coverURL, icon } = determineExternalMetadata(
+              source,
+              {
+                comicvine,
+                comicInfo,
+                locg,
+              },
+            );
             const isComicVineMetadataAvailable =
               !isUndefined(comicvine) &&
               !isUndefined(comicvine.volumeInformation);

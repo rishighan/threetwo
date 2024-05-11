@@ -1,71 +1,42 @@
-import React, { ChangeEventHandler, useRef, useState } from "react";
-
-import { format, isValid, parse, parseISO } from "date-fns";
+import React, { useRef, useState } from "react";
+import { format } from "date-fns";
 import FocusTrap from "focus-trap-react";
-import { DayPicker, SelectSingleEventHandler } from "react-day-picker";
-import { usePopper } from "react-popper";
+import { ClassNames, DayPicker } from "react-day-picker";
+import { useFloating, offset, flip, autoUpdate } from "@floating-ui/react-dom";
+import styles from "react-day-picker/dist/style.module.css";
 
 export const DatePickerDialog = (props) => {
   const { setter, apiAction } = props;
   const [selected, setSelected] = useState<Date>();
   const [isPopperOpen, setIsPopperOpen] = useState(false);
 
-  const popperRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(
-    null,
-  );
-
-  const customStyles = {
-    container: {
-      // Style for the entire container
-      border: "1px solid #ccc",
-      borderRadius: "4px",
-      padding: "10px",
-      width: "300px",
-    },
-    day: {
-      // Style for individual days
-
-      padding: "5px",
-      margin: "2px",
-    },
-    selected: {
-      // Style for selected days
-      backgroundColor: "#007bff",
-      color: "#fff",
-    },
-    disabled: {
-      // Style for disabled days
-      color: "#ccc",
-    },
-    today: {
-      // Style for today's date
-      backgroundColor: "#f0f0f0",
-    },
-    dayWrapper: {
-      // Style for the wrapper around each day
-      display: "inline-block",
-    },
+  const classNames: ClassNames = {
+    ...styles,
+    head: "custom-head",
   };
-
-  const popper = usePopper(popperRef.current, popperElement, {
-    placement: "bottom-start",
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const { x, y, reference, floating, strategy, refs, update } = useFloating({
+    placement: "bottom-end",
+    middleware: [offset(10), flip()],
+    strategy: "absolute",
   });
 
   const closePopper = () => {
     setIsPopperOpen(false);
-    buttonRef?.current?.focus();
+    buttonRef.current?.focus();
   };
 
   const handleButtonClick = () => {
     setIsPopperOpen(true);
+    if (refs.reference.current && refs.floating.current) {
+      autoUpdate(refs.reference.current, refs.floating.current, update);
+    }
   };
 
-  const handleDaySelect: SelectSingleEventHandler = (date) => {
+  const handleDaySelect = (date) => {
     setSelected(date);
     if (date) {
-      setter(format(date, "M-dd-yyyy"));
+      setter(format(date, "yyyy-MM-dd"));
       apiAction();
       closePopper();
     } else {
@@ -75,17 +46,14 @@ export const DatePickerDialog = (props) => {
 
   return (
     <div>
-      <div ref={popperRef}>
+      <div ref={reference}>
         <button
           ref={buttonRef}
           type="button"
           aria-label="Pick a date"
           onClick={handleButtonClick}
-          className="flex space-x-1 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-2 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+          className="flex space-x-1 mb-2 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-2 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
         >
-          <span className="pr-1 pt-0.5 h-8">
-            <span className="icon-[solar--calendar-date-bold-duotone] w-6 h-6"></span>
-          </span>
           Pick a date
         </button>
       </div>
@@ -101,11 +69,14 @@ export const DatePickerDialog = (props) => {
           }}
         >
           <div
-            tabIndex={-1}
-            style={popper.styles.popper}
-            className="bg-slate-200 mt-3 p-2 rounded-lg z-50"
-            {...popper.attributes.popper}
-            ref={setPopperElement}
+            ref={floating}
+            style={{
+              position: strategy,
+              zIndex: "999",
+              borderRadius: "10px",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.1)", // Example of adding a shadow
+            }}
+            className="bg-slate-400 dark:bg-slate-500"
             role="dialog"
             aria-label="DayPicker calendar"
           >
@@ -115,7 +86,7 @@ export const DatePickerDialog = (props) => {
               defaultMonth={selected}
               selected={selected}
               onSelect={handleDaySelect}
-              styles={customStyles}
+              classNames={classNames}
             />
           </div>
         </FocusTrap>

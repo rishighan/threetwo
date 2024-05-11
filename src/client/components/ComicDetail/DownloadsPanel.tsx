@@ -59,7 +59,6 @@ export const DownloadsPanel = (
         },
       }),
   });
-
   const getBundles = async (comicObject) => {
     if (comicObject?.data.acquisition.directconnect) {
       const filteredBundles =
@@ -94,10 +93,6 @@ export const DownloadsPanel = (
 
   return (
     <div className="columns is-multiline">
-      {!isEmpty(airDCPPSocketInstance) &&
-        !isEmpty(bundles) &&
-        activeTab === "directconnect" && <AirDCPPBundles data={bundles} />}
-
       <div>
         <div className="sm:hidden">
           <label htmlFor="Download Type" className="sr-only">
@@ -141,6 +136,9 @@ export const DownloadsPanel = (
       </div>
 
       {activeTab === "torrents" && <TorrentDownloads data={torrentDetails} />}
+      {!isEmpty(airDCPPSocketInstance) &&
+        !isEmpty(bundles) &&
+        activeTab === "directconnect" && <AirDCPPBundles data={bundles} />}
     </div>
   );
 };

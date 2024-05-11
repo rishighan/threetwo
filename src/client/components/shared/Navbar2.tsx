@@ -98,7 +98,7 @@ export const Navbar2 = (): ReactElement => {
               <li>
                 {/* Light/Dark Mode toggle */}
                 <div className="flex items-center space-x-2">
-                  <span className="text-gray-600 dark:text-white">Light</span>
+                  <span className="text-gray-600 dark:text-white">Dark</span>
                   <label
                     htmlFor="toggle"
                     className="relative inline-flex items-center"
@@ -117,7 +117,7 @@ export const Navbar2 = (): ReactElement => {
                       }`}
                     ></span>
                   </label>
-                  <span className="text-gray-600 dark:text-white">Dark</span>
+                  <span className="text-gray-600 dark:text-white">Light</span>
                 </div>
               </li>
             </ul>

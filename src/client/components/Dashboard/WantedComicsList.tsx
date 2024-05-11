@@ -31,10 +31,9 @@ export const WantedComicsList = ({
             _id,
             rawFileDetails,
             sourcedMetadata: { comicvine, comicInfo, locg },
+            wanted,
           }) => {
-            const isComicBookMetadataAvailable =
-              !isUndefined(comicvine) &&
-              !isUndefined(comicvine.volumeInformation);
+            const isComicBookMetadataAvailable = !isUndefined(comicvine);
             const consolidatedComicMetadata = {
               rawFileDetails,
               comicvine,
@@ -42,12 +41,15 @@ export const WantedComicsList = ({
               locg,
             };
 
-            const { issueName, url } = determineCoverFile(
-              consolidatedComicMetadata,
-            );
+            const {
+              issueName,
+              url,
+              publisher = null,
+            } = determineCoverFile(consolidatedComicMetadata);
             const titleElement = (
               <Link to={"/comic/details/" + _id}>
                 {ellipsize(issueName, 20)}
+                <p>{publisher}</p>
               </Link>
             );
             return (
@@ -59,28 +61,42 @@ export const WantedComicsList = ({
                 title={issueName ? titleElement : <span>No Name</span>}
               >
                 <div className="pb-1">
-                  {/* Issue type */}
-                  {isComicBookMetadataAvailable &&
-                  !isNil(
-                    detectIssueTypes(comicvine.volumeInformation.description),
-                  ) ? (
-                    <div className="my-2">
-                      <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                        <span className="pr-1 pt-1">
-                          <i className="icon-[solar--book-2-line-duotone] w-5 h-5"></i>
-                        </span>
+                  <div className="flex flex-row gap-2">
+                    {/* Issue type */}
+                    {isComicBookMetadataAvailable &&
+                    !isNil(detectIssueTypes(comicvine.description)) ? (
+                      <div className="my-2">
+                        <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                          <span className="pr-1 pt-1">
+                            <i className="icon-[solar--book-2-line-duotone] w-5 h-5"></i>
+                          </span>
 
-                        <span className="text-md text-slate-500 dark:text-slate-900">
-                          {
-                            detectIssueTypes(
-                              comicvine.volumeInformation.description,
-                            ).displayName
-                          }
+                          <span className="text-md text-slate-500 dark:text-slate-900">
+                            {
+                              detectIssueTypes(comicvine.description)
+                                .displayName
+                            }
+                          </span>
                         </span>
-                      </span>
-                    </div>
-                  ) : null}
+                      </div>
+                    ) : null}
+                    {/* issues marked as wanted, part of this volume */}
+                    {wanted?.markEntireVolumeWanted ? (
+                      <div className="text-sm">sagla volume pahije</div>
+                    ) : (
+                      <div className="my-2">
+                        <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                          <span className="pr-1 pt-1">
+                            <i className="icon-[solar--documents-bold-duotone] w-5 h-5"></i>
+                          </span>
 
+                          <span className="text-md text-slate-500 dark:text-slate-900">
+                            {wanted.issues.length}
+                          </span>
+                        </span>
+                      </div>
+                    )}
+                  </div>
                   {/* comicVine metadata presence */}
                   {isComicBookMetadataAvailable && (
                     <img
