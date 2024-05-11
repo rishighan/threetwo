@@ -36,7 +36,7 @@
     "date-fns": "^2.28.0",
     "dayjs": "^1.10.6",
     "ellipsize": "^0.5.1",
-    "express": "^4.17.1",
+    "express": "^4.19.2",
     "filename-parser": "^1.0.2",
     "final-form": "^4.20.2",
     "final-form-arrays": "^3.0.2",
@@ -74,7 +74,9 @@
     "socket.io-client": "^4.3.2",
     "styled-components": "^6.1.0",
     "threetwo-ui-typings": "^1.0.14",
+
     "vite": "^5.2.7",
+
     "vite-plugin-html": "^3.2.0",
     "websocket": "^1.0.34",
     "zustand": "^4.4.6"
@@ -113,7 +115,7 @@
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-storybook": "^0.6.13",
-    "express": "^4.17.1",
+    "express": "^4.19.2",
     "install": "^0.13.0",
     "jest": "^29.6.3",
     "nodemon": "^3.0.1",
