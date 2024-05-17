@@ -12,7 +12,8 @@ RUN apk --no-cache add g++ make libpng-dev git python3 autoconf automake libjpeg
 
 # Install node modules
 RUN yarn install --ignore-engines
-
+# Explicitly install sass
+RUN yarn add -D sass
 # Copy the rest of the application
 COPY . .
 
