@@ -125,26 +125,26 @@ export const AcquisitionPanel = (
     );
   };
 
-  socketIOInstance.on("searchResultAdded", (data: SearchResult) => {
+  socketIOInstance.on("searchResultAdded", ({ groupedResult }: any) => {
     setAirDCPPSearchResults((previousState) => {
       const exists = previousState.some(
-        (item) => data.result.id === item.result.id,
+        (item) => groupedResult.result.id === item.result.id,
       );
       if (!exists) {
-        return [...previousState, data];
+        return [...previousState, groupedResult];
       }
       return previousState;
     });
   });
 
-  socketIOInstance.on("searchResultUpdated", (groupedResult: SearchResult) => {
+  socketIOInstance.on("searchResultUpdated", ({ updatedResult }: any) => {
     // ...update properties of the existing result in the UI
     const bundleToUpdateIndex = airDCPPSearchResults?.findIndex(
-      (bundle) => bundle.result.id === groupedResult.result.id,
+      (bundle) => bundle.result.id === updatedResult.result.id,
     );
     const updatedState = [...airDCPPSearchResults];
-    if (!isNil(difference(updatedState[bundleToUpdateIndex], groupedResult))) {
-      updatedState[bundleToUpdateIndex] = groupedResult;
+    if (!isNil(difference(updatedState[bundleToUpdateIndex], updatedResult))) {
+      updatedState[bundleToUpdateIndex] = updatedResult;
     }
     setAirDCPPSearchResults((state) => [...state, ...updatedState]);
   });
@@ -255,8 +255,8 @@ export const AcquisitionPanel = (
           <div className="">
             <article className="">
               <div className="">
-                AirDC++ is not configured. Please configure it in{" "}
-                <code>Settings &gt; AirDC++ &gt; Connection</code>.
+                No AirDC++ hub configured. Please configure it in{" "}
+                <code>Settings &gt; AirDC++ &gt; Hubs</code>.
               </div>
             </article>
           </div>

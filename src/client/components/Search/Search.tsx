@@ -63,7 +63,6 @@ export const Search = ({}: ISearchProps): ReactElement => {
       markEntireVolumeWanted,
       resourceType,
     }) => {
-      console.log("jigni", comicObject);
       let volumeInformation = {};
       let issues = [];
       switch (resourceType) {
@@ -73,11 +72,12 @@ export const Search = ({}: ISearchProps): ReactElement => {
           // Add issue metadata
           issues.push({
             id,
-            api_detail_url,
+            url: api_detail_url,
             image,
             coverDate: cover_date,
             issueNumber: issue_number,
           });
+          console.log(issues);
           // Get volume metadata from CV
           const response = await axios({
             url: `${COMICVINE_SERVICE_URI}/getVolumes`,
