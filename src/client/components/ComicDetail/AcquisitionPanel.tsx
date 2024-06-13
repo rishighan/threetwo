@@ -11,6 +11,8 @@ import { useShallow } from "zustand/react/shallow";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { AIRDCPP_SERVICE_BASE_URI } from "../../constants/endpoints";
+import {toast} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.min.css';
 
 interface IAcquisitionPanelProps {
   query: any;
@@ -76,7 +78,7 @@ export const AcquisitionPanel = (
   const { comicObjectId } = props;
   const issueName = props.query.issue.name || "";
   const sanitizedIssueName = issueName.replace(/[^a-zA-Z0-9 ]/g, " ");
-
+ const notify = () => toast("Wow so easy !");
   const [dcppQuery, setDcppQuery] = useState({});
   const [airDCPPSearchResults, setAirDCPPSearchResults] = useState<
     SearchResult[]
@@ -206,6 +208,7 @@ export const AcquisitionPanel = (
 
   return (
     <>
+    <button onClick={notify}>Notify !</button>
       <div className="mt-5">
         {!isEmpty(hubs?.data) ? (
           <Form

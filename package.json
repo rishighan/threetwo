@@ -53,7 +53,7 @@
     "pretty-bytes": "^5.6.0",
     "prop-types": "^15.8.1",
     "qs": "^6.10.5",
-    "react": "^18.2.0",
+    "react": "^18.3.1",
     "react-collapsible": "^2.9.0",
     "react-comic-viewer": "^0.4.0",
     "react-day-picker": "^8.10.0",
@@ -70,13 +70,11 @@
     "react-select-async-paginate": "^0.7.2",
     "react-sliding-pane": "^7.1.0",
     "react-textarea-autosize": "^8.3.4",
-    "reapop": "^4.2.1",
+    "react-toastify": "^10.0.5",
     "socket.io-client": "^4.3.2",
     "styled-components": "^6.1.0",
     "threetwo-ui-typings": "^1.0.14",
-
     "vite": "^5.2.7",
-
     "vite-plugin-html": "^3.2.0",
     "websocket": "^1.0.34",
     "zustand": "^4.4.6"

@@ -5,6 +5,7 @@ import { SOCKET_BASE_URI } from "../constants/endpoints";
 import { produce } from "immer";
 import { QueryClient } from "@tanstack/react-query";
 
+
 /*  Broadly, this file sets up:
  *    1. The zustand-based global client state
  *    2. socket.io client
@@ -127,6 +128,10 @@ socketIOInstance.on("LS_COVER_EXTRACTION_FAILED", (data) => {
       failedJobCount,
     },
   }));
+});
+
+socketIOInstance.on("searchResultsAvailable", (data) => {
+  console.log(data);
 });
 
 // 1b.  Clear the localStorage sessionId upon receiving the
