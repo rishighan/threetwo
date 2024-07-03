@@ -4,7 +4,8 @@ import io from "socket.io-client";
 import { SOCKET_BASE_URI } from "../constants/endpoints";
 import { produce } from "immer";
 import { QueryClient } from "@tanstack/react-query";
-
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.min.css";
 
 /*  Broadly, this file sets up:
  *    1. The zustand-based global client state
@@ -83,6 +84,7 @@ if (!isNil(sessionId)) {
     "call",
     "socket.resumeSession",
     {
+      namespace: "/",
       sessionId,
     },
     (data) => console.log(data),
@@ -131,7 +133,8 @@ socketIOInstance.on("LS_COVER_EXTRACTION_FAILED", (data) => {
 });
 
 socketIOInstance.on("searchResultsAvailable", (data) => {
-  console.log(data);
+  const results = Object.keys(data?.results).length;
+  toast(`${results} results found for query: ${data.query}`);
 });
 
 // 1b.  Clear the localStorage sessionId upon receiving the
