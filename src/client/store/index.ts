@@ -133,8 +133,8 @@ socketIOInstance.on("LS_COVER_EXTRACTION_FAILED", (data) => {
 });
 
 socketIOInstance.on("searchResultsAvailable", (data) => {
-  const results = Object.keys(data?.results).length;
-  toast(`${results} results found for query: ${data.query}`);
+  console.log(data);
+  toast(`Results found for query: ${JSON.stringify(data.query, null, 2)}`);
 });
 
 // 1b.  Clear the localStorage sessionId upon receiving the

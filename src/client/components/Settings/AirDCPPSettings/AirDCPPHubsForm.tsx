@@ -1,9 +1,10 @@
-import React, { ReactElement, useEffect, useState, useContext } from "react";
+import React, { ReactElement, useState } from "react";
 import { Form, Field } from "react-final-form";
 import { isEmpty, isNil, isUndefined } from "lodash";
 import Select from "react-select";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { produce } from "immer";
 import { AIRDCPP_SERVICE_BASE_URI } from "../../../constants/endpoints";
 
 export const AirDCPPHubsForm = (): ReactElement => {
@@ -13,6 +14,7 @@ export const AirDCPPHubsForm = (): ReactElement => {
     data: settings,
     isLoading,
     isError,
+    refetch,
   } = useQuery({
     queryKey: ["settings"],
     queryFn: async () =>
@@ -20,11 +22,9 @@ export const AirDCPPHubsForm = (): ReactElement => {
         url: "http://localhost:3000/api/settings/getAllSettings",
         method: "GET",
       }),
+    staleTime: Infinity,
   });
 
-  /**
-   * Get the hubs list from an AirDCPP Socket
-   */
   const { data: hubs } = useQuery({
     queryKey: ["hubs"],
     queryFn: async () =>
@@ -37,14 +37,16 @@ export const AirDCPPHubsForm = (): ReactElement => {
       }),
     enabled: !isEmpty(settings?.data.directConnect?.client?.host),
   });
-  let hubList = {};
+
+  let hubList: any[] = [];
   if (!isNil(hubs)) {
     hubList = hubs?.data.map(({ hub_url, identity }) => ({
       value: hub_url,
       label: identity.name,
     }));
   }
-  const { mutate } = useMutation({
+
+  const mutation = useMutation({
     mutationFn: async (values) =>
       await axios({
         url: `http://localhost:3000/api/settings/saveSettings`,
@@ -55,21 +57,43 @@ export const AirDCPPHubsForm = (): ReactElement => {
           settingsKey: "directConnect",
         },
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["settings"] });
+    onSuccess: (data) => {
+      queryClient.setQueryData(["settings"], (oldData: any) =>
+        produce(oldData, (draft: any) => {
+          draft.data.directConnect.client = {
+            ...draft.data.directConnect.client,
+            ...data.data.directConnect.client,
+          };
+        }),
+      );
     },
   });
-  const validate = async () => {};
+
+  const validate = async (values) => {
+    const errors = {};
+    // Add any validation logic here if needed
+    return errors;
+  };
 
   const SelectAdapter = ({ input, ...rest }) => {
     return <Select {...input} {...rest} isClearable isMulti />;
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error loading settings.</div>;
+  }
+
   return (
     <>
       {!isEmpty(hubList) && !isUndefined(hubs) ? (
         <Form
-          onSubmit={mutate}
+          onSubmit={(values) => {
+            mutation.mutate(values);
+          }}
           validate={validate}
           render={({ handleSubmit }) => (
             <form onSubmit={handleSubmit}>
@@ -91,26 +115,27 @@ export const AirDCPPHubsForm = (): ReactElement => {
                   />
                 </div>
               </div>
-
-              <button type="submit" className="button is-primary">
+              <button
+                type="submit"
+                className="flex space-x-1 sm:mt-5 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-4 py-2 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+              >
                 Submit
               </button>
             </form>
           )}
         />
       ) : (
-        <>
-          <article
-            role="alert"
-            className="mt-4 rounded-lg max-w-screen-md border-s-4 border-yellow-500 bg-yellow-50 p-4 dark:border-s-4 dark:border-yellow-600 dark:bg-yellow-300 dark:text-slate-600"
-          >
-            <div className="message-body">
-              No configured hubs detected in AirDC++. <br />
-              Configure to a hub in AirDC++ and then select a default hub here.
-            </div>
-          </article>
-        </>
+        <article
+          role="alert"
+          className="mt-4 rounded-lg max-w-screen-md border-s-4 border-yellow-500 bg-yellow-50 p-4 dark:border-s-4 dark:border-yellow-600 dark:bg-yellow-300 dark:text-slate-600"
+        >
+          <div className="message-body">
+            No configured hubs detected in AirDC++. <br />
+            Configure to a hub in AirDC++ and then select a default hub here.
+          </div>
+        </article>
       )}
+      {JSON.stringify(settings?.data.directConnect?.client?.hubs, null, 4)}
       {!isEmpty(settings?.data.directConnect?.client.hubs) ? (
         <>
           <div className="mt-4">
