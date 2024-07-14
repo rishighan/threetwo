@@ -96,24 +96,28 @@ export const AirDCPPHubsForm = (): ReactElement => {
           }}
           validate={validate}
           render={({ handleSubmit }) => (
-            <form onSubmit={handleSubmit}>
-              <div>
-                <h3 className="title">Hubs</h3>
+            <form onSubmit={handleSubmit} className="mt-10">
+              <h2 className="text-xl">Configure DC++ Hubs</h2>
+              <article
+                role="alert"
+                className="mt-4 rounded-lg max-w-screen-md border-s-4 border-blue-500 bg-blue-50 p-4 dark:border-s-4 dark:border-blue-600 dark:bg-blue-300 dark:text-slate-600"
+              >
                 <h6 className="subtitle has-text-grey-light">
-                  Select the hubs you want to perform searches against.
+                  Select the hubs you want to perform searches against. Your
+                  selection in the dropdown <strong>will replace</strong> the
+                  existing selection.
                 </h6>
-              </div>
+              </article>
+
               <div className="field">
-                <label className="label">AirDC++ Host</label>
-                <div className="control">
-                  <Field
-                    name="hubs"
-                    component={SelectAdapter}
-                    className="basic-multi-select"
-                    placeholder="Select Hubs to Search Against"
-                    options={hubList}
-                  />
-                </div>
+                <label className="block py-1 mt-3">AirDC++ Host</label>
+                <Field
+                  name="hubs"
+                  component={SelectAdapter}
+                  className="basic-multi-select"
+                  placeholder="Select Hubs to Search Against"
+                  options={hubList}
+                />
               </div>
               <button
                 type="submit"
@@ -135,27 +139,30 @@ export const AirDCPPHubsForm = (): ReactElement => {
           </div>
         </article>
       )}
-      {JSON.stringify(settings?.data.directConnect?.client?.hubs, null, 4)}
       {!isEmpty(settings?.data.directConnect?.client.hubs) ? (
         <>
           <div className="mt-4">
             <article className="message is-warning">
-              <div className="message-body is-size-6 is-family-secondary">
-                Your selection in the dropdown <strong>will replace</strong> the
-                existing selection.
-              </div>
+              <div className="message-body is-size-6 is-family-secondary"></div>
             </article>
           </div>
-          <div className="box mt-3">
-            <h6>Default Hub For Searches:</h6>
-            {settings?.data.directConnect?.client.hubs.map(
-              ({ value, label }) => (
-                <div key={value}>
-                  <div>{label}</div>
-                  <span className="is-size-7">{value}</span>
-                </div>
-              ),
-            )}
+          <div>
+            <span className="flex items-center mt-10 mb-4">
+              <span className="text-xl text-slate-500 dark:text-slate-200 pr-5">
+                Default Hub for Searches
+              </span>
+              <span className="h-px flex-1 bg-slate-200 dark:bg-slate-400"></span>
+            </span>
+            <div className="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-slate-400 dark:border-gray-700">
+              {settings?.data.directConnect?.client.hubs.map(
+                ({ value, label }) => (
+                  <div key={value}>
+                    <div>{label}</div>
+                    <span className="is-size-7">{value}</span>
+                  </div>
+                ),
+              )}
+            </div>
           </div>
         </>
       ) : null}
