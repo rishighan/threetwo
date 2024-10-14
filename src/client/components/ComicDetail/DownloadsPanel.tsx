@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, ReactElement, useState } from "react";
 import { RootState } from "threetwo-ui-typings";
-import { isEmpty, map } from "lodash";
+import { isEmpty, isNil, map } from "lodash";
 import { AirDCPPBundles } from "./AirDCPPBundles";
 import { TorrentDownloads } from "./TorrentDownloads";
 import { useQuery } from "@tanstack/react-query";
@@ -25,14 +25,14 @@ export const DownloadsPanel = (
   const [bundles, setBundles] = useState([]);
   const [infoHashes, setInfoHashes] = useState<string[]>([]);
   const [torrentDetails, setTorrentDetails] = useState([]);
-  const [activeTab, setActiveTab] = useState("torrents");
+  const [activeTab, setActiveTab] = useState("directconnect");
   const { airDCPPSocketInstance, socketIOInstance } = useStore(
     useShallow((state: any) => ({
       airDCPPSocketInstance: state.airDCPPSocketInstance,
       socketIOInstance: state.socketIOInstance,
     })),
   );
-
+  
   // React to torrent progress data sent over websockets
   socketIOInstance.on("AS_TORRENT_DATA", (data) => {
     const torrents = data.torrents
@@ -60,7 +60,7 @@ export const DownloadsPanel = (
       }),
   });
   const getBundles = async (comicObject) => {
-    if (comicObject?.data.acquisition.directconnect) {
+    if (!isNil(comicObject?.data.acquisition.directconnect)) {
       const filteredBundles =
         comicObject.data.acquisition.directconnect.downloads.map(
           async ({ bundleId }) => {
@@ -87,6 +87,7 @@ export const DownloadsPanel = (
 
   useEffect(() => {
     getBundles(comicObject).then((result) => {
+      console.log("mingi", result);
       setBundles(result);
     });
   }, [comicObject]);

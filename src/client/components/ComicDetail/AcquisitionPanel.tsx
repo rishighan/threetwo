@@ -35,8 +35,14 @@ export const AcquisitionPanel = (
     priority: PriorityEnum;
   }
   interface SearchResult {
-      id: number;
+      id: string;
     // Add other properties as needed
+    slots: any;
+    type: any;
+    users: any;
+    name: string;
+    dupe: Boolean;
+    size: number;
   }
 
   const handleSearch = (searchQuery) => {
@@ -122,7 +128,6 @@ export const AcquisitionPanel = (
   };
 
   socketIOInstance.on("searchResultAdded", ({ result }: any) => {
-    console.log("yelaweda", result);
     setAirDCPPSearchResults((previousState) => {
       const exists = previousState.some(
         (item) => result.id === item.id,
@@ -135,7 +140,6 @@ export const AcquisitionPanel = (
   });
 
   socketIOInstance.on("searchResultUpdated", ({ result }: any) => {
-    console.log("endh", result);
     // ...update properties of the existing result in the UI
     const bundleToUpdateIndex = airDCPPSearchResults?.findIndex(
       (bundle) => bundle.id === result.id,
@@ -201,141 +205,7 @@ export const AcquisitionPanel = (
 
     search(manualQuery);
   };
-  console.log(airDCPPSearchResults);
-  // const comment = `<div className="overflow-x-auto w-fit mt-4 rounded-lg border border-gray-200 dark:border-gray-500">
-  //   <table className="min-w-full divide-y-2 divide-gray-200 dark:divide-gray-500 text-md">
-  //     <thead>
-  //       <tr>
-  //         <th className="whitespace-nowrap px-2 py-2 font-medium text-gray-900 dark:text-slate-200">
-  //           Name
-  //         </th>
-  //         <th className="whitespace-nowrap py-2 font-medium text-gray-900 dark:text-slate-200">
-  //           Type
-  //         </th>
-  //         <th className="whitespace-nowrap py-2 font-medium text-gray-900 dark:text-slate-200">
-  //           Slots
-  //         </th>
-  //         <th className="whitespace-nowrap py-2 font-medium text-gray-900 dark:text-slate-200">
-  //           Actions
-  //         </th>
-  //       </tr>
-  //     </thead>
-  //     <tbody className="divide-y divide-slate-100 dark:divide-gray-500">
-  //       {map(airDCPPSearchResults, ({ result, search_id }, idx) => {
-  //         return (
-  //           <tr
-  //             key={idx}
-  //             className={
-  //               !isNil(result.dupe)
-  //                 ? "bg-gray-100 dark:bg-gray-700"
-  //                 : "w-fit text-sm"
-  //             }
-  //           >
-  //             <td className="whitespace-nowrap px-3 py-3 text-gray-700 dark:text-slate-300">
-  //               <p className="mb-2">
-  //                 {result.type.id === "directory" ? (
-  //                   <i className="fas fa-folder"></i>
-  //                 ) : null}
-  //                 {ellipsize(result.name, 70)}
-  //               </p>
-  // 
-  //               <dl>
-  //                 <dd>
-  //                   <div className="inline-flex flex-row gap-2">
-  //                     {!isNil(result.dupe) ? (
-  //                       <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-  //                         <span className="pr-1 pt-1">
-  //                           <i className="icon-[solar--copy-bold-duotone] w-5 h-5"></i>
-  //                         </span>
-  // 
-  //                         <span className="text-md text-slate-500 dark:text-slate-900">
-  //                           Dupe
-  //                         </span>
-  //                       </span>
-  //                     ) : null}
-  // 
-  //                     {/* Nicks */}
-  //                     <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-  //                       <span className="pr-1 pt-1">
-  //                         <i className="icon-[solar--user-rounded-bold-duotone] w-5 h-5"></i>
-  //                       </span>
-  // 
-  //                       <span className="text-md text-slate-500 dark:text-slate-900">
-  //                         {result.users.user.nicks}
-  //                       </span>
-  //                     </span>
-  //                     {/* Flags */}
-  //                     {result.users.user.flags.map((flag, idx) => (
-  //                       <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-  //                         <span className="pr-1 pt-1">
-  //                           <i className="icon-[solar--tag-horizontal-bold-duotone] w-5 h-5"></i>
-  //                         </span>
-  // 
-  //                         <span className="text-md text-slate-500 dark:text-slate-900">
-  //                           {flag}
-  //                         </span>
-  //                       </span>
-  //                     ))}
-  //                   </div>
-  //                 </dd>
-  //               </dl>
-  //             </td>
-  //             <td>
-  //               {/* Extension */}
-  //               <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-  //                 <span className="pr-1 pt-1">
-  //                   <i className="icon-[solar--zip-file-bold-duotone] w-5 h-5"></i>
-  //                 </span>
-  // 
-  //                 <span className="text-md text-slate-500 dark:text-slate-900">
-  //                   {result.type.str}
-  //                 </span>
-  //               </span>
-  //             </td>
-  //             <td className="px-2">
-  //               {/* Slots */}
-  //               <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-  //                 <span className="pr-1 pt-1">
-  //                   <i className="icon-[solar--settings-minimalistic-bold-duotone] w-5 h-5"></i>
-  //                 </span>
-  // 
-  //                 <span className="text-md text-slate-500 dark:text-slate-900">
-  //                   {result.slots.total} slots; {result.slots.free} free
-  //                 </span>
-  //               </span>
-  //             </td>
-  //             <td className="px-2">
-  //               <button
-  //                 className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-3 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
-  //                 onClick={() =>
-  //                   download(
-  //                     airDCPPSearchInstance.id,
-  //                     result.id,
-  //                     comicObjectId,
-  //                     result.name,
-  //                     result.size,
-  //                     result.type,
-  //                     {
-  //                       protocol: `ws`,
-  //                       hostname: `localhost:5600`,
-  //                       username: `user`,
-  //                       password: `pass`,
-  //                     },
-  //                   )
-  //                 }
-  //               >
-  //                 <span className="text-xs">Download</span>
-  //                 <span className="w-5 h-5">
-  //                   <i className="h-5 w-5 icon-[solar--download-bold-duotone]"></i>
-  //                 </span>
-  //               </button>
-  //             </td>
-  //           </tr>
-  //         );
-  //       })}
-  //     </tbody>
-  //   </table>
-  // </div>`;
+  
   return (
     <>
       <div className="mt-5">
@@ -445,7 +315,140 @@ export const AcquisitionPanel = (
       {/* AirDC++ results */}
       <div className="">
         {!isNil(airDCPPSearchResults) && !isEmpty(airDCPPSearchResults) ? (
-          <></>
+          <div className="overflow-x-auto w-fit mt-4 rounded-lg border border-gray-200 dark:border-gray-500">
+            <table className="min-w-full divide-y-2 divide-gray-200 dark:divide-gray-500 text-md">
+              <thead>
+                <tr>
+                  <th className="whitespace-nowrap px-2 py-2 font-medium text-gray-900 dark:text-slate-200">
+                    Name
+                  </th>
+                  <th className="whitespace-nowrap py-2 font-medium text-gray-900 dark:text-slate-200">
+                    Type
+                  </th>
+                  <th className="whitespace-nowrap py-2 font-medium text-gray-900 dark:text-slate-200">
+                    Slots
+                  </th>
+                  <th className="whitespace-nowrap py-2 font-medium text-gray-900 dark:text-slate-200">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-gray-500">
+                {map(airDCPPSearchResults, ({ dupe, type, name, id, slots, users, size }, idx) => {
+                  return (
+                    <tr
+                      key={idx}
+                      className={
+                        !isNil(dupe)
+                          ? "bg-gray-100 dark:bg-gray-700"
+                          : "w-fit text-sm"
+                      }
+                    >
+                      <td className="whitespace-nowrap px-3 py-3 text-gray-700 dark:text-slate-300">
+                        <p className="mb-2">
+                          {type.id === "directory" ? (
+                            <i className="fas fa-folder"></i>
+                          ) : null}
+                          {ellipsize(name, 70)}
+                        </p>
+          
+                        <dl>
+                          <dd>
+                            <div className="inline-flex flex-row gap-2">
+                              {!isNil(dupe) ? (
+                                <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                                  <span className="pr-1 pt-1">
+                                    <i className="icon-[solar--copy-bold-duotone] w-5 h-5"></i>
+                                  </span>
+          
+                                  <span className="text-md text-slate-500 dark:text-slate-900">
+                                    Dupe
+                                  </span>
+                                </span>
+                              ) : null}
+          
+                              {/* Nicks */}
+                              <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                                <span className="pr-1 pt-1">
+                                  <i className="icon-[solar--user-rounded-bold-duotone] w-5 h-5"></i>
+                                </span>
+          
+                                <span className="text-md text-slate-500 dark:text-slate-900">
+                                  {users.user.nicks}
+                                </span>
+                              </span>
+                              {/* Flags */}
+                              {users.user.flags.map((flag, idx) => (
+                                <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                                  <span className="pr-1 pt-1">
+                                    <i className="icon-[solar--tag-horizontal-bold-duotone] w-5 h-5"></i>
+                                  </span>
+          
+                                  <span className="text-md text-slate-500 dark:text-slate-900">
+                                    {flag}
+                                  </span>
+                                </span>
+                              ))}
+                            </div>
+                          </dd>
+                        </dl>
+                      </td>
+                      <td>
+                        {/* Extension */}
+                        <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                          <span className="pr-1 pt-1">
+                            <i className="icon-[solar--zip-file-bold-duotone] w-5 h-5"></i>
+                          </span>
+          
+                          <span className="text-md text-slate-500 dark:text-slate-900">
+                            {type.str}
+                          </span>
+                        </span>
+                      </td>
+                      <td className="px-2">
+                        {/* Slots */}
+                        <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                          <span className="pr-1 pt-1">
+                            <i className="icon-[solar--settings-minimalistic-bold-duotone] w-5 h-5"></i>
+                          </span>
+          
+                          <span className="text-md text-slate-500 dark:text-slate-900">
+                            {slots.total} slots; {slots.free} free
+                          </span>
+                        </span>
+                      </td>
+                      <td className="px-2">
+                        <button
+                          className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-3 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+                          onClick={() =>
+                            download(
+                              airDCPPSearchInstance.id,
+                              id,
+                              comicObjectId,
+                              name,
+                              size,
+                              type,
+                              {
+                                protocol: `ws`,
+                                hostname: `localhost:5600`,
+                                username: `user`,
+                                password: `pass`,
+                              },
+                            )
+                          }
+                        >
+                          <span className="text-xs">Download</span>
+                          <span className="w-5 h-5">
+                            <i className="h-5 w-5 icon-[solar--download-bold-duotone]"></i>
+                          </span>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <div className="">
             <article
