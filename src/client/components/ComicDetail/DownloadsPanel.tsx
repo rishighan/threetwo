@@ -59,6 +59,7 @@ export const DownloadsPanel = (
         },
       }),
   });
+  // This method needs to be moved to an endpoint in threetwo-core-service
   const getBundles = async (comicObject) => {
     if (!isNil(comicObject?.data.acquisition.directconnect)) {
       const filteredBundles =
