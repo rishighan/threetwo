@@ -1,5 +1,4 @@
 import React, { useCallback, ReactElement, useEffect, useState } from "react";
-import { getBundlesForComic, sleep } from "../../actions/airdcpp.actions";
 import { SearchQuery, PriorityEnum, SearchResponse } from "threetwo-ui-typings";
 import { RootState, SearchInstance } from "threetwo-ui-typings";
 import ellipsize from "ellipsize";
@@ -11,7 +10,6 @@ import { useShallow } from "zustand/react/shallow";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { AIRDCPP_SERVICE_BASE_URI } from "../../constants/endpoints";
-
 
 interface IAcquisitionPanelProps {
   query: any;
@@ -35,7 +33,7 @@ export const AcquisitionPanel = (
     priority: PriorityEnum;
   }
   interface SearchResult {
-      id: string;
+    id: string;
     // Add other properties as needed
     slots: any;
     type: any;
@@ -112,26 +110,20 @@ export const AcquisitionPanel = (
    */
   const search = async (searchData: any) => {
     setAirDCPPSearchResults([]);
-    socketIOInstance.emit(
-      "call",
-      "socket.search",
-      {
-        query: searchData,
-        config: {
-          protocol: `ws`,
-          hostname: `localhost:5600`,
-          username: `user`,
-          password: `pass`,
-        },
+    socketIOInstance.emit("call", "socket.search", {
+      query: searchData,
+      config: {
+        protocol: `ws`,
+        hostname: `localhost:5600`,
+        username: `user`,
+        password: `pass`,
       },
-    );
+    });
   };
 
   socketIOInstance.on("searchResultAdded", ({ result }: any) => {
     setAirDCPPSearchResults((previousState) => {
-      const exists = previousState.some(
-        (item) => result.id === item.id,
-      );
+      const exists = previousState.some((item) => result.id === item.id);
       if (!exists) {
         return [...previousState, result];
       }
@@ -205,7 +197,7 @@ export const AcquisitionPanel = (
 
     search(manualQuery);
   };
-  
+
   return (
     <>
       <div className="mt-5">
@@ -334,118 +326,121 @@ export const AcquisitionPanel = (
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-gray-500">
-                {map(airDCPPSearchResults, ({ dupe, type, name, id, slots, users, size }, idx) => {
-                  return (
-                    <tr
-                      key={idx}
-                      className={
-                        !isNil(dupe)
-                          ? "bg-gray-100 dark:bg-gray-700"
-                          : "w-fit text-sm"
-                      }
-                    >
-                      <td className="whitespace-nowrap px-3 py-3 text-gray-700 dark:text-slate-300">
-                        <p className="mb-2">
-                          {type.id === "directory" ? (
-                            <i className="fas fa-folder"></i>
-                          ) : null}
-                          {ellipsize(name, 70)}
-                        </p>
-          
-                        <dl>
-                          <dd>
-                            <div className="inline-flex flex-row gap-2">
-                              {!isNil(dupe) ? (
+                {map(
+                  airDCPPSearchResults,
+                  ({ dupe, type, name, id, slots, users, size }, idx) => {
+                    return (
+                      <tr
+                        key={idx}
+                        className={
+                          !isNil(dupe)
+                            ? "bg-gray-100 dark:bg-gray-700"
+                            : "w-fit text-sm"
+                        }
+                      >
+                        <td className="whitespace-nowrap px-3 py-3 text-gray-700 dark:text-slate-300">
+                          <p className="mb-2">
+                            {type.id === "directory" ? (
+                              <i className="fas fa-folder"></i>
+                            ) : null}
+                            {ellipsize(name, 70)}
+                          </p>
+
+                          <dl>
+                            <dd>
+                              <div className="inline-flex flex-row gap-2">
+                                {!isNil(dupe) ? (
+                                  <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                                    <span className="pr-1 pt-1">
+                                      <i className="icon-[solar--copy-bold-duotone] w-5 h-5"></i>
+                                    </span>
+
+                                    <span className="text-md text-slate-500 dark:text-slate-900">
+                                      Dupe
+                                    </span>
+                                  </span>
+                                ) : null}
+
+                                {/* Nicks */}
                                 <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
                                   <span className="pr-1 pt-1">
-                                    <i className="icon-[solar--copy-bold-duotone] w-5 h-5"></i>
+                                    <i className="icon-[solar--user-rounded-bold-duotone] w-5 h-5"></i>
                                   </span>
-          
+
                                   <span className="text-md text-slate-500 dark:text-slate-900">
-                                    Dupe
+                                    {users.user.nicks}
                                   </span>
                                 </span>
-                              ) : null}
-          
-                              {/* Nicks */}
-                              <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                                <span className="pr-1 pt-1">
-                                  <i className="icon-[solar--user-rounded-bold-duotone] w-5 h-5"></i>
-                                </span>
-          
-                                <span className="text-md text-slate-500 dark:text-slate-900">
-                                  {users.user.nicks}
-                                </span>
-                              </span>
-                              {/* Flags */}
-                              {users.user.flags.map((flag, idx) => (
-                                <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                                  <span className="pr-1 pt-1">
-                                    <i className="icon-[solar--tag-horizontal-bold-duotone] w-5 h-5"></i>
+                                {/* Flags */}
+                                {users.user.flags.map((flag, idx) => (
+                                  <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                                    <span className="pr-1 pt-1">
+                                      <i className="icon-[solar--tag-horizontal-bold-duotone] w-5 h-5"></i>
+                                    </span>
+
+                                    <span className="text-md text-slate-500 dark:text-slate-900">
+                                      {flag}
+                                    </span>
                                   </span>
-          
-                                  <span className="text-md text-slate-500 dark:text-slate-900">
-                                    {flag}
-                                  </span>
-                                </span>
-                              ))}
-                            </div>
-                          </dd>
-                        </dl>
-                      </td>
-                      <td>
-                        {/* Extension */}
-                        <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                          <span className="pr-1 pt-1">
-                            <i className="icon-[solar--zip-file-bold-duotone] w-5 h-5"></i>
+                                ))}
+                              </div>
+                            </dd>
+                          </dl>
+                        </td>
+                        <td>
+                          {/* Extension */}
+                          <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                            <span className="pr-1 pt-1">
+                              <i className="icon-[solar--zip-file-bold-duotone] w-5 h-5"></i>
+                            </span>
+
+                            <span className="text-md text-slate-500 dark:text-slate-900">
+                              {type.str}
+                            </span>
                           </span>
-          
-                          <span className="text-md text-slate-500 dark:text-slate-900">
-                            {type.str}
+                        </td>
+                        <td className="px-2">
+                          {/* Slots */}
+                          <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                            <span className="pr-1 pt-1">
+                              <i className="icon-[solar--settings-minimalistic-bold-duotone] w-5 h-5"></i>
+                            </span>
+
+                            <span className="text-md text-slate-500 dark:text-slate-900">
+                              {slots.total} slots; {slots.free} free
+                            </span>
                           </span>
-                        </span>
-                      </td>
-                      <td className="px-2">
-                        {/* Slots */}
-                        <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                          <span className="pr-1 pt-1">
-                            <i className="icon-[solar--settings-minimalistic-bold-duotone] w-5 h-5"></i>
-                          </span>
-          
-                          <span className="text-md text-slate-500 dark:text-slate-900">
-                            {slots.total} slots; {slots.free} free
-                          </span>
-                        </span>
-                      </td>
-                      <td className="px-2">
-                        <button
-                          className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-3 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
-                          onClick={() =>
-                            download(
-                              airDCPPSearchInstance.id,
-                              id,
-                              comicObjectId,
-                              name,
-                              size,
-                              type,
-                              {
-                                protocol: `ws`,
-                                hostname: `localhost:5600`,
-                                username: `user`,
-                                password: `pass`,
-                              },
-                            )
-                          }
-                        >
-                          <span className="text-xs">Download</span>
-                          <span className="w-5 h-5">
-                            <i className="h-5 w-5 icon-[solar--download-bold-duotone]"></i>
-                          </span>
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
+                        </td>
+                        <td className="px-2">
+                          <button
+                            className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-3 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+                            onClick={() =>
+                              download(
+                                airDCPPSearchInstance.id,
+                                id,
+                                comicObjectId,
+                                name,
+                                size,
+                                type,
+                                {
+                                  protocol: `ws`,
+                                  hostname: `localhost:5600`,
+                                  username: `user`,
+                                  password: `pass`,
+                                },
+                              )
+                            }
+                          >
+                            <span className="text-xs">Download</span>
+                            <span className="w-5 h-5">
+                              <i className="h-5 w-5 icon-[solar--download-bold-duotone]"></i>
+                            </span>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  },
+                )}
               </tbody>
             </table>
           </div>
