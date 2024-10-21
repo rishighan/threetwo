@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, ReactElement, useState } from "react";
 import { RootState } from "threetwo-ui-typings";
-import { isEmpty, isNil, map } from "lodash";
+import { isEmpty, isNil, isUndefined, map } from "lodash";
 import { AirDCPPBundles } from "./AirDCPPBundles";
 import { TorrentDownloads } from "./TorrentDownloads";
 import { useQuery } from "@tanstack/react-query";
@@ -9,6 +9,7 @@ import {
   LIBRARY_SERVICE_BASE_URI,
   QBITTORRENT_SERVICE_BASE_URI,
   TORRENT_JOB_SERVICE_BASE_URI,
+  SOCKET_BASE_URI,
 } from "../../constants/endpoints";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
@@ -22,17 +23,15 @@ export const DownloadsPanel = (
   props: IDownloadsPanelProps,
 ): ReactElement | null => {
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
-  const [bundles, setBundles] = useState([]);
   const [infoHashes, setInfoHashes] = useState<string[]>([]);
   const [torrentDetails, setTorrentDetails] = useState([]);
   const [activeTab, setActiveTab] = useState("directconnect");
-  const { airDCPPSocketInstance, socketIOInstance } = useStore(
+  const { socketIOInstance } = useStore(
     useShallow((state: any) => ({
-      airDCPPSocketInstance: state.airDCPPSocketInstance,
       socketIOInstance: state.socketIOInstance,
     })),
   );
-  
+
   // React to torrent progress data sent over websockets
   socketIOInstance.on("AS_TORRENT_DATA", (data) => {
     const torrents = data.torrents
@@ -44,33 +43,29 @@ export const DownloadsPanel = (
       .filter((item) => item !== undefined);
     setTorrentDetails(torrents);
   });
-  // Fetch the downloaded files and currently-downloading file(s) from AirDC++
-  const { data: comicObject, isSuccess } = useQuery({
+
+  /**
+   * Query to fetch AirDC++ download bundles for a given comic resource Id
+   * @param {string} {comicObjectId} - A mongo id that identifies a comic document
+   */
+  const { data: bundles } = useQuery({
     queryKey: ["bundles"],
     queryFn: async () =>
       await axios({
-        url: `${LIBRARY_SERVICE_BASE_URI}/getComicBookById`,
+        url: `${LIBRARY_SERVICE_BASE_URI}/getBundles`,
         method: "POST",
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-        },
         data: {
-          id: `${comicObjectId}`,
+          comicObjectId,
+          config: {
+            protocol: `ws`,
+            hostname: `192.168.1.119:5600`,
+            username: `admin`,
+            password: `password`,
+          },
         },
       }),
+    enabled: activeTab !== "" && activeTab === "directconnect",
   });
-  // This method needs to be moved to an endpoint in threetwo-core-service
-  const getBundles = async (comicObject) => {
-    if (!isNil(comicObject?.data.acquisition.directconnect)) {
-      const filteredBundles =
-        comicObject.data.acquisition.directconnect.downloads.map(
-          async ({ bundleId }) => {
-            return await airDCPPSocketInstance.get(`queue/bundles/${bundleId}`);
-          },
-        );
-      return await Promise.all(filteredBundles);
-    }
-  };
 
   // Call the scheduled job for fetching torrent data
   // triggered by the active tab been set to "torrents"
@@ -84,18 +79,13 @@ export const DownloadsPanel = (
         },
       }),
     queryKey: [activeTab],
+    enabled: activeTab !== "" && activeTab === "torrents",
   });
-
-  useEffect(() => {
-    getBundles(comicObject).then((result) => {
-      console.log("mingi", result);
-      setBundles(result);
-    });
-  }, [comicObject]);
-
+  console.log(bundles);
   return (
     <div className="columns is-multiline">
       <div>
+        {JSON.stringify(activeTab, null, 4)}
         <div className="sm:hidden">
           <label htmlFor="Download Type" className="sr-only">
             Download Type
@@ -137,10 +127,14 @@ export const DownloadsPanel = (
         </div>
       </div>
 
-      {activeTab === "torrents" && <TorrentDownloads data={torrentDetails} />}
-      {!isEmpty(airDCPPSocketInstance) &&
-        !isEmpty(bundles) &&
-        activeTab === "directconnect" && <AirDCPPBundles data={bundles} />}
+      {activeTab === "torrents" ? (
+        <TorrentDownloads data={torrentDetails} />
+      ) : null}
+      {!isNil(bundles?.data) && bundles?.data.length !== 0 ? (
+        <AirDCPPBundles data={bundles} />
+      ) : (
+        "nutin"
+      )}
     </div>
   );
 };

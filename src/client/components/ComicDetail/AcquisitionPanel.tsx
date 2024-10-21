@@ -114,9 +114,9 @@ export const AcquisitionPanel = (
       query: searchData,
       config: {
         protocol: `ws`,
-        hostname: `localhost:5600`,
-        username: `user`,
-        password: `pass`,
+        hostname: `192.168.1.119:5600`,
+        username: `admin`,
+        password: `password`,
       },
     });
   };
@@ -191,7 +191,7 @@ export const AcquisitionPanel = (
         pattern: `${searchQuery.issueName}`,
         extensions: ["cbz", "cbr", "cb7"],
       },
-      hub_urls: map(hubs?.data, (hub) => hub.hub_url),
+      hub_urls: [hubs?.data[0].hub_url],
       priority: 5,
     };
 
@@ -424,9 +424,9 @@ export const AcquisitionPanel = (
                                 type,
                                 {
                                   protocol: `ws`,
-                                  hostname: `localhost:5600`,
-                                  username: `user`,
-                                  password: `pass`,
+                                  hostname: `192.168.1.119:5600`,
+                                  username: `admin`,
+                                  password: `password`,
                                 },
                               )
                             }
