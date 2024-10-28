@@ -246,14 +246,13 @@ export const AcquisitionPanel = (
             )}
           />
         ) : (
-          <div className="">
-            <article className="">
-              <div className="">
-                No AirDC++ hub configured. Please configure it in{" "}
-                <code>Settings &gt; AirDC++ &gt; Hubs</code>.
-              </div>
-            </article>
-          </div>
+          <article
+            role="alert"
+            className="mt-4 rounded-lg text-sm max-w-screen-md border-s-4 border-yellow-500 bg-yellow-50 p-4 dark:border-s-4 dark:border-yellow-600 dark:bg-yellow-300 dark:text-slate-600"
+          >
+            No AirDC++ hub configured. Please configure it in{" "}
+            <code>Settings &gt; AirDC++ &gt; Hubs</code>.
+          </article>
         )}
       </div>
 

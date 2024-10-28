@@ -85,7 +85,6 @@ export const DownloadsPanel = (
   return (
     <div className="columns is-multiline">
       <div>
-        {JSON.stringify(activeTab, null, 4)}
         <div className="sm:hidden">
           <label htmlFor="Download Type" className="sr-only">
             Download Type
@@ -131,7 +130,7 @@ export const DownloadsPanel = (
         <TorrentDownloads data={torrentDetails} />
       ) : null}
       {!isNil(bundles?.data) && bundles?.data.length !== 0 ? (
-        <AirDCPPBundles data={bundles} />
+        <AirDCPPBundles data={bundles.data} />
       ) : (
         "nutin"
       )}
