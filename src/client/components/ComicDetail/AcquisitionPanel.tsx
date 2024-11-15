@@ -114,9 +114,10 @@ export const AcquisitionPanel = (
       query: searchData,
       config: {
         protocol: `ws`,
-        hostname: `192.168.1.119:5600`,
-        username: `admin`,
-        password: `password`,
+        // hostname: `192.168.1.119:5600`,
+        hostname: `127.0.0.1:5600`,
+        username: `user`,
+        password: `pass`,
       },
     });
   };
@@ -200,7 +201,7 @@ export const AcquisitionPanel = (
 
   return (
     <>
-      <div className="mt-5">
+      <div className="mt-5 mb-3">
         {!isEmpty(hubs?.data) ? (
           <Form
             onSubmit={getDCPPSearchResults}
@@ -255,6 +256,13 @@ export const AcquisitionPanel = (
           </article>
         )}
       </div>
+      {/* configured hub */}
+      <span className="inline-flex items-center bg-green-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-green-300">
+        <span className="pr-1 pt-1">
+          <i className="icon-[solar--server-2-bold-duotone] w-5 h-5"></i>
+        </span>
+        {hubs && hubs?.data[0].hub_url}
+      </span>
 
       {/* AirDC++ search instance details */}
       {!isNil(airDCPPSearchInstance) &&
