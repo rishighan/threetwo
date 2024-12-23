@@ -1,5 +1,4 @@
 import React, { ReactElement, useMemo, useState } from "react";
-import PropTypes from "prop-types";
 import {
   ColumnDef,
   flexRender,
@@ -9,7 +8,19 @@ import {
   PaginationState,
 } from "@tanstack/react-table";
 
-export const T2Table = (tableOptions): ReactElement => {
+interface T2TableProps {
+  sourceData?: unknown[];
+  totalPages?: number;
+  columns?: unknown[];
+  paginationHandlers?: {
+    nextPage?(...args: unknown[]): unknown;
+    previousPage?(...args: unknown[]): unknown;
+  };
+  rowClickHandler?(...args: unknown[]): unknown;
+  children?: any;
+}
+
+export const T2Table = (tableOptions: T2TableProps): ReactElement => {
   const {
     sourceData,
     columns,
@@ -142,15 +153,4 @@ export const T2Table = (tableOptions): ReactElement => {
   );
 };
 
-T2Table.propTypes = {
-  sourceData: PropTypes.array,
-  totalPages: PropTypes.number,
-  columns: PropTypes.array,
-  paginationHandlers: PropTypes.shape({
-    nextPage: PropTypes.func,
-    previousPage: PropTypes.func,
-  }),
-  rowClickHandler: PropTypes.func,
-  children: PropTypes.any,
-};
 export default T2Table;

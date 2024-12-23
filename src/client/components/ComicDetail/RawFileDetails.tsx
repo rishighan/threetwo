@@ -1,10 +1,36 @@
 import React, { ReactElement } from "react";
-import PropTypes from "prop-types";
 import prettyBytes from "pretty-bytes";
 import { isEmpty } from "lodash";
 import { format, parseISO } from "date-fns";
 
-export const RawFileDetails = (props): ReactElement => {
+interface RawFileDetailsProps {
+  data?: {
+    rawFileDetails?: {
+      containedIn?: string;
+      name?: string;
+      fileSize?: number;
+      path?: string;
+      extension?: string;
+      mimeType?: string;
+      cover?: {
+        filePath?: string;
+      };
+    };
+    inferredMetadata?: {
+      issue?: {
+        year?: string;
+        name?: string;
+        number?: number;
+        subtitle?: string;
+      };
+    };
+    created_at?: string;
+    updated_at?: string;
+  };
+  children?: any;
+}
+
+export const RawFileDetails = (props: RawFileDetailsProps): ReactElement => {
   const { rawFileDetails, inferredMetadata, created_at, updated_at } =
     props.data;
   return (
@@ -98,30 +124,3 @@ export const RawFileDetails = (props): ReactElement => {
 };
 
 export default RawFileDetails;
-
-RawFileDetails.propTypes = {
-  data: PropTypes.shape({
-    rawFileDetails: PropTypes.shape({
-      containedIn: PropTypes.string,
-      name: PropTypes.string,
-      fileSize: PropTypes.number,
-      path: PropTypes.string,
-      extension: PropTypes.string,
-      mimeType: PropTypes.string,
-      cover: PropTypes.shape({
-        filePath: PropTypes.string,
-      }),
-    }),
-    inferredMetadata: PropTypes.shape({
-      issue: PropTypes.shape({
-        year: PropTypes.string,
-        name: PropTypes.string,
-        number: PropTypes.number,
-        subtitle: PropTypes.string,
-      }),
-    }),
-    created_at: PropTypes.string,
-    updated_at: PropTypes.string,
-  }),
-  children: PropTypes.any,
-};

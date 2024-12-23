@@ -170,7 +170,7 @@ export const AcquisitionPanel = (
     size: Number,
     type: any,
     config: any,
-  ): void => {
+  ): Promise<void> => {
     socketIOInstance.emit(
       "call",
       "socket.download",
@@ -257,12 +257,14 @@ export const AcquisitionPanel = (
         )}
       </div>
       {/* configured hub */}
-      <span className="inline-flex items-center bg-green-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-green-300">
-        <span className="pr-1 pt-1">
-          <i className="icon-[solar--server-2-bold-duotone] w-5 h-5"></i>
+      {!isEmpty(hubs?.data) && (
+        <span className="inline-flex items-center bg-green-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-green-300">
+          <span className="pr-1 pt-1">
+            <i className="icon-[solar--server-2-bold-duotone] w-5 h-5"></i>
+          </span>
+          {hubs && hubs?.data[0].hub_url}
         </span>
-        {hubs && hubs?.data[0].hub_url}
-      </span>
+      )}
 
       {/* AirDC++ search instance details */}
       {!isNil(airDCPPSearchInstance) &&
@@ -273,7 +275,7 @@ export const AcquisitionPanel = (
               <dl>
                 <dt>
                   <div className="mb-1">
-                    {hubs?.data.map((value, idx) => (
+                    {hubs?.data.map((value, idx: string) => (
                       <span className="tag is-warning" key={idx}>
                         {value.identity.name}
                       </span>
