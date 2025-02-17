@@ -4,7 +4,7 @@ import Card from "../shared/Carda";
 import T2Table from "../shared/T2Table";
 import ellipsize from "ellipsize";
 import { convert } from "html-to-text";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { SEARCH_SERVICE_BASE_URI } from "../../constants/endpoints";

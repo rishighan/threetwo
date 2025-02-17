@@ -14,7 +14,7 @@ import { isNil, isEmpty, isUndefined } from "lodash";
 import Masonry from "react-masonry-css";
 import Card from "../shared/Carda";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
 
 interface ILibraryGridProps {}

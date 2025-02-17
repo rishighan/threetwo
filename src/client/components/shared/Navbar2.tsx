@@ -1,5 +1,5 @@
 import React, { ReactElement, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useDarkMode } from "../../hooks/useDarkMode";
 
 export const Navbar2 = (): ReactElement => {

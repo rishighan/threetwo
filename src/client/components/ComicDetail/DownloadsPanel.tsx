@@ -13,7 +13,7 @@ import {
 } from "../../constants/endpoints";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 
 interface IDownloadsPanelProps {
   key: number;

@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 type IHeaderProps = {
   headerContent: string;
