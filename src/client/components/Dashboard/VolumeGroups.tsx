@@ -1,7 +1,7 @@
 import { map, unionBy } from "lodash";
 import React, { ReactElement } from "react";
 import ellipsize from "ellipsize";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import Card from "../shared/Carda";
 import Header from "../shared/Header";
 

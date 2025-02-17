@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 import { Navbar2 } from "./shared/Navbar2";
 import { ToastContainer } from "react-toastify";
 import "../assets/scss/App.scss";

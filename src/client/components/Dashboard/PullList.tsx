@@ -4,7 +4,7 @@ import Card from "../shared/Carda";
 import Header from "../shared/Header";
 import { importToDB } from "../../actions/fileops.actions";
 import ellipsize from "ellipsize";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 import axios from "axios";
 import rateLimiter from "axios-rate-limit";

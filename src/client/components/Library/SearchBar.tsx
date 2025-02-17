@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import PropTypes from "prop-types";
 import { Form, Field } from "react-final-form";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 export const SearchBar = (props): ReactElement => {
   const { searchHandler } = props;
