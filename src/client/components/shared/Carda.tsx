@@ -83,7 +83,7 @@ const renderCard = (props: ICardProps): ReactElement => {
 
     case "vertical-2":
       return (
-        <div className="block rounded-md w-64 h-fit shadow-md shadow-white-400 bg-gray-200 dark:bg-slate-500">
+        <div className="block rounded-md max-w-64 h-fit shadow-md shadow-white-400 bg-gray-200 dark:bg-slate-500">
           <img
             alt="Home"
             src={props.imageUrl}

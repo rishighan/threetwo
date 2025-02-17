@@ -1,11 +1,17 @@
 import React, { ReactElement, useCallback, useState } from "react";
-import PropTypes from "prop-types";
 import { fetchMetronResource } from "../../../actions/metron.actions";
 import Creatable from "react-select/creatable";
 import { withAsyncPaginate } from "react-select-async-paginate";
 const CreatableAsyncPaginate = withAsyncPaginate(Creatable);
 
-export const AsyncSelectPaginate = (props): ReactElement => {
+interface AsyncSelectPaginateProps {
+  metronResource: string;
+  placeholder?: string;
+  value?: object;
+  onChange?(...args: unknown[]): unknown;
+}
+
+export const AsyncSelectPaginate = (props: AsyncSelectPaginateProps): ReactElement => {
   const [value, setValue] = useState(null);
   const [isAddingInProgress, setIsAddingInProgress] = useState(false);
 
@@ -36,13 +42,6 @@ export const AsyncSelectPaginate = (props): ReactElement => {
       }}
     />
   );
-};
-
-AsyncSelectPaginate.propTypes = {
-  metronResource: PropTypes.string.isRequired,
-  placeholder: PropTypes.string,
-  value: PropTypes.object,
-  onChange: PropTypes.func,
 };
 
 export default AsyncSelectPaginate;

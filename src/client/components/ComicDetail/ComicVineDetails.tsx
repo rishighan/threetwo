@@ -1,12 +1,21 @@
 import React, { ReactElement } from "react";
-import PropTypes from "prop-types";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
 import dayjs from "dayjs";
 import { isEmpty, isUndefined } from "lodash";
 import Card from "../shared/Carda";
 import { convert } from "html-to-text";
 
-export const ComicVineDetails = (props): ReactElement => {
+interface ComicVineDetailsProps {
+  updatedAt?: string;
+  data?: {
+    name?: string;
+    number?: string;
+    resource_type?: string;
+    id?: number;
+  };
+}
+
+export const ComicVineDetails = (props: ComicVineDetailsProps): ReactElement => {
   const { data, updatedAt } = props;
   return (
     <div className="text-slate-500 dark:text-gray-400">
@@ -107,13 +116,3 @@ export const ComicVineDetails = (props): ReactElement => {
 };
 
 export default ComicVineDetails;
-
-ComicVineDetails.propTypes = {
-  updatedAt: PropTypes.string,
-  data: PropTypes.shape({
-    name: PropTypes.string,
-    number: PropTypes.string,
-    resource_type: PropTypes.string,
-    id: PropTypes.number,
-  }),
-};

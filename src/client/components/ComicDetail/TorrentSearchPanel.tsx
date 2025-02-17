@@ -25,7 +25,7 @@ export const TorrentSearchPanel = (props) => {
         data: {
           prowlarrQuery: {
             port: "9696",
-            apiKey: "c4f42e265fb044dc81f7e88bd41c3367",
+            apiKey: "38c2656e8f5d4790962037b8c4416a8f",
             offset: 0,
             categories: [7030],
             query: searchTerm.issueName,

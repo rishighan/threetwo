@@ -86,8 +86,8 @@ export const PullList = (): ReactElement => {
             <span className="text-md">
               Pull List aggregated for the week from{" "}
               <span className="underline">
-                <a href="https://leagueofcomicgeeks.com/comics/new-comics">
-                  League Of Comic Geeks
+                <a href="https://www.tfaw.com/comics/new-releases.html">
+                  Things From Another World
                 </a>
                 <i className="icon-[solar--arrow-right-up-outline] w-4 h-4" />
               </span>
@@ -132,13 +132,13 @@ export const PullList = (): ReactElement => {
               <div key={idx} className="keen-slider__slide">
                 <Card
                   orientation={"vertical-2"}
-                  imageUrl={issue.cover}
+                  imageUrl={issue.coverImageUrl}
                   hasDetails
                   title={ellipsize(issue.name, 25)}
                 >
                   <div className="px-1">
                     <span className="inline-flex mb-2 items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-1 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                      {issue.publisher}
+                      {issue.publicationDate}
                     </span>
                     <div className="flex flex-row justify-end">
                       <button
