@@ -34,7 +34,24 @@ import { styled } from "styled-components";
 import { COMICVINE_SERVICE_URI } from "../../constants/endpoints";
 import { refineQuery } from "filename-parser";
 
-type ComicDetailProps = {};
+interface ComicDetailProps {
+  data: {
+    _id: string;
+    rawFileDetails: {};
+    inferredMetadata: {
+      issue: {};
+    };
+    sourcedMetadata: {
+      comicvine: {};
+      locg: {};
+      comicInfo: {};
+    };
+    acquisition: {};
+    createdAt: string;
+    updatedAt: string;
+  };
+  userSettings: {};
+}
 /**
  * Component for displaying the metadata for a comic in greater detail.
  *
@@ -68,7 +85,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
 
   // const dispatch = useDispatch();
 
-  const openModal = useCallback((filePath) => {
+  const openModal = useCallback((filePath: string) => {
     setIsOpen(true);
     // dispatch(
     //   extractComicArchive(filePath, {
