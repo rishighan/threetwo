@@ -1,23 +1,36 @@
-FROM node:18.15.0-alpine
+# Use Node.js 22 as the base image
+FROM node:22-alpine
+
 LABEL maintainer="Rishi Ghan <rishi.ghan@gmail.com>"
 
+# Set the working directory inside the container
 WORKDIR /threetwo
 
-# Copy package.json and lock file first to leverage Docker cache
-COPY package.json ./
-COPY yarn.lock ./
+# Copy package.json and yarn.lock to leverage Docker cache
+COPY package.json yarn.lock ./
 
-# Install build dependencies necessary for native modules
-RUN apk --no-cache add g++ make libpng-dev git python3 autoconf automake libjpeg-turbo-dev mesa-dev mesa libxi build-base gcc libtool nasm
+# Install build dependencies necessary for native modules (for node-sass)
+RUN apk --no-cache add \
+    g++ \
+    make \
+    python3 \
+    autoconf \
+    automake \
+    libtool \
+    nasm \
+    git
 
 # Install node modules
 RUN yarn install --ignore-engines
+
 # Explicitly install sass
 RUN yarn add -D sass
-# Copy the rest of the application
+
+# Copy the rest of the application files into the container
 COPY . .
 
+# Expose the application port (default for Vite)
 EXPOSE 5173
 
-# Use yarn start if you want to stick with yarn, or change to npm start if you prefer npm
-ENTRYPOINT [ "yarn", "start" ]
+# Start the application with yarn
+ENTRYPOINT ["yarn", "start"]
