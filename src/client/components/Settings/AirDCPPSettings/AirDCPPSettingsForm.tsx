@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AirDCPPSettingsConfirmation } from "./AirDCPPSettingsConfirmation";
 import { ConnectionForm } from "../../shared/ConnectionForm/ConnectionForm";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import {
   AIRDCPP_SERVICE_BASE_URI,

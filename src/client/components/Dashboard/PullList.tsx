@@ -31,7 +31,7 @@ export const PullList = (): ReactElement => {
   // datepicker
   const date = new Date();
   const [inputValue, setInputValue] = useState<string>(
-    format(date, "M-dd-yyyy"),
+    format(date, "yyyy/M/dd"),
   );
 
   // keen slider
@@ -86,8 +86,8 @@ export const PullList = (): ReactElement => {
             <span className="text-md">
               Pull List aggregated for the week from{" "}
               <span className="underline">
-                <a href="https://www.tfaw.com/comics/new-releases.html">
-                  Things From Another World
+                <a href="https://leagueofcomicgeeks.com">
+                  League Of Comic Geeks
                 </a>
                 <i className="icon-[solar--arrow-right-up-outline] w-4 h-4" />
               </span>
@@ -134,7 +134,7 @@ export const PullList = (): ReactElement => {
                   orientation={"vertical-2"}
                   imageUrl={issue.coverImageUrl}
                   hasDetails
-                  title={ellipsize(issue.name, 25)}
+                  title={ellipsize(issue.issueName, 25)}
                 >
                   <div className="px-1">
                     <span className="inline-flex mb-2 items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-1 rounded-md dark:text-slate-900 dark:bg-slate-400">

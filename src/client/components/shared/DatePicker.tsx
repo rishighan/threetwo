@@ -36,7 +36,7 @@ export const DatePickerDialog = (props) => {
   const handleDaySelect = (date) => {
     setSelected(date);
     if (date) {
-      setter(format(date, "yyyy-MM-dd"));
+      setter(format(date, "yyyy/MM/dd"));
       apiAction();
       closePopper();
     } else {
