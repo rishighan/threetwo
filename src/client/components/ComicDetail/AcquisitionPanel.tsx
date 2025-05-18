@@ -1,4 +1,10 @@
-import React, { useCallback, ReactElement, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  ReactElement,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { SearchQuery, PriorityEnum, SearchResponse } from "threetwo-ui-typings";
 import { RootState, SearchInstance } from "threetwo-ui-typings";
 import ellipsize from "ellipsize";
@@ -10,6 +16,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { AIRDCPP_SERVICE_BASE_URI } from "../../constants/endpoints";
+import type { Socket } from "socket.io-client";
 
 interface IAcquisitionPanelProps {
   query: any;
@@ -21,32 +28,65 @@ interface IAcquisitionPanelProps {
 export const AcquisitionPanel = (
   props: IAcquisitionPanelProps,
 ): ReactElement => {
-  const { socketIOInstance } = useStore(
-    useShallow((state) => ({
-      socketIOInstance: state.socketIOInstance,
-    })),
-  );
+  const socketRef = useRef<Socket>();
+  const queryClient = useQueryClient();
 
-  interface SearchData {
-    query: Pick<SearchQuery, "pattern"> & Partial<Omit<SearchQuery, "pattern">>;
-    hub_urls: string[] | undefined | null;
-    priority: PriorityEnum;
-  }
-  interface SearchResult {
-    id: string;
-    // Add other properties as needed
-    slots: any;
-    type: any;
-    users: any;
-    name: string;
-    dupe: Boolean;
-    size: number;
-  }
+  const [dcppQuery, setDcppQuery] = useState({});
+  const [airDCPPSearchResults, setAirDCPPSearchResults] = useState<any[]>([]);
+  const [airDCPPSearchStatus, setAirDCPPSearchStatus] = useState(false);
+  const [airDCPPSearchInstance, setAirDCPPSearchInstance] = useState<any>({});
+  const [airDCPPSearchInfo, setAirDCPPSearchInfo] = useState<any>({});
 
-  const handleSearch = (searchQuery) => {
-    // Use the already connected socket instance to emit events
-    socketIOInstance.emit("initiateSearch", searchQuery);
-  };
+  const { comicObjectId } = props;
+  const issueName = props.query.issue.name || "";
+  const sanitizedIssueName = issueName.replace(/[^a-zA-Z0-9 ]/g, " ");
+
+  useEffect(() => {
+    const socket = useStore.getState().getSocket("manual");
+    socketRef.current = socket;
+
+    // --- Handlers ---
+    const handleResultAdded = ({ result }: any) => {
+      setAirDCPPSearchResults((prev) =>
+        prev.some((r) => r.id === result.id) ? prev : [...prev, result],
+      );
+    };
+
+    const handleResultUpdated = ({ result }: any) => {
+      setAirDCPPSearchResults((prev) => {
+        const idx = prev.findIndex((r) => r.id === result.id);
+        if (idx === -1) return prev;
+        if (JSON.stringify(prev[idx]) === JSON.stringify(result)) return prev;
+        const next = [...prev];
+        next[idx] = result;
+        return next;
+      });
+    };
+
+    const handleSearchInitiated = (data: any) => {
+      setAirDCPPSearchInstance(data.instance);
+    };
+
+    const handleSearchesSent = (data: any) => {
+      setAirDCPPSearchInfo(data.searchInfo);
+    };
+
+    // --- Subscribe once ---
+    socket.on("searchResultAdded", handleResultAdded);
+    socket.on("searchResultUpdated", handleResultUpdated);
+    socket.on("searchInitiated", handleSearchInitiated);
+    socket.on("searchesSent", handleSearchesSent);
+
+    return () => {
+      socket.off("searchResultAdded", handleResultAdded);
+      socket.off("searchResultUpdated", handleResultUpdated);
+      socket.off("searchInitiated", handleSearchInitiated);
+      socket.off("searchesSent", handleSearchesSent);
+      // if you want to fully close the socket:
+      // useStore.getState().disconnectSocket("/manual");
+    };
+  }, []);
+
   const {
     data: settings,
     isLoading,
@@ -59,9 +99,7 @@ export const AcquisitionPanel = (
         method: "GET",
       }),
   });
-  /**
-   * Get the hubs list from an AirDCPP Socket
-   */
+
   const { data: hubs } = useQuery({
     queryKey: ["hubs"],
     queryFn: async () =>
@@ -74,24 +112,8 @@ export const AcquisitionPanel = (
       }),
     enabled: !isEmpty(settings?.data.directConnect?.client?.host),
   });
-  const { comicObjectId } = props;
-  const issueName = props.query.issue.name || "";
-  const sanitizedIssueName = issueName.replace(/[^a-zA-Z0-9 ]/g, " ");
 
-  const [dcppQuery, setDcppQuery] = useState({});
-  const [airDCPPSearchResults, setAirDCPPSearchResults] = useState<
-    SearchResult[]
-  >([]);
-  const [airDCPPSearchStatus, setAirDCPPSearchStatus] = useState(false);
-  const [airDCPPSearchInstance, setAirDCPPSearchInstance] = useState({});
-  const [airDCPPSearchInfo, setAirDCPPSearchInfo] = useState({});
-  const queryClient = useQueryClient();
-
-  // Construct a AirDC++ query based on metadata inferred, upon component mount
-  // Pre-populate the search input with the search string, so that
-  // all the user has to do is hit "Search AirDC++" to perform a search
   useEffect(() => {
-    // AirDC++ search query
     const dcppSearchQuery = {
       query: {
         pattern: `${sanitizedIssueName.replace(/#/g, "")}`,
@@ -101,67 +123,22 @@ export const AcquisitionPanel = (
       priority: 5,
     };
     setDcppQuery(dcppSearchQuery);
-  }, []);
+  }, [hubs, sanitizedIssueName]);
 
-  /**
-   * Method to perform a search via an AirDC++ websocket
-   * @param {SearchData} data - a SearchData query
-   * @param {any} ADCPPSocket - an intialized AirDC++ socket instance
-   */
   const search = async (searchData: any) => {
     setAirDCPPSearchResults([]);
-    socketIOInstance.emit("call", "socket.search", {
+    socketRef.current?.emit("call", "socket.search", {
       query: searchData,
+      namespace: "/manual",
       config: {
         protocol: `ws`,
-        // hostname: `192.168.1.119:5600`,
-        hostname: `127.0.0.1:5600`,
-        username: `user`,
-        password: `pass`,
+        hostname: `192.168.1.119:5600`,
+        username: `admin`,
+        password: `password`,
       },
     });
   };
 
-  socketIOInstance.on("searchResultAdded", ({ result }: any) => {
-    setAirDCPPSearchResults((previousState) => {
-      const exists = previousState.some((item) => result.id === item.id);
-      if (!exists) {
-        return [...previousState, result];
-      }
-      return previousState;
-    });
-  });
-
-  socketIOInstance.on("searchResultUpdated", ({ result }: any) => {
-    // ...update properties of the existing result in the UI
-    const bundleToUpdateIndex = airDCPPSearchResults?.findIndex(
-      (bundle) => bundle.id === result.id,
-    );
-    const updatedState = [...airDCPPSearchResults];
-    if (!isNil(difference(updatedState[bundleToUpdateIndex], result))) {
-      updatedState[bundleToUpdateIndex] = result;
-    }
-    setAirDCPPSearchResults((state) => [...state, ...updatedState]);
-  });
-
-  socketIOInstance.on("searchInitiated", (data) => {
-    setAirDCPPSearchInstance(data.instance);
-  });
-  socketIOInstance.on("searchesSent", (data) => {
-    setAirDCPPSearchInfo(data.searchInfo);
-  });
-
-  /**
-   * Method to download a bundle associated with a search result from AirDC++
-   * @param {Number} searchInstanceId - description
-   * @param {String} resultId - description
-   * @param {String} comicObjectId - description
-   * @param {String} name - description
-   * @param {Number} size - description
-   * @param {any} type - description
-   * @param {any} config - description
-   * @returns {void}  - description
-   */
   const download = async (
     searchInstanceId: Number,
     resultId: String,
@@ -171,7 +148,7 @@ export const AcquisitionPanel = (
     type: any,
     config: any,
   ): Promise<void> => {
-    socketIOInstance.emit(
+    socketRef.current?.emit(
       "call",
       "socket.download",
       {
@@ -186,6 +163,7 @@ export const AcquisitionPanel = (
       (data: any) => console.log(data),
     );
   };
+
   const getDCPPSearchResults = async (searchQuery) => {
     const manualQuery = {
       query: {
@@ -316,20 +294,20 @@ export const AcquisitionPanel = (
       {/* AirDC++ results */}
       <div className="">
         {!isNil(airDCPPSearchResults) && !isEmpty(airDCPPSearchResults) ? (
-          <div className="overflow-x-auto w-fit mt-4 rounded-lg border border-gray-200 dark:border-gray-500">
-            <table className="min-w-full divide-y-2 divide-gray-200 dark:divide-gray-500 text-md">
+          <div className="overflow-x-auto max-w-full mt-4 rounded-lg border border-gray-200 dark:border-gray-500">
+            <table className="w-full table-auto divide-y-2 divide-gray-200 dark:divide-gray-500 text-md">
               <thead>
                 <tr>
                   <th className="whitespace-nowrap px-2 py-2 font-medium text-gray-900 dark:text-slate-200">
                     Name
                   </th>
-                  <th className="whitespace-nowrap py-2 font-medium text-gray-900 dark:text-slate-200">
+                  <th className="whitespace-nowrap px-2 py-2 font-medium text-gray-900 dark:text-slate-200">
                     Type
                   </th>
-                  <th className="whitespace-nowrap py-2 font-medium text-gray-900 dark:text-slate-200">
+                  <th className="whitespace-nowrap px-2 py-2 font-medium text-gray-900 dark:text-slate-200">
                     Slots
                   </th>
-                  <th className="whitespace-nowrap py-2 font-medium text-gray-900 dark:text-slate-200">
+                  <th className="whitespace-nowrap px-2 py-2 font-medium text-gray-900 dark:text-slate-200">
                     Actions
                   </th>
                 </tr>
@@ -337,118 +315,93 @@ export const AcquisitionPanel = (
               <tbody className="divide-y divide-slate-100 dark:divide-gray-500">
                 {map(
                   airDCPPSearchResults,
-                  ({ dupe, type, name, id, slots, users, size }, idx) => {
-                    return (
-                      <tr
-                        key={idx}
-                        className={
-                          !isNil(dupe)
-                            ? "bg-gray-100 dark:bg-gray-700"
-                            : "w-fit text-sm"
-                        }
-                      >
-                        <td className="whitespace-nowrap px-3 py-3 text-gray-700 dark:text-slate-300">
-                          <p className="mb-2">
-                            {type.id === "directory" ? (
-                              <i className="fas fa-folder"></i>
-                            ) : null}
-                            {ellipsize(name, 70)}
-                          </p>
-
-                          <dl>
-                            <dd>
-                              <div className="inline-flex flex-row gap-2">
-                                {!isNil(dupe) ? (
-                                  <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                                    <span className="pr-1 pt-1">
-                                      <i className="icon-[solar--copy-bold-duotone] w-5 h-5"></i>
-                                    </span>
-
-                                    <span className="text-md text-slate-500 dark:text-slate-900">
-                                      Dupe
-                                    </span>
-                                  </span>
-                                ) : null}
-
-                                {/* Nicks */}
-                                <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                                  <span className="pr-1 pt-1">
-                                    <i className="icon-[solar--user-rounded-bold-duotone] w-5 h-5"></i>
-                                  </span>
-
-                                  <span className="text-md text-slate-500 dark:text-slate-900">
-                                    {users.user.nicks}
-                                  </span>
+                  ({ dupe, type, name, id, slots, users, size }, idx) => (
+                    <tr
+                      key={idx}
+                      className={
+                        !isNil(dupe)
+                          ? "bg-gray-100 dark:bg-gray-700"
+                          : "text-sm"
+                      }
+                    >
+                      {/* NAME */}
+                      <td className="whitespace-nowrap px-3 py-3 text-gray-700 dark:text-slate-300 max-w-xs">
+                        <p className="mb-2">
+                          {type.id === "directory" && (
+                            <i className="fas fa-folder mr-1"></i>
+                          )}
+                          {ellipsize(name, 45)}
+                        </p>
+                        <dl>
+                          <dd>
+                            <div className="inline-flex flex-wrap gap-1">
+                              {!isNil(dupe) && (
+                                <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-800 text-xs font-medium py-0.5 px-2 rounded dark:bg-slate-400 dark:text-slate-900">
+                                  <i className="icon-[solar--copy-bold-duotone] w-4 h-4"></i>
+                                  Dupe
                                 </span>
-                                {/* Flags */}
-                                {users.user.flags.map((flag, idx) => (
-                                  <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                                    <span className="pr-1 pt-1">
-                                      <i className="icon-[solar--tag-horizontal-bold-duotone] w-5 h-5"></i>
-                                    </span>
+                              )}
+                              <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-800 text-xs font-medium py-0.5 px-2 rounded dark:bg-slate-400 dark:text-slate-900">
+                                <i className="icon-[solar--user-rounded-bold-duotone] w-4 h-4"></i>
+                                {users.user.nicks}
+                              </span>
+                              {users.user.flags.map((flag, idx) => (
+                                <span
+                                  key={idx}
+                                  className="inline-flex items-center gap-1 bg-slate-100 text-slate-800 text-xs font-medium py-0.5 px-2 rounded dark:bg-slate-400 dark:text-slate-900"
+                                >
+                                  <i className="icon-[solar--tag-horizontal-bold-duotone] w-4 h-4"></i>
+                                  {flag}
+                                </span>
+                              ))}
+                            </div>
+                          </dd>
+                        </dl>
+                      </td>
 
-                                    <span className="text-md text-slate-500 dark:text-slate-900">
-                                      {flag}
-                                    </span>
-                                  </span>
-                                ))}
-                              </div>
-                            </dd>
-                          </dl>
-                        </td>
-                        <td>
-                          {/* Extension */}
-                          <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                            <span className="pr-1 pt-1">
-                              <i className="icon-[solar--zip-file-bold-duotone] w-5 h-5"></i>
-                            </span>
+                      {/* TYPE */}
+                      <td className="px-2 py-3">
+                        <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-800 text-xs font-medium py-0.5 px-2 rounded dark:bg-slate-400 dark:text-slate-900">
+                          <i className="icon-[solar--zip-file-bold-duotone] w-4 h-4"></i>
+                          {type.str}
+                        </span>
+                      </td>
 
-                            <span className="text-md text-slate-500 dark:text-slate-900">
-                              {type.str}
-                            </span>
-                          </span>
-                        </td>
-                        <td className="px-2">
-                          {/* Slots */}
-                          <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                            <span className="pr-1 pt-1">
-                              <i className="icon-[solar--settings-minimalistic-bold-duotone] w-5 h-5"></i>
-                            </span>
+                      {/* SLOTS */}
+                      <td className="px-2 py-3">
+                        <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-800 text-xs font-medium py-0.5 px-2 rounded dark:bg-slate-400 dark:text-slate-900">
+                          <i className="icon-[solar--settings-minimalistic-bold-duotone] w-4 h-4"></i>
+                          {slots.total} slots; {slots.free} free
+                        </span>
+                      </td>
 
-                            <span className="text-md text-slate-500 dark:text-slate-900">
-                              {slots.total} slots; {slots.free} free
-                            </span>
-                          </span>
-                        </td>
-                        <td className="px-2">
-                          <button
-                            className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-3 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
-                            onClick={() =>
-                              download(
-                                airDCPPSearchInstance.id,
-                                id,
-                                comicObjectId,
-                                name,
-                                size,
-                                type,
-                                {
-                                  protocol: `ws`,
-                                  hostname: `192.168.1.119:5600`,
-                                  username: `admin`,
-                                  password: `password`,
-                                },
-                              )
-                            }
-                          >
-                            <span className="text-xs">Download</span>
-                            <span className="w-5 h-5">
-                              <i className="h-5 w-5 icon-[solar--download-bold-duotone]"></i>
-                            </span>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  },
+                      {/* ACTIONS */}
+                      <td className="px-2 py-3">
+                        <button
+                          className="inline-flex items-center gap-1 rounded border border-green-500 bg-green-500 px-2 py-1 text-xs font-medium text-white hover:bg-transparent hover:text-green-400 dark:border-green-300 dark:bg-green-300 dark:text-slate-900 dark:hover:bg-transparent"
+                          onClick={() =>
+                            download(
+                              airDCPPSearchInstance.id,
+                              id,
+                              comicObjectId,
+                              name,
+                              size,
+                              type,
+                              {
+                                protocol: `ws`,
+                                hostname: `192.168.1.119:5600`,
+                                username: `admin`,
+                                password: `password`,
+                              },
+                            )
+                          }
+                        >
+                          Download
+                          <i className="icon-[solar--download-bold-duotone] w-4 h-4"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ),
                 )}
               </tbody>
             </table>

@@ -1,161 +1,173 @@
 import { create } from "zustand";
-import { isNil } from "lodash";
-import io from "socket.io-client";
+import io, { Socket } from "socket.io-client";
 import { SOCKET_BASE_URI } from "../constants/endpoints";
-import { produce } from "immer";
+import { isNil } from "lodash";
 import { QueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 
-/*  Broadly, this file sets up:
- *    1. The zustand-based global client state
- *    2. socket.io client
- */
-export const useStore = create((set, get) => ({
-  // Socket.io state
-  socketIOInstance: {},
-  // ComicVine Scraping status
+const queryClient = new QueryClient();
+
+// Type for global state
+interface StoreState {
+  socketInstances: Record<string, Socket>;
+  getSocket: (namespace?: string) => Socket;
+  disconnectSocket: (namespace: string) => void;
+
+  comicvine: {
+    scrapingStatus: string;
+  };
+
+  importJobQueue: {
+    successfulJobCount: number;
+    failedJobCount: number;
+    status: string | undefined;
+    mostRecentImport: string | null;
+
+    setStatus: (status: string) => void;
+    setJobCount: (jobType: string, count: number) => void;
+    setMostRecentImport: (fileName: string) => void;
+  };
+}
+
+export const useStore = create<StoreState>((set, get) => ({
+  socketInstances: {},
+
+  getSocket: (namespace = "/") => {
+    const fullNamespace = namespace === "/" ? "" : namespace;
+    const existing = get().socketInstances[namespace];
+
+    if (existing && existing.connected) return existing;
+
+    const sessionId = localStorage.getItem("sessionId");
+    const socket = io(`${SOCKET_BASE_URI}${fullNamespace}`, {
+      transports: ["websocket"],
+      withCredentials: true,
+      query: { sessionId },
+    });
+
+    socket.on("connect", () => {
+      console.log(`✅ Connected to ${namespace}:`, socket.id);
+    });
+
+    if (sessionId) {
+      socket.emit("call", "socket.resumeSession", { sessionId, namespace });
+    } else {
+      socket.on("sessionInitialized", (id) => {
+        localStorage.setItem("sessionId", id);
+      });
+    }
+
+    socket.on("RESTORE_JOB_COUNTS_AFTER_SESSION_RESTORATION", (data) => {
+      const { completedJobCount, failedJobCount, queueStatus } = data;
+      set((state) => ({
+        importJobQueue: {
+          ...state.importJobQueue,
+          successfulJobCount: completedJobCount,
+          failedJobCount,
+          status: queueStatus,
+        },
+      }));
+    });
+
+    socket.on("LS_COVER_EXTRACTED", ({ completedJobCount, importResult }) => {
+      set((state) => ({
+        importJobQueue: {
+          ...state.importJobQueue,
+          successfulJobCount: completedJobCount,
+          mostRecentImport: importResult.data.rawFileDetails.name,
+        },
+      }));
+    });
+
+    socket.on("LS_COVER_EXTRACTION_FAILED", ({ failedJobCount }) => {
+      set((state) => ({
+        importJobQueue: {
+          ...state.importJobQueue,
+          failedJobCount,
+        },
+      }));
+    });
+
+    socket.on("LS_IMPORT_QUEUE_DRAINED", () => {
+      localStorage.removeItem("sessionId");
+      set((state) => ({
+        importJobQueue: {
+          ...state.importJobQueue,
+          status: "drained",
+        },
+      }));
+      queryClient.invalidateQueries({ queryKey: ["allImportJobResults"] });
+    });
+
+    socket.on("CV_SCRAPING_STATUS", (data) => {
+      set((state) => ({
+        comicvine: {
+          ...state.comicvine,
+          scrapingStatus: data.message,
+        },
+      }));
+    });
+
+    socket.on("searchResultsAvailable", (data) => {
+      toast(`Results found for query: ${JSON.stringify(data.query, null, 2)}`);
+    });
+
+    set((state) => ({
+      socketInstances: {
+        ...state.socketInstances,
+        [namespace]: socket,
+      },
+    }));
+
+    return socket;
+  },
+
+  disconnectSocket: (namespace: string) => {
+    const socket = get().socketInstances[namespace];
+    if (socket) {
+      socket.disconnect();
+      set((state) => {
+        const { [namespace]: _, ...rest } = state.socketInstances;
+        return { socketInstances: rest };
+      });
+    }
+  },
+
   comicvine: {
     scrapingStatus: "",
   },
 
-  // Import job queue and associated statuses
   importJobQueue: {
     successfulJobCount: 0,
     failedJobCount: 0,
     status: undefined,
-    setStatus: (status: string) =>
-      set(
-        produce((draftState) => {
-          draftState.importJobQueue.status = status;
-        }),
-      ),
-    setJobCount: (jobType: string, count: Number) => {
-      switch (jobType) {
-        case "successful":
-          set(
-            produce((draftState) => {
-              draftState.importJobQueue.successfulJobCount = count;
-            }),
-          );
-          break;
-
-        case "failed":
-          set(
-            produce((draftState) => {
-              draftState.importJobQueue.failedJobCount = count;
-            }),
-          );
-          break;
-      }
-    },
     mostRecentImport: null,
-    setMostRecentImport: (fileName: string) => {
-      set(
-        produce((state) => {
-          state.importJobQueue.mostRecentImport = fileName;
-        }),
-      );
-    },
+
+    setStatus: (status: string) =>
+      set((state) => ({
+        importJobQueue: {
+          ...state.importJobQueue,
+          status,
+        },
+      })),
+
+    setJobCount: (jobType: string, count: number) =>
+      set((state) => ({
+        importJobQueue: {
+          ...state.importJobQueue,
+          ...(jobType === "successful"
+            ? { successfulJobCount: count }
+            : { failedJobCount: count }),
+        },
+      })),
+
+    setMostRecentImport: (fileName: string) =>
+      set((state) => ({
+        importJobQueue: {
+          ...state.importJobQueue,
+          mostRecentImport: fileName,
+        },
+      })),
   },
 }));
-
-const { getState, setState } = useStore;
-const queryClient = new QueryClient();
-
-/** Socket.IO initialization **/
-// 1. Fetch sessionId from localStorage
-const sessionId = localStorage.getItem("sessionId");
-// 2. socket.io instantiation
-const socketIOInstance = io(SOCKET_BASE_URI, {
-  transports: ["websocket"],
-  withCredentials: true,
-  query: { sessionId },
-});
-// 3. Set the instance in global state
-setState({
-  socketIOInstance,
-});
-
-// Socket.io-based session restoration
-if (!isNil(sessionId)) {
-  // 1. Resume the session
-  socketIOInstance.emit(
-    "call",
-    "socket.resumeSession",
-    {
-      namespace: "/",
-      sessionId,
-    },
-    (data) => console.log(data),
-  );
-} else {
-  // 1. Inititalize the session and persist the sessionId to localStorage
-  socketIOInstance.on("sessionInitialized", (sessionId) => {
-    localStorage.setItem("sessionId", sessionId);
-  });
-}
-// 2. If a job is in progress, restore the job counts and persist those to global state
-socketIOInstance.on("RESTORE_JOB_COUNTS_AFTER_SESSION_RESTORATION", (data) => {
-  console.log("Active import in progress detected; restoring counts...");
-  const { completedJobCount, failedJobCount, queueStatus } = data;
-  setState((state) => ({
-    importJobQueue: {
-      ...state.importJobQueue,
-      successfulJobCount: completedJobCount,
-      failedJobCount,
-      status: queueStatus,
-    },
-  }));
-});
-
-// 1a.  Act on each comic issue successfully imported/failed, as indicated
-//      by the LS_COVER_EXTRACTED/LS_COVER_EXTRACTION_FAILED events
-socketIOInstance.on("LS_COVER_EXTRACTED", (data) => {
-  const { completedJobCount, importResult } = data;
-  console.log(importResult);
-  setState((state) => ({
-    importJobQueue: {
-      ...state.importJobQueue,
-      successfulJobCount: completedJobCount,
-      mostRecentImport: importResult.data.rawFileDetails.name,
-    },
-  }));
-});
-socketIOInstance.on("LS_COVER_EXTRACTION_FAILED", (data) => {
-  const { failedJobCount } = data;
-  setState((state) => ({
-    importJobQueue: {
-      ...state.importJobQueue,
-      failedJobCount,
-    },
-  }));
-});
-
-socketIOInstance.on("searchResultsAvailable", (data) => {
-  console.log(data);
-  toast(`Results found for query: ${JSON.stringify(data.query, null, 2)}`);
-});
-
-// 1b.  Clear the localStorage sessionId upon receiving the
-//      LS_IMPORT_QUEUE_DRAINED event
-socketIOInstance.on("LS_IMPORT_QUEUE_DRAINED", (data) => {
-  localStorage.removeItem("sessionId");
-  setState((state) => ({
-    importJobQueue: {
-      ...state.importJobQueue,
-      status: "drained",
-    },
-  }));
-  queryClient.invalidateQueries({ queryKey: ["allImportJobResults"] });
-});
-
-// ComicVine Scraping status
-socketIOInstance.on("CV_SCRAPING_STATUS", (data) => {
-  setState((state) => ({
-    comicvine: {
-      ...state.comicvine,
-      scrapingStatus: data.message,
-    },
-  }));
-});
