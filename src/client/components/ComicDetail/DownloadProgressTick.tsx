@@ -91,7 +91,7 @@ export const DownloadProgressTick: React.FC<DownloadProgressTickProps> = ({
   }, [socketRef, bundleId]);
 
   if (!tick) {
-    return null;
+    return <>Nothing detected.</>;
   }
 
   // Compute human-readable values and percentages
@@ -105,9 +105,6 @@ export const DownloadProgressTick: React.FC<DownloadProgressTickProps> = ({
 
   return (
     <div className="mt-2 p-2 border rounded-md bg-white shadow-sm">
-      {/* File name */}
-      <h5 className="text-md font-medium truncate">{tick.name}</h5>
-
       {/* Downloaded vs Total */}
       <div className="mt-1 flex items-center space-x-2">
         <span className="text-sm text-gray-700">{downloaded} of {total}</span>
@@ -123,7 +120,7 @@ export const DownloadProgressTick: React.FC<DownloadProgressTickProps> = ({
       <div className="mt-1 text-xs text-gray-600">{percent}% complete</div>
 
       {/* Speed and Time Left */}
-      <div className="mt-2 flex space-x-4 text-sm text-gray-600">
+      <div className="mt-2 flex space-x-4 text-xs text-gray-600">
         <span>Speed: {speed}</span>
         <span>Time left: {minutesLeft} min</span>
       </div>

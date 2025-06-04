@@ -294,25 +294,25 @@ export const AcquisitionPanel = (
       {/* AirDC++ results */}
       <div className="">
         {!isNil(airDCPPSearchResults) && !isEmpty(airDCPPSearchResults) ? (
-          <div className="overflow-x-auto max-w-full mt-4 rounded-lg border border-gray-200 dark:border-gray-500">
-            <table className="w-full table-auto divide-y-2 divide-gray-200 dark:divide-gray-500 text-md">
+          <div className="overflow-x-auto max-w-full mt-6">
+            <table className="w-full table-auto text-sm text-gray-900 dark:text-slate-100">
               <thead>
-                <tr>
-                  <th className="whitespace-nowrap px-2 py-2 font-medium text-gray-900 dark:text-slate-200">
+                <tr className="border-b border-gray-300 dark:border-slate-700">
+                  <th className="whitespace-nowrap px-3 py-2 text-left text-[11px] font-semibold tracking-wide text-gray-500 dark:text-slate-400 uppercase">
                     Name
                   </th>
-                  <th className="whitespace-nowrap px-2 py-2 font-medium text-gray-900 dark:text-slate-200">
+                  <th className="whitespace-nowrap px-3 py-2 text-left text-[11px] font-semibold tracking-wide text-gray-500 dark:text-slate-400 uppercase">
                     Type
                   </th>
-                  <th className="whitespace-nowrap px-2 py-2 font-medium text-gray-900 dark:text-slate-200">
+                  <th className="whitespace-nowrap px-3 py-2 text-left text-[11px] font-semibold tracking-wide text-gray-500 dark:text-slate-400 uppercase">
                     Slots
                   </th>
-                  <th className="whitespace-nowrap px-2 py-2 font-medium text-gray-900 dark:text-slate-200">
+                  <th className="whitespace-nowrap px-3 py-2 text-left text-[11px] font-semibold tracking-wide text-gray-500 dark:text-slate-400 uppercase">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-gray-500">
+              <tbody>
                 {map(
                   airDCPPSearchResults,
                   ({ dupe, type, name, id, slots, users, size }, idx) => (
@@ -320,8 +320,8 @@ export const AcquisitionPanel = (
                       key={idx}
                       className={
                         !isNil(dupe)
-                          ? "bg-gray-100 dark:bg-gray-700"
-                          : "text-sm"
+                          ? "border-b border-gray-200 dark:border-slate-700 bg-gray-100 dark:bg-gray-700"
+                          : "border-b border-gray-200 dark:border-slate-700 text-sm"
                       }
                     >
                       {/* NAME */}
