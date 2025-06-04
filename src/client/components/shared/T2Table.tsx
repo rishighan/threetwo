@@ -81,42 +81,47 @@ export const T2Table = (tableOptions: T2TableProps): ReactElement => {
   return (
     <div className="container max-w-fit mx-14">
       <div>
-        <div className="flex flex-row gap-2 justify-between mt-7">
+        <div className="flex flex-row gap-2 justify-between mt-6 mb-4">
           {/* Search bar */}
           {tableOptions.children}
-          {/* pagination controls */}
-          <div>
-            Page {pageIndex} of {Math.ceil(totalPages / pageSize)}
-            <p>{totalPages} comics in all</p>
-            {/* Prev/Next buttons */}
-            <div className="inline-flex flex-row mt-4 mb-4">
+
+          {/* Pagination controls */}
+          <div className="text-sm text-gray-800 dark:text-slate-200">
+            <div className="mb-1">
+              Page {pageIndex} of {Math.ceil(totalPages / pageSize)}
+            </div>
+            <p className="text-xs text-gray-600 dark:text-slate-400">
+              {totalPages} comics in all
+            </p>
+            <div className="inline-flex flex-row mt-3">
               <button
                 onClick={() => goToPreviousPage()}
                 disabled={pageIndex === 1}
-                className="dark:bg-slate-500 bg-slate-400 rounded-l border-slate-600 border-r pt-2 px-2"
+                className="dark:bg-slate-400 bg-gray-300 rounded-l px-2 py-1 border-r border-slate-600"
               >
-                <i className="icon-[solar--arrow-left-linear] h-6 w-6"></i>
+                <i className="icon-[solar--arrow-left-linear] h-5 w-5"></i>
               </button>
               <button
-                className="dark:bg-slate-500 bg-slate-400 rounded-r pt-2 px-2"
+                className="dark:bg-slate-400 bg-gray-300 rounded-r px-2 py-1"
                 onClick={() => goToNextPage()}
                 disabled={pageIndex > Math.floor(totalPages / pageSize)}
               >
-                <i className="icon-[solar--arrow-right-linear] h-6 w-6"></i>
+                <i className="icon-[solar--arrow-right-linear] h-5 w-5"></i>
               </button>
             </div>
           </div>
         </div>
       </div>
-      <table className="table-auto overflow-auto">
-        <thead className="sticky top-0 bg-slate-200 dark:bg-slate-500">
-          {table.getHeaderGroups().map((headerGroup, idx) => (
+
+      <table className="table-auto w-full text-sm text-gray-900 dark:text-slate-100 border-separate border-spacing-0">
+        <thead className="sticky top-0 bg-white dark:bg-slate-900 z-10 border-b border-gray-300 dark:border-slate-700">
+          {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header, idx) => (
+              {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
                   colSpan={header.colSpan}
-                  className="px-3 py-3"
+                  className="px-3 py-2 text-[11px] font-semibold tracking-wide uppercase text-left text-gray-500 dark:text-slate-400"
                 >
                   {header.isPlaceholder
                     ? null
@@ -131,22 +136,19 @@ export const T2Table = (tableOptions: T2TableProps): ReactElement => {
         </thead>
 
         <tbody>
-          {table.getRowModel().rows.map((row, idx) => {
-            return (
-              <tr key={row.id} onClick={() => rowClickHandler(row)}>
-                {row.getVisibleCells().map((cell) => {
-                  return (
-                    <td key={cell.id} className="align-top">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
+          {table.getRowModel().rows.map((row) => (
+            <tr
+              key={row.id}
+              onClick={() => rowClickHandler(row)}
+              className="border-b border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
+            >
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id} className="px-3 py-2 align-top">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
