@@ -1,5 +1,4 @@
-import React, { useEffect, useContext, ReactElement, useState } from "react";
-import { RootState } from "threetwo-ui-typings";
+import React, { useEffect, ReactElement, useState, useMemo } from "react";
 import { isEmpty, isNil, isUndefined, map } from "lodash";
 import { AirDCPPBundles } from "./AirDCPPBundles";
 import { TorrentDownloads } from "./TorrentDownloads";
@@ -9,47 +8,73 @@ import {
   LIBRARY_SERVICE_BASE_URI,
   QBITTORRENT_SERVICE_BASE_URI,
   TORRENT_JOB_SERVICE_BASE_URI,
-  SOCKET_BASE_URI,
 } from "../../constants/endpoints";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
 import { useParams } from "react-router-dom";
 
-interface IDownloadsPanelProps {
-  key: number;
+export interface TorrentDetails {
+  infoHash: string;
+  progress: number;
+  downloadSpeed?: number;
+  uploadSpeed?: number;
 }
 
-export const DownloadsPanel = (
-  props: IDownloadsPanelProps,
-): ReactElement | null => {
+/**
+ * DownloadsPanel displays two tabs of download information for a specific comic:
+ * - DC++ (AirDCPP) bundles
+ * - Torrent downloads
+ * It also listens for real-time torrent updates via a WebSocket.
+ *
+ * @component
+ * @returns {ReactElement | null} The rendered DownloadsPanel or null if no socket is available.
+ */
+export const DownloadsPanel = (): ReactElement | null => {
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
   const [infoHashes, setInfoHashes] = useState<string[]>([]);
-  const [torrentDetails, setTorrentDetails] = useState([]);
-  const [activeTab, setActiveTab] = useState("directconnect");
-  const { socketIOInstance } = useStore(
-    useShallow((state: any) => ({
-      socketIOInstance: state.socketIOInstance,
-    })),
+  const [torrentDetails, setTorrentDetails] = useState<TorrentDetails[]>([]);
+  const [activeTab, setActiveTab] = useState<"directconnect" | "torrents">(
+    "directconnect",
   );
 
-  // React to torrent progress data sent over websockets
-  socketIOInstance.on("AS_TORRENT_DATA", (data) => {
-    const torrents = data.torrents
-      .flatMap(({ _id, details }) => {
-        if (_id === comicObjectId) {
-          return details;
-        }
-      })
-      .filter((item) => item !== undefined);
-    setTorrentDetails(torrents);
-  });
+  const { socketIOInstance } = useStore(
+    useShallow((state: any) => ({ socketIOInstance: state.socketIOInstance })),
+  );
 
   /**
-   * Query to fetch AirDC++ download bundles for a given comic resource Id
-   * @param {string} {comicObjectId} - A mongo id that identifies a comic document
+   * Registers socket listeners on mount and cleans up on unmount.
    */
+  useEffect(() => {
+    if (!socketIOInstance) return;
+
+    /**
+     * Handler for incoming torrent data events.
+     * Merges new entries or updates existing ones by infoHash.
+     *
+     * @param {TorrentDetails} data - Payload from the socket event.
+     */
+    const handleTorrentData = (data: TorrentDetails) => {
+      setTorrentDetails((prev) => {
+        const idx = prev.findIndex((t) => t.infoHash === data.infoHash);
+        if (idx === -1) {
+          return [...prev, data];
+        }
+        const next = [...prev];
+        next[idx] = { ...next[idx], ...data };
+        return next;
+      });
+    };
+
+    socketIOInstance.on("AS_TORRENT_DATA", handleTorrentData);
+
+    return () => {
+      socketIOInstance.off("AS_TORRENT_DATA", handleTorrentData);
+    };
+  }, [socketIOInstance]);
+
+  // ————— DC++ Bundles (via REST) —————
   const { data: bundles } = useQuery({
-    queryKey: ["bundles"],
+    queryKey: ["bundles", comicObjectId],
     queryFn: async () =>
       await axios({
         url: `${LIBRARY_SERVICE_BASE_URI}/getBundles`,
@@ -64,77 +89,66 @@ export const DownloadsPanel = (
           },
         },
       }),
-    enabled: activeTab !== "" && activeTab === "directconnect",
   });
 
-  // Call the scheduled job for fetching torrent data
-  // triggered by the active tab been set to "torrents"
-  const { data: torrentData } = useQuery({
-    queryFn: () =>
-      axios({
-        url: `${TORRENT_JOB_SERVICE_BASE_URI}/getTorrentData`,
-        method: "GET",
-        params: {
-          trigger: activeTab,
-        },
-      }),
-    queryKey: [activeTab],
-    enabled: activeTab !== "" && activeTab === "torrents",
+  // ————— Torrent Jobs (via REST) —————
+  const { data: rawJobs = [] } = useQuery<any[]>({
+    queryKey: ["torrents", comicObjectId],
+    queryFn: async () => {
+      const { data } = await axios.get(
+        `${TORRENT_JOB_SERVICE_BASE_URI}/getTorrentData`,
+        { params: { trigger: activeTab } },
+      );
+      return Array.isArray(data) ? data : [];
+    },
+    initialData: [],
+    enabled: activeTab === "torrents",
   });
-  console.log(bundles);
+
+  // Only when rawJobs changes *and* activeTab === "torrents" should we update infoHashes:
+  useEffect(() => {
+    if (activeTab !== "torrents") return;
+    setInfoHashes(rawJobs.map((j: any) => j.infoHash));
+  }, [activeTab]);
+
   return (
-    <div className="columns is-multiline">
-      <div>
-        <div className="sm:hidden">
-          <label htmlFor="Download Type" className="sr-only">
-            Download Type
-          </label>
+    <>
+      <div className="mt-5 mb-3">
+        <nav className="flex space-x-2">
+          <button
+            onClick={() => setActiveTab("directconnect")}
+            className={`px-4 py-1 rounded-full text-sm font-medium transition-colors ${
+              activeTab === "directconnect"
+                ? "bg-green-500 text-white"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+          >
+            DC++
+          </button>
+          <button
+            onClick={() => setActiveTab("torrents")}
+            className={`px-4 py-1 rounded-full text-sm font-medium transition-colors ${
+              activeTab === "torrents"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+          >
+            Torrents
+          </button>
+        </nav>
 
-          <select id="Tab" className="w-full rounded-md border-gray-200">
-            <option>DC++ Downloads</option>
-            <option>Torrents</option>
-          </select>
-        </div>
-
-        <div className="hidden sm:block">
-          <nav className="flex gap-6" aria-label="Tabs">
-            <a
-              href="#"
-              className={`shrink-0 rounded-lg p-2 text-sm font-medium hover:bg-gray-50 hover:text-gray-700 ${
-                activeTab === "directconnect"
-                  ? "bg-slate-200 dark:text-slate-200 dark:bg-slate-400 text-slate-800"
-                  : "dark:text-slate-400 text-slate-800"
-              }`}
-              aria-current="page"
-              onClick={() => setActiveTab("directconnect")}
-            >
-              DC++ Downloads
-            </a>
-
-            <a
-              href="#"
-              className={`shrink-0 rounded-lg p-2 text-sm font-medium hover:bg-gray-50 hover:text-gray-700 ${
-                activeTab === "torrents"
-                  ? "bg-slate-200 text-slate-800"
-                  : "dark:text-slate-400 text-slate-800"
-              }`}
-              onClick={() => setActiveTab("torrents")}
-            >
-              Torrents
-            </a>
-          </nav>
+        <div className="mt-4">
+          {activeTab === "torrents" ? (
+            <TorrentDownloads data={torrentDetails} />
+          ) : !isNil(bundles?.data) && bundles.data.length > 0 ? (
+            <AirDCPPBundles data={bundles.data} />
+          ) : (
+            <p>No DC++ bundles found.</p>
+          )}
         </div>
       </div>
-
-      {activeTab === "torrents" ? (
-        <TorrentDownloads data={torrentDetails} />
-      ) : null}
-      {!isNil(bundles?.data) && bundles?.data.length !== 0 ? (
-        <AirDCPPBundles data={bundles.data} />
-      ) : (
-        "nutin"
-      )}
-    </div>
+    </>
   );
 };
+
 export default DownloadsPanel;

@@ -3,7 +3,7 @@ import prettyBytes from "pretty-bytes";
 import dayjs from "dayjs";
 import ellipsize from "ellipsize";
 import { map } from "lodash";
-
+import {DownloadProgressTick} from "./DownloadProgressTick"
 export const AirDCPPBundles = (props) => {
   return (
     <div className="overflow-x-auto w-fit mt-4 rounded-lg border border-gray-200">
@@ -38,6 +38,8 @@ export const AirDCPPBundles = (props) => {
                 {dayjs
                   .unix(bundle.time_finished)
                   .format("h:mm on ddd, D MMM, YYYY")}
+                  {/* Download progress */}
+                  <DownloadProgressTick bundleId={bundle.id} />
               </td>
               <td className="whitespace-nowrap px-2 py-2 text-gray-700 dark:text-slate-300">
                 <span className="tag is-warning">{bundle.id}</span>
