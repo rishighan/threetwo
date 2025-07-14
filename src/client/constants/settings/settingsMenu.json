@@ -9,8 +9,8 @@
         "displayName": "Dashboard"
       },
       {
-        "id": "gen-gls",
-        "displayName": "Global Search"
+        "id": "gen-docker-vars",
+        "displayName": "Docker ENV vars"
       }
     ]
   },
