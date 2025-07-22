@@ -357,7 +357,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
                 result.resource_type === "volume" && (
                   <div
                     key={result.id}
-                    className="flex gap-4 py-4 border-b border-slate-300 dark:border-slate-700"
+                    className="relative flex items-start gap-4 py-6 border-b border-slate-300 dark:border-slate-700"
                   >
                     {/* LEFT COLUMN: COVER */}
                     <Card
@@ -371,7 +371,7 @@ export const Search = ({}: ISearchProps): ReactElement => {
                     />
 
                     {/* RIGHT COLUMN */}
-                    <div className="flex-1 min-w-0 flex flex-col">
+                    <div className="flex-1 min-w-0">
                       {/* TITLE */}
                       <div className="text-lg font-bold text-gray-900 dark:text-white">
                         {result.name || <span>No Name</span>}
@@ -438,18 +438,21 @@ export const Search = ({}: ISearchProps): ReactElement => {
                           )}
                         </p>
                       )}
-
-                      <PopoverButton
-                        content={`This will add ${result.volume.name} to your wanted list.`}
-                        clickHandler={() =>
-                          addToWantedList({
-                            source: "comicvine",
-                            comicObject: result,
-                            markEntireVolumeWanted: false,
-                            resourceType: "issue",
-                          })
-                        }
-                      />
+                      {result.name ? (
+                        <div className="mt-4 justify-self-end">
+                          <PopoverButton
+                            content={`This will add ${result.count_of_issues} issues your wanted list.`}
+                            clickHandler={() =>
+                              addToWantedList({
+                                source: "comicvine",
+                                comicObject: result,
+                                markEntireVolumeWanted: false,
+                                resourceType: "issue",
+                              })
+                            }
+                          />
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 )
