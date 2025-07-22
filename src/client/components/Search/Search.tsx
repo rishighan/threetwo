@@ -266,55 +266,80 @@ export const Search = ({}: ISearchProps): ReactElement => {
           </div>
         )}
         {!isEmpty(comicVineSearchResults?.data?.results) ? (
-          <div className="mx-auto max-w-screen-xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
+          <div className="mx-auto w-full sm:w-[90vw] md:w-[80vw] lg:w-[70vw] max-w-6xl px-4 py-6">
             {comicVineSearchResults.data.results.map((result) => {
               return result.resource_type === "issue" ? (
                 <div
                   key={result.id}
-                  className="mb-5 dark:bg-slate-400 p-4 rounded-lg"
+                  className="relative flex items-start gap-4 py-6 border-b border-slate-300 dark:border-slate-700"
                 >
-                  <div className="flex flex-row">
-                    <div className="mr-5 min-w-[80px] max-w-[13%]">
-                      <Card
-                        key={result.id}
-                        orientation={"cover-only"}
-                        imageUrl={result.image.small_url}
-                        hasDetails={false}
-                      />
+                  {/* IMAGE */}
+                  <Card
+                    orientation="cover-only"
+                    imageUrl={result?.image?.small_url}
+                    hasDetails={false}
+                    cardContainerStyle={{
+                      width: "120px",
+                      maxWidth: "150px",
+                    }}
+                  />
+
+                  {/* RIGHT-SIDE CONTENT */}
+                  <div className="flex-1 min-w-0">
+                    {/* TITLE */}
+                    <div className="text-base font-semibold text-gray-900 dark:text-white truncate">
+                      {result.volume?.name || <span>No Name</span>}
                     </div>
-                    <div className="w-3/4">
-                      <div className="text-xl">
-                        {!isEmpty(result.volume.name) ? (
-                          result.volume.name
-                        ) : (
-                          <span className="is-size-3">No Name</span>
-                        )}
-                      </div>
+
+                    {/* SUBMETA */}
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {/* Cover Date Token */}
                       {result.cover_date && (
-                        <p>
-                          <span className="tag is-light">Cover date</span>
-                          {dayjs(result.cover_date).format("MMM D, YYYY")}
-                        </p>
+                        <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                          <span className="pr-1 pt-1">
+                            <i className="icon-[solar--calendar-bold-duotone] w-4 h-4"></i>
+                          </span>
+                          <span className="text-xs text-slate-500 dark:text-slate-900">
+                            {dayjs(result.cover_date).format("MMM YYYY")}
+                          </span>
+                        </span>
                       )}
 
-                      <p className="tag is-warning">{result.id}</p>
+                      {/* ID Token */}
+                      <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                        <span className="pr-1 pt-1">
+                          <i className="icon-[solar--hashtag-bold-duotone] w-4 h-4"></i>
+                        </span>
+                        <span className="text-xs text-slate-500 dark:text-slate-900">
+                          {result.id}
+                        </span>
+                      </span>
+                    </div>
 
-                      <a href={result.api_detail_url}>
-                        {result.api_detail_url}
-                      </a>
-                      <p className="text-sm">
+                    {/* LINK */}
+                    <a
+                      href={result.api_detail_url}
+                      className="text-xs text-blue-500 underline mt-1 inline-block break-all"
+                    >
+                      {result.api_detail_url}
+                    </a>
+
+                    {/* DESCRIPTION */}
+                    {result.description && (
+                      <p className="text-sm text-slate-600 dark:text-slate-200 mt-2 line-clamp-3">
                         {ellipsize(
-                          convert(result.description, {
-                            baseElements: {
-                              selectors: ["p", "div"],
-                            },
+                          convert(result.description ?? "", {
+                            baseElements: { selectors: ["p", "div"] },
                           }),
-                          320,
+                          300,
                         )}
                       </p>
-                      <div className="mt-2">
+                    )}
+                    {/* CTA BUTTON */}
+                    {result.volume.name ? (
+                      <div className="mt-4 justify-self-end">
                         <PopoverButton
-                          content={`This will add ${result.volume.name} to your wanted list.`}
+                          content={`This will add ${result?.volume?.name} to your wanted list.`}
                           clickHandler={() =>
                             addToWantedList({
                               source: "comicvine",
@@ -325,114 +350,106 @@ export const Search = ({}: ISearchProps): ReactElement => {
                           }
                         />
                       </div>
-                    </div>
+                    ) : null}
                   </div>
                 </div>
               ) : (
                 result.resource_type === "volume" && (
                   <div
                     key={result.id}
-                    className="mb-5 dark:bg-slate-500 p-4 rounded-lg"
+                    className="flex gap-4 py-4 border-b border-slate-300 dark:border-slate-700"
                   >
-                    <div className="flex flex-row">
-                      <div className="mr-5 min-w-[80px] max-w-[13%]">
-                        <Card
-                          key={result.id}
-                          orientation={"cover-only"}
-                          imageUrl={result.image.small_url}
-                          hasDetails={false}
-                        />
+                    {/* LEFT COLUMN: COVER */}
+                    <Card
+                      orientation="cover-only"
+                      imageUrl={result.image.small_url}
+                      hasDetails={false}
+                      cardContainerStyle={{
+                        width: "120px",
+                        maxWidth: "150px",
+                      }}
+                    />
+
+                    {/* RIGHT COLUMN */}
+                    <div className="flex-1 min-w-0 flex flex-col">
+                      {/* TITLE */}
+                      <div className="text-lg font-bold text-gray-900 dark:text-white">
+                        {result.name || <span>No Name</span>}
+                        {result.start_year && <> ({result.start_year})</>}
                       </div>
-                      <div className="w-3/4">
-                        <div className="text-xl">
-                          {!isEmpty(result.name) ? (
-                            result.name
-                          ) : (
-                            <span className="text-xl">No Name</span>
-                          )}
-                          {result.start_year && <> ({result.start_year})</>}
-                        </div>
 
-                        <div className="flex flex-row gap-2">
-                          {/* issue count */}
-                          {result.count_of_issues && (
-                            <div className="my-2">
-                              <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                                <span className="pr-1 pt-1">
-                                  <i className="icon-[solar--documents-minimalistic-bold-duotone] w-5 h-5"></i>
-                                </span>
+                      {/* TOKENS */}
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {/* ISSUE COUNT */}
+                        {result.count_of_issues && (
+                          <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                            <span className="pr-1 pt-1">
+                              <i className="icon-[solar--documents-minimalistic-bold-duotone] w-4 h-4" />
+                            </span>
+                            <span>
+                              {t("issueWithCount", {
+                                count: result.count_of_issues,
+                              })}
+                            </span>
+                          </span>
+                        )}
 
-                                <span className="text-md text-slate-500 dark:text-slate-900">
-                                  {t("issueWithCount", {
-                                    count: result.count_of_issues,
-                                  })}
-                                </span>
+                        {/* FORMAT DETECTED */}
+                        {result.description &&
+                          !isEmpty(detectIssueTypes(result.description)) && (
+                            <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                              <span className="pr-1 pt-1">
+                                <i className="icon-[solar--book-2-line-duotone] w-4 h-4" />
                               </span>
-                            </div>
+                              <span>
+                                {
+                                  detectIssueTypes(result.description)
+                                    .displayName
+                                }
+                              </span>
+                            </span>
                           )}
-                          {/* type: TPB, one-shot, graphic novel etc. */}
-                          {!isNil(result.description) &&
-                            !isUndefined(result.description) && (
-                              <>
-                                {!isEmpty(
-                                  detectIssueTypes(result.description),
-                                ) && (
-                                  <div className="my-2">
-                                    <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                                      <span className="pr-1 pt-1">
-                                        <i className="icon-[solar--book-2-line-duotone] w-5 h-5"></i>
-                                      </span>
 
-                                      <span className="text-md text-slate-500 dark:text-slate-900">
-                                        {
-                                          detectIssueTypes(result.description)
-                                            .displayName
-                                        }
-                                      </span>
-                                    </span>
-                                  </div>
-                                )}
-                              </>
-                            )}
-                        </div>
+                        {/* ID */}
+                        <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                          <span className="pr-1 pt-1">
+                            <i className="icon-[solar--hashtag-bold-duotone] w-4 h-4" />
+                          </span>
+                          <span>{result.id}</span>
+                        </span>
+                      </div>
 
-                        <span className="tag is-warning">{result.id}</span>
-                        <p>
-                          <a href={result.api_detail_url}>
-                            {result.api_detail_url}
-                          </a>
-                        </p>
+                      {/* LINK */}
+                      <a
+                        href={result.api_detail_url}
+                        className="text-sm text-blue-500 underline mt-2 break-all"
+                      >
+                        {result.api_detail_url}
+                      </a>
 
-                        {/* description */}
-                        <p className="text-sm">
+                      {/* DESCRIPTION */}
+                      {result.description && (
+                        <p className="text-sm mt-2 text-slate-700 dark:text-slate-200 break-words line-clamp-3">
                           {ellipsize(
                             convert(result.description, {
-                              baseElements: {
-                                selectors: ["p", "div"],
-                              },
+                              baseElements: { selectors: ["p", "div"] },
                             }),
                             320,
                           )}
                         </p>
-                        <div className="mt-2">
-                          <PopoverButton
-                            content={`Adding this volume will add ${t(
-                              "issueWithCount",
-                              {
-                                count: result.count_of_issues,
-                              },
-                            )} to your wanted list.`}
-                            clickHandler={() =>
-                              addToWantedList({
-                                source: "comicvine",
-                                comicObject: result,
-                                markEntireVolumeWanted: true,
-                                resourceType: "volume",
-                              })
-                            }
-                          />
-                        </div>
-                      </div>
+                      )}
+
+                      <PopoverButton
+                        content={`This will add ${result.volume.name} to your wanted list.`}
+                        clickHandler={() =>
+                          addToWantedList({
+                            source: "comicvine",
+                            comicObject: result,
+                            markEntireVolumeWanted: false,
+                            resourceType: "issue",
+                          })
+                        }
+                      />
                     </div>
                   </div>
                 )

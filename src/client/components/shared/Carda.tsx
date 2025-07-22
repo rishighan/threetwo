@@ -140,14 +140,31 @@ const renderCard = (props: ICardProps): ReactElement => {
       );
 
     case "cover-only":
+      const containerStyle = {
+        width: props.cardContainerStyle?.width || "100%",
+        height: props.cardContainerStyle?.height || "auto",
+        maxWidth: props.cardContainerStyle?.maxWidth || "none",
+        ...props.cardContainerStyle,
+      };
+
+      const imageStyle = {
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        ...props.imageStyle,
+      };
+
       return (
-        <>
-          {/* thumbnail */}
-          <div className="rounded-lg shadow-lg overflow-hidden w-fit h-fit">
-            <img src={props.imageUrl} />
-          </div>
-        </>
+        <div
+          className={`rounded-lg overflow-hidden shadow-md bg-white dark:bg-slate-800 ${
+            props.cardContainerStyle?.height ? "" : "aspect-[2/3]"
+          }`}
+          style={containerStyle}
+        >
+          <img src={props.imageUrl} alt="Comic cover" style={imageStyle} />
+        </div>
       );
+      
     case "card-with-info-panel":
       return (
         <>

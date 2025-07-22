@@ -71,7 +71,7 @@ export const T2Table = (tableOptions: T2TableProps): ReactElement => {
     columns,
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
-    pageCount: sourceData.length ?? -1,
+    pageCount: sourceData?.length ?? -1,
     state: {
       pagination,
     },

@@ -22,7 +22,7 @@ const PopoverButton = ({ content, clickHandler }) => {
         onFocus={() => setIsVisible(true)}
         onBlur={() => setIsVisible(false)}
         aria-describedby="popover"
-        className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-2 py-2 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+        className="flex text-sm space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-1.5 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
         onClick={clickHandler}
       >
         <i className="icon-[solar--add-square-bold-duotone] w-6 h-6 mr-2"></i>{" "}
@@ -32,7 +32,7 @@ const PopoverButton = ({ content, clickHandler }) => {
         <div
           ref={refs.setFloating} // Apply the floating setter directly to the ref prop
           style={floatingStyles}
-          className="text-sm bg-slate-400 p-2 rounded-md"
+          className="text-xs bg-slate-400 p-1.5 rounded-md"
           role="tooltip"
         >
           {content}
