@@ -271,23 +271,22 @@ export const Search = ({}: ISearchProps): ReactElement => {
               return result.resource_type === "issue" ? (
                 <div
                   key={result.id}
-                  className="relative flex items-start gap-4 py-6 border-b border-slate-300 dark:border-slate-700"
+                  className="relative flex gap-4 py-6 px-3 border-b border-slate-200 dark:border-slate-700 hover:bg-slate-100/50 dark:hover:bg-slate-800/30 transition-colors duration-150 group"
                 >
                   {/* IMAGE */}
-                  <Card
-                    orientation="cover-only"
-                    imageUrl={result?.image?.small_url}
-                    hasDetails={false}
-                    cardContainerStyle={{
-                      width: "120px",
-                      maxWidth: "150px",
-                    }}
-                  />
+                  <div className="flex-shrink-0">
+                    <Card
+                      orientation="cover-only"
+                      imageUrl={result.image.small_url}
+                      hasDetails={false}
+                      cardContainerStyle={{ width: "120px", maxWidth: "150px" }}
+                    />
+                  </div>
 
                   {/* RIGHT-SIDE CONTENT */}
                   <div className="flex-1 min-w-0">
                     {/* TITLE */}
-                    <div className="text-base font-semibold text-gray-900 dark:text-white truncate">
+                    <div className="text-base font-medium text-slate-800 dark:text-white tracking-tight truncate">
                       {result.volume?.name || <span>No Name</span>}
                     </div>
 
@@ -335,9 +334,10 @@ export const Search = ({}: ISearchProps): ReactElement => {
                         )}
                       </p>
                     )}
+
                     {/* CTA BUTTON */}
-                    {result.volume.name ? (
-                      <div className="mt-4 justify-self-end">
+                    {result.volume.name && (
+                      <div className="absolute bottom-4 right-4">
                         <PopoverButton
                           content={`This will add ${result?.volume?.name} to your wanted list.`}
                           clickHandler={() =>
@@ -350,14 +350,14 @@ export const Search = ({}: ISearchProps): ReactElement => {
                           }
                         />
                       </div>
-                    ) : null}
+                    )}
                   </div>
                 </div>
               ) : (
                 result.resource_type === "volume" && (
                   <div
                     key={result.id}
-                    className="relative flex items-start gap-4 py-6 border-b border-slate-300 dark:border-slate-700"
+                    className="relative flex gap-4 py-6 px-3 border-b border-slate-200 dark:border-slate-700 hover:bg-slate-100/50 dark:hover:bg-slate-800/30 transition-colors duration-150 group"
                   >
                     {/* LEFT COLUMN: COVER */}
                     <Card

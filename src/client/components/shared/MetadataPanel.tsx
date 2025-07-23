@@ -67,21 +67,21 @@ export const MetadataPanel = (props: MetadataPanelProps): ReactElement => {
 
           {inferredMetadata.issue.number && (
             <dd className="my-2">
-              <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                <i className="icon-[solar--hashtag-outline] w-3.5 h-3.5 pr-1 pt-1"></i>
+              <span className="inline-flex items-center bg-slate-100 dark:bg-slate-400 text-slate-800 dark:text-slate-900 text-xs font-medium px-2 py-1 rounded-md">
+                <i className="icon-[solar--hashtag-bold-duotone] w-4 h-4 mr-1 opacity-70"></i>
                 <span>{inferredMetadata.issue.number}</span>
               </span>
             </dd>
           )}
 
           <dd className="flex flex-row gap-2 w-max">
-            <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-              <i className="icon-[solar--zip-file-bold-duotone] w-5 h-5 pr-1 pt-1" />
+            <span className="inline-flex items-center bg-slate-100 dark:bg-slate-400 text-slate-800 dark:text-slate-900 text-xs font-medium px-2 py-1 rounded-md">
+              <i className="icon-[solar--file-text-bold-duotone] w-4 h-4 mr-1 opacity-70" />
               {rawFileDetails.mimeType}
             </span>
 
-            <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-              <i className="icon-[solar--mirror-right-bold-duotone] w-5 h-5 pr-1 pt-1" />
+            <span className="inline-flex items-center bg-slate-100 dark:bg-slate-400 text-slate-800 dark:text-slate-900 text-xs font-medium px-2 py-1 rounded-md">
+              <i className="icon-[solar--database-bold-duotone] w-4 h-4 mr-1 opacity-70" />
               {prettyBytes(rawFileDetails.fileSize)}
             </span>
 
@@ -98,43 +98,48 @@ export const MetadataPanel = (props: MetadataPanelProps): ReactElement => {
     {
       name: "comicvine",
       content: () => {
-        console.log("comicvine:", comicvine);
-        console.log("volumeInformation:", comicvine?.volumeInformation);
         return (
           !isUndefined(comicvine?.volumeInformation) && (
-            <dl>
-              <dt>
-                <h6
-                  className="name has-text-weight-medium mb-1"
-                  style={props.titleStyle}
-                >
-                  {ellipsize(issueName, 18)}
-                </h6>
+            <dl className="space-y-1 text-sm text-slate-700 dark:text-slate-200">
+              {/* Title */}
+              <dt className="text-base font-semibold text-slate-900 dark:text-white">
+                {ellipsize(issueName, 28)}
               </dt>
+
+              {/* Volume Name */}
               <dd>
-                <span className="is-size-7">
-                  Is a part of{" "}
-                  <span className="has-text-weight-semibold">
+                <span className="text-sm text-slate-600 dark:text-slate-300">
+                  Part of{" "}
+                  <span className="font-medium text-slate-800 dark:text-white">
                     {comicvine.volumeInformation.name}
                   </span>
                 </span>
               </dd>
-              <dd className="is-size-7">
-                <span>
-                  {ellipsize(
-                    convert(comicvine.description || "", {
-                      baseElements: { selectors: ["p"] },
-                    }),
-                    120,
-                  )}
-                </span>
+
+              {/* Description */}
+              <dd className="text-slate-600 dark:text-slate-300">
+                {ellipsize(
+                  convert(comicvine.description || "", {
+                    baseElements: { selectors: ["p"] },
+                  }),
+                  160,
+                )}
               </dd>
-              <dd className="is-size-7 mt-2">
-                <span className="my-3 mx-2">
+
+              {/* Misc Info */}
+              <dd className="flex flex-wrap items-center gap-2 pt-2 text-xs text-slate-500 dark:text-slate-300">
+                <span className="inline-flex items-center bg-slate-100 dark:bg-slate-600 px-2 py-0.5 rounded-md">
+                  <i className="icon-[solar--calendar-bold-duotone] w-4 h-4 mr-1 opacity-70" />
                   {comicvine.volumeInformation.start_year}
                 </span>
-                {comicvine.volumeInformation.count_of_issues}
-                ComicVine ID: {comicvine.id}
+                <span className="inline-flex items-center bg-slate-100 dark:bg-slate-600 px-2 py-0.5 rounded-md">
+                  <i className="icon-[solar--book-bold-duotone] w-4 h-4 mr-1 opacity-70" />
+                  {comicvine.volumeInformation.count_of_issues} issues
+                </span>
+                <span className="inline-flex items-center bg-slate-100 dark:bg-slate-600 px-2 py-0.5 rounded-md">
+                  <i className="icon-[solar--hashtag-bold-duotone] w-4 h-4 mr-1 opacity-70" />
+                  ID: {comicvine.id}
+                </span>
               </dd>
             </dl>
           )
@@ -187,6 +192,7 @@ export const MetadataPanel = (props: MetadataPanelProps): ReactElement => {
         orientation="cover-only"
         hasDetails={false}
         imageStyle={props.imageStyle}
+        cardContainerStyle={{ width: "190px", maxWidth: "230px" }}
       />
       <div>{metadataPanel?.content()}</div>
     </div>

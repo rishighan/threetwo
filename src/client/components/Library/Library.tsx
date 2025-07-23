@@ -152,10 +152,10 @@ export const Library = (): ReactElement => {
             accessorKey: "_source.createdAt",
             cell: (info) => {
               return !isNil(info.getValue()) ? (
-                <div className="text-sm w-max ml-3 my-3 text-slate-600 dark:text-slate-900">
-                  <p>{format(parseISO(info.getValue()), "dd MMMM, yyyy")} </p>
-                  {format(parseISO(info.getValue()), "h aaaa")}
-                </div>
+                <span className="inline-flex items-center bg-slate-300 dark:bg-slate-500 text-xs font-medium text-slate-700 dark:text-slate-200 px-3 py-1 rounded-md shadow-sm whitespace-nowrap ml-3 my-3">
+                  <i className="icon-[solar--file-download-bold] w-4 h-4 mr-2 opacity-70" />
+                  {format(parseISO(info.getValue()), "dd MMM yyyy, h:mm a")}
+                </span>
               ) : null;
             },
           },
@@ -164,23 +164,25 @@ export const Library = (): ReactElement => {
             accessorKey: "_source.acquisition",
             cell: (info) => (
               <div className="flex flex-col gap-2 ml-3 my-3">
-                <span className="inline-flex items-center w-fit bg-slate-50 text-slate-800 text-xs px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                  <span className="pr-1 pt-1">
-                    <i className="icon-[solar--folder-path-connect-bold-duotone] w-5 h-5"></i>
+                {/* DC++ Downloads */}
+                {info.getValue().directconnect?.downloads?.length > 0 ? (
+                  <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-1 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                    <i className="icon-[solar--folder-path-connect-bold-duotone] w-4 h-4 mr-1 opacity-70" />
+                    <span>
+                      DC++: {info.getValue().directconnect.downloads.length}
+                    </span>
                   </span>
-                  <span className="text-md text-slate-900 dark:text-slate-900">
-                    DC++: {info.getValue().directconnect.downloads.length}
-                  </span>
-                </span>
+                ) : null}
 
-                <span className="inline-flex w-fit items-center bg-slate-50 text-slate-800 text-xs px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                  <span className="pr-1 pt-1">
-                    <i className="icon-[solar--magnet-bold-duotone] w-5 h-5"></i>
+                {/* Torrent Downloads */}
+                {info.getValue().torrent.length > 0 ? (
+                  <span className="inline-flex items-center whitespace-nowrap bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-1 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                    <i className="icon-[solar--magnet-bold-duotone] w-4 h-4 mr-1 opacity-70" />
+                    <span className="whitespace-nowrap">
+                      Torrent: {info.getValue().torrent.length}
+                    </span>
                   </span>
-                  <span className="text-md text-slate-900 dark:text-slate-900">
-                    Torrent: {info.getValue().torrent.length}
-                  </span>
-                </span>
+                ) : null}
               </div>
             ),
           },
