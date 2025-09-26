@@ -5,7 +5,6 @@ import { Card } from "../shared/Carda";
 import { convert } from "html-to-text";
 import { determineCoverFile } from "../../shared/utils/metadata.utils";
 import { find, isUndefined } from "lodash";
-import { o } from "react-router/dist/development/fog-of-war-BLArG-qZ";
 
 /**
  * Props for the MetadataPanel component.
