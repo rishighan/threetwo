@@ -18,7 +18,6 @@ import { VolumeInformation } from "./Tabs/VolumeInformation";
 
 import { isEmpty, isUndefined, isNil, filter } from "lodash";
 import { components } from "react-select";
-import { RootState } from "threetwo-ui-typings";
 
 import "react-sliding-pane/dist/react-sliding-pane.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
@@ -37,20 +36,30 @@ import { refineQuery } from "filename-parser";
 interface ComicDetailProps {
   data: {
     _id: string;
-    rawFileDetails: {};
-    inferredMetadata: {
-      issue: {};
+    rawFileDetails?: any;
+    inferredMetadata?: {
+      issue?: {
+        year?: string;
+        name?: string;
+        number?: number;
+        subtitle?: string;
+      };
     };
     sourcedMetadata: {
-      comicvine: {};
-      locg: {};
-      comicInfo: {};
+      comicvine?: any;
+      locg?: any;
+      comicInfo?: any;
     };
-    acquisition: {};
+    acquisition?: {
+      directconnect?: {
+        downloads?: any[];
+      };
+      torrent?: any[];
+    };
     createdAt: string;
     updatedAt: string;
   };
-  userSettings: {};
+  userSettings?: any;
 }
 /**
  * Component for displaying the metadata for a comic in greater detail.
@@ -102,7 +111,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   const StyledSlidingPanel = styled(SlidingPane)`
     background: #ccc;
   `;
-  const afterOpenModal = useCallback((things) => {
+  const afterOpenModal = useCallback((things: any) => {
     // references are now sync'd and can be accessed.
     // subtitle.style.color = "#f00";
     console.log("kolaveri", things);
@@ -113,9 +122,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   }, []);
 
   // sliding panel init
-  const contentForSlidingPanel = {
+  const contentForSlidingPanel: Record<string, { content: (props?: any) => JSX.Element }> = {
     CVMatches: {
-      content: (props) => (
+      content: (props?: any) => (
         <>
           <div>
             <ComicVineSearchForm data={rawFileDetails} />
@@ -123,7 +132,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
 
           <div className="border-slate-500 border rounded-lg p-2 mt-3">
             <p className="">Searching for:</p>
-            {inferredMetadata.issue ? (
+            {inferredMetadata?.issue ? (
               <>
                 <span className="">{inferredMetadata.issue.name} </span>
                 <span className=""> # {inferredMetadata.issue.number} </span>
@@ -148,9 +157,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   // Actions
 
   const fetchComicVineMatches = async (
-    searchPayload,
-    issueSearchQuery,
-    seriesSearchQuery,
+    searchPayload: any,
+    issueSearchQuery: any,
+    seriesSearchQuery: any,
   ) => {
     try {
       const response = await axios({
@@ -170,7 +179,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
           },
           rawFileDetails: searchPayload,
         },
-        transformResponse: (r) => {
+        transformResponse: (r: string) => {
           const matches = JSON.parse(r);
           return matches;
           // return sortBy(matches, (match) => -match.score);
@@ -180,9 +189,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
       if (!isNil(response.data.results) && response.data.results.length === 1) {
         matches = response.data.results;
       } else {
-        matches = response.data.map((match) => match);
+        matches = response.data.map((match: any) => match);
       }
-      const scoredMatches = matches.sort((a, b) => b.score - a.score);
+      const scoredMatches = matches.sort((a: any, b: any) => b.score - a.score);
       setComicVineMatches(scoredMatches);
     } catch (err) {
       console.log(err);
@@ -191,13 +200,13 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
 
   // Action event handlers
   const openDrawerWithCVMatches = () => {
-    let seriesSearchQuery: IComicVineSearchQuery = {} as IComicVineSearchQuery;
-    let issueSearchQuery: IComicVineSearchQuery = {} as IComicVineSearchQuery;
+    let seriesSearchQuery: any = {};
+    let issueSearchQuery: any = {};
 
     if (!isUndefined(rawFileDetails)) {
-      issueSearchQuery = refineQuery(rawFileDetails.name);
+      issueSearchQuery = refineQuery((rawFileDetails as any).name);
     } else if (!isEmpty(comicvine)) {
-      issueSearchQuery = refineQuery(comicvine.name);
+      issueSearchQuery = refineQuery((comicvine as any).name);
     }
     fetchComicVineMatches(rawFileDetails, issueSearchQuery, seriesSearchQuery);
     setSlidingPanelContentId("CVMatches");
@@ -211,30 +220,30 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
 
   //  Actions menu options and handler
   const CVMatchLabel = (
-    <span className="inline-flex flex-row items-center gap-2">
-      <div className="w-6 h-6">
-        <i className="icon-[solar--magic-stick-3-bold-duotone] w-6 h-6"></i>
+    <span className="inline-flex flex-row items-center gap-1.5">
+      <div className="w-4 h-4">
+        <i className="icon-[solar--magic-stick-3-bold-duotone] w-4 h-4"></i>
       </div>
-      <div>Match on ComicVine</div>
+      <div className="text-sm">Match on ComicVine</div>
     </span>
   );
   const editLabel = (
-    <span className="inline-flex flex-row items-center gap-2">
-      <div className="w-6 h-6">
-        <i className="icon-[solar--pen-2-bold-duotone] w-6 h-6"></i>
+    <span className="inline-flex flex-row items-center gap-1.5">
+      <div className="w-4 h-4">
+        <i className="icon-[solar--pen-2-bold-duotone] w-4 h-4"></i>
       </div>
-      <div>Edit Metadata</div>
+      <div className="text-sm">Edit Metadata</div>
     </span>
   );
   const deleteLabel = (
-    <span className="inline-flex flex-row items-center gap-2">
-      <div className="w-6 h-6">
-        <i className="icon-[solar--trash-bin-trash-bold-duotone] w-6 h-6"></i>
+    <span className="inline-flex flex-row items-center gap-1.5">
+      <div className="w-4 h-4">
+        <i className="icon-[solar--trash-bin-trash-bold-duotone] w-4 h-4"></i>
       </div>
-      <div>Delete Comic</div>
+      <div className="text-sm">Delete Comic</div>
     </span>
   );
-  const Placeholder = (props) => {
+  const Placeholder = (props: any) => {
     return <components.Placeholder {...props} />;
   };
   const actionOptions = [
@@ -249,7 +258,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     }
     return item;
   });
-  const handleActionSelection = (action) => {
+  const handleActionSelection = (action: any) => {
     switch (action.value) {
       case "match-on-comic-vine":
         openDrawerWithCVMatches();
@@ -263,23 +272,23 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     }
   };
   const customStyles = {
-    menu: (base) => ({
+    menu: (base: any) => ({
       ...base,
       backgroundColor: "rgb(156, 163, 175)",
     }),
-    placeholder: (base) => ({
+    placeholder: (base: any) => ({
       ...base,
       color: "black",
     }),
-    option: (base, { data, isDisabled, isFocused, isSelected }) => ({
+    option: (base: any, { data, isDisabled, isFocused, isSelected }: any) => ({
       ...base,
       backgroundColor: isFocused ? "gray" : "rgb(156, 163, 175)",
     }),
-    singleValue: (base) => ({
+    singleValue: (base: any) => ({
       ...base,
       paddingTop: "0.4rem",
     }),
-    control: (base) => ({
+    control: (base: any) => ({
       ...base,
       backgroundColor: "rgb(156, 163, 175)",
       color: "black",
@@ -289,7 +298,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
 
   // check for the availability of CV metadata
   const isComicBookMetadataAvailable =
-    !isUndefined(comicvine) && !isUndefined(comicvine.volumeInformation);
+    !isUndefined(comicvine) && !isUndefined((comicvine as any)?.volumeInformation);
 
   // check for the availability of rawFileDetails
   const areRawFileDetailsAvailable =
@@ -354,7 +363,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
           query={airDCPPQuery}
           comicObjectId={_id}
           comicObject={data.data}
-          userSettings={userSettings}
+          settings={userSettings}
           key={4}
         />
       ),
@@ -376,8 +385,8 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
       name: "Downloads",
       icon: (
         <>
-          {acquisition?.directconnect?.downloads?.length +
-            acquisition?.torrent.length}
+          {(acquisition?.directconnect?.downloads?.length || 0) +
+            (acquisition?.torrent?.length || 0)}
         </>
       ),
       content:
@@ -414,11 +423,12 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                   imageUrl={url}
                   orientation={"cover-only"}
                   hasDetails={false}
+                  cardContainerStyle={{ maxWidth: "290px", width: "100%" }}
                 />
 
                 {/* raw file details */}
                 {!isUndefined(rawFileDetails) &&
-                  !isEmpty(rawFileDetails.cover) && (
+                  !isEmpty((rawFileDetails as any)?.cover) && (
                     <div className="grid">
                       <RawFileDetails
                         data={{
@@ -468,7 +478,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
 
             <TabControls
               filteredTabs={filteredTabs}
-              downloadCount={acquisition?.directconnect?.downloads?.length}
+              downloadCount={acquisition?.directconnect?.downloads?.length || 0}
             />
 
             <StyledSlidingPanel

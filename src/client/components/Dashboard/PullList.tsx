@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useState, useEffect } from "react";
 import { map } from "lodash";
 import Card from "../shared/Carda";
 import Header from "../shared/Header";
@@ -34,24 +34,35 @@ export const PullList = (): ReactElement => {
     format(date, "yyyy/M/dd"),
   );
 
+  // Responsive slides per view
+  const [slidesPerView, setSlidesPerView] = useState(1);
+
+
+
   // keen slider
-  const [sliderRef, instanceRef] = useKeenSlider(
-    {
-      loop: true,
-      slides: {
-        origin: "auto",
-        number: 15,
-        perView: 5,
-        spacing: 15,
-      },
-      slideChanged() {
-        console.log("slide changed");
-      },
+  const [sliderRef, instanceRef] = useKeenSlider({
+    loop: true,
+    mode: "free-snap",
+    slides: {
+      perView: slidesPerView,
+      spacing: 15,
     },
-    [
-      // add plugins here
-    ],
-  );
+    slideChanged() {
+      console.log("slide changed");
+    },
+  });
+
+  // Update slider when slidesPerView changes
+  useEffect(() => {
+    if (instanceRef.current) {
+      instanceRef.current.update({
+        slides: {
+          perView: slidesPerView,
+          spacing: 15,
+        },
+      });
+    }
+  }, [slidesPerView, instanceRef]);
 
   const {
     data: pullList,
@@ -80,79 +91,81 @@ export const PullList = (): ReactElement => {
   return (
     <>
       <div className="content">
-        <Header
-          headerContent="Discover"
-          subHeaderContent={
-            <span className="text-md">
-              Pull List aggregated for the week from{" "}
-              <span className="underline">
-                <a href="https://leagueofcomicgeeks.com">
-                  League Of Comic Geeks
-                </a>
-                <i className="icon-[solar--arrow-right-up-outline] w-4 h-4" />
+        <div className="mx-auto">
+          <Header
+            headerContent="Discover"
+            subHeaderContent={
+              <span className="text-md">
+                Pull List aggregated for the week from{" "}
+                <span className="underline">
+                  <a href="https://leagueofcomicgeeks.com">
+                    League Of Comic Geeks
+                  </a>
+                  <i className="icon-[solar--arrow-right-up-outline] w-4 h-4" />
+                </span>
               </span>
-            </span>
-          }
-          iconClassNames="fa-solid fa-binoculars mr-2"
-          link="/pull-list/all/"
-        />
-        <div className="flex flex-row gap-5 mb-3">
-          {/* select week */}
-          <div className="flex flex-row gap-4 my-3">
-            <Form
-              onSubmit={() => {}}
-              render={({ handleSubmit }) => (
-                <form>
-                  <div className="flex flex-col gap-2">
-                    {/* week selection for pull list */}
-                    <DatePickerDialog
-                      inputValue={inputValue}
-                      setter={setInputValue}
-                    />
-                    {inputValue && (
-                      <div className="text-sm">
-                        Showing pull list for{" "}
-                        <span className="inline-flex mb-2 items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-1 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                          {inputValue}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </form>
-              )}
-            />
+            }
+            iconClassNames="fa-solid fa-binoculars mr-2"
+            link="/pull-list/all/"
+          />
+          <div className="flex flex-row gap-5 mb-3">
+            {/* select week */}
+            <div className="flex flex-row gap-4 my-3">
+              <Form
+                onSubmit={() => {}}
+                render={({ handleSubmit }) => (
+                  <form>
+                    <div className="flex flex-col gap-2">
+                      {/* week selection for pull list */}
+                      <DatePickerDialog
+                        inputValue={inputValue}
+                        setter={setInputValue}
+                      />
+                      {inputValue && (
+                        <div className="text-sm">
+                          Showing pull list for{" "}
+                          <span className="inline-flex mb-2 items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-1 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                            {inputValue}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </form>
+                )}
+              />
+            </div>
           </div>
         </div>
       </div>
 
       {isSuccess && !isLoading && (
-        <div ref={sliderRef} className="keen-slider flex flex-row">
+        <div ref={sliderRef} className="keen-slider">
           {map(pullList?.data.result, (issue, idx) => {
-            return (
-              <div key={idx} className="keen-slider__slide">
-                <Card
-                  orientation={"vertical-2"}
-                  imageUrl={issue.coverImageUrl}
-                  hasDetails
-                  title={ellipsize(issue.issueName, 25)}
-                >
-                  <div className="px-1">
-                    <span className="inline-flex mb-2 items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-1 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                      {issue.publicationDate}
-                    </span>
-                    <div className="flex flex-row justify-end">
-                      <button
-                        className="flex space-x-1 mb-2 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-2 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
-                        onClick={() => addToLibrary("locg", issue)}
-                      >
-                        <i className="icon-[solar--add-square-bold-duotone] w-5 h-5 mr-2"></i>{" "}
-                        Want
-                      </button>
-                    </div>
+          return (
+            <div key={idx} className="keen-slider__slide">
+              <Card
+                orientation={"vertical-2"}
+                imageUrl={issue.coverImageUrl}
+                hasDetails
+                title={ellipsize(issue.issueName, 25)}
+              >
+                <div className="px-1">
+                  <span className="inline-flex mb-2 items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-1 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                    {issue.publicationDate}
+                  </span>
+                  <div className="flex flex-row justify-end">
+                    <button
+                      className="flex space-x-1 mb-2 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-2 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+                      onClick={() => addToLibrary("locg", issue)}
+                    >
+                      <i className="icon-[solar--add-square-bold-duotone] w-5 h-5 mr-2"></i>{" "}
+                      Want
+                    </button>
                   </div>
-                </Card>
-              </div>
-            );
+                </div>
+              </Card>
+            </div>
+          );
           })}
         </div>
       )}

@@ -21,12 +21,13 @@ export const RecentlyImported = (
   console.log(comics);
   return (
     <div>
-      <Header
-        headerContent="Recently Imported"
-        subHeaderContent="Recent Library activity such as imports, tagging, etc."
-        iconClassNames="fa-solid fa-binoculars mr-2"
-      />
-      <div className="grid grid-cols-5 gap-6 mt-3">
+      <div className="mx-auto" style={{ maxWidth: '1400px' }}>
+        <Header
+          headerContent="Recently Imported"
+          subHeaderContent="Recent Library activity such as imports, tagging, etc."
+          iconClassNames="fa-solid fa-binoculars mr-2"
+        />
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 gap-6 mt-3">
         {comics?.comics.map(
           (
             {
@@ -125,6 +126,7 @@ export const RecentlyImported = (
             );
           },
         )}
+        </div>
       </div>
     </div>
   );

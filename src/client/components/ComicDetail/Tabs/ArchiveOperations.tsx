@@ -14,12 +14,16 @@ import { useStore } from "../../../store";
 import { useShallow } from "zustand/react/shallow";
 import { escapePoundSymbol } from "../../../shared/utils/formatting.utils";
 
-export const ArchiveOperations = (props): ReactElement => {
+interface ArchiveOperationsProps {
+  data: any;
+}
+
+export const ArchiveOperations = (props: ArchiveOperationsProps): ReactElement => {
   const { data } = props;
 
-  const { socketIOInstance } = useStore(
+  const { getSocket } = useStore(
     useShallow((state) => ({
-      socketIOInstance: state.socketIOInstance,
+      getSocket: state.getSocket,
     })),
   );
   const queryClient = useQueryClient();
@@ -27,21 +31,32 @@ export const ArchiveOperations = (props): ReactElement => {
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
   // current image
-  const [currentImage, setCurrentImage] = useState([]);
-  const [uncompressedArchive, setUncompressedArchive] = useState([]);
-  const [imageAnalysisResult, setImageAnalysisResult] = useState({});
+  const [currentImage, setCurrentImage] = useState<string>("");
+  const [uncompressedArchive, setUncompressedArchive] = useState<string[]>([]);
+  const [imageAnalysisResult, setImageAnalysisResult] = useState<any>({});
   const [shouldRefetchComicBookData, setShouldRefetchComicBookData] =
     useState(false);
-  const constructImagePaths = (data): Array<string> => {
+  const constructImagePaths = (data: string[]): Array<string> => {
     return data?.map((path: string) =>
       escapePoundSymbol(encodeURI(`${LIBRARY_SERVICE_HOST}/${path}`)),
     );
   };
 
   // Listen to the uncompression complete event and orchestrate the final payload
-  socketIOInstance.on("LS_UNCOMPRESSION_JOB_COMPLETE", (data) => {
-    setUncompressedArchive(constructImagePaths(data?.uncompressedArchive));
-  });
+  useEffect(() => {
+    const socket = getSocket("/");
+    
+    const handleUncompressionComplete = (data: any) => {
+      setUncompressedArchive(constructImagePaths(data?.uncompressedArchive));
+    };
+
+    socket.on("LS_UNCOMPRESSION_JOB_COMPLETE", handleUncompressionComplete);
+
+    // Cleanup listener on unmount
+    return () => {
+      socket.off("LS_UNCOMPRESSION_JOB_COMPLETE", handleUncompressionComplete);
+    };
+  }, [getSocket]);
 
   useEffect(() => {
     let isMounted = true;
@@ -58,7 +73,7 @@ export const ArchiveOperations = (props): ReactElement => {
             },
             transformResponse: async (responseData) => {
               const parsedData = JSON.parse(responseData);
-              const paths = parsedData.map((pathObject) => {
+              const paths = parsedData.map((pathObject: any) => {
                 return `${pathObject.containedIn}/${pathObject.name}${pathObject.extension}`;
               });
               const uncompressedArchive = constructImagePaths(paths);
@@ -131,7 +146,7 @@ export const ArchiveOperations = (props): ReactElement => {
   }
 
   // sliding panel init
-  const contentForSlidingPanel = {
+  const contentForSlidingPanel: Record<string, { content: () => JSX.Element }> = {
     imageAnalysis: {
       content: () => {
         return (
@@ -143,7 +158,7 @@ export const ArchiveOperations = (props): ReactElement => {
               </pre>
             ) : null}
             <pre className="font-hasklig mt-3 text-sm">
-              {JSON.stringify(imageAnalysisResult.analyzedData, null, 2)}
+              {JSON.stringify(imageAnalysisResult?.analyzedData, null, 2)}
             </pre>
           </div>
         );
@@ -152,7 +167,7 @@ export const ArchiveOperations = (props): ReactElement => {
   };
 
   // sliding panel handlers
-  const openImageAnalysisPanel = useCallback((imageFilePath) => {
+  const openImageAnalysisPanel = useCallback((imageFilePath: string) => {
     setSlidingPanelContentId("imageAnalysis");
     analyzeImage(imageFilePath);
     setCurrentImage(imageFilePath);

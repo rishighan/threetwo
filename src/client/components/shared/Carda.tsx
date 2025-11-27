@@ -11,8 +11,8 @@ interface ICardProps {
   borderColorClass?: string;
   backgroundColor?: string;
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
-  cardContainerStyle?: PropTypes.object;
-  imageStyle?: PropTypes.object;
+  cardContainerStyle?: any;
+  imageStyle?: any;
 }
 
 const renderCard = (props: ICardProps): ReactElement => {
@@ -156,7 +156,7 @@ const renderCard = (props: ICardProps): ReactElement => {
 
       return (
         <div
-          className={`rounded-lg overflow-hidden shadow-md bg-white dark:bg-slate-800 ${
+          className={`rounded-2xl overflow-hidden shadow-md bg-white dark:bg-slate-800 ${
             props.cardContainerStyle?.height ? "" : "aspect-[2/3]"
           }`}
           style={containerStyle}

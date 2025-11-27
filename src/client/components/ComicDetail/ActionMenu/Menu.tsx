@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import Select from "react-select";
 
-export const Menu = (props): ReactElement => {
+export const Menu = (props: any): ReactElement => {
   const {
     filteredActionOptions,
     customStyles,
@@ -13,11 +13,11 @@ export const Menu = (props): ReactElement => {
     <Select
       components={{ Placeholder }}
       placeholder={
-        <span className="inline-flex flex-row items-center gap-2 pt-1">
-          <div className="w-6 h-6">
-            <i className="icon-[solar--cursor-bold-duotone] w-6 h-6"></i>
+        <span className="inline-flex flex-row items-center gap-1.5 pt-1">
+          <div className="w-4 h-4">
+            <i className="icon-[solar--cursor-bold-duotone] w-4 h-4"></i>
           </div>
-          <div>Select An Action</div>
+          <div className="text-sm">Select An Action</div>
         </span>
       }
       styles={customStyles}
