@@ -3,12 +3,11 @@ import { Link } from "react-router-dom";
 import { useDarkMode } from "../../hooks/useDarkMode";
 
 export const Navbar2 = (): ReactElement => {
-  const [colorTheme, setTheme] = useDarkMode();
-  const [darkMode, setDarkMode] = useState(false);
+  const [theme, setTheme] = useDarkMode();
+  const darkMode = theme === "dark";
 
-  const toggleDarkMode = (checked) => {
-    setTheme(colorTheme);
-    setDarkMode(!darkMode);
+  const toggleDarkMode = () => {
+    setTheme(darkMode ? "light" : "dark");
   };
 
   return (
@@ -98,7 +97,7 @@ export const Navbar2 = (): ReactElement => {
               <li>
                 {/* Light/Dark Mode toggle */}
                 <div className="flex items-center space-x-2">
-                  <span className="text-gray-600 dark:text-white">Dark</span>
+                  <span className="text-gray-600 dark:text-white">Light</span>
                   <label
                     htmlFor="toggle"
                     className="relative inline-flex items-center"
@@ -117,7 +116,7 @@ export const Navbar2 = (): ReactElement => {
                       }`}
                     ></span>
                   </label>
-                  <span className="text-gray-600 dark:text-white">Light</span>
+                  <span className="text-gray-600 dark:text-white">Dark</span>
                 </div>
               </li>
             </ul>
