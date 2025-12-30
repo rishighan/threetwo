@@ -4048,14 +4048,16 @@ axe-core@=4.7.0:
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.7.0.tgz#34ba5a48a8b564f67e103f0aa5768d76e15bbbbf"
   integrity sha512-M0JtH+hlOL5pLQwHOLNYZaXuhqmvS8oExsqB1SBYgA4Dk7u/xx+YdGHXaK5pyUfed5mYXdlYiphWq3G8cRi5JQ==
 
-axios-cache-interceptor@^1.0.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/axios-cache-interceptor/-/axios-cache-interceptor-1.5.1.tgz#fe4095f74262011fd8b7576b0a0e8c8026e301c5"
-  integrity sha512-1p/rTi7DSqUghJ5Ck8GKNt47X6f3IB8XnJ+TM4PwIdhimmCgh0jEQiwI8mBvf2kIMIl4Kz5idwbf/ouK75nEHA==
+axios-cache-interceptor@^1.11.1:
+  version "1.11.1"
+  resolved "https://registry.yarnpkg.com/axios-cache-interceptor/-/axios-cache-interceptor-1.11.1.tgz#f8939c23de5e910c4f98b463d12316298bc3692f"
+  integrity sha512-Ldacl7iSMMjKBn/IB5GWRfUIxbOCSmH/xInnZ4lX/+BF/Oa6HxpWqvgXY1WOmyUSa8AKI6AwLl7NTLKrJAV42g==
   dependencies:
-    cache-parser "1.2.4"
-    fast-defer "1.1.8"
-    object-code "1.3.2"
+    cache-parser "^1.2.6"
+    fast-defer "^1.1.9"
+    http-vary "^1.0.3"
+    object-code "^2.0.0"
+    try "^1.0.3"
 
 axios-rate-limit@^1.3.0:
   version "1.3.0"
@@ -4349,10 +4351,10 @@ bytes@3.1.2:
   resolved "https://registry.yarnpkg.com/bytes/-/bytes-3.1.2.tgz#8b0beeb98605adf1b128fa4386403c009e0221a5"
   integrity sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==
 
-cache-parser@1.2.4:
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/cache-parser/-/cache-parser-1.2.4.tgz#60975135ef2330e6a1d60895279d7237a2a9b398"
-  integrity sha512-O0KwuHuJnbHUrghHi2kGp0SxnWSIBXTYt7M8WVhW0kbPRUNUKoE/Of6e1rRD6AAxmfxFunKnt90yEK09D+sc5g==
+cache-parser@^1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/cache-parser/-/cache-parser-1.2.6.tgz#481e47f4d763d6cc9f742a5892196ea1c80a3f9c"
+  integrity sha512-SjjnKlWgrhDrAWKUxAvmZLRGDa6JExMfjSu59/pvpNoI6mEHYSLcLKUw2RtECEOINvf6dxJo35fY+T/scA0SUA==
 
 call-bind-apply-helpers@^1.0.1, call-bind-apply-helpers@^1.0.2:
   version "1.0.2"
@@ -6029,10 +6031,10 @@ fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz#3a7d56b559d6cbc3eb512325244e619a65c6c525"
   integrity sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==
 
-fast-defer@1.1.8:
-  version "1.1.8"
-  resolved "https://registry.yarnpkg.com/fast-defer/-/fast-defer-1.1.8.tgz#940ef9597b2ea51c4cd08e99d0f2a8978fa49ba2"
-  integrity sha512-lEJeOH5VL5R09j6AA0D4Uvq7AgsHw0dAImQQ+F3iSyHZuAxyQfWobsagGpTcOPvJr3urmKRHrs+Gs9hV+/Qm/Q==
+fast-defer@^1.1.9:
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/fast-defer/-/fast-defer-1.1.9.tgz#d30e74f67b923a410ec27b47393fa4704e4f3bb5"
+  integrity sha512-JP7Xm9HuePSeTT1DI78NeE9eAQvgNb9qNP2jlyQrcx4jiWM189omV6oyd0xaUPWHPlKmvDzz6H1FfPWIDU+xfg==
 
 fast-diff@^1.1.2:
   version "1.3.0"
@@ -6778,6 +6780,11 @@ http-errors@2.0.0:
     setprototypeof "1.2.0"
     statuses "2.0.1"
     toidentifier "1.0.1"
+
+http-vary@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/http-vary/-/http-vary-1.0.3.tgz#bacf8fccf31294577c1dc97d6cec479dde1e7741"
+  integrity sha512-sx7Y8YTqF3o0mFJJvF66n8dbaE8v3liV1RgCz46XP5xK7dnzyZHvwMWRA115q5kjbCPBV65/nOMlgW54WLyiag==
 
 https-proxy-agent@^4.0.0:
   version "4.0.0"
@@ -8523,10 +8530,10 @@ object-assign@^4.0.1, object-assign@^4.1.1:
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
   integrity sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==
 
-object-code@1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/object-code/-/object-code-1.3.2.tgz#f0c0fd71b16aed45a58c306b831f2249806dffd5"
-  integrity sha512-3CVDmQiru7YYVr+4OpCGrqkVE7GogmWinDcgfno1fXlKgIhtW9FhgHTiV98gMPUjQwWuWvijQDCY8sGnqKrhTw==
+object-code@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/object-code/-/object-code-2.0.0.tgz#251754cb38abca927e0844f50e8184e3ed45c386"
+  integrity sha512-qOwMF43O/VAD51nJAB7MKsf1yWksql6O1i0DHRo1yaOQM6xJQH0NAE9UKJzYB7lyKw1jnpeb2BmB8qakjxiYZA==
 
 object-hash@^3.0.0:
   version "3.0.0"
@@ -10543,6 +10550,11 @@ tr46@~0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/tr46/-/tr46-0.0.3.tgz#8184fd347dac9cdc185992f3a6622e14b9d9ab6a"
   integrity sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==
+
+try@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/try/-/try-1.0.3.tgz#337a26a7f0d1821df6d3a90d45fdcdf492666723"
+  integrity sha512-AHA8khVCII6zKyRkyPo6pRwoR9v5jb7QFw6e5avtaVSkxVfaEucYIo06xnwB+pJaEarfYNbs7W3Vq+LZLZiWyA==
 
 ts-dedent@^2.0.0, ts-dedent@^2.2.0:
   version "2.2.0"
