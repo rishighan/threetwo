@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useState, useCallback } from "react";
 import { map } from "lodash";
 import Card from "../shared/Carda";
 import Header from "../shared/Header";
@@ -10,8 +10,7 @@ import axios from "axios";
 import rateLimiter from "axios-rate-limit";
 import { setupCache } from "axios-cache-interceptor";
 import { useQuery } from "@tanstack/react-query";
-import "keen-slider/keen-slider.min.css";
-import { useKeenSlider } from "keen-slider/react";
+import useEmblaCarousel from "embla-carousel-react";
 import { COMICVINE_SERVICE_URI } from "../../constants/endpoints";
 import { Field, Form } from "react-final-form";
 import DatePickerDialog from "../shared/DatePicker";
@@ -34,24 +33,13 @@ export const PullList = (): ReactElement => {
     format(date, "yyyy/M/dd"),
   );
 
-  // keen slider
-  const [sliderRef, instanceRef] = useKeenSlider(
-    {
-      loop: true,
-      slides: {
-        origin: "auto",
-        number: 15,
-        perView: 5,
-        spacing: 15,
-      },
-      slideChanged() {
-        console.log("slide changed");
-      },
-    },
-    [
-      // add plugins here
-    ],
-  );
+  // embla carousel
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: false,
+    align: "start",
+    containScroll: "trimSnaps",
+    slidesToScroll: 1,
+  });
 
   const {
     data: pullList,
@@ -126,34 +114,41 @@ export const PullList = (): ReactElement => {
       </div>
 
       {isSuccess && !isLoading && (
-        <div ref={sliderRef} className="keen-slider flex flex-row">
-          {map(pullList?.data.result, (issue, idx) => {
-            return (
-              <div key={idx} className="keen-slider__slide">
-                <Card
-                  orientation={"vertical-2"}
-                  imageUrl={issue.coverImageUrl}
-                  hasDetails
-                  title={ellipsize(issue.issueName, 25)}
-                >
-                  <div className="px-1">
-                    <span className="inline-flex mb-2 items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-1 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                      {issue.publicationDate}
-                    </span>
-                    <div className="flex flex-row justify-end">
-                      <button
-                        className="flex space-x-1 mb-2 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-2 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
-                        onClick={() => addToLibrary("locg", issue)}
-                      >
-                        <i className="icon-[solar--add-square-bold-duotone] w-5 h-5 mr-2"></i>{" "}
-                        Want
-                      </button>
-                    </div>
+        <div className="content">
+          <div className="overflow-hidden -mr-[100vw]" ref={emblaRef}>
+            <div className="flex">
+              {map(pullList?.data.result, (issue, idx) => {
+                return (
+                  <div
+                    key={idx}
+                    className="flex-[0_0_200px] min-w-0 sm:flex-[0_0_220px] md:flex-[0_0_240px] lg:flex-[0_0_260px] xl:flex-[0_0_280px] pr-[15px]"
+                  >
+                    <Card
+                      orientation={"vertical-2"}
+                      imageUrl={issue.coverImageUrl}
+                      hasDetails
+                      title={ellipsize(issue.issueName, 25)}
+                    >
+                      <div className="px-1">
+                        <span className="inline-flex mb-2 items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-1 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                          {issue.publicationDate}
+                        </span>
+                        <div className="flex flex-row justify-end">
+                          <button
+                            className="flex space-x-1 mb-2 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-2 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+                            onClick={() => addToLibrary("locg", issue)}
+                          >
+                            <i className="icon-[solar--add-square-bold-duotone] w-5 h-5 mr-2"></i>{" "}
+                            Want
+                          </button>
+                        </div>
+                      </div>
+                    </Card>
                   </div>
-                </Card>
-              </div>
-            );
-          })}
+                );
+              })}
+            </div>
+          </div>
         </div>
       )}
       {isLoading ? <div>Loading...</div> : null}
