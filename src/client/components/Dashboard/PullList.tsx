@@ -114,8 +114,8 @@ export const PullList = (): ReactElement => {
       </div>
 
       {isSuccess && !isLoading && (
-        <div className="content">
-          <div className="overflow-hidden -mr-[100vw]" ref={emblaRef}>
+        <div className="overflow-hidden -mr-4 sm:-mr-8 lg:-mr-16 xl:-mr-20 2xl:-mr-24">
+          <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex">
               {map(pullList?.data.result, (issue, idx) => {
                 return (
