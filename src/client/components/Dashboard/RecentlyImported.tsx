@@ -55,12 +55,11 @@ export const RecentlyImported = (
             const isComicVineMetadataAvailable =
               !isUndefined(comicvine) &&
               !isUndefined(comicvine.volumeInformation);
-
             return (
               <Card
                 orientation="vertical-2"
                 key={idx}
-                imageUrl={`${LIBRARY_SERVICE_HOST}/${rawFileDetails.cover.filePath}`}
+                imageUrl={url}
                 title={inferredMetadata.issue.name}
                 hasDetails
               >
