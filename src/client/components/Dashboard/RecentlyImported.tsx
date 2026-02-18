@@ -10,6 +10,7 @@ import {
 } from "../../shared/utils/metadata.utils";
 import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
 import Header from "../shared/Header";
+import useEmblaCarousel from "embla-carousel-react";
 
 type RecentlyImportedProps = {
   comics: any;
@@ -19,6 +20,15 @@ export const RecentlyImported = (
   comics: RecentlyImportedProps,
 ): ReactElement => {
   console.log(comics);
+  
+  // embla carousel
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: false,
+    align: "start",
+    containScroll: "trimSnaps",
+    slidesToScroll: 1,
+  });
+
   return (
     <div>
       <Header
@@ -26,8 +36,10 @@ export const RecentlyImported = (
         subHeaderContent="Recent Library activity such as imports, tagging, etc."
         iconClassNames="fa-solid fa-binoculars mr-2"
       />
-      <div className="grid grid-cols-5 gap-6 mt-3">
-        {comics?.comics.map(
+      <div className="overflow-hidden -mr-4 sm:-mr-8 lg:-mr-16 xl:-mr-20 2xl:-mr-24 mt-3">
+        <div className="overflow-hidden" ref={emblaRef}>
+          <div className="flex">
+            {comics?.comics.map(
           (
             {
               _id,
@@ -56,13 +68,16 @@ export const RecentlyImported = (
               !isUndefined(comicvine) &&
               !isUndefined(comicvine.volumeInformation);
             return (
-              <Card
-                orientation="vertical-2"
+              <div
                 key={idx}
-                imageUrl={url}
-                title={inferredMetadata.issue.name}
-                hasDetails
+                className="flex-[0_0_200px] min-w-0 sm:flex-[0_0_220px] md:flex-[0_0_240px] lg:flex-[0_0_260px] xl:flex-[0_0_280px] pr-[15px]"
               >
+                <Card
+                  orientation="vertical-2"
+                  imageUrl={url}
+                  title={inferredMetadata.issue.name}
+                  hasDetails
+                >
                 <div>
                   <dd className="text-sm my-1 flex flex-row gap-1">
                     {/* Issue number */}
@@ -99,16 +114,17 @@ export const RecentlyImported = (
                   <div className="sm:inline-flex sm:shrink-0 sm:items-center sm:gap-2">
                     {/* ComicInfo.xml presence */}
                     {!isNil(comicInfo) && !isEmpty(comicInfo) && (
-                      <div mt-1>
+                      <div className="mt-1">
                         <i className="h-7 w-7 icon-[solar--code-file-bold-duotone] text-yellow-500 dark:text-yellow-300"></i>
                       </div>
                     )}
                     {/* ComicVine metadata presence */}
                     {isComicVineMetadataAvailable && (
-                      <span className="w-7 h-7">
+                      <span className="inline-block w-6 h-6 md:w-7 md:h-7 flex-shrink-0">
                         <img
                           src="/src/client/assets/img/cvlogo.svg"
                           alt={"ComicVine metadata detected."}
+                          className="w-full h-full object-contain"
                         />
                       </span>
                     )}
@@ -121,9 +137,12 @@ export const RecentlyImported = (
                   )}
                 </div>
               </Card>
+              </div>
             );
           },
         )}
+          </div>
+        </div>
       </div>
     </div>
   );

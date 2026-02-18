@@ -102,7 +102,7 @@ export const WantedComicsList = ({
                     <img
                       src="/src/client/assets/img/cvlogo.svg"
                       alt={"ComicVine metadata detected."}
-                      className="w-7 h-7"
+                      className="inline-block w-6 h-6 md:w-7 md:h-7 flex-shrink-0 object-contain"
                     />
                   )}
                   {!isEmpty(locg) && (

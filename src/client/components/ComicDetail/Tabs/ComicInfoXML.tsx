@@ -1,18 +1,18 @@
 import { isUndefined } from "lodash";
 import React, { ReactElement } from "react";
 
-export const ComicInfoXML = (data): ReactElement => {
+export const ComicInfoXML = (data: { json: any }): ReactElement => {
   const { json } = data;
   return (
     <div className="flex md:w-4/5 lg:w-78">
       <dl className="dark:bg-yellow-600 bg-yellow-200 p-3 rounded-lg">
         <dt>
-          <p className="text-lg">{json.series[0]}</p>
+          <p className="text-lg">{json.series?.[0]}</p>
         </dt>
         <dd className="text-sm">
           published by{" "}
           <span className="underline">
-            {json.publisher[0]}
+            {json.publisher?.[0]}
             <i className="icon-[solar--arrow-right-up-outline] w-4 h-4" />
           </span>
         </dd>
@@ -30,18 +30,20 @@ export const ComicInfoXML = (data): ReactElement => {
               </span>
             </dd>
           )}
-          <dd className="my-2">
-            {/* Genre */}
-            <span className="inline-flex items-center bg-slate-50 text-slate-800 text-sm font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-              <span className="pr-1 pt-1">
-                <i className="icon-[solar--sticker-smile-circle-bold-duotone] w-5 h-5"></i>
-              </span>
+          {/* Genre */}
+          {!isUndefined(json.genre) && (
+            <dd className="my-2">
+              <span className="inline-flex items-center bg-slate-50 text-slate-800 text-sm font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                <span className="pr-1 pt-1">
+                  <i className="icon-[solar--sticker-smile-circle-bold-duotone] w-5 h-5"></i>
+                </span>
 
-              <span className="text-slate-500 dark:text-slate-900">
-                {json.genre[0]}
+                <span className="text-slate-500 dark:text-slate-900">
+                  {json.genre[0]}
+                </span>
               </span>
-            </span>
-          </dd>
+            </dd>
+          )}
         </span>
 
         <dd className="my-1">
@@ -52,12 +54,14 @@ export const ComicInfoXML = (data): ReactElement => {
             </span>
           )}
         </dd>
-        <dd>
-          {/* Notes */}
-          <span className="text-sm text-slate-500 dark:text-slate-900">
-            {json.notes[0]}
-          </span>
-        </dd>
+        {!isUndefined(json.notes) && (
+          <dd>
+            {/* Notes */}
+            <span className="text-sm text-slate-500 dark:text-slate-900">
+              {json.notes[0]}
+            </span>
+          </dd>
+        )}
       </dl>
     </div>
   );

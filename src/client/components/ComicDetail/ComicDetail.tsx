@@ -34,6 +34,11 @@ import { styled } from "styled-components";
 import { COMICVINE_SERVICE_URI } from "../../constants/endpoints";
 import { refineQuery } from "filename-parser";
 
+// overridden <SlidingPanel> with some styles - moved outside component to prevent recreation
+const StyledSlidingPanel = styled(SlidingPane)`
+  background: #ccc;
+`;
+
 interface ComicDetailProps {
   data: {
     _id: string;
@@ -98,11 +103,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     // );
   }, []);
 
-  // overridden <SlidingPanel> with some styles
-  const StyledSlidingPanel = styled(SlidingPane)`
-    background: #ccc;
-  `;
-  const afterOpenModal = useCallback((things) => {
+  const afterOpenModal = useCallback((things: any) => {
     // references are now sync'd and can be accessed.
     // subtitle.style.color = "#f00";
     console.log("kolaveri", things);
