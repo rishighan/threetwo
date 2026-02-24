@@ -27,10 +27,10 @@ interface IProps {
 
 export const Import = (props: IProps): ReactElement => {
   const queryClient = useQueryClient();
-  const { importJobQueue, socketIOInstance } = useStore(
+  const { importJobQueue, getSocket } = useStore(
     useShallow((state) => ({
       importJobQueue: state.importJobQueue,
-      socketIOInstance: state.socketIOInstance,
+      getSocket: state.getSocket,
     })),
   );
 
@@ -44,24 +44,57 @@ export const Import = (props: IProps): ReactElement => {
       }),
   });
 
-  const { data, isError, isLoading } = useQuery({
+  const { data, isError, isLoading, refetch } = useQuery({
     queryKey: ["allImportJobResults"],
-    queryFn: async () =>
-      await axios({
+    queryFn: async () => {
+      const response = await axios({
         method: "GET",
         url: "http://localhost:3000/api/jobqueue/getJobResultStatistics",
-      }),
+        params: { _t: Date.now() }, // Cache busting
+      });
+      console.log("Fetched import results:", response.data);
+      return response;
+    },
+    refetchOnWindowFocus: false,
+    staleTime: 0, // Always consider data stale
+    gcTime: 0, // Don't cache the data (formerly cacheTime)
   });
 
+  // Ensure socket connection is established and listen for import completion
+  useEffect(() => {
+    const socket = getSocket("/");
+    
+    // Listen for import queue drained event to refresh the table
+    const handleQueueDrained = () => {
+      console.log("Import queue drained, refreshing table...");
+      refetch();
+    };
+
+    // Listen for individual import completions to refresh the table
+    const handleCoverExtracted = () => {
+      console.log("Cover extracted, refreshing table...");
+      refetch();
+    };
+
+    socket.on("LS_IMPORT_QUEUE_DRAINED", handleQueueDrained);
+    socket.on("LS_COVER_EXTRACTED", handleCoverExtracted);
+
+    return () => {
+      socket.off("LS_IMPORT_QUEUE_DRAINED", handleQueueDrained);
+      socket.off("LS_COVER_EXTRACTED", handleCoverExtracted);
+    };
+  }, [getSocket, refetch]);
+
   const toggleQueue = (queueAction: string, queueStatus: string) => {
-    socketIOInstance.emit(
+    const socket = getSocket("/");
+    socket.emit(
       "call",
       "socket.setQueueStatus",
       {
         queueAction,
         queueStatus,
       },
-      (data) => console.log(data),
+      (data: any) => console.log(data),
     );
   };
   /**
@@ -155,21 +188,21 @@ export const Import = (props: IProps): ReactElement => {
           </article>
 
           <div className="my-4">
-            {importJobQueue.status === "drained" ||
-              (importJobQueue.status === undefined && (
-                <button
-                  className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-5 py-3 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
-                  onClick={() => {
-                    initiateImport();
-                    importJobQueue.setStatus("running");
-                  }}
-                >
-                  <span className="text-md">Start Import</span>
-                  <span className="w-6 h-6">
-                    <i className="h-6 w-6 icon-[solar--file-left-bold-duotone]"></i>
-                  </span>
-                </button>
-              ))}
+            {(importJobQueue.status === "drained" ||
+              importJobQueue.status === undefined) && (
+              <button
+                className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-5 py-3 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+                onClick={() => {
+                  initiateImport();
+                  importJobQueue.setStatus("running");
+                }}
+              >
+                <span className="text-md">Start Import</span>
+                <span className="w-6 h-6">
+                  <i className="h-6 w-6 icon-[solar--file-left-bold-duotone]"></i>
+                </span>
+              </button>
+            )}
           </div>
 
           {/* Activity */}
@@ -231,6 +264,9 @@ export const Import = (props: IProps): ReactElement => {
                   <thead className="ltr:text-left rtl:text-right">
                     <tr>
                       <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 dark:text-slate-200">
+                        #
+                      </th>
+                      <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 dark:text-slate-200">
                         Time Started
                       </th>
                       <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 dark:text-slate-200">
@@ -246,9 +282,12 @@ export const Import = (props: IProps): ReactElement => {
                   </thead>
 
                   <tbody className="divide-y divide-gray-200">
-                    {data?.data.map((jobResult, id) => {
+                    {data?.data.map((jobResult: any, index: number) => {
                       return (
-                        <tr key={id}>
+                        <tr key={index}>
+                          <td className="whitespace-nowrap px-4 py-2 text-gray-700 dark:text-slate-300 font-medium">
+                            {index + 1}
+                          </td>
                           <td className="whitespace-nowrap px-2 py-2 text-gray-700 dark:text-slate-300">
                             {format(
                               new Date(jobResult.earliestTimestamp),

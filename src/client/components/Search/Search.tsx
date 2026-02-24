@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import "../../shared/utils/i18n.util";
 import PopoverButton from "../shared/PopoverButton";
 import dayjs from "dayjs";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   COMICVINE_SERVICE_URI,
   LIBRARY_SERVICE_BASE_URI,
@@ -20,6 +20,7 @@ import axios from "axios";
 interface ISearchProps {}
 
 export const Search = ({}: ISearchProps): ReactElement => {
+  const queryClient = useQueryClient();
   const formData = {
     search: "",
   };
@@ -137,6 +138,10 @@ export const Search = ({}: ISearchProps): ReactElement => {
           },
         },
       });
+    },
+    onSuccess: () => {
+      // Invalidate and refetch wanted comics queries
+      queryClient.invalidateQueries({ queryKey: ["wantedComics"] });
     },
   });
 

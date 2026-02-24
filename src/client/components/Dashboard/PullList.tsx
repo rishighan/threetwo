@@ -9,9 +9,9 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import rateLimiter from "axios-rate-limit";
 import { setupCache } from "axios-cache-interceptor";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useEmblaCarousel from "embla-carousel-react";
-import { COMICVINE_SERVICE_URI } from "../../constants/endpoints";
+import { COMICVINE_SERVICE_URI, LIBRARY_SERVICE_BASE_URI } from "../../constants/endpoints";
 import { Field, Form } from "react-final-form";
 import DatePickerDialog from "../shared/DatePicker";
 import { format } from "date-fns";
@@ -27,6 +27,8 @@ const http = rateLimiter(axios.create(), {
 });
 const cachedAxios = setupCache(axios);
 export const PullList = (): ReactElement => {
+  const queryClient = useQueryClient();
+  
   // datepicker
   const date = new Date();
   const [inputValue, setInputValue] = useState<string>(
@@ -55,8 +57,38 @@ export const PullList = (): ReactElement => {
       }),
     queryKey: ["pullList", inputValue],
   });
-  const addToLibrary = (sourceName: string, locgMetadata) =>
-    importToDB(sourceName, { locg: locgMetadata });
+
+  const { mutate: addToLibrary } = useMutation({
+    mutationFn: async ({ sourceName, metadata }: { sourceName: string; metadata: any }) => {
+      const comicBookMetadata = {
+        importType: "new",
+        payload: {
+          rawFileDetails: {
+            name: "",
+          },
+          importStatus: {
+            isImported: true,
+            tagged: false,
+            matchedResult: {
+              score: "0",
+            },
+          },
+          sourcedMetadata: metadata || null,
+          acquisition: { source: { wanted: true, name: sourceName } },
+        },
+      };
+      
+      return await axios.request({
+        url: `${LIBRARY_SERVICE_BASE_URI}/rawImportToDb`,
+        method: "POST",
+        data: comicBookMetadata,
+      });
+    },
+    onSuccess: () => {
+      // Invalidate and refetch wanted comics queries
+      queryClient.invalidateQueries({ queryKey: ["wantedComics"] });
+    },
+  });
 
   const next = () => {
     // sliderRef.slickNext();
@@ -135,7 +167,7 @@ export const PullList = (): ReactElement => {
                         <div className="flex flex-row justify-end">
                           <button
                             className="flex space-x-1 mb-2 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-2 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
-                            onClick={() => addToLibrary("locg", issue)}
+                            onClick={() => addToLibrary({ sourceName: "locg", metadata: { locg: issue } })}
                           >
                             <i className="icon-[solar--add-square-bold-duotone] w-5 h-5 mr-2"></i>{" "}
                             Want
