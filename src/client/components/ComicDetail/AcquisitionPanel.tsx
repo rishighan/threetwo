@@ -5,8 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { SearchQuery, PriorityEnum, SearchResponse } from "threetwo-ui-typings";
-import { RootState, SearchInstance } from "threetwo-ui-typings";
+import { SearchQuery, PriorityEnum, SearchResponse, SearchInstance } from "threetwo-ui-typings";
 import ellipsize from "ellipsize";
 import { Form, Field } from "react-final-form";
 import { difference } from "../../shared/utils/object.utils";
@@ -15,14 +14,68 @@ import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { AIRDCPP_SERVICE_BASE_URI } from "../../constants/endpoints";
+import { AIRDCPP_SERVICE_BASE_URI, SETTINGS_SERVICE_BASE_URI } from "../../constants/endpoints";
 import type { Socket } from "socket.io-client";
 
 interface IAcquisitionPanelProps {
   query: any;
-  comicObjectId: any;
+  comicObjectId: string;
   comicObject: any;
   settings: any;
+}
+
+interface AirDCPPConfig {
+  protocol: string;
+  hostname: string;
+  username: string;
+  password: string;
+}
+
+interface SearchResult {
+  id: string;
+  name: string;
+  type: {
+    id: string;
+    str: string;
+  };
+  size: number;
+  slots: {
+    total: number;
+    free: number;
+  };
+  users: {
+    user: {
+      nicks: string;
+      flags: string[];
+    };
+  };
+  dupe?: any;
+}
+
+interface SearchInstanceData {
+  id: number;
+  owner: string;
+  expires_in: number;
+}
+
+interface SearchInfo {
+  query: {
+    pattern: string;
+    extensions: string[];
+    file_type: string;
+  };
+}
+
+interface Hub {
+  hub_url: string;
+  identity: {
+    name: string;
+  };
+  value: string;
+}
+
+interface SearchFormValues {
+  issueName: string;
 }
 
 export const AcquisitionPanel = (
@@ -30,29 +83,35 @@ export const AcquisitionPanel = (
 ): ReactElement => {
   const socketRef = useRef<Socket>();
   const queryClient = useQueryClient();
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const [dcppQuery, setDcppQuery] = useState({});
-  const [airDCPPSearchResults, setAirDCPPSearchResults] = useState<any[]>([]);
+  const [dcppQuery, setDcppQuery] = useState<SearchQuery | null>(null);
+  const [airDCPPSearchResults, setAirDCPPSearchResults] = useState<SearchResult[]>([]);
   const [airDCPPSearchStatus, setAirDCPPSearchStatus] = useState(false);
-  const [airDCPPSearchInstance, setAirDCPPSearchInstance] = useState<any>({});
-  const [airDCPPSearchInfo, setAirDCPPSearchInfo] = useState<any>({});
+  const [isSearching, setIsSearching] = useState(false);
+  const [airDCPPSearchInstance, setAirDCPPSearchInstance] = useState<SearchInstanceData | null>(null);
+  const [airDCPPSearchInfo, setAirDCPPSearchInfo] = useState<SearchInfo | null>(null);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   const { comicObjectId } = props;
   const issueName = props.query.issue.name || "";
   const sanitizedIssueName = issueName.replace(/[^a-zA-Z0-9 ]/g, " ");
+
+  // Search timeout duration in milliseconds (30 seconds)
+  const SEARCH_TIMEOUT_MS = 30000;
 
   useEffect(() => {
     const socket = useStore.getState().getSocket("manual");
     socketRef.current = socket;
 
     // --- Handlers ---
-    const handleResultAdded = ({ result }: any) => {
+    const handleResultAdded = ({ result }: { result: SearchResult }) => {
       setAirDCPPSearchResults((prev) =>
         prev.some((r) => r.id === result.id) ? prev : [...prev, result],
       );
     };
 
-    const handleResultUpdated = ({ result }: any) => {
+    const handleResultUpdated = ({ result }: { result: SearchResult }) => {
       setAirDCPPSearchResults((prev) => {
         const idx = prev.findIndex((r) => r.id === result.id);
         if (idx === -1) return prev;
@@ -63,12 +122,46 @@ export const AcquisitionPanel = (
       });
     };
 
-    const handleSearchInitiated = (data: any) => {
+    const handleSearchInitiated = (data: { instance: SearchInstanceData }) => {
       setAirDCPPSearchInstance(data.instance);
+      setIsSearching(true);
+      setSearchError(null);
+      
+      // Clear any existing timeout
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+      
+      // Set a timeout to stop searching after SEARCH_TIMEOUT_MS
+      searchTimeoutRef.current = setTimeout(() => {
+        setIsSearching(false);
+        console.log(`Search timeout reached after ${SEARCH_TIMEOUT_MS / 1000} seconds`);
+      }, SEARCH_TIMEOUT_MS);
     };
 
-    const handleSearchesSent = (data: any) => {
+    const handleSearchesSent = (data: { searchInfo: SearchInfo }) => {
       setAirDCPPSearchInfo(data.searchInfo);
+    };
+
+    const handleSearchError = (error: { message: string }) => {
+      setSearchError(error.message || "Search failed");
+      setIsSearching(false);
+      
+      // Clear timeout on error
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+        searchTimeoutRef.current = null;
+      }
+    };
+
+    const handleSearchCompleted = () => {
+      setIsSearching(false);
+      
+      // Clear timeout when search completes
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+        searchTimeoutRef.current = null;
+      }
     };
 
     // --- Subscribe once ---
@@ -76,32 +169,39 @@ export const AcquisitionPanel = (
     socket.on("searchResultUpdated", handleResultUpdated);
     socket.on("searchInitiated", handleSearchInitiated);
     socket.on("searchesSent", handleSearchesSent);
+    socket.on("searchError", handleSearchError);
+    socket.on("searchCompleted", handleSearchCompleted);
 
     return () => {
       socket.off("searchResultAdded", handleResultAdded);
       socket.off("searchResultUpdated", handleResultUpdated);
       socket.off("searchInitiated", handleSearchInitiated);
       socket.off("searchesSent", handleSearchesSent);
-      // if you want to fully close the socket:
-      // useStore.getState().disconnectSocket("/manual");
+      socket.off("searchError", handleSearchError);
+      socket.off("searchCompleted", handleSearchCompleted);
+      
+      // Clean up timeout on unmount
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
     };
-  }, []);
+  }, [SEARCH_TIMEOUT_MS]);
 
   const {
     data: settings,
-    isLoading,
-    isError,
+    isLoading: isLoadingSettings,
+    isError: isSettingsError,
   } = useQuery({
     queryKey: ["settings"],
     queryFn: async () =>
       await axios({
-        url: "http://localhost:3000/api/settings/getAllSettings",
+        url: `${SETTINGS_SERVICE_BASE_URI}/getAllSettings`,
         method: "GET",
       }),
   });
 
-  const { data: hubs } = useQuery({
-    queryKey: ["hubs"],
+  const { data: hubs, isLoading: isLoadingHubs } = useQuery({
+    queryKey: ["hubs", settings?.data.directConnect?.client?.host],
     queryFn: async () =>
       await axios({
         url: `${AIRDCPP_SERVICE_BASE_URI}/getHubs`,
@@ -110,45 +210,72 @@ export const AcquisitionPanel = (
           host: settings?.data.directConnect?.client?.host,
         },
       }),
-    enabled: !isEmpty(settings?.data.directConnect?.client?.host),
+    enabled: !!settings?.data?.directConnect?.client?.host,
   });
 
+  // Get AirDC++ config from settings
+  const airDCPPConfig: AirDCPPConfig | null = settings?.data?.directConnect?.client
+    ? {
+        protocol: settings.data.directConnect.client.protocol || "ws",
+        hostname: typeof settings.data.directConnect.client.host === 'string'
+          ? settings.data.directConnect.client.host
+          : `${settings.data.directConnect.client.host?.hostname || 'localhost'}:${settings.data.directConnect.client.host?.port || '5600'}`,
+        username: settings.data.directConnect.client.username || "admin",
+        password: settings.data.directConnect.client.password || "password",
+      }
+    : null;
+
   useEffect(() => {
-    const dcppSearchQuery = {
-      query: {
-        pattern: `${sanitizedIssueName.replace(/#/g, "")}`,
-        extensions: ["cbz", "cbr", "cb7"],
-      },
-      hub_urls: map(hubs?.data, (item) => item.value),
-      priority: 5,
-    };
-    setDcppQuery(dcppSearchQuery);
+    if (hubs?.data && Array.isArray(hubs.data) && hubs.data.length > 0) {
+      const dcppSearchQuery = {
+        query: {
+          pattern: `${sanitizedIssueName.replace(/#/g, "")}`,
+          extensions: ["cbz", "cbr", "cb7"],
+        },
+        hub_urls: map(hubs.data, (item) => item.value),
+        priority: 5,
+      };
+      setDcppQuery(dcppSearchQuery as any);
+    }
   }, [hubs, sanitizedIssueName]);
 
   const search = async (searchData: any) => {
+    if (!airDCPPConfig) {
+      setSearchError("AirDC++ configuration not found in settings");
+      return;
+    }
+
+    if (!socketRef.current) {
+      setSearchError("Socket connection not available");
+      return;
+    }
+
     setAirDCPPSearchResults([]);
-    socketRef.current?.emit("call", "socket.search", {
+    setIsSearching(true);
+    setSearchError(null);
+    
+    socketRef.current.emit("call", "socket.search", {
       query: searchData,
       namespace: "/manual",
-      config: {
-        protocol: `ws`,
-        hostname: `192.168.1.119:5600`,
-        username: `admin`,
-        password: `password`,
-      },
+      config: airDCPPConfig,
     });
   };
 
   const download = async (
-    searchInstanceId: Number,
-    resultId: String,
-    comicObjectId: String,
-    name: String,
-    size: Number,
-    type: any,
-    config: any,
+    searchInstanceId: number,
+    resultId: string,
+    comicObjectId: string,
+    name: string,
+    size: number,
+    type: SearchResult["type"],
+    config: AirDCPPConfig,
   ): Promise<void> => {
-    socketRef.current?.emit(
+    if (!socketRef.current) {
+      console.error("Socket connection not available");
+      return;
+    }
+
+    socketRef.current.emit(
       "call",
       "socket.download",
       {
@@ -160,17 +287,27 @@ export const AcquisitionPanel = (
         type,
         config,
       },
-      (data: any) => console.log(data),
+      (data: any) => console.log("Download initiated:", data),
     );
   };
 
-  const getDCPPSearchResults = async (searchQuery) => {
+  const getDCPPSearchResults = async (searchQuery: SearchFormValues) => {
+    if (!searchQuery.issueName || searchQuery.issueName.trim() === "") {
+      setSearchError("Please enter a search term");
+      return;
+    }
+
+    if (!hubs?.data || !Array.isArray(hubs.data) || hubs.data.length === 0) {
+      setSearchError("No hubs configured");
+      return;
+    }
+
     const manualQuery = {
       query: {
-        pattern: `${searchQuery.issueName}`,
+        pattern: `${searchQuery.issueName.trim()}`,
         extensions: ["cbz", "cbr", "cb7"],
       },
-      hub_urls: [hubs?.data[0].hub_url],
+      hub_urls: [hubs.data[0].hub_url],
       priority: 5,
     };
 
@@ -180,7 +317,12 @@ export const AcquisitionPanel = (
   return (
     <>
       <div className="mt-5 mb-3">
-        {!isEmpty(hubs?.data) ? (
+        {isLoadingSettings || isLoadingHubs ? (
+          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <i className="icon-[solar--refresh-bold-duotone] h-5 w-5 animate-spin" />
+            Loading configuration...
+          </div>
+        ) : !isEmpty(hubs?.data) ? (
           <Form
             onSubmit={getDCPPSearchResults}
             initialValues={{
@@ -200,20 +342,31 @@ export const AcquisitionPanel = (
                             {...input}
                             className="dark:bg-slate-400 bg-slate-300 py-2 px-2 rounded-l-md border-gray-300 h-10 min-w-full dark:text-slate-800 sm:text-md sm:leading-5 focus:outline-none focus:shadow-outline-blue focus:border-blue-300"
                             placeholder="Type an issue/volume name"
+                            disabled={isSearching}
                           />
 
                           <button
-                            className="sm:mt-0 min-w-fit rounded-r-lg border border-green-400 dark:border-green-200 bg-green-200 px-3 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+                            className="sm:mt-0 min-w-fit rounded-r-lg border border-green-400 dark:border-green-200 bg-green-200 px-3 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
                             type="submit"
+                            disabled={isSearching}
                           >
-                            <div className="flex flex-row">
-                              Search DC++
-                              <div className="h-5 w-5 ml-2">
-                                <img
-                                  src="/src/client/assets/img/airdcpp_logo.svg"
-                                  className="h-5 w-5"
-                                />
-                              </div>
+                            <div className="flex flex-row items-center">
+                              {isSearching ? (
+                                <>
+                                  <i className="icon-[solar--refresh-bold-duotone] h-5 w-5 animate-spin mr-2" />
+                                  Searching...
+                                </>
+                              ) : (
+                                <>
+                                  Search DC++
+                                  <div className="h-5 w-5 ml-2">
+                                    <img
+                                      src="/src/client/assets/img/airdcpp_logo.svg"
+                                      className="h-5 w-5"
+                                    />
+                                  </div>
+                                </>
+                              )}
                             </div>
                           </button>
                         </div>
@@ -234,26 +387,36 @@ export const AcquisitionPanel = (
           </article>
         )}
       </div>
+
+      {/* Search Error Display */}
+      {searchError && (
+        <article
+          role="alert"
+          className="mt-4 rounded-lg text-sm max-w-screen-md border-s-4 border-red-500 bg-red-50 p-4 dark:border-s-4 dark:border-red-600 dark:bg-red-300 dark:text-slate-600"
+        >
+          <strong>Error:</strong> {searchError}
+        </article>
+      )}
       {/* configured hub */}
-      {!isEmpty(hubs?.data) && (
+      {!isEmpty(hubs?.data) && hubs?.data[0] && (
         <span className="inline-flex items-center bg-green-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-green-300">
           <span className="pr-1 pt-1">
             <i className="icon-[solar--server-2-bold-duotone] w-5 h-5"></i>
           </span>
-          {hubs && hubs?.data[0].hub_url}
+          {hubs.data[0].hub_url}
         </span>
       )}
 
       {/* AirDC++ search instance details */}
-      {!isNil(airDCPPSearchInstance) &&
-        !isEmpty(airDCPPSearchInfo) &&
-        !isNil(hubs) && (
+      {airDCPPSearchInstance &&
+        airDCPPSearchInfo &&
+        hubs?.data && (
           <div className="flex flex-row gap-3 my-5 font-hasklig">
             <div className="block max-w-sm h-fit p-6 text-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-slate-400 dark:border-gray-700">
               <dl>
                 <dt>
                   <div className="mb-1">
-                    {hubs?.data.map((value, idx: string) => (
+                    {hubs.data.map((value: Hub, idx: number) => (
                       <span className="tag is-warning" key={idx}>
                         {value.identity.name}
                       </span>
@@ -293,7 +456,7 @@ export const AcquisitionPanel = (
 
       {/* AirDC++ results */}
       <div className="">
-        {!isNil(airDCPPSearchResults) && !isEmpty(airDCPPSearchResults) ? (
+        {airDCPPSearchResults.length > 0 ? (
           <div className="overflow-x-auto max-w-full mt-6">
             <table className="w-full table-auto text-sm text-gray-900 dark:text-slate-100">
               <thead>
@@ -345,9 +508,9 @@ export const AcquisitionPanel = (
                                 <i className="icon-[solar--user-rounded-bold-duotone] w-4 h-4"></i>
                                 {users.user.nicks}
                               </span>
-                              {users.user.flags.map((flag, idx) => (
+                              {users.user.flags.map((flag: string, flagIdx: number) => (
                                 <span
-                                  key={idx}
+                                  key={flagIdx}
                                   className="inline-flex items-center gap-1 bg-slate-100 text-slate-800 text-xs font-medium py-0.5 px-2 rounded dark:bg-slate-400 dark:text-slate-900"
                                 >
                                   <i className="icon-[solar--tag-horizontal-bold-duotone] w-4 h-4"></i>
@@ -378,23 +541,21 @@ export const AcquisitionPanel = (
                       {/* ACTIONS */}
                       <td className="px-2 py-3">
                         <button
-                          className="inline-flex items-center gap-1 rounded border border-green-500 bg-green-500 px-2 py-1 text-xs font-medium text-white hover:bg-transparent hover:text-green-400 dark:border-green-300 dark:bg-green-300 dark:text-slate-900 dark:hover:bg-transparent"
-                          onClick={() =>
-                            download(
-                              airDCPPSearchInstance.id,
-                              id,
-                              comicObjectId,
-                              name,
-                              size,
-                              type,
-                              {
-                                protocol: `ws`,
-                                hostname: `192.168.1.119:5600`,
-                                username: `admin`,
-                                password: `password`,
-                              },
-                            )
-                          }
+                          className="inline-flex items-center gap-1 rounded border border-green-500 bg-green-500 px-2 py-1 text-xs font-medium text-white hover:bg-transparent hover:text-green-400 dark:border-green-300 dark:bg-green-300 dark:text-slate-900 dark:hover:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                          onClick={() => {
+                            if (airDCPPSearchInstance && airDCPPConfig) {
+                              download(
+                                airDCPPSearchInstance.id,
+                                id,
+                                comicObjectId,
+                                name,
+                                size,
+                                type,
+                                airDCPPConfig,
+                              );
+                            }
+                          }}
+                          disabled={!airDCPPSearchInstance || !airDCPPConfig}
                         >
                           Download
                           <i className="icon-[solar--download-bold-duotone] w-4 h-4"></i>
@@ -406,7 +567,7 @@ export const AcquisitionPanel = (
               </tbody>
             </table>
           </div>
-        ) : (
+        ) : !isSearching ? (
           <div className="">
             <article
               role="alert"
@@ -431,6 +592,11 @@ export const AcquisitionPanel = (
                 reliable than <code className="font-hasklig">NMDCS</code> ones.
               </div>
             </article>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-400 mt-6 p-4">
+            <i className="icon-[solar--refresh-bold-duotone] h-6 w-6 animate-spin" />
+            Searching...
           </div>
         )}
       </div>

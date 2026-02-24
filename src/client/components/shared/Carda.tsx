@@ -87,7 +87,7 @@ const renderCard = (props: ICardProps): ReactElement => {
           <img
             alt="Home"
             src={props.imageUrl}
-            className="rounded-t-md object-cover"
+            className="rounded-t-md object-cover w-full"
           />
 
           {props.title ? (

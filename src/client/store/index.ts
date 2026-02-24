@@ -2,17 +2,16 @@ import { create } from "zustand";
 import io, { Socket } from "socket.io-client";
 import { SOCKET_BASE_URI } from "../constants/endpoints";
 import { isNil } from "lodash";
-import { QueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
-
-const queryClient = new QueryClient();
 
 // Type for global state
 interface StoreState {
   socketInstances: Record<string, Socket>;
   getSocket: (namespace?: string) => Socket;
   disconnectSocket: (namespace: string) => void;
+  queryClientRef: { current: any } | null;
+  setQueryClientRef: (ref: any) => void;
 
   comicvine: {
     scrapingStatus: string;
@@ -32,6 +31,8 @@ interface StoreState {
 
 export const useStore = create<StoreState>((set, get) => ({
   socketInstances: {},
+  queryClientRef: null,
+  setQueryClientRef: (ref: any) => set({ queryClientRef: ref }),
 
   getSocket: (namespace = "/") => {
     const fullNamespace = namespace === "/" ? "" : namespace;
@@ -97,7 +98,10 @@ export const useStore = create<StoreState>((set, get) => ({
           status: "drained",
         },
       }));
-      queryClient.invalidateQueries({ queryKey: ["allImportJobResults"] });
+      const queryClientRef = get().queryClientRef;
+      if (queryClientRef?.current) {
+        queryClientRef.current.invalidateQueries({ queryKey: ["allImportJobResults"] });
+      }
     });
 
     socket.on("CV_SCRAPING_STATUS", (data) => {

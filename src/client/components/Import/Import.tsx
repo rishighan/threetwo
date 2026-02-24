@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect } from "react";
+import React, { ReactElement, useCallback, useEffect, useRef } from "react";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import { format } from "date-fns";
 import Loader from "react-loader-spinner";
@@ -27,12 +27,21 @@ interface IProps {
 
 export const Import = (props: IProps): ReactElement => {
   const queryClient = useQueryClient();
-  const { importJobQueue, socketIOInstance } = useStore(
+  const { importJobQueue, getSocket, setQueryClientRef } = useStore(
     useShallow((state) => ({
       importJobQueue: state.importJobQueue,
-      socketIOInstance: state.socketIOInstance,
+      getSocket: state.getSocket,
+      setQueryClientRef: state.setQueryClientRef,
     })),
   );
+  
+  const previousResultCountRef = useRef<number>(0);
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Set the queryClient reference in the store so socket events can use it
+  useEffect(() => {
+    setQueryClientRef({ current: queryClient });
+  }, [queryClient, setQueryClientRef]);
 
   const sessionId = localStorage.getItem("sessionId");
   const { mutate: initiateImport } = useMutation({
@@ -44,24 +53,91 @@ export const Import = (props: IProps): ReactElement => {
       }),
   });
 
-  const { data, isError, isLoading } = useQuery({
+  const { data, isError, isLoading, refetch } = useQuery({
     queryKey: ["allImportJobResults"],
-    queryFn: async () =>
-      await axios({
+    queryFn: async () => {
+      const response = await axios({
         method: "GET",
         url: "http://localhost:3000/api/jobqueue/getJobResultStatistics",
-      }),
+        params: {
+          _t: Date.now(), // Cache buster
+        },
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+        },
+      });
+      
+      // Track the result count
+      if (response.data?.length) {
+        previousResultCountRef.current = response.data.length;
+      }
+      
+      return response;
+    },
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    staleTime: 0, // Always consider data stale
+    gcTime: 0, // Don't cache the data (replaces cacheTime in newer versions)
+    // Poll every 5 seconds when import is running
+    refetchInterval: importJobQueue.status === "running" || importJobQueue.status === "paused" ? 5000 : false,
   });
 
+  // Listen for import queue drained event to refresh the table
+  useEffect(() => {
+    const socket = getSocket("/");
+    
+    const handleQueueDrained = () => {
+      const initialCount = previousResultCountRef.current;
+      let attempts = 0;
+      const maxAttempts = 20; // Poll for up to 20 seconds
+      
+      // Clear any existing polling interval
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+      
+      // Poll every second until we see new data or hit max attempts
+      pollingIntervalRef.current = setInterval(async () => {
+        attempts++;
+        
+        const result = await refetch();
+        const newCount = result.data?.data?.length || 0;
+        
+        if (newCount > initialCount) {
+          if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+            pollingIntervalRef.current = null;
+          }
+        } else if (attempts >= maxAttempts) {
+          if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+            pollingIntervalRef.current = null;
+          }
+        }
+      }, 1000);
+    };
+
+    socket.on("LS_IMPORT_QUEUE_DRAINED", handleQueueDrained);
+
+    return () => {
+      socket.off("LS_IMPORT_QUEUE_DRAINED", handleQueueDrained);
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+    };
+  }, [getSocket, queryClient, refetch]);
+
   const toggleQueue = (queueAction: string, queueStatus: string) => {
-    socketIOInstance.emit(
+    const socket = getSocket("/");
+    socket.emit(
       "call",
       "socket.setQueueStatus",
       {
         queueAction,
         queueStatus,
       },
-      (data) => console.log(data),
+      (data: any) => console.log(data),
     );
   };
   /**
@@ -246,7 +322,7 @@ export const Import = (props: IProps): ReactElement => {
                   </thead>
 
                   <tbody className="divide-y divide-gray-200">
-                    {data?.data.map((jobResult, id) => {
+                    {data?.data.map((jobResult: any, id: number) => {
                       return (
                         <tr key={id}>
                           <td className="whitespace-nowrap px-2 py-2 text-gray-700 dark:text-slate-300">
