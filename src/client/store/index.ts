@@ -50,12 +50,14 @@ export const useStore = create<StoreState>((set, get) => ({
       console.log(`✅ Connected to ${namespace}:`, socket.id);
     });
 
+    // Always listen for sessionInitialized in case backend creates a new session
+    socket.on("sessionInitialized", (id) => {
+      console.log("Session initialized with ID:", id);
+      localStorage.setItem("sessionId", id);
+    });
+
     if (sessionId) {
       socket.emit("call", "socket.resumeSession", { sessionId, namespace });
-    } else {
-      socket.on("sessionInitialized", (id) => {
-        localStorage.setItem("sessionId", id);
-      });
     }
 
     socket.on("RESTORE_JOB_COUNTS_AFTER_SESSION_RESTORATION", (data) => {
@@ -90,14 +92,17 @@ export const useStore = create<StoreState>((set, get) => ({
     });
 
     socket.on("LS_IMPORT_QUEUE_DRAINED", () => {
-      localStorage.removeItem("sessionId");
       set((state) => ({
         importJobQueue: {
           ...state.importJobQueue,
           status: "drained",
         },
       }));
-      queryClient.invalidateQueries({ queryKey: ["allImportJobResults"] });
+      // Delay query invalidation and sessionId removal to ensure backend has persisted data
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["allImportJobResults"] });
+        localStorage.removeItem("sessionId");
+      }, 500);
     });
 
     socket.on("CV_SCRAPING_STATUS", (data) => {

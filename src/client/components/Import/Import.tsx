@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect } from "react";
+import React, { ReactElement, useCallback, useEffect, useState } from "react";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import { format } from "date-fns";
 import Loader from "react-loader-spinner";
@@ -27,21 +27,24 @@ interface IProps {
 
 export const Import = (props: IProps): ReactElement => {
   const queryClient = useQueryClient();
-  const { importJobQueue, getSocket } = useStore(
+  const [socketReconnectTrigger, setSocketReconnectTrigger] = useState(0);
+  const { importJobQueue, getSocket, disconnectSocket } = useStore(
     useShallow((state) => ({
       importJobQueue: state.importJobQueue,
       getSocket: state.getSocket,
+      disconnectSocket: state.disconnectSocket,
     })),
   );
 
-  const sessionId = localStorage.getItem("sessionId");
   const { mutate: initiateImport } = useMutation({
-    mutationFn: async () =>
-      await axios.request({
+    mutationFn: async () => {
+      const sessionId = localStorage.getItem("sessionId");
+      return await axios.request({
         url: `http://localhost:3000/api/library/newImport`,
         method: "POST",
         data: { sessionId },
-      }),
+      });
+    },
   });
 
   const { data, isError, isLoading, refetch } = useQuery({
@@ -83,7 +86,7 @@ export const Import = (props: IProps): ReactElement => {
       socket.off("LS_IMPORT_QUEUE_DRAINED", handleQueueDrained);
       socket.off("LS_COVER_EXTRACTED", handleCoverExtracted);
     };
-  }, [getSocket, refetch]);
+  }, [getSocket, refetch, socketReconnectTrigger]);
 
   const toggleQueue = (queueAction: string, queueStatus: string) => {
     const socket = getSocket("/");
@@ -193,8 +196,26 @@ export const Import = (props: IProps): ReactElement => {
               <button
                 className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-5 py-3 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
                 onClick={() => {
-                  initiateImport();
-                  importJobQueue.setStatus("running");
+                  // Clear old sessionId when starting a new import after queue is drained
+                  if (importJobQueue.status === "drained") {
+                    localStorage.removeItem("sessionId");
+                    // Disconnect and reconnect socket to get new sessionId
+                    disconnectSocket("/");
+                    // Wait for socket to reconnect and get new sessionId before starting import
+                    setTimeout(() => {
+                      getSocket("/");
+                      // Trigger useEffect to re-attach event listeners
+                      setSocketReconnectTrigger(prev => prev + 1);
+                      // Wait a bit more for sessionInitialized event to fire
+                      setTimeout(() => {
+                        initiateImport();
+                        importJobQueue.setStatus("running");
+                      }, 500);
+                    }, 100);
+                  } else {
+                    initiateImport();
+                    importJobQueue.setStatus("running");
+                  }
                 }}
               >
                 <span className="text-md">Start Import</span>
