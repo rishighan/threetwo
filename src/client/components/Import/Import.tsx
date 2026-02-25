@@ -1,5 +1,4 @@
 import React, { ReactElement, useCallback, useEffect, useState } from "react";
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import { format } from "date-fns";
 import Loader from "react-loader-spinner";
 import { isEmpty, isNil, isUndefined } from "lodash";
@@ -55,7 +54,6 @@ export const Import = (props: IProps): ReactElement => {
         url: "http://localhost:3000/api/jobqueue/getJobResultStatistics",
         params: { _t: Date.now() }, // Cache busting
       });
-      console.log("Fetched import results:", response.data);
       return response;
     },
     refetchOnWindowFocus: false,
@@ -69,13 +67,11 @@ export const Import = (props: IProps): ReactElement => {
     
     // Listen for import queue drained event to refresh the table
     const handleQueueDrained = () => {
-      console.log("Import queue drained, refreshing table...");
       refetch();
     };
 
     // Listen for individual import completions to refresh the table
     const handleCoverExtracted = () => {
-      console.log("Cover extracted, refreshing table...");
       refetch();
     };
 
@@ -97,7 +93,6 @@ export const Import = (props: IProps): ReactElement => {
         queueAction,
         queueStatus,
       },
-      (data: any) => console.log(data),
     );
   };
   /**

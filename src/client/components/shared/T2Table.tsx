@@ -113,15 +113,15 @@ export const T2Table = (tableOptions: T2TableProps): ReactElement => {
         </div>
       </div>
 
-      <table className="table-auto w-full text-sm text-gray-900 dark:text-slate-100 border-separate border-spacing-0">
-        <thead className="sticky top-0 bg-white dark:bg-slate-900 z-10 border-b border-gray-300 dark:border-slate-700">
-          {table.getHeaderGroups().map((headerGroup) => (
+      <table className="table-auto w-full text-sm text-gray-900 dark:text-slate-100">
+        <thead className="sticky top-0 z-10 bg-white dark:bg-slate-900">
+          {table.getHeaderGroups().map((headerGroup, groupIndex) => (
             <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
+              {headerGroup.headers.map((header, index) => (
                 <th
                   key={header.id}
                   colSpan={header.colSpan}
-                  className="px-3 py-2 text-[11px] font-semibold tracking-wide uppercase text-left text-gray-500 dark:text-slate-400"
+                  className="px-3 py-2 text-[11px] font-semibold tracking-wide uppercase text-left text-gray-500 dark:text-slate-400 border-b border-gray-300 dark:border-slate-700"
                 >
                   {header.isPlaceholder
                     ? null
@@ -136,11 +136,11 @@ export const T2Table = (tableOptions: T2TableProps): ReactElement => {
         </thead>
 
         <tbody>
-          {table.getRowModel().rows.map((row) => (
+          {table.getRowModel().rows.map((row, rowIndex) => (
             <tr
               key={row.id}
               onClick={() => rowClickHandler(row)}
-              className="border-b border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
+              className="border-b border-gray-200 dark:border-slate-700 hover:bg-slate-100/30 dark:hover:bg-slate-700/20 transition-colors cursor-pointer"
             >
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id} className="px-3 py-2 align-top">

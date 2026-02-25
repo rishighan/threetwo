@@ -59,6 +59,7 @@ export const WantedComicsList = ({
                 imageUrl={url}
                 hasDetails
                 title={issueName ? titleElement : <span>No Name</span>}
+                cardState="wanted"
               >
                 <div className="pb-1">
                   <div className="flex flex-row gap-2">

@@ -5,7 +5,9 @@ import { defineConfig } from "vite";
 export default defineConfig({
   publicDir: "public",
   base: "",
-  build: "esnext",
+  build: {
+    target: "esnext",
+  },
   esbuild: {
     supported: {
       "top-level-await": true, //browsers can handle top-level-await features

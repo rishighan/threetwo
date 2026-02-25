@@ -5,7 +5,7 @@ import React from 'react';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 
 import { Card } from '../components/shared/Carda';
-import "../assets/scss/App.scss";
+import "../assets/scss/App.css";
 export default {
   /* 👇 The title prop is optional.
   * See https://storybook.js.org/docs/react/configure/overview#configure-story-loading

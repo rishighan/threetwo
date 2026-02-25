@@ -3,7 +3,7 @@ import React from 'react';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 
 import { MetadataPanel } from '../components/shared/MetadataPanel';
-import "../assets/scss/App.scss";
+import "../assets/scss/App.css";
 export default {
     /* 👇 The title prop is optional.
     * See https://storybook.js.org/docs/react/configure/overview#configure-story-loading

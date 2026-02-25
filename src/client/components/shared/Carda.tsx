@@ -10,10 +10,28 @@ interface ICardProps {
   children?: PropTypes.ReactNodeLike;
   borderColorClass?: string;
   backgroundColor?: string;
+  cardState?: "wanted" | "delete" | "scraped" | "uncompressed" | "imported";
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
-  cardContainerStyle?: PropTypes.object;
-  imageStyle?: PropTypes.object;
+  cardContainerStyle?: React.CSSProperties;
+  imageStyle?: React.CSSProperties;
 }
+
+const getCardStateClass = (cardState?: string): string => {
+  switch (cardState) {
+    case "wanted":
+      return "bg-card-wanted";
+    case "delete":
+      return "bg-card-delete";
+    case "scraped":
+      return "bg-card-scraped";
+    case "uncompressed":
+      return "bg-card-uncompressed";
+    case "imported":
+      return "bg-card-imported";
+    default:
+      return "";
+  }
+};
 
 const renderCard = (props: ICardProps): ReactElement => {
   switch (props.orientation) {
@@ -83,7 +101,7 @@ const renderCard = (props: ICardProps): ReactElement => {
 
     case "vertical-2":
       return (
-        <div className="block rounded-md max-w-64 h-fit shadow-md shadow-white-400 bg-gray-200 dark:bg-slate-500">
+        <div className={`block rounded-md max-w-64 h-fit shadow-md shadow-white-400 ${getCardStateClass(props.cardState) || "bg-gray-200 dark:bg-slate-500"}`}>
           <img
             alt="Home"
             src={props.imageUrl}
@@ -109,7 +127,7 @@ const renderCard = (props: ICardProps): ReactElement => {
     case "horizontal-small":
       return (
         <>
-          <div className="flex flex-row justify-start align-top gap-3 bg-slate-200 h-fit rounded-md shadow-md shadow-white-400">
+          <div className={`flex flex-row justify-start align-top gap-3 h-fit rounded-md shadow-md shadow-white-400 ${getCardStateClass(props.cardState) || "bg-slate-200"}`}>
             {/* thumbnail */}
             <div className="rounded-md overflow-hidden">
               <img src={props.imageUrl} className="object-cover h-20 w-20" />
@@ -125,7 +143,7 @@ const renderCard = (props: ICardProps): ReactElement => {
     case "horizontal-medium":
       return (
         <>
-          <div className="flex flex-row items-center align-top gap-3 bg-slate-200 h-fit p-2 rounded-md shadow-md shadow-white-400">
+          <div className={`flex flex-row items-center align-top gap-3 h-fit p-2 rounded-md shadow-md shadow-white-400 ${getCardStateClass(props.cardState) || "bg-slate-200"}`}>
             {/* thumbnail */}
             <div className="rounded-md overflow-hidden">
               <img src={props.imageUrl} />

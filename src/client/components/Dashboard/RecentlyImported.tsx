@@ -67,6 +67,8 @@ export const RecentlyImported = (
             const isComicVineMetadataAvailable =
               !isUndefined(comicvine) &&
               !isUndefined(comicvine.volumeInformation);
+            const hasComicInfo = !isNil(comicInfo) && !isEmpty(comicInfo);
+            const cardState = (hasComicInfo || isComicVineMetadataAvailable) ? "scraped" : "imported";
             return (
               <div
                 key={idx}
@@ -77,6 +79,7 @@ export const RecentlyImported = (
                   imageUrl={url}
                   title={inferredMetadata.issue.name}
                   hasDetails
+                  cardState={cardState}
                 >
                 <div>
                   <dd className="text-sm my-1 flex flex-row gap-1">
@@ -115,7 +118,7 @@ export const RecentlyImported = (
                     {/* ComicInfo.xml presence */}
                     {!isNil(comicInfo) && !isEmpty(comicInfo) && (
                       <div className="mt-1">
-                        <i className="h-7 w-7 icon-[solar--code-file-bold-duotone] text-yellow-500 dark:text-yellow-300"></i>
+                        <i className="h-7 w-7 icon-[solar--code-file-bold-duotone] text-gray-500 dark:text-white-300"></i>
                       </div>
                     )}
                     {/* ComicVine metadata presence */}

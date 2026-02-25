@@ -21,7 +21,6 @@ import { components } from "react-select";
 import { RootState } from "threetwo-ui-typings";
 
 import "react-sliding-pane/dist/react-sliding-pane.css";
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Loader from "react-loader-spinner";
 import SlidingPane from "react-sliding-pane";
 import Modal from "react-modal";

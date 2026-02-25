@@ -4,7 +4,7 @@ import { SOCKET_BASE_URI } from "../constants/endpoints";
 import { isNil } from "lodash";
 import { QueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.min.css";
+import "react-toastify/dist/ReactToastify.css";
 
 const queryClient = new QueryClient();
 
