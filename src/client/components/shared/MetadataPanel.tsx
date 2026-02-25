@@ -31,11 +31,11 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
     {
       name: "rawFileDetails",
       content: () => (
-        <dl className="dark:bg-card-imported bg-card-imported dark:text-slate-800 p-3 rounded-lg">
+        <dl className="dark:bg-card-imported bg-card-imported dark:text-slate-800 p-2 sm:p-3 rounded-lg">
           <dt>
-            <p className="text-lg">{issueName}</p>
+            <p className="text-sm sm:text-lg">{issueName}</p>
           </dt>
-          <dd className="text-sm">
+          <dd className="text-xs sm:text-sm">
             is a part of{" "}
             <span className="underline">
               {inferredMetadata.issue.name}
@@ -50,31 +50,31 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
                 <span className="pr-1 pt-1">
                   <i className="icon-[solar--hashtag-outline] w-3.5 h-3.5"></i>
                 </span>
-                <span className="text-md text-slate-900 dark:text-slate-900">
+                <span className="text-xs sm:text-md text-slate-900 dark:text-slate-900">
                   {inferredMetadata.issue.number}
                 </span>
               </span>
             </dd>
           )}
-          <dd className="flex flex-row gap-2 w-max">
+          <dd className="flex flex-row flex-wrap gap-1 sm:gap-2 w-full sm:w-max">
             {/* File extension */}
-            <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+            <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-1.5 sm:px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
               <span className="pr-1 pt-1">
-                <i className="icon-[solar--zip-file-bold-duotone] w-5 h-5"></i>
+                <i className="icon-[solar--zip-file-bold-duotone] w-4 h-4 sm:w-5 sm:h-5"></i>
               </span>
 
-              <span className="text-md text-slate-500 dark:text-slate-900">
+              <span className="text-xs sm:text-md text-slate-500 dark:text-slate-900">
                 {rawFileDetails.mimeType}
               </span>
             </span>
 
             {/* size */}
-            <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+            <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-1.5 sm:px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
               <span className="pr-1 pt-1">
-                <i className="icon-[solar--mirror-right-bold-duotone] w-5 h-5"></i>
+                <i className="icon-[solar--mirror-right-bold-duotone] w-4 h-4 sm:w-5 sm:h-5"></i>
               </span>
 
-              <span className="text-md text-slate-500 dark:text-slate-900">
+              <span className="text-xs sm:text-md text-slate-500 dark:text-slate-900">
                 {prettyBytes(rawFileDetails.fileSize)}
               </span>
             </span>
@@ -179,14 +179,16 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
   });
 
   return (
-    <div className="flex gap-5 my-3">
-      <Card
-        imageUrl={url}
-        orientation={"cover-only"}
-        hasDetails={false}
-        imageStyle={props.imageStyle}
-      />
-      <div>{metadataPanel.content()}</div>
+    <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 my-3">
+      <div className="w-32 sm:w-56 lg:w-52 shrink-0">
+        <Card
+          imageUrl={url}
+          orientation={"cover-only"}
+          hasDetails={false}
+          imageStyle={props.imageStyle}
+        />
+      </div>
+      <div className="flex-1">{metadataPanel.content()}</div>
     </div>
   );
 };

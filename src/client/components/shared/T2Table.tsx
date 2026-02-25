@@ -79,7 +79,7 @@ export const T2Table = (tableOptions: T2TableProps): ReactElement => {
   });
 
   return (
-    <div className="container max-w-fit mx-14">
+    <div className="container max-w-fit">
       <div>
         <div className="flex flex-row gap-2 justify-between mt-6 mb-4">
           {/* Search bar */}

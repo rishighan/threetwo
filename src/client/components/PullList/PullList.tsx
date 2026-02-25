@@ -99,7 +99,7 @@ export const PullList = (): ReactElement => {
     [],
   );
   return (
-    <section className="container">
+    <section className="container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="section">
         <div className="header-area">
           <h1 className="title">Weekly Pull List</h1>

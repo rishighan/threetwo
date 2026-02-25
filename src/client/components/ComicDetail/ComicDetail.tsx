@@ -404,7 +404,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   // 2. from the CV-scraped version
 
   return (
-    <section className="container mx-auto">
+    <section className="container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="section">
         {!isNil(data) && !isEmpty(data) && (
           <>

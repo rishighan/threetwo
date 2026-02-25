@@ -160,7 +160,7 @@ export const WantedComics = (props): ReactElement => {
     <div className="">
       <section className="">
         <header className="bg-slate-200 dark:bg-slate-500">
-          <div className="mx-auto max-w-screen-xl px-2 py-2 sm:px-6 sm:py-8 lg:px-8 lg:py-4">
+          <div className="mx-auto max-w-screen-xl px-4 py-2 sm:px-6 sm:py-8 lg:px-8 lg:py-4">
             <div className="sm:flex sm:items-center sm:justify-between">
               <div className="text-center sm:text-left">
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
@@ -175,7 +175,7 @@ export const WantedComics = (props): ReactElement => {
           </div>
         </header>
         {isSuccess && wantedComics?.data.hits?.hits ? (
-          <div>
+          <div className="mx-auto max-w-screen-xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
             <div className="library">
               <T2Table
                 sourceData={wantedComics?.data.hits.hits}

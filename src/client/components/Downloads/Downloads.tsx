@@ -57,7 +57,7 @@ export const Downloads = (props: IDownloadsProps): ReactElement => {
   }, [issueBundles]);
 
   return !isNil(bundles) ? (
-    <div className="container">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <section className="section">
         <h1 className="title">Downloads</h1>
         <div className="columns">

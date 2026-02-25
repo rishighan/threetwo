@@ -83,30 +83,30 @@ export const Library = (): ReactElement => {
 
   const ComicInfoXML = (value) => {
     return value.data ? (
-      <dl className="flex flex-col text-md p-3 ml-4 my-3 rounded-lg dark:bg-yellow-500 bg-yellow-300 w-max">
+      <dl className="flex flex-col text-xs sm:text-md p-2 sm:p-3 ml-0 sm:ml-4 my-3 rounded-lg dark:bg-yellow-500 bg-yellow-300 w-full sm:w-max max-w-full">
         {/* Series Name */}
-        <span className="inline-flex items-center w-fit bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-          <span className="pr-1 pt-1">
-            <i className="icon-[solar--bookmark-square-minimalistic-bold-duotone] w-5 h-5"></i>
+        <span className="inline-flex items-center w-fit bg-slate-50 text-slate-800 text-xs font-medium px-1.5 sm:px-2 rounded-md dark:text-slate-900 dark:bg-slate-400 max-w-full overflow-hidden">
+          <span className="pr-0.5 sm:pr-1 pt-1">
+            <i className="icon-[solar--bookmark-square-minimalistic-bold-duotone] w-4 h-4 sm:w-5 sm:h-5"></i>
           </span>
-          <span className="text-md text-slate-900 dark:text-slate-900">
-            {ellipsize(value.data.series[0], 45)}
+          <span className="text-xs sm:text-md text-slate-900 dark:text-slate-900 truncate">
+            {ellipsize(value.data.series[0], 25)}
           </span>
         </span>
-        <div className="flex flex-row mt-2 gap-2">
+        <div className="flex flex-row flex-wrap mt-1 sm:mt-2 gap-1 sm:gap-2">
           {/* Pages */}
-          <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-            <span className="pr-1 pt-1">
-              <i className="icon-[solar--notebook-minimalistic-bold-duotone] w-5 h-5"></i>
+          <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs px-1 sm:px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+            <span className="pr-0.5 sm:pr-1 pt-1">
+              <i className="icon-[solar--notebook-minimalistic-bold-duotone] w-3.5 h-3.5 sm:w-5 sm:h-5"></i>
             </span>
-            <span className="text-md text-slate-900 dark:text-slate-900">
+            <span className="text-xs sm:text-md text-slate-900 dark:text-slate-900">
               Pages: {value.data.pagecount[0]}
             </span>
           </span>
           {/* Issue number */}
-          <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-            <span className="pr-1 pt-1">
-              <i className="icon-[solar--hashtag-outline] w-3.5 h-3.5"></i>
+          <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs px-1 sm:px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+            <span className="pr-0.5 sm:pr-1 pt-1">
+              <i className="icon-[solar--hashtag-outline] w-3 h-3 sm:w-3.5 sm:h-3.5"></i>
             </span>
             <span className="text-slate-900 dark:text-slate-900">
               {!isNil(value.data.number) && (
@@ -128,7 +128,7 @@ export const Library = (): ReactElement => {
           {
             header: "File Details",
             id: "fileDetails",
-            minWidth: 400,
+            minWidth: 250,
             accessorKey: "_source",
             cell: (info) => {
               return <MetadataPanel data={info.getValue()} />;
@@ -248,7 +248,7 @@ export const Library = (): ReactElement => {
     <div>
       <section>
         <header className="bg-slate-200 dark:bg-slate-500">
-          <div className="mx-auto max-w-screen-xl px-2 py-2 sm:px-6 sm:py-8 lg:px-8 lg:py-4">
+          <div className="mx-auto max-w-screen-xl px-4 py-2 sm:px-6 sm:py-8 lg:px-8 lg:py-4">
             <div className="sm:flex sm:items-center sm:justify-between">
               <div className="text-center sm:text-left">
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
@@ -263,7 +263,7 @@ export const Library = (): ReactElement => {
           </div>
         </header>
         {!isUndefined(searchResults?.hits) ? (
-          <div>
+          <div className="mx-auto max-w-screen-xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
             <div>
               <T2Table
                 totalPages={searchResults.hits.total.value}

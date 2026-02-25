@@ -99,8 +99,7 @@ export const PullList = (): ReactElement => {
 
   return (
     <>
-      <div className="content">
-        <Header
+      <Header
           headerContent="Discover"
           subHeaderContent={
             <span className="text-md">
@@ -143,9 +142,8 @@ export const PullList = (): ReactElement => {
             />
           </div>
         </div>
-      </div>
-      {isSuccess && !isLoading && (
-        <div className="overflow-hidden -mr-4 sm:-mr-8 lg:-mr-16 xl:-mr-20 2xl:-mr-24">
+      <div className="overflow-hidden mt-3 -mx-4 sm:-mx-8 lg:-mx-16 xl:-mx-20 2xl:-mx-24 pl-4 sm:pl-8 lg:pl-16 xl:pl-20 2xl:pl-24">
+        {isSuccess && !isLoading && (
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex">
               {map(pullList?.data.result, (issue, idx) => {
@@ -180,12 +178,10 @@ export const PullList = (): ReactElement => {
               })}
             </div>
           </div>
-        </div>
-      )}
-      {isLoading ? <div>Loading...</div> : null}
-      {isError ? (
-        <div>An error occurred while retrieving the pull list.</div>
-      ) : null}
+        )}
+        {isLoading && <div>Loading...</div>}
+        {isError && <div>An error occurred while retrieving the pull list.</div>}
+      </div>
     </>
   );
 };

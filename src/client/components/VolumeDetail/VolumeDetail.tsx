@@ -266,7 +266,7 @@ const VolumeDetails = (props): ReactElement => {
     return (
       <>
         <header className="bg-slate-200 dark:bg-slate-500">
-          <div className="mx-auto max-w-screen-xl px-2 py-2 sm:px-6 sm:py-8 lg:px-8 lg:py-4">
+          <div className="mx-auto max-w-screen-xl px-4 py-2 sm:px-6 sm:py-8 lg:px-8 lg:py-4">
             <div className="sm:flex sm:items-center sm:justify-between">
               <div className="text-center sm:text-left">
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
@@ -280,7 +280,7 @@ const VolumeDetails = (props): ReactElement => {
             </div>
           </div>
         </header>
-        <div className="container mx-auto mt-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-4">
           <div>
             <div className="flex flex-row gap-4">
               {/* Volume cover */}
