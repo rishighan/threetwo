@@ -4,8 +4,8 @@ import React, { ReactElement } from "react";
 export const ComicInfoXML = (data: { json: any }): ReactElement => {
   const { json } = data;
   return (
-    <div className="flex md:w-4/5 lg:w-78">
-      <dl className="dark:bg-yellow-600 bg-yellow-200 p-3 rounded-lg">
+    <div className="flex w-3/4">
+      <dl className="dark:bg-yellow-600 bg-yellow-200 p-3 rounded-lg w-full">
         <dt>
           <p className="text-lg">{json.series?.[0]}</p>
         </dt>
