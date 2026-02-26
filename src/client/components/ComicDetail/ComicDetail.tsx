@@ -1,34 +1,23 @@
 import React, { useState, ReactElement, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import Card from "../shared/Carda";
-import { ComicVineMatchPanel } from "./ComicVineMatchPanel";
-
 import { RawFileDetails } from "./RawFileDetails";
-import { ComicVineSearchForm } from "./ComicVineSearchForm";
-
 import TabControls from "./TabControls";
-import { EditMetadataPanel } from "./EditMetadataPanel";
 import { Menu } from "./ActionMenu/Menu";
-import { ArchiveOperations } from "./Tabs/ArchiveOperations";
-import { ComicInfoXML } from "./Tabs/ComicInfoXML";
-import AcquisitionPanel from "./AcquisitionPanel";
-import TorrentSearchPanel from "./TorrentSearchPanel";
-import DownloadsPanel from "./DownloadsPanel";
-import { VolumeInformation } from "./Tabs/VolumeInformation";
-
 import { isEmpty, isUndefined, isNil, filter } from "lodash";
-import { components, PlaceholderProps, GroupBase, StylesConfig } from "react-select";
-
+import { components } from "react-select";
 import "react-sliding-pane/dist/react-sliding-pane.css";
 import SlidingPane from "react-sliding-pane";
-
 import { determineCoverFile } from "../../shared/utils/metadata.utils";
-import axios from "axios";
 import { styled } from "styled-components";
-import { COMICVINE_SERVICE_URI } from "../../constants/endpoints";
-import { refineQuery } from "filename-parser";
 
-// overridden <SlidingPanel> with some styles - moved outside component to prevent recreation
+// Extracted modules
+import { useComicVineMatching } from "./useComicVineMatching";
+import { createTabConfig } from "./tabConfig";
+import { actionOptions, customStyles, ActionOption } from "./actionMenuConfig";
+import { CVMatchesPanel, EditMetadataPanelWrapper } from "./SlidingPanelContent";
+
+// Styled component - moved outside to prevent recreation
 const StyledSlidingPanel = styled(SlidingPane)`
   background: #ccc;
 `;
@@ -89,29 +78,6 @@ interface ComicDetailProps {
   comicObjectId?: string;
 }
 
-interface ComicVineSearchQuery {
-  inferredIssueDetails: {
-    name: string;
-    [key: string]: any;
-  };
-  [key: string]: any;
-}
-
-interface ComicVineMatch {
-  score: number;
-  [key: string]: any;
-}
-
-interface ActionOption {
-  value: string;
-  label: React.ReactElement;
-}
-
-interface ContentForSlidingPanel {
-  [key: string]: {
-    content: (props?: any) => React.ReactElement;
-  };
-}
 /**
  * Component for displaying the metadata for a comic in greater detail.
  *
@@ -121,7 +87,6 @@ interface ContentForSlidingPanel {
  *   <ComicDetail/>
  * )
  */
-
 export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   const {
     data: {
@@ -137,32 +102,21 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     queryClient,
     comicObjectId: comicObjectIdProp,
   } = data;
+
   const [activeTab, setActiveTab] = useState<number | undefined>(undefined);
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
   const [modalIsOpen, setIsOpen] = useState(false);
-  const [comicVineMatches, setComicVineMatches] = useState<ComicVineMatch[]>([]);
 
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
+  const { comicVineMatches, prepareAndFetchMatches } = useComicVineMatching();
 
-  // const dispatch = useDispatch();
-
+  // Modal handlers (currently unused but kept for future use)
   const openModal = useCallback((filePath: string) => {
     setIsOpen(true);
-    // dispatch(
-    //   extractComicArchive(filePath, {
-    //     type: "full",
-    //     purpose: "reading",
-    //     imageResizeOptions: {
-    //       baseWidth: 1024,
-    //     },
-    //   }),
-    // );
   }, []);
 
   const afterOpenModal = useCallback((things: any) => {
-    // references are now sync'd and can be accessed.
-    // subtitle.style.color = "#f00";
     console.log("kolaveri", things);
   }, []);
 
@@ -170,99 +124,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     setIsOpen(false);
   }, []);
 
-  // sliding panel init
-  const contentForSlidingPanel: ContentForSlidingPanel = {
-    CVMatches: {
-      content: (props?: any) => (
-        <>
-          <div>
-            <ComicVineSearchForm data={rawFileDetails} />
-          </div>
-
-          <div className="border-slate-500 border rounded-lg p-2 mt-3">
-            <p className="">Searching for:</p>
-            {inferredMetadata.issue ? (
-              <>
-                <span className="">{inferredMetadata.issue?.name} </span>
-                <span className=""> # {inferredMetadata.issue?.number} </span>
-              </>
-            ) : null}
-          </div>
-          <ComicVineMatchPanel
-            props={{
-              comicVineMatches,
-              comicObjectId,
-              queryClient,
-              onMatchApplied: () => {
-                setVisible(false);
-                setActiveTab(1); // Switch to Volume Information tab (id: 1)
-              },
-            }}
-          />
-        </>
-      ),
-    },
-
-    editComicBookMetadata: {
-      content: () => <EditMetadataPanel data={rawFileDetails} />,
-    },
-  };
-
-  // Actions
-
-  const fetchComicVineMatches = async (
-    searchPayload: any,
-    issueSearchQuery: ComicVineSearchQuery,
-    seriesSearchQuery: ComicVineSearchQuery,
-  ) => {
-    try {
-      const response = await axios({
-        url: `${COMICVINE_SERVICE_URI}/volumeBasedSearch`,
-        method: "POST",
-        data: {
-          format: "json",
-          // hack
-          query: issueSearchQuery.inferredIssueDetails.name
-            .replace(/[^a-zA-Z0-9 ]/g, "")
-            .trim(),
-          limit: "100",
-          page: 1,
-          resources: "volume",
-          scorerConfiguration: {
-            searchParams: issueSearchQuery.inferredIssueDetails,
-          },
-          rawFileDetails: searchPayload,
-        },
-        transformResponse: (r) => {
-          const matches = JSON.parse(r);
-          return matches;
-          // return sortBy(matches, (match) => -match.score);
-        },
-      });
-      let matches: ComicVineMatch[] = [];
-      if (!isNil(response.data.results) && response.data.results.length === 1) {
-        matches = response.data.results;
-      } else {
-        matches = response.data.map((match: ComicVineMatch) => match);
-      }
-      const scoredMatches = matches.sort((a: ComicVineMatch, b: ComicVineMatch) => b.score - a.score);
-      setComicVineMatches(scoredMatches);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   // Action event handlers
   const openDrawerWithCVMatches = () => {
-    let seriesSearchQuery: ComicVineSearchQuery = {} as ComicVineSearchQuery;
-    let issueSearchQuery: ComicVineSearchQuery = {} as ComicVineSearchQuery;
-
-    if (!isUndefined(rawFileDetails)) {
-      issueSearchQuery = refineQuery(rawFileDetails.name) as ComicVineSearchQuery;
-    } else if (!isEmpty(comicvine) && comicvine?.name) {
-      issueSearchQuery = refineQuery(comicvine.name) as ComicVineSearchQuery;
-    }
-    fetchComicVineMatches(rawFileDetails, issueSearchQuery, seriesSearchQuery);
+    prepareAndFetchMatches(rawFileDetails, comicvine);
     setSlidingPanelContentId("CVMatches");
     setVisible(true);
   };
@@ -272,44 +136,15 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     setVisible(true);
   }, []);
 
-  //  Actions menu options and handler
-  const CVMatchLabel = (
-    <span className="inline-flex flex-row items-center gap-2">
-      <div className="w-6 h-6">
-        <i className="icon-[solar--magic-stick-3-bold-duotone] w-6 h-6"></i>
-      </div>
-      <div>Match on ComicVine</div>
-    </span>
-  );
-  const editLabel = (
-    <span className="inline-flex flex-row items-center gap-2">
-      <div className="w-6 h-6">
-        <i className="icon-[solar--pen-2-bold-duotone] w-6 h-6"></i>
-      </div>
-      <div>Edit Metadata</div>
-    </span>
-  );
-  const deleteLabel = (
-    <span className="inline-flex flex-row items-center gap-2">
-      <div className="w-6 h-6">
-        <i className="icon-[solar--trash-bin-trash-bold-duotone] w-6 h-6"></i>
-      </div>
-      <div>Delete Comic</div>
-    </span>
-  );
+  // Action menu handler
   const Placeholder = components.Placeholder;
-  const actionOptions = [
-    { value: "match-on-comic-vine", label: CVMatchLabel },
-    { value: "edit-metdata", label: editLabel },
-    { value: "delete-comic", label: deleteLabel },
-  ];
-
   const filteredActionOptions = filter(actionOptions, (item) => {
     if (isUndefined(rawFileDetails)) {
       return item.value !== "match-on-comic-vine";
     }
     return item;
   });
+
   const handleActionSelection = (action: ActionOption) => {
     switch (action.value) {
       case "match-on-comic-vine":
@@ -323,36 +158,11 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
         break;
     }
   };
-  const customStyles: StylesConfig<ActionOption, false> = {
-    menu: (base: any) => ({
-      ...base,
-      backgroundColor: "rgb(156, 163, 175)",
-    }),
-    placeholder: (base: any) => ({
-      ...base,
-      color: "black",
-    }),
-    option: (base: any, { isFocused }: any) => ({
-      ...base,
-      backgroundColor: isFocused ? "gray" : "rgb(156, 163, 175)",
-    }),
-    singleValue: (base: any) => ({
-      ...base,
-      paddingTop: "0.4rem",
-    }),
-    control: (base: any) => ({
-      ...base,
-      backgroundColor: "rgb(156, 163, 175)",
-      color: "black",
-      border: "1px solid rgb(156, 163, 175)",
-    }),
-  };
 
-  // check for the availability of CV metadata
+  // Check for metadata availability
   const isComicBookMetadataAvailable =
     !isUndefined(comicvine) && !isUndefined(comicvine?.volumeInformation);
 
-  // check for the availability of rawFileDetails
   const areRawFileDetailsAvailable =
     !isUndefined(rawFileDetails) && !isEmpty(rawFileDetails);
 
@@ -362,107 +172,51 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     locg,
   });
 
-  // query for airdc++
+  // Query for airdc++
   const airDCPPQuery = {
     issue: {
       name: issueName,
     },
   };
 
-  // Tab content and header details
-  const tabGroup = [
-    {
-      id: 1,
-      name: "Volume Information",
-      icon: (
-        <i className="h-5 w-5 icon-[solar--book-2-bold] text-slate-500 dark:text-slate-300"></i>
-      ),
-      content: isComicBookMetadataAvailable ? (
-        <VolumeInformation data={data.data} key={1} />
-      ) : null,
-      shouldShow: isComicBookMetadataAvailable,
-    },
-    {
-      id: 2,
-      name: "ComicInfo.xml",
-      icon: (
-        <i className="h-5 w-5 icon-[solar--code-file-bold-duotone] text-slate-500 dark:text-slate-300" />
-      ),
-      content: (
-        <div key={2}>
-          {!isNil(comicInfo) && <ComicInfoXML json={comicInfo} />}
-        </div>
-      ),
-      shouldShow: !isEmpty(comicInfo),
-    },
-    {
-      id: 3,
-      icon: (
-        <i className="h-5 w-5 icon-[solar--winrar-bold-duotone] text-slate-500 dark:text-slate-300" />
-      ),
-      name: "Archive Operations",
-      content: <ArchiveOperations data={data.data} key={3} />,
-      shouldShow: areRawFileDetailsAvailable,
-    },
-    {
-      id: 4,
-      icon: (
-        <i className="h-5 w-5 icon-[solar--folder-path-connect-bold-duotone] text-slate-500 dark:text-slate-300" />
-      ),
-      name: "DC++ Search",
-      content: (
-        <AcquisitionPanel
-          query={airDCPPQuery}
-          comicObjectId={_id}
-          comicObject={data.data}
-          settings={userSettings}
-          key={4}
-        />
-      ),
-      shouldShow: true,
-    },
-    {
-      id: 5,
-      icon: (
-        <span className="inline-flex flex-row">
-          <i className="h-5 w-5 icon-[solar--magnet-bold-duotone] text-slate-500 dark:text-slate-300" />
-        </span>
-      ),
-      name: "Torrent Search",
-      content: <TorrentSearchPanel comicObjectId={_id} issueName={issueName} />,
-      shouldShow: true,
-    },
-    {
-      id: 6,
-      name: "Downloads",
-      icon: (
-        <>
-          {(acquisition?.directconnect?.downloads?.length || 0) +
-            (acquisition?.torrent?.length || 0)}
-        </>
-      ),
-      content:
-        !isNil(data.data) && !isEmpty(data.data) ? (
-          <DownloadsPanel key={5} />
-        ) : (
-          <div className="column is-three-fifths">
-            <article className="message is-info">
-              <div className="message-body is-size-6 is-family-secondary">
-                AirDC++ is not configured. Please configure it in{" "}
-                <code>Settings</code>.
-              </div>
-            </article>
-          </div>
-        ),
-      shouldShow: true,
-    },
-  ];
-  // filtered Tabs
+  // Create tab configuration
+  const tabGroup = createTabConfig({
+    data: data.data,
+    comicInfo,
+    isComicBookMetadataAvailable,
+    areRawFileDetailsAvailable,
+    airDCPPQuery,
+    comicObjectId: _id,
+    userSettings,
+    issueName,
+    acquisition,
+  });
+
   const filteredTabs = tabGroup.filter((tab) => tab.shouldShow);
 
-  // Determine which cover image to use:
-  // 1. from the locally imported or
-  // 2. from the CV-scraped version
+  // Sliding panel content mapping
+  const renderSlidingPanelContent = () => {
+    switch (slidingPanelContentId) {
+      case "CVMatches":
+        return (
+          <CVMatchesPanel
+            rawFileDetails={rawFileDetails}
+            inferredMetadata={inferredMetadata}
+            comicVineMatches={comicVineMatches}
+            comicObjectId={comicObjectId || _id}
+            queryClient={queryClient}
+            onMatchApplied={() => {
+              setVisible(false);
+              setActiveTab(1);
+            }}
+          />
+        );
+      case "editComicBookMetadata":
+        return <EditMetadataPanelWrapper rawFileDetails={rawFileDetails} />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <section className="mx-auto max-w-screen-xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
@@ -503,25 +257,6 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                           />
                         </div>
                       </RawFileDetails>
-
-                      {/* <Modal
-                      style={{ content: { marginTop: "2rem" } }}
-                      isOpen={modalIsOpen}
-                      onAfterOpen={afterOpenModal}
-                      onRequestClose={closeModal}
-                      contentLabel="Example Modal"
-                    >
-                      <button onClick={closeModal}>close</button>
-                      {extractedComicBook && (
-                        <ComicViewer
-                          pages={extractedComicBook}
-                          direction="ltr"
-                          className={{
-                            closeButton: "border: 1px solid red;",
-                          }}
-                        />
-                      )}
-                    </Modal> */}
                     </div>
                   )}
               </div>
@@ -540,8 +275,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
               title={"Comic Vine Search Matches"}
               width={"600px"}
             >
-              {slidingPanelContentId !== "" &&
-                contentForSlidingPanel[slidingPanelContentId]?.content()}
+              {renderSlidingPanelContent()}
             </StyledSlidingPanel>
           </>
         )}
