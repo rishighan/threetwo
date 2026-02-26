@@ -85,6 +85,8 @@ interface ComicDetailProps {
     updatedAt: string;
   };
   userSettings?: any;
+  queryClient?: any;
+  comicObjectId?: string;
 }
 
 interface ComicVineSearchQuery {
@@ -132,8 +134,10 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
       updatedAt,
     },
     userSettings,
+    queryClient,
+    comicObjectId: comicObjectIdProp,
   } = data;
-  const [page, setPage] = useState(1);
+  const [activeTab, setActiveTab] = useState<number | undefined>(undefined);
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
   const [modalIsOpen, setIsOpen] = useState(false);
@@ -188,6 +192,11 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
             props={{
               comicVineMatches,
               comicObjectId,
+              queryClient,
+              onMatchApplied: () => {
+                setVisible(false);
+                setActiveTab(1); // Switch to Volume Information tab (id: 1)
+              },
             }}
           />
         </>
@@ -521,6 +530,8 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
             <TabControls
               filteredTabs={filteredTabs}
               downloadCount={acquisition?.directconnect?.downloads?.length || 0}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
             />
 
             <StyledSlidingPanel

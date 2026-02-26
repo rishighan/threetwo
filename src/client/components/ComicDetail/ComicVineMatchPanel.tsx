@@ -6,7 +6,7 @@ import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
 
 export const ComicVineMatchPanel = (comicVineData): ReactElement => {
-  const { comicObjectId, comicVineMatches } = comicVineData.props;
+  const { comicObjectId, comicVineMatches, queryClient, onMatchApplied } = comicVineData.props;
   const { comicvine } = useStore(
     useShallow((state) => ({
       comicvine: state.comicvine,
@@ -19,6 +19,8 @@ export const ComicVineMatchPanel = (comicVineData): ReactElement => {
           <MatchResult
             matchData={comicVineMatches}
             comicObjectId={comicObjectId}
+            queryClient={queryClient}
+            onMatchApplied={onMatchApplied}
           />
         ) : (
           <>

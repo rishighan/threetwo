@@ -2,8 +2,12 @@ import React, { ReactElement, useState } from "react";
 import { isNil } from "lodash";
 
 export const TabControls = (props): ReactElement => {
-  const { filteredTabs, downloadCount } = props;
+  const { filteredTabs, downloadCount, activeTab, setActiveTab } = props;
   const [active, setActive] = useState(filteredTabs[0].id);
+  
+  // Use controlled state if provided, otherwise use internal state
+  const currentActive = activeTab !== undefined ? activeTab : active;
+  const handleSetActive = activeTab !== undefined ? setActiveTab : setActive;
 
   return (
     <>
@@ -14,12 +18,12 @@ export const TabControls = (props): ReactElement => {
               <a
                 key={id}
                 className={`inline-flex shrink-0 items-center gap-2 px-1 py-1 text-md font-medium text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:border-b hover:dark:text-slate-200 ${
-                  active === id
+                  currentActive === id
                     ? "border-b border-cyan-50 dark:text-slate-200"
                     : "border-b border-transparent"
                 }`}
                 aria-current="page"
-                onClick={() => setActive(id)}
+                onClick={() => handleSetActive(id)}
               >
                 {/* Downloads tab and count badge */}
                 <>
@@ -44,7 +48,7 @@ export const TabControls = (props): ReactElement => {
         </div>
       </div>
       {filteredTabs.map(({ id, content }) => {
-        return active === id ? content : null;
+        return currentActive === id ? content : null;
       })}
     </>
   );

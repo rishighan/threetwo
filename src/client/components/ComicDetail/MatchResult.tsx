@@ -8,6 +8,8 @@ import axios from "axios";
 interface MatchResultProps {
   matchData: any;
   comicObjectId: string;
+  queryClient?: any;
+  onMatchApplied?: () => void;
 }
 
 const handleBrokenImage = (e) => {
@@ -16,14 +18,33 @@ const handleBrokenImage = (e) => {
 
 export const MatchResult = (props: MatchResultProps) => {
   const applyCVMatch = async (match, comicObjectId) => {
-    return await axios.request({
-      url: `${LIBRARY_SERVICE_BASE_URI}/applyComicVineMetadata`,
-      method: "POST",
-      data: {
-        match,
-        comicObjectId,
-      },
-    });
+    try {
+      const response = await axios.request({
+        url: `${LIBRARY_SERVICE_BASE_URI}/applyComicVineMetadata`,
+        method: "POST",
+        data: {
+          match,
+          comicObjectId,
+        },
+      });
+      
+      // Invalidate and refetch the comic book metadata
+      if (props.queryClient) {
+        await props.queryClient.invalidateQueries({
+          queryKey: ["comicBookMetadata", comicObjectId],
+        });
+      }
+      
+      // Call the callback to close panel and switch tabs
+      if (props.onMatchApplied) {
+        props.onMatchApplied();
+      }
+      
+      return response;
+    } catch (error) {
+      console.error("Error applying ComicVine match:", error);
+      throw error;
+    }
   };
   return (
     <>
