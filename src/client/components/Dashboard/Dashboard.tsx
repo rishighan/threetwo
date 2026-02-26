@@ -67,16 +67,19 @@ export const Dashboard = (): ReactElement => {
   });
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-      <PullList />
-      {recentComics && <RecentlyImported comics={recentComics?.data.docs} />}
-      {/* Wanted comics */}
-      <WantedComicsList comics={wantedComics?.data?.docs} />
-      {/* Library Statistics */}
-      {statistics && <LibraryStatistics stats={statistics?.data} />}
-      {/* Volume groups */}
-      <VolumeGroups volumeGroups={volumeGroups?.data} />
-    </div>
+    <>
+      
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <PullList />
+        {recentComics && <RecentlyImported comics={recentComics?.data.docs} />}
+        {/* Wanted comics */}
+        <WantedComicsList comics={wantedComics?.data?.docs} />
+        {/* Library Statistics */}
+        {statistics && <LibraryStatistics stats={statistics?.data} />}
+        {/* Volume groups */}
+        <VolumeGroups volumeGroups={volumeGroups?.data} />
+      </div>
+    </>
   );
 };
 
