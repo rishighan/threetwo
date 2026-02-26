@@ -142,7 +142,7 @@ export const PullList = (): ReactElement => {
             />
           </div>
         </div>
-      <div className="w-lvw -mr-4 sm:-mr-6 lg:-mr-8 mt-3">
+      <div className="w-lvw -mr-4 sm:-mr-6 lg:-mr-8">
         {isSuccess && !isLoading && (
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex">

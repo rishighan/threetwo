@@ -36,7 +36,7 @@ export const RecentlyImported = (
         subHeaderContent="Recent Library activity such as imports, tagging, etc."
         iconClassNames="fa-solid fa-binoculars mr-2"
       />
-      <div className="overflow-hidden -mr-4 sm:-mr-8 lg:-mr-16 xl:-mr-20 2xl:-mr-24 mt-3">
+      <div className="-mr-10 sm:-mr-17 lg:-mr-29 xl:-mr-36 2xl:-mr-42 mt-3">
         <div className="overflow-hidden" ref={emblaRef}>
           <div className="flex">
             {comics?.comics.map(
