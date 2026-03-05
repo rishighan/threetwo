@@ -278,23 +278,9 @@ export type InferredMetadataInput = {
 
 export type Issue = {
   __typename?: 'Issue';
-  api_detail_url?: Maybe<Scalars['String']['output']>;
-  character_credits?: Maybe<Array<CharacterCredit>>;
-  cover_date?: Maybe<Scalars['String']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  id: Scalars['Int']['output'];
-  image?: Maybe<ImageUrls>;
-  issue_number?: Maybe<Scalars['String']['output']>;
-  location_credits?: Maybe<Array<LocationCredit>>;
   name?: Maybe<Scalars['String']['output']>;
   number?: Maybe<Scalars['Int']['output']>;
-  person_credits?: Maybe<Array<PersonCredit>>;
-  site_detail_url?: Maybe<Scalars['String']['output']>;
-  store_date?: Maybe<Scalars['String']['output']>;
-  story_arc_credits?: Maybe<Array<StoryArcCredit>>;
   subtitle?: Maybe<Scalars['String']['output']>;
-  team_credits?: Maybe<Array<TeamCredit>>;
-  volume?: Maybe<Volume>;
   year?: Maybe<Scalars['String']['output']>;
 };
 
@@ -534,9 +520,10 @@ export type PullListItem = {
   __typename?: 'PullListItem';
   cover?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
-  name: Scalars['String']['output'];
+  name?: Maybe<Scalars['String']['output']>;
   potw?: Maybe<Scalars['Int']['output']>;
   price?: Maybe<Scalars['String']['output']>;
+  publicationDate?: Maybe<Scalars['String']['output']>;
   publisher?: Maybe<Scalars['String']['output']>;
   pulls?: Maybe<Scalars['Int']['output']>;
   rating?: Maybe<Scalars['Float']['output']>;
@@ -1009,7 +996,7 @@ export type GetWeeklyPullListQueryVariables = Exact<{
 }>;
 
 
-export type GetWeeklyPullListQuery = { __typename?: 'Query', getWeeklyPullList: { __typename?: 'PullListResponse', result: Array<{ __typename?: 'PullListItem', name: string, publisher?: string | null, cover?: string | null }> } };
+export type GetWeeklyPullListQuery = { __typename?: 'Query', getWeeklyPullList: { __typename?: 'PullListResponse', result: Array<{ __typename?: 'PullListItem', name?: string | null, publisher?: string | null, cover?: string | null }> } };
 
 export type GetLibraryComicsQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;

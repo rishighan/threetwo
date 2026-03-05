@@ -307,7 +307,7 @@ export const Import = (props: IProps): ReactElement => {
                           <td className="whitespace-nowrap px-2 py-2 text-gray-700 dark:text-slate-300">
                             {format(
                               new Date(jobResult.earliestTimestamp),
-                              "EEEE, hh:mma, do LLLL Y",
+                              "EEEE, hh:mma, do LLLL y",
                             )}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-gray-700 dark:text-slate-300">
