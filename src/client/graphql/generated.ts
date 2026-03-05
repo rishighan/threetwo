@@ -1,4 +1,4 @@
-import { useQuery, useInfiniteQuery, UseQueryOptions, UseInfiniteQueryOptions, InfiniteData } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery, useMutation, UseQueryOptions, UseInfiniteQueryOptions, InfiniteData, UseMutationOptions } from '@tanstack/react-query';
 import { fetcher } from './fetcher';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -260,11 +260,48 @@ export type ImportComicResult = {
   success: Scalars['Boolean']['output'];
 };
 
+export type ImportJobResult = {
+  __typename?: 'ImportJobResult';
+  jobsQueued: Scalars['Int']['output'];
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
+export type ImportStatistics = {
+  __typename?: 'ImportStatistics';
+  directory: Scalars['String']['output'];
+  stats: ImportStats;
+  success: Scalars['Boolean']['output'];
+};
+
+export type ImportStats = {
+  __typename?: 'ImportStats';
+  alreadyImported: Scalars['Int']['output'];
+  newFiles: Scalars['Int']['output'];
+  percentageImported: Scalars['String']['output'];
+  totalLocalFiles: Scalars['Int']['output'];
+};
+
 export type ImportStatus = {
   __typename?: 'ImportStatus';
   isImported?: Maybe<Scalars['Boolean']['output']>;
   matchedResult?: Maybe<MatchedResult>;
   tagged?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export type IncrementalImportResult = {
+  __typename?: 'IncrementalImportResult';
+  message: Scalars['String']['output'];
+  stats: IncrementalImportStats;
+  success: Scalars['Boolean']['output'];
+};
+
+export type IncrementalImportStats = {
+  __typename?: 'IncrementalImportStats';
+  alreadyImported: Scalars['Int']['output'];
+  newFiles: Scalars['Int']['output'];
+  queued: Scalars['Int']['output'];
+  total: Scalars['Int']['output'];
 };
 
 export type InferredMetadata = {
@@ -278,9 +315,23 @@ export type InferredMetadataInput = {
 
 export type Issue = {
   __typename?: 'Issue';
+  api_detail_url?: Maybe<Scalars['String']['output']>;
+  character_credits?: Maybe<Array<CharacterCredit>>;
+  cover_date?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  image?: Maybe<ImageUrls>;
+  issue_number?: Maybe<Scalars['String']['output']>;
+  location_credits?: Maybe<Array<LocationCredit>>;
   name?: Maybe<Scalars['String']['output']>;
   number?: Maybe<Scalars['Int']['output']>;
+  person_credits?: Maybe<Array<PersonCredit>>;
+  site_detail_url?: Maybe<Scalars['String']['output']>;
+  store_date?: Maybe<Scalars['String']['output']>;
+  story_arc_credits?: Maybe<Array<StoryArcCredit>>;
   subtitle?: Maybe<Scalars['String']['output']>;
+  team_credits?: Maybe<Array<TeamCredit>>;
+  volume?: Maybe<Volume>;
   year?: Maybe<Scalars['String']['output']>;
 };
 
@@ -306,6 +357,14 @@ export type IssuesForSeriesResponse = {
   offset: Scalars['Int']['output'];
   results: Array<Issue>;
   status_code: Scalars['Int']['output'];
+};
+
+export type JobResultStatistics = {
+  __typename?: 'JobResultStatistics';
+  completedJobs: Scalars['Int']['output'];
+  earliestTimestamp: Scalars['String']['output'];
+  failedJobs: Scalars['Int']['output'];
+  sessionId: Scalars['String']['output'];
 };
 
 export type LocgMetadata = {
@@ -375,6 +434,36 @@ export type MetadataField = {
   value?: Maybe<Scalars['String']['output']>;
 };
 
+export type MetadataPaginationMeta = {
+  __typename?: 'MetadataPaginationMeta';
+  currentPage: Scalars['Int']['output'];
+  hasNextPage: Scalars['Boolean']['output'];
+  hasPreviousPage: Scalars['Boolean']['output'];
+  pageSize: Scalars['Int']['output'];
+  totalCount: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
+};
+
+export type MetadataPullListItem = {
+  __typename?: 'MetadataPullListItem';
+  cover?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  potw?: Maybe<Scalars['Int']['output']>;
+  price?: Maybe<Scalars['String']['output']>;
+  publicationDate?: Maybe<Scalars['String']['output']>;
+  publisher?: Maybe<Scalars['String']['output']>;
+  pulls?: Maybe<Scalars['Int']['output']>;
+  rating?: Maybe<Scalars['Float']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+export type MetadataPullListResponse = {
+  __typename?: 'MetadataPullListResponse';
+  meta: MetadataPaginationMeta;
+  result: Array<MetadataPullListItem>;
+};
+
 export enum MetadataSource {
   ComicinfoXml = 'COMICINFO_XML',
   Comicvine = 'COMICVINE',
@@ -406,6 +495,8 @@ export type Mutation = {
   removeMetadataOverride: Comic;
   resolveMetadata: Comic;
   setMetadataField: Comic;
+  startIncrementalImport: IncrementalImportResult;
+  startNewImport: ImportJobResult;
   updateSourcedMetadata: Comic;
   updateUserPreferences: UserPreferences;
 };
@@ -445,6 +536,17 @@ export type MutationSetMetadataFieldArgs = {
 };
 
 
+export type MutationStartIncrementalImportArgs = {
+  directoryPath?: InputMaybe<Scalars['String']['input']>;
+  sessionId: Scalars['String']['input'];
+};
+
+
+export type MutationStartNewImportArgs = {
+  sessionId: Scalars['String']['input'];
+};
+
+
 export type MutationUpdateSourcedMetadataArgs = {
   comicId: Scalars['ID']['input'];
   metadata: Scalars['String']['input'];
@@ -462,16 +564,6 @@ export type PageInfo = {
   currentPage: Scalars['Int']['output'];
   hasNextPage: Scalars['Boolean']['output'];
   hasPreviousPage: Scalars['Boolean']['output'];
-  totalPages: Scalars['Int']['output'];
-};
-
-export type PaginationMeta = {
-  __typename?: 'PaginationMeta';
-  currentPage: Scalars['Int']['output'];
-  hasNextPage: Scalars['Boolean']['output'];
-  hasPreviousPage: Scalars['Boolean']['output'];
-  pageSize: Scalars['Int']['output'];
-  totalCount: Scalars['Int']['output'];
   totalPages: Scalars['Int']['output'];
 };
 
@@ -516,26 +608,6 @@ export type PublisherStats = {
   id: Scalars['String']['output'];
 };
 
-export type PullListItem = {
-  __typename?: 'PullListItem';
-  cover?: Maybe<Scalars['String']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  potw?: Maybe<Scalars['Int']['output']>;
-  price?: Maybe<Scalars['String']['output']>;
-  publicationDate?: Maybe<Scalars['String']['output']>;
-  publisher?: Maybe<Scalars['String']['output']>;
-  pulls?: Maybe<Scalars['Int']['output']>;
-  rating?: Maybe<Scalars['Float']['output']>;
-  url?: Maybe<Scalars['String']['output']>;
-};
-
-export type PullListResponse = {
-  __typename?: 'PullListResponse';
-  meta: PaginationMeta;
-  result: Array<PullListItem>;
-};
-
 export type Query = {
   __typename?: 'Query';
   analyzeMetadataConflicts: Array<MetadataConflict>;
@@ -547,15 +619,17 @@ export type Query = {
   getComicBooks: ComicBooksResult;
   /** Get generic ComicVine resource (issues, volumes, etc.) */
   getComicVineResource: ComicVineResourceResponse;
+  getImportStatistics: ImportStatistics;
   /** Get all issues for a series by comic object ID */
   getIssuesForSeries: IssuesForSeriesResponse;
+  getJobResultStatistics: Array<JobResultStatistics>;
   getLibraryStatistics: LibraryStatistics;
   /** Get story arcs for a volume */
   getStoryArcs: Array<StoryArc>;
   /** Get volume details by URI */
   getVolume: VolumeDetailResponse;
   /** Get weekly pull list from League of Comic Geeks */
-  getWeeklyPullList: PullListResponse;
+  getWeeklyPullList: MetadataPullListResponse;
   previewCanonicalMetadata?: Maybe<CanonicalMetadata>;
   /** Search ComicVine for volumes, issues, characters, etc. */
   searchComicVine: ComicVineSearchResult;
@@ -598,6 +672,11 @@ export type QueryGetComicBooksArgs = {
 
 export type QueryGetComicVineResourceArgs = {
   input: GetResourceInput;
+};
+
+
+export type QueryGetImportStatisticsArgs = {
+  directoryPath?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -996,7 +1075,34 @@ export type GetWeeklyPullListQueryVariables = Exact<{
 }>;
 
 
-export type GetWeeklyPullListQuery = { __typename?: 'Query', getWeeklyPullList: { __typename?: 'PullListResponse', result: Array<{ __typename?: 'PullListItem', name?: string | null, publisher?: string | null, cover?: string | null }> } };
+export type GetWeeklyPullListQuery = { __typename?: 'Query', getWeeklyPullList: { __typename?: 'MetadataPullListResponse', result: Array<{ __typename?: 'MetadataPullListItem', name?: string | null, publisher?: string | null, cover?: string | null }> } };
+
+export type GetImportStatisticsQueryVariables = Exact<{
+  directoryPath?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GetImportStatisticsQuery = { __typename?: 'Query', getImportStatistics: { __typename?: 'ImportStatistics', success: boolean, directory: string, stats: { __typename?: 'ImportStats', totalLocalFiles: number, alreadyImported: number, newFiles: number, percentageImported: string } } };
+
+export type StartNewImportMutationVariables = Exact<{
+  sessionId: Scalars['String']['input'];
+}>;
+
+
+export type StartNewImportMutation = { __typename?: 'Mutation', startNewImport: { __typename?: 'ImportJobResult', success: boolean, message: string, jobsQueued: number } };
+
+export type StartIncrementalImportMutationVariables = Exact<{
+  sessionId: Scalars['String']['input'];
+  directoryPath?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type StartIncrementalImportMutation = { __typename?: 'Mutation', startIncrementalImport: { __typename?: 'IncrementalImportResult', success: boolean, message: string, stats: { __typename?: 'IncrementalImportStats', total: number, alreadyImported: number, newFiles: number, queued: number } } };
+
+export type GetJobResultStatisticsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetJobResultStatisticsQuery = { __typename?: 'Query', getJobResultStatistics: Array<{ __typename?: 'JobResultStatistics', sessionId: string, earliestTimestamp: string, completedJobs: number, failedJobs: number }> };
 
 export type GetLibraryComicsQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -1720,6 +1826,173 @@ useInfiniteGetWeeklyPullListQuery.getKey = (variables: GetWeeklyPullListQueryVar
 
 
 useGetWeeklyPullListQuery.fetcher = (variables: GetWeeklyPullListQueryVariables, options?: RequestInit['headers']) => fetcher<GetWeeklyPullListQuery, GetWeeklyPullListQueryVariables>(GetWeeklyPullListDocument, variables, options);
+
+export const GetImportStatisticsDocument = `
+    query GetImportStatistics($directoryPath: String) {
+  getImportStatistics(directoryPath: $directoryPath) {
+    success
+    directory
+    stats {
+      totalLocalFiles
+      alreadyImported
+      newFiles
+      percentageImported
+    }
+  }
+}
+    `;
+
+export const useGetImportStatisticsQuery = <
+      TData = GetImportStatisticsQuery,
+      TError = unknown
+    >(
+      variables?: GetImportStatisticsQueryVariables,
+      options?: Omit<UseQueryOptions<GetImportStatisticsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<GetImportStatisticsQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useQuery<GetImportStatisticsQuery, TError, TData>(
+      {
+    queryKey: variables === undefined ? ['GetImportStatistics'] : ['GetImportStatistics', variables],
+    queryFn: fetcher<GetImportStatisticsQuery, GetImportStatisticsQueryVariables>(GetImportStatisticsDocument, variables),
+    ...options
+  }
+    )};
+
+useGetImportStatisticsQuery.getKey = (variables?: GetImportStatisticsQueryVariables) => variables === undefined ? ['GetImportStatistics'] : ['GetImportStatistics', variables];
+
+export const useInfiniteGetImportStatisticsQuery = <
+      TData = InfiniteData<GetImportStatisticsQuery>,
+      TError = unknown
+    >(
+      variables: GetImportStatisticsQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<GetImportStatisticsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<GetImportStatisticsQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useInfiniteQuery<GetImportStatisticsQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? variables === undefined ? ['GetImportStatistics.infinite'] : ['GetImportStatistics.infinite', variables],
+      queryFn: (metaData) => fetcher<GetImportStatisticsQuery, GetImportStatisticsQueryVariables>(GetImportStatisticsDocument, {...variables, ...(metaData.pageParam ?? {})})(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteGetImportStatisticsQuery.getKey = (variables?: GetImportStatisticsQueryVariables) => variables === undefined ? ['GetImportStatistics.infinite'] : ['GetImportStatistics.infinite', variables];
+
+
+useGetImportStatisticsQuery.fetcher = (variables?: GetImportStatisticsQueryVariables, options?: RequestInit['headers']) => fetcher<GetImportStatisticsQuery, GetImportStatisticsQueryVariables>(GetImportStatisticsDocument, variables, options);
+
+export const StartNewImportDocument = `
+    mutation StartNewImport($sessionId: String!) {
+  startNewImport(sessionId: $sessionId) {
+    success
+    message
+    jobsQueued
+  }
+}
+    `;
+
+export const useStartNewImportMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(options?: UseMutationOptions<StartNewImportMutation, TError, StartNewImportMutationVariables, TContext>) => {
+    
+    return useMutation<StartNewImportMutation, TError, StartNewImportMutationVariables, TContext>(
+      {
+    mutationKey: ['StartNewImport'],
+    mutationFn: (variables?: StartNewImportMutationVariables) => fetcher<StartNewImportMutation, StartNewImportMutationVariables>(StartNewImportDocument, variables)(),
+    ...options
+  }
+    )};
+
+
+useStartNewImportMutation.fetcher = (variables: StartNewImportMutationVariables, options?: RequestInit['headers']) => fetcher<StartNewImportMutation, StartNewImportMutationVariables>(StartNewImportDocument, variables, options);
+
+export const StartIncrementalImportDocument = `
+    mutation StartIncrementalImport($sessionId: String!, $directoryPath: String) {
+  startIncrementalImport(sessionId: $sessionId, directoryPath: $directoryPath) {
+    success
+    message
+    stats {
+      total
+      alreadyImported
+      newFiles
+      queued
+    }
+  }
+}
+    `;
+
+export const useStartIncrementalImportMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(options?: UseMutationOptions<StartIncrementalImportMutation, TError, StartIncrementalImportMutationVariables, TContext>) => {
+    
+    return useMutation<StartIncrementalImportMutation, TError, StartIncrementalImportMutationVariables, TContext>(
+      {
+    mutationKey: ['StartIncrementalImport'],
+    mutationFn: (variables?: StartIncrementalImportMutationVariables) => fetcher<StartIncrementalImportMutation, StartIncrementalImportMutationVariables>(StartIncrementalImportDocument, variables)(),
+    ...options
+  }
+    )};
+
+
+useStartIncrementalImportMutation.fetcher = (variables: StartIncrementalImportMutationVariables, options?: RequestInit['headers']) => fetcher<StartIncrementalImportMutation, StartIncrementalImportMutationVariables>(StartIncrementalImportDocument, variables, options);
+
+export const GetJobResultStatisticsDocument = `
+    query GetJobResultStatistics {
+  getJobResultStatistics {
+    sessionId
+    earliestTimestamp
+    completedJobs
+    failedJobs
+  }
+}
+    `;
+
+export const useGetJobResultStatisticsQuery = <
+      TData = GetJobResultStatisticsQuery,
+      TError = unknown
+    >(
+      variables?: GetJobResultStatisticsQueryVariables,
+      options?: Omit<UseQueryOptions<GetJobResultStatisticsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<GetJobResultStatisticsQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useQuery<GetJobResultStatisticsQuery, TError, TData>(
+      {
+    queryKey: variables === undefined ? ['GetJobResultStatistics'] : ['GetJobResultStatistics', variables],
+    queryFn: fetcher<GetJobResultStatisticsQuery, GetJobResultStatisticsQueryVariables>(GetJobResultStatisticsDocument, variables),
+    ...options
+  }
+    )};
+
+useGetJobResultStatisticsQuery.getKey = (variables?: GetJobResultStatisticsQueryVariables) => variables === undefined ? ['GetJobResultStatistics'] : ['GetJobResultStatistics', variables];
+
+export const useInfiniteGetJobResultStatisticsQuery = <
+      TData = InfiniteData<GetJobResultStatisticsQuery>,
+      TError = unknown
+    >(
+      variables: GetJobResultStatisticsQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<GetJobResultStatisticsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<GetJobResultStatisticsQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useInfiniteQuery<GetJobResultStatisticsQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? variables === undefined ? ['GetJobResultStatistics.infinite'] : ['GetJobResultStatistics.infinite', variables],
+      queryFn: (metaData) => fetcher<GetJobResultStatisticsQuery, GetJobResultStatisticsQueryVariables>(GetJobResultStatisticsDocument, {...variables, ...(metaData.pageParam ?? {})})(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteGetJobResultStatisticsQuery.getKey = (variables?: GetJobResultStatisticsQueryVariables) => variables === undefined ? ['GetJobResultStatistics.infinite'] : ['GetJobResultStatistics.infinite', variables];
+
+
+useGetJobResultStatisticsQuery.fetcher = (variables?: GetJobResultStatisticsQueryVariables, options?: RequestInit['headers']) => fetcher<GetJobResultStatisticsQuery, GetJobResultStatisticsQueryVariables>(GetJobResultStatisticsDocument, variables, options);
 
 export const GetLibraryComicsDocument = `
     query GetLibraryComics($page: Int, $limit: Int, $search: String, $series: String) {

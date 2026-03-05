@@ -1,11 +1,15 @@
 import React, { ReactElement, useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
-import Loader from "react-loader-spinner";
 import { isEmpty, isNil, isUndefined } from "lodash";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
 import axios from "axios";
+import {
+  useGetJobResultStatisticsQuery,
+  useGetImportStatisticsQuery,
+  useStartIncrementalImportMutation
+} from "../../graphql/generated";
 
 interface IProps {
   matches?: unknown;
@@ -27,6 +31,7 @@ interface IProps {
 export const Import = (props: IProps): ReactElement => {
   const queryClient = useQueryClient();
   const [socketReconnectTrigger, setSocketReconnectTrigger] = useState(0);
+  const [showPreview, setShowPreview] = useState(false);
   const { importJobQueue, getSocket, disconnectSocket } = useStore(
     useShallow((state) => ({
       importJobQueue: state.importJobQueue,
@@ -34,6 +39,29 @@ export const Import = (props: IProps): ReactElement => {
       disconnectSocket: state.disconnectSocket,
     })),
   );
+
+  // Query to get import statistics (preview)
+  const {
+    data: importStats,
+    isLoading: isLoadingStats,
+    refetch: refetchStats
+  } = useGetImportStatisticsQuery(
+    {},
+    {
+      enabled: showPreview,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  // Mutation for incremental import (smart import)
+  const { mutate: startIncrementalImport, isPending: isStartingImport } = useStartIncrementalImportMutation({
+    onSuccess: (data) => {
+      if (data.startIncrementalImport.success) {
+        importJobQueue.setStatus("running");
+        setShowPreview(false);
+      }
+    },
+  });
 
   const { mutate: initiateImport } = useMutation({
     mutationFn: async () => {
@@ -46,20 +74,7 @@ export const Import = (props: IProps): ReactElement => {
     },
   });
 
-  const { data, isError, isLoading, refetch } = useQuery({
-    queryKey: ["allImportJobResults"],
-    queryFn: async () => {
-      const response = await axios({
-        method: "GET",
-        url: "http://localhost:3000/api/jobqueue/getJobResultStatistics",
-        params: { _t: Date.now() }, // Cache busting
-      });
-      return response;
-    },
-    refetchOnWindowFocus: false,
-    staleTime: 0, // Always consider data stale
-    gcTime: 0, // Don't cache the data (formerly cacheTime)
-  });
+  const { data, isError, isLoading, refetch } = useGetJobResultStatisticsQuery();
 
   // Ensure socket connection is established and listen for import completion
   useEffect(() => {
@@ -95,6 +110,35 @@ export const Import = (props: IProps): ReactElement => {
       },
     );
   };
+
+  const handleShowPreview = () => {
+    setShowPreview(true);
+    refetchStats();
+  };
+
+  const handleStartSmartImport = () => {
+    // Clear old sessionId when starting a new import after queue is drained
+    if (importJobQueue.status === "drained") {
+      localStorage.removeItem("sessionId");
+      // Disconnect and reconnect socket to get new sessionId
+      disconnectSocket("/");
+      // Wait for socket to reconnect and get new sessionId before starting import
+      setTimeout(() => {
+        getSocket("/");
+        // Trigger useEffect to re-attach event listeners
+        setSocketReconnectTrigger(prev => prev + 1);
+        // Wait a bit more for sessionInitialized event to fire
+        setTimeout(() => {
+          const sessionId = localStorage.getItem("sessionId") || "";
+          startIncrementalImport({ sessionId });
+        }, 500);
+      }, 100);
+    } else {
+      const sessionId = localStorage.getItem("sessionId") || "";
+      startIncrementalImport({ sessionId });
+    }
+  };
+
   /**
    * Method to render import job queue pause/resume controls on the UI
    *
@@ -146,6 +190,7 @@ export const Import = (props: IProps): ReactElement => {
         return null;
     }
   };
+
   return (
     <div>
       <section>
@@ -185,41 +230,147 @@ export const Import = (props: IProps): ReactElement => {
             </div>
           </article>
 
-          <div className="my-4">
-            {(importJobQueue.status === "drained" ||
-              importJobQueue.status === undefined) && (
+          {/* Import Preview Section */}
+          {!showPreview && (importJobQueue.status === "drained" || importJobQueue.status === undefined) && (
+            <div className="my-4 flex gap-3">
               <button
-                className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-5 py-3 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
-                onClick={() => {
-                  // Clear old sessionId when starting a new import after queue is drained
-                  if (importJobQueue.status === "drained") {
-                    localStorage.removeItem("sessionId");
-                    // Disconnect and reconnect socket to get new sessionId
-                    disconnectSocket("/");
-                    // Wait for socket to reconnect and get new sessionId before starting import
-                    setTimeout(() => {
-                      getSocket("/");
-                      // Trigger useEffect to re-attach event listeners
-                      setSocketReconnectTrigger(prev => prev + 1);
-                      // Wait a bit more for sessionInitialized event to fire
-                      setTimeout(() => {
-                        initiateImport();
-                        importJobQueue.setStatus("running");
-                      }, 500);
-                    }, 100);
-                  } else {
-                    initiateImport();
-                    importJobQueue.setStatus("running");
-                  }
-                }}
+                className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-blue-400 dark:border-blue-200 bg-blue-200 px-5 py-3 text-gray-500 hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
+                onClick={handleShowPreview}
               >
-                <span className="text-md">Start Import</span>
+                <span className="text-md">Preview Import</span>
                 <span className="w-6 h-6">
-                  <i className="h-6 w-6 icon-[solar--file-left-bold-duotone]"></i>
+                  <i className="h-6 w-6 icon-[solar--eye-bold-duotone]"></i>
                 </span>
               </button>
-            )}
-          </div>
+            </div>
+          )}
+
+          {/* Preview Statistics */}
+          {showPreview && !isLoadingStats && importStats?.getImportStatistics && (
+            <div className="my-6 max-w-screen-lg">
+              <span className="flex items-center my-5">
+                <span className="text-xl text-slate-500 dark:text-slate-200 pr-5">
+                  Import Preview
+                </span>
+                <span className="h-px flex-1 bg-slate-200 dark:bg-slate-400"></span>
+              </span>
+
+              <div className="rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-slate-700 p-6">
+                <div className="mb-4">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    <span className="font-semibold">Directory:</span> {importStats.getImportStatistics.directory}
+                  </p>
+                </div>
+
+                <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                  <div className="flex flex-col rounded-lg bg-blue-100 dark:bg-blue-200 px-4 py-6 text-center">
+                    <dd className="text-3xl text-blue-600 md:text-5xl">
+                      {importStats.getImportStatistics.stats.totalLocalFiles}
+                    </dd>
+                    <dt className="text-lg font-medium text-gray-500">
+                      Total Files
+                    </dt>
+                  </div>
+
+                  <div className="flex flex-col rounded-lg bg-green-100 dark:bg-green-200 px-4 py-6 text-center">
+                    <dd className="text-3xl text-green-600 md:text-5xl">
+                      {importStats.getImportStatistics.stats.newFiles}
+                    </dd>
+                    <dt className="text-lg font-medium text-gray-500">
+                      New Comics
+                    </dt>
+                  </div>
+
+                  <div className="flex flex-col rounded-lg bg-yellow-100 dark:bg-yellow-200 px-4 py-6 text-center">
+                    <dd className="text-3xl text-yellow-600 md:text-5xl">
+                      {importStats.getImportStatistics.stats.alreadyImported}
+                    </dd>
+                    <dt className="text-lg font-medium text-gray-500">
+                      Already Imported
+                    </dt>
+                  </div>
+
+                  <div className="flex flex-col rounded-lg bg-purple-100 dark:bg-purple-200 px-4 py-6 text-center">
+                    <dd className="text-3xl text-purple-600 md:text-5xl">
+                      {(() => {
+                        const percentage = importStats.getImportStatistics.stats.percentageImported;
+                        const numValue = typeof percentage === 'number' ? percentage : parseFloat(percentage);
+                        return !isNaN(numValue) ? numValue.toFixed(1) : '0.0';
+                      })()}%
+                    </dd>
+                    <dt className="text-lg font-medium text-gray-500">
+                      Already in Library
+                    </dt>
+                  </div>
+                </dl>
+
+                {importStats.getImportStatistics.stats.newFiles > 0 && (
+                  <div className="mt-6">
+                    <article
+                      role="alert"
+                      className="rounded-lg border-s-4 border-green-500 bg-green-50 p-4 dark:border-s-4 dark:border-green-600 dark:bg-green-300 dark:text-slate-600"
+                    >
+                      <p className="font-medium">
+                        Ready to import {importStats.getImportStatistics.stats.newFiles} new comic{importStats.getImportStatistics.stats.newFiles !== 1 ? 's' : ''}!
+                      </p>
+                      <p className="text-sm mt-1">
+                        {importStats.getImportStatistics.stats.alreadyImported} comic{importStats.getImportStatistics.stats.alreadyImported !== 1 ? 's' : ''} will be skipped (already in library).
+                      </p>
+                    </article>
+                  </div>
+                )}
+
+                {importStats.getImportStatistics.stats.newFiles === 0 && (
+                  <div className="mt-6">
+                    <article
+                      role="alert"
+                      className="rounded-lg border-s-4 border-yellow-500 bg-yellow-50 p-4 dark:border-s-4 dark:border-yellow-600 dark:bg-yellow-300 dark:text-slate-600"
+                    >
+                      <p className="font-medium">
+                        No new comics to import!
+                      </p>
+                      <p className="text-sm mt-1">
+                        All {importStats.getImportStatistics.stats.totalLocalFiles} comic{importStats.getImportStatistics.stats.totalLocalFiles !== 1 ? 's' : ''} in the directory {importStats.getImportStatistics.stats.totalLocalFiles !== 1 ? 'are' : 'is'} already in your library.
+                      </p>
+                    </article>
+                  </div>
+                )}
+
+                <div className="mt-6 flex gap-3">
+                  {importStats.getImportStatistics.stats.newFiles > 0 && (
+                    <button
+                      className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-5 py-3 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-green-500"
+                      onClick={handleStartSmartImport}
+                      disabled={isStartingImport}
+                    >
+                      <span className="text-md">
+                        {isStartingImport ? "Starting..." : "Start Smart Import"}
+                      </span>
+                      <span className="w-6 h-6">
+                        <i className="h-6 w-6 icon-[solar--file-left-bold-duotone]"></i>
+                      </span>
+                    </button>
+                  )}
+                  <button
+                    className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-gray-400 dark:border-gray-200 bg-gray-200 px-5 py-3 text-gray-500 hover:bg-transparent hover:text-gray-600 focus:outline-none focus:ring active:text-gray-500"
+                    onClick={() => setShowPreview(false)}
+                  >
+                    <span className="text-md">Cancel</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Loading state for preview */}
+          {showPreview && isLoadingStats && (
+            <div className="my-6 flex justify-center items-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+              <span className="ml-3 text-gray-600 dark:text-gray-300">
+                Analyzing comics folder...
+              </span>
+            </div>
+          )}
 
           {/* Activity */}
           {(importJobQueue.status === "running" ||
@@ -266,7 +417,7 @@ export const Import = (props: IProps): ReactElement => {
           )}
 
           {/* Past imports */}
-          {!isLoading && !isEmpty(data?.data) && (
+          {!isLoading && !isEmpty(data?.getJobResultStatistics) && (
             <div className="max-w-screen-lg">
               <span className="flex items-center mt-6">
                 <span className="text-xl text-slate-500 dark:text-slate-200 pr-5">
@@ -298,17 +449,19 @@ export const Import = (props: IProps): ReactElement => {
                   </thead>
 
                   <tbody className="divide-y divide-gray-200">
-                    {data?.data.map((jobResult: any, index: number) => {
+                    {data?.getJobResultStatistics.map((jobResult: any, index: number) => {
                       return (
                         <tr key={index}>
                           <td className="whitespace-nowrap px-4 py-2 text-gray-700 dark:text-slate-300 font-medium">
                             {index + 1}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-gray-700 dark:text-slate-300">
-                            {format(
-                              new Date(jobResult.earliestTimestamp),
-                              "EEEE, hh:mma, do LLLL y",
-                            )}
+                            {jobResult.earliestTimestamp && !isNaN(new Date(jobResult.earliestTimestamp).getTime())
+                              ? format(
+                                  new Date(jobResult.earliestTimestamp),
+                                  "EEEE, hh:mma, do LLLL y",
+                                )
+                              : "N/A"}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-gray-700 dark:text-slate-300">
                             <span className="tag is-warning">

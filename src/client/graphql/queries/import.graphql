@@ -1,0 +1,42 @@
+query GetImportStatistics($directoryPath: String) {
+  getImportStatistics(directoryPath: $directoryPath) {
+    success
+    directory
+    stats {
+      totalLocalFiles
+      alreadyImported
+      newFiles
+      percentageImported
+    }
+  }
+}
+
+mutation StartNewImport($sessionId: String!) {
+  startNewImport(sessionId: $sessionId) {
+    success
+    message
+    jobsQueued
+  }
+}
+
+mutation StartIncrementalImport($sessionId: String!, $directoryPath: String) {
+  startIncrementalImport(sessionId: $sessionId, directoryPath: $directoryPath) {
+    success
+    message
+    stats {
+      total
+      alreadyImported
+      newFiles
+      queued
+    }
+  }
+}
+
+query GetJobResultStatistics {
+  getJobResultStatistics {
+    sessionId
+    earliestTimestamp
+    completedJobs
+    failedJobs
+  }
+}
