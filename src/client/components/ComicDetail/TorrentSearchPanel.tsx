@@ -43,7 +43,7 @@ export const TorrentSearchPanel = (props) => {
     mutationFn: async (newTorrent) =>
       axios.post(`${QBITTORRENT_SERVICE_BASE_URI}/addTorrent`, newTorrent),
     onSuccess: async (data) => {
-      console.log(data);
+      // Torrent added successfully
     },
   });
   const searchIndexer = (values) => {

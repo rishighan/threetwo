@@ -33,7 +33,6 @@ export const Volumes = (props): ReactElement => {
       }),
     queryKey: ["volumes"],
   });
-  console.log(volumes);
   const columnData = useMemo(
     (): any => [
       {
@@ -46,7 +45,6 @@ export const Volumes = (props): ReactElement => {
           const {
             _source: { sourcedMetadata },
           } = comicObject;
-          console.log("jaggu", row.getValue());
           return (
             <div className="flex flex-row gap-3 mt-5">
               <Link to={`/volume/details/${comicObject._id}`}>

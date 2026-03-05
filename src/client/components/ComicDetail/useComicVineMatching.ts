@@ -3,29 +3,25 @@ import axios from "axios";
 import { isNil, isUndefined, isEmpty } from "lodash";
 import { refineQuery } from "filename-parser";
 import { COMICVINE_SERVICE_URI } from "../../constants/endpoints";
+import { RawFileDetails as RawFileDetailsType } from "../../graphql/generated";
 
-interface ComicVineMatch {
+type ComicVineMatch = {
   score: number;
   [key: string]: any;
-}
+};
 
-interface ComicVineSearchQuery {
+type ComicVineSearchQuery = {
   inferredIssueDetails: {
     name: string;
     [key: string]: any;
   };
   [key: string]: any;
-}
+};
 
-interface RawFileDetails {
-  name: string;
-  [key: string]: any;
-}
-
-interface ComicVineMetadata {
+type ComicVineMetadata = {
   name?: string;
   [key: string]: any;
-}
+};
 
 export const useComicVineMatching = () => {
   const [comicVineMatches, setComicVineMatches] = useState<ComicVineMatch[]>([]);
@@ -67,18 +63,18 @@ export const useComicVineMatching = () => {
       const scoredMatches = matches.sort((a: ComicVineMatch, b: ComicVineMatch) => b.score - a.score);
       setComicVineMatches(scoredMatches);
     } catch (err) {
-      console.log(err);
+      // Error handling could be added here if needed
     }
   };
 
   const prepareAndFetchMatches = (
-    rawFileDetails: RawFileDetails | undefined,
+    rawFileDetails: RawFileDetailsType | undefined,
     comicvine: ComicVineMetadata | undefined,
   ) => {
     let seriesSearchQuery: ComicVineSearchQuery = {} as ComicVineSearchQuery;
     let issueSearchQuery: ComicVineSearchQuery = {} as ComicVineSearchQuery;
 
-    if (!isUndefined(rawFileDetails)) {
+    if (!isUndefined(rawFileDetails) && rawFileDetails.name) {
       issueSearchQuery = refineQuery(rawFileDetails.name) as ComicVineSearchQuery;
     } else if (!isEmpty(comicvine) && comicvine?.name) {
       issueSearchQuery = refineQuery(comicvine.name) as ComicVineSearchQuery;

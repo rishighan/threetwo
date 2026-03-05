@@ -160,7 +160,9 @@ export const AcquisitionPanel = (
         type,
         config,
       },
-      (data: any) => console.log(data),
+      (data: any) => {
+        // Download initiated
+      },
     );
   };
 

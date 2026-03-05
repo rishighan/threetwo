@@ -1,0 +1,191 @@
+query GetComicById($id: ID!) {
+  comic(id: $id) {
+    id
+    
+    # Inferred metadata
+    inferredMetadata {
+      issue {
+        name
+        number
+        year
+        subtitle
+      }
+    }
+    
+    # Canonical metadata
+    canonicalMetadata {
+      title {
+        value
+        provenance {
+          source
+          sourceId
+          confidence
+          fetchedAt
+          url
+        }
+        userOverride
+      }
+      series {
+        value
+        provenance {
+          source
+          sourceId
+          confidence
+          fetchedAt
+          url
+        }
+        userOverride
+      }
+      volume {
+        value
+        provenance {
+          source
+          sourceId
+          confidence
+          fetchedAt
+          url
+        }
+        userOverride
+      }
+      issueNumber {
+        value
+        provenance {
+          source
+          sourceId
+          confidence
+          fetchedAt
+          url
+        }
+        userOverride
+      }
+      publisher {
+        value
+        provenance {
+          source
+          sourceId
+          confidence
+          fetchedAt
+          url
+        }
+        userOverride
+      }
+      publicationDate {
+        value
+        provenance {
+          source
+          sourceId
+          confidence
+          fetchedAt
+          url
+        }
+        userOverride
+      }
+      coverDate {
+        value
+        provenance {
+          source
+          sourceId
+          confidence
+          fetchedAt
+          url
+        }
+        userOverride
+      }
+      description {
+        value
+        provenance {
+          source
+          sourceId
+          confidence
+          fetchedAt
+          url
+        }
+        userOverride
+      }
+      creators {
+        name
+        role
+        provenance {
+          source
+          sourceId
+          confidence
+          fetchedAt
+          url
+        }
+      }
+      pageCount {
+        value
+        provenance {
+          source
+          sourceId
+          confidence
+          fetchedAt
+          url
+        }
+        userOverride
+      }
+      coverImage {
+        value
+        provenance {
+          source
+          sourceId
+          confidence
+          fetchedAt
+          url
+        }
+        userOverride
+      }
+    }
+    
+    # Sourced metadata
+    sourcedMetadata {
+      comicInfo
+      comicvine
+      metron
+      gcd
+      locg {
+        name
+        publisher
+        url
+        cover
+        description
+        price
+        rating
+        pulls
+        potw
+      }
+    }
+    
+    # Raw file details
+    rawFileDetails {
+      name
+      filePath
+      fileSize
+      extension
+      mimeType
+      containedIn
+      pageCount
+      archive {
+        uncompressed
+        expandedPath
+      }
+      cover {
+        filePath
+        stats
+      }
+    }
+    
+    # Import status
+    importStatus {
+      isImported
+      tagged
+      matchedResult {
+        score
+      }
+    }
+    
+    # Timestamps
+    createdAt
+    updatedAt
+  }
+}

@@ -42,7 +42,6 @@ export const WantedComics = (props): ReactElement => {
           minWidth: 350,
           accessorFn: (data) => data,
           cell: (value) => {
-            console.log("ASDASd", value);
             const row = value.getValue()._source;
             return row && <MetadataPanel data={row} />;
           },

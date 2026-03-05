@@ -35,7 +35,6 @@ export const AirDCPPSettingsForm = () => {
   // Handle setting update and subsequent AirDC++ initialization
   const { mutate } = useMutation({
     mutationFn: (values) => {
-      console.log(values);
       return axios.post("http://localhost:3000/api/settings/saveSettings", {
         settingsPayload: values,
         settingsKey: "directConnect",

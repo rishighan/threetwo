@@ -77,8 +77,7 @@ export const ArchiveOperations = (props: { data: any }): ReactElement => {
             },
           });
         } catch (error) {
-          console.error("Error fetching uncompressed archive:", error);
-          // Handle error if necessary
+          // Error handling could be added here if needed
         }
       };
       fetchUncompressedArchive();

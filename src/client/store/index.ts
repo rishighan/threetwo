@@ -47,12 +47,11 @@ export const useStore = create<StoreState>((set, get) => ({
     });
 
     socket.on("connect", () => {
-      console.log(`✅ Connected to ${namespace}:`, socket.id);
+      // Socket connected successfully
     });
 
     // Always listen for sessionInitialized in case backend creates a new session
     socket.on("sessionInitialized", (id) => {
-      console.log("Session initialized with ID:", id);
       localStorage.setItem("sessionId", id);
     });
 

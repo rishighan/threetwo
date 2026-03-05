@@ -19,7 +19,6 @@ export const DockerVars = (): React.ReactElement => {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
-  console.log("Docker Vars: ", environmentVariables);
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-xl font-semibold">Docker Environment Variables</h2>

@@ -6,3 +6,6 @@ declare module "*.png" {
 declare module "*.jpg";
 declare module "*.gif";
 declare module "*.less";
+
+// Comic types are now generated from GraphQL schema
+// Import from '../../graphql/generated' instead

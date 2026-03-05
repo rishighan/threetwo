@@ -34,7 +34,6 @@ import {
   LS_SET_QUEUE_STATUS,
   LS_IMPORT_JOB_STATISTICS_FETCHED,
 } from "../constants/action-types";
-import { success } from "react-notification-system-redux";
 
 import { isNil } from "lodash";
 
@@ -151,7 +150,7 @@ export const getComicBooks = (options) => async (dispatch) => {
       });
       break;
     default:
-      console.log("Unrecognized comic status.");
+      break;
   }
 };
 
@@ -219,12 +218,11 @@ export const fetchVolumeGroups = () => async (dispatch) => {
       data: response.data,
     });
   } catch (error) {
-    console.log(error);
+    // Error handling could be added here if needed
   }
 };
 export const fetchComicVineMatches =
   (searchPayload, issueSearchQuery, seriesSearchQuery?) => async (dispatch) => {
-    console.log(issueSearchQuery);
     try {
       dispatch({
         type: CV_API_CALL_IN_PROGRESS,
@@ -273,7 +271,7 @@ export const fetchComicVineMatches =
           });
         });
     } catch (error) {
-      console.log(error);
+      // Error handling could be added here if needed
     }
 
     dispatch({

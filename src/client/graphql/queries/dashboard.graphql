@@ -1,0 +1,216 @@
+query GetComics($page: Int, $limit: Int, $search: String, $publisher: String, $series: String) {
+  comics(page: $page, limit: $limit, search: $search, publisher: $publisher, series: $series) {
+    comics {
+      id
+      inferredMetadata {
+        issue {
+          name
+          number
+          year
+          subtitle
+        }
+      }
+      rawFileDetails {
+        name
+        extension
+        archive {
+          uncompressed
+        }
+      }
+      sourcedMetadata {
+        comicvine
+        comicInfo
+        locg {
+          name
+          publisher
+          cover
+        }
+      }
+      canonicalMetadata {
+        title {
+          value
+        }
+        series {
+          value
+        }
+        issueNumber {
+          value
+        }
+      }
+    }
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      currentPage
+      totalPages
+    }
+  }
+}
+
+query GetRecentComics($limit: Int) {
+  comics(page: 1, limit: $limit) {
+    comics {
+      id
+      inferredMetadata {
+        issue {
+          name
+          number
+          year
+          subtitle
+        }
+      }
+      rawFileDetails {
+        name
+        extension
+        cover {
+          filePath
+        }
+        archive {
+          uncompressed
+        }
+      }
+      sourcedMetadata {
+        comicvine
+        comicInfo
+        locg {
+          name
+          publisher
+          cover
+        }
+      }
+      canonicalMetadata {
+        title {
+          value
+        }
+        series {
+          value
+        }
+        issueNumber {
+          value
+        }
+        publisher {
+          value
+        }
+      }
+      createdAt
+      updatedAt
+    }
+    totalCount
+  }
+}
+
+query GetWantedComics($paginationOptions: PaginationOptionsInput!, $predicate: PredicateInput) {
+  getComicBooks(paginationOptions: $paginationOptions, predicate: $predicate) {
+    docs {
+      id
+      inferredMetadata {
+        issue {
+          name
+          number
+          year
+          subtitle
+        }
+      }
+      rawFileDetails {
+        name
+        extension
+        cover {
+          filePath
+        }
+        archive {
+          uncompressed
+        }
+      }
+      sourcedMetadata {
+        comicvine
+        comicInfo
+        locg {
+          name
+          publisher
+          cover
+        }
+      }
+      canonicalMetadata {
+        title {
+          value
+        }
+        series {
+          value
+        }
+        issueNumber {
+          value
+        }
+      }
+      createdAt
+      updatedAt
+    }
+    totalDocs
+    limit
+    page
+    totalPages
+    hasNextPage
+    hasPrevPage
+  }
+}
+
+query GetVolumeGroups {
+  getComicBookGroups {
+    id
+    volumes {
+      id
+      name
+      count_of_issues
+      publisher {
+        id
+        name
+      }
+      start_year
+      image {
+        small_url
+      }
+    }
+  }
+}
+
+query GetLibraryStatistics {
+  getLibraryStatistics {
+    totalDocuments
+    comicDirectorySize {
+      fileCount
+    }
+    statistics {
+      fileTypes {
+        id
+        data
+      }
+      issues {
+        id {
+          id
+          name
+        }
+        data
+      }
+      fileLessComics {
+        id
+      }
+      issuesWithComicInfoXML {
+        id
+      }
+      publisherWithMostComicsInLibrary {
+        id
+        count
+      }
+    }
+  }
+}
+
+query GetWeeklyPullList($input: WeeklyPullListInput!) {
+  getWeeklyPullList(input: $input) {
+    result {
+      name
+      publisher
+      cover
+    }
+  }
+}

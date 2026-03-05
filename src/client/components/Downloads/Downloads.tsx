@@ -63,7 +63,6 @@ export const Downloads = (props: IDownloadsProps): ReactElement => {
         <div className="columns">
           <div className="column is-half">
             {bundles.map((bundle, idx) => {
-              console.log(bundle);
               return (
                 <div key={idx}>
                   <MetadataPanel

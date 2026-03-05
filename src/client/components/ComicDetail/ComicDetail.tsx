@@ -10,6 +10,7 @@ import "react-sliding-pane/dist/react-sliding-pane.css";
 import SlidingPane from "react-sliding-pane";
 import { determineCoverFile } from "../../shared/utils/metadata.utils";
 import { styled } from "styled-components";
+import { RawFileDetails as RawFileDetailsType } from "../../graphql/generated";
 
 // Extracted modules
 import { useComicVineMatching } from "./useComicVineMatching";
@@ -22,45 +23,32 @@ const StyledSlidingPanel = styled(SlidingPane)`
   background: #ccc;
 `;
 
-interface RawFileDetails {
-  name: string;
-  cover?: {
-    filePath?: string;
-  };
-  containedIn?: string;
-  fileSize?: number;
-  path?: string;
-  extension?: string;
-  mimeType?: string;
-  [key: string]: any;
-}
-
-interface InferredIssue {
+type InferredIssue = {
   name?: string;
   number?: number;
   year?: string;
   subtitle?: string;
   [key: string]: any;
-}
+};
 
-interface ComicVineMetadata {
+type ComicVineMetadata = {
   name?: string;
   volumeInformation?: any;
   [key: string]: any;
-}
+};
 
-interface Acquisition {
+type Acquisition = {
   directconnect?: {
     downloads?: any[];
   };
   torrent?: any[];
   [key: string]: any;
-}
+};
 
-interface ComicDetailProps {
+type ComicDetailProps = {
   data: {
     _id: string;
-    rawFileDetails?: RawFileDetails;
+    rawFileDetails?: RawFileDetailsType;
     inferredMetadata: {
       issue?: InferredIssue;
     };
@@ -76,7 +64,7 @@ interface ComicDetailProps {
   userSettings?: any;
   queryClient?: any;
   comicObjectId?: string;
-}
+};
 
 /**
  * Component for displaying the metadata for a comic in greater detail.
@@ -117,7 +105,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   }, []);
 
   const afterOpenModal = useCallback((things: any) => {
-    console.log("kolaveri", things);
+    // Modal opened callback
   }, []);
 
   const closeModal = useCallback(() => {
@@ -154,7 +142,6 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
         openEditMetadataPanel();
         break;
       default:
-        console.log("No valid action selected.");
         break;
     }
   };

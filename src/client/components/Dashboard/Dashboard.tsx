@@ -1,83 +1,70 @@
 import React, { ReactElement } from "react";
-import ZeroState from "./ZeroState";
 import { RecentlyImported } from "./RecentlyImported";
 import { WantedComicsList } from "./WantedComicsList";
 import { VolumeGroups } from "./VolumeGroups";
 import { LibraryStatistics } from "./LibraryStatistics";
 import { PullList } from "./PullList";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { LIBRARY_SERVICE_BASE_URI } from "../../constants/endpoints";
+import {
+  useGetRecentComicsQuery,
+  useGetWantedComicsQuery,
+  useGetVolumeGroupsQuery,
+  useGetLibraryStatisticsQuery
+} from "../../graphql/generated";
 
 export const Dashboard = (): ReactElement => {
-  const { data: recentComics } = useQuery({
-    queryFn: async () =>
-      await axios({
-        url: `${LIBRARY_SERVICE_BASE_URI}/getComicBooks`,
-        method: "POST",
-        data: {
-          paginationOptions: {
-            page: 0,
-            limit: 5,
-            sort: { updatedAt: "-1" },
-          },
-          predicate: {
-            wanted: { $exists: false },
-          },
-          comicStatus: "recent",
-        },
-      }),
-    queryKey: ["recentComics"],
-  });
-  // Wanted Comics
-  const { data: wantedComics } = useQuery({
-    queryFn: async () =>
-      await axios({
-        url: `${LIBRARY_SERVICE_BASE_URI}/getComicBooks`,
-        method: "POST",
-        data: {
-          paginationOptions: {
-            page: 0,
-            limit: 5,
-            sort: { updatedAt: "-1" },
-          },
-          predicate: {
-            wanted: { $exists: true, $ne: null },
-          },
-        },
-      }),
-    queryKey: ["wantedComics"],
-  });
-  const { data: volumeGroups } = useQuery({
-    queryFn: async () =>
-      await axios({
-        url: `${LIBRARY_SERVICE_BASE_URI}/getComicBookGroups`,
-        method: "GET",
-      }),
-    queryKey: ["volumeGroups"],
-  });
+  // Use GraphQL for recent comics
+  const { data: recentComicsData, error: recentComicsError } = useGetRecentComicsQuery(
+    { limit: 5 },
+    { refetchOnWindowFocus: false }
+  );
 
-  const { data: statistics } = useQuery({
-    queryFn: async () =>
-      await axios({
-        url: `${LIBRARY_SERVICE_BASE_URI}/libraryStatistics`,
-        method: "GET",
-      }),
-    queryKey: ["libraryStatistics"],
-  });
+  // Wanted Comics - using GraphQL
+  const { data: wantedComicsData, error: wantedComicsError } = useGetWantedComicsQuery(
+    {
+      paginationOptions: {
+        page: 1,
+        limit: 5,
+        sort: '{"updatedAt": -1}'
+      },
+      predicate: '{"acquisition.source.wanted": true}'
+    },
+    {
+      refetchOnWindowFocus: false,
+      retry: false
+    }
+  );
+
+  // Volume Groups - using GraphQL
+  const { data: volumeGroupsData, error: volumeGroupsError } = useGetVolumeGroupsQuery(
+    undefined,
+    { refetchOnWindowFocus: false }
+  );
+
+  // Library Statistics - using GraphQL
+  const { data: statisticsData, error: statisticsError } = useGetLibraryStatisticsQuery(
+    undefined,
+    {
+      refetchOnWindowFocus: false,
+      retry: false
+    }
+  );
+
+  const recentComics = recentComicsData?.comics?.comics || [];
+  const wantedComics = !wantedComicsError ? (wantedComicsData?.getComicBooks?.docs || []) : [];
+  const volumeGroups = volumeGroupsData?.getComicBookGroups || [];
+  const statistics = !statisticsError ? statisticsData?.getLibraryStatistics : undefined;
 
   return (
     <>
-      
       <div className="mx-auto max-w-screen-xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
         <PullList />
-        {recentComics && <RecentlyImported comics={recentComics?.data.docs} />}
+        {recentComics.length > 0 && <RecentlyImported comics={recentComics} />}
         {/* Wanted comics */}
-        <WantedComicsList comics={wantedComics?.data?.docs} />
+        <WantedComicsList comics={wantedComics} />
         {/* Library Statistics */}
-        {statistics && <LibraryStatistics stats={statistics?.data} />}
+        {statistics && <LibraryStatistics stats={statistics} />}
         {/* Volume groups */}
-        <VolumeGroups volumeGroups={volumeGroups?.data} />
+        <VolumeGroups volumeGroups={volumeGroups} />
       </div>
     </>
   );

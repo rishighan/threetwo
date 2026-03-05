@@ -47,7 +47,6 @@ const onSearchSent = async (item, instance, unsubscribe, searchInfo) => {
 
   if (results.length > 0) {
     // We have results, download the best one
-    console.log("SASAAAA", results);
     // const result = results[0];
     // SocketService.post(`search/${instance.id}/results/${result.id}/download`, {
     //   priority: Utils.toApiPriority(item.priority),

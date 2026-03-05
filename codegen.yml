@@ -1,0 +1,16 @@
+schema: http://localhost:3000/graphql
+documents: 'src/client/graphql/**/*.graphql'
+generates:
+  src/client/graphql/generated.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-query
+    config:
+      fetcher:
+        func: './fetcher#fetcher'
+        isReactHook: false
+      exposeFetcher: true
+      exposeQueryKeys: true
+      addInfiniteQuery: true
+      reactQueryVersion: 5

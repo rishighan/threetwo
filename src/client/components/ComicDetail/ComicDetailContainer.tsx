@@ -1,9 +1,9 @@
 import React, { ReactElement } from "react";
 import { useParams } from "react-router-dom";
 import { ComicDetail } from "../ComicDetail/ComicDetail";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { LIBRARY_SERVICE_BASE_URI } from "../../constants/endpoints";
-import axios from "axios";
+import { useQueryClient } from "@tanstack/react-query";
+import { useGetComicByIdQuery } from "../../graphql/generated";
+import { adaptGraphQLComicToLegacy } from "../../graphql/adapters/comicAdapter";
 
 export const ComicDetailContainer = (): ReactElement | null => {
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
@@ -13,31 +13,28 @@ export const ComicDetailContainer = (): ReactElement | null => {
     data: comicBookDetailData,
     isLoading,
     isError,
-  } = useQuery({
-    queryKey: ["comicBookMetadata", comicObjectId],
-    queryFn: async () =>
-      await axios({
-        url: `${LIBRARY_SERVICE_BASE_URI}/getComicBookById`,
-        method: "POST",
-        data: {
-          id: comicObjectId,
-        },
-      }),
-  });
-
-  {
-    isError && <>Error</>;
-  }
-  {
-    isLoading && <>Loading...</>;
-  }
-  return (
-    comicBookDetailData?.data && (
-      <ComicDetail
-        data={comicBookDetailData.data}
-        queryClient={queryClient}
-        comicObjectId={comicObjectId}
-      />
-    )
+  } = useGetComicByIdQuery(
+    { id: comicObjectId! },
+    { enabled: !!comicObjectId }
   );
+
+  if (isError) {
+    return <div>Error loading comic details</div>;
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  const adaptedData = comicBookDetailData?.comic 
+    ? adaptGraphQLComicToLegacy(comicBookDetailData.comic)
+    : null;
+
+  return adaptedData ? (
+    <ComicDetail
+      data={adaptedData}
+      queryClient={queryClient}
+      comicObjectId={comicObjectId}
+    />
+  ) : null;
 };

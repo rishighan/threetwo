@@ -2,17 +2,18 @@ import React from "react";
 import { ComicVineSearchForm } from "./ComicVineSearchForm";
 import { ComicVineMatchPanel } from "./ComicVineMatchPanel";
 import { EditMetadataPanel } from "./EditMetadataPanel";
+import { RawFileDetails } from "../../graphql/generated";
 
-interface InferredIssue {
+type InferredIssue = {
   name?: string;
   number?: number;
   year?: string;
   subtitle?: string;
   [key: string]: any;
-}
+};
 
-interface CVMatchesPanelProps {
-  rawFileDetails: any;
+type CVMatchesPanelProps = {
+  rawFileDetails?: RawFileDetails;
   inferredMetadata: {
     issue?: InferredIssue;
   };
@@ -20,7 +21,7 @@ interface CVMatchesPanelProps {
   comicObjectId: string;
   queryClient: any;
   onMatchApplied: () => void;
-}
+};
 
 export const CVMatchesPanel: React.FC<CVMatchesPanelProps> = ({
   rawFileDetails,
@@ -55,9 +56,9 @@ export const CVMatchesPanel: React.FC<CVMatchesPanelProps> = ({
   </>
 );
 
-interface EditMetadataPanelWrapperProps {
-  rawFileDetails: any;
-}
+type EditMetadataPanelWrapperProps = {
+  rawFileDetails?: RawFileDetails;
+};
 
 export const EditMetadataPanelWrapper: React.FC<EditMetadataPanelWrapperProps> = ({
   rawFileDetails,

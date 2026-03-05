@@ -42,6 +42,6 @@ const getIssueTypeDisplayName = (
       return { displayName, results };
     }
   } catch (error) {
-    console.log(error);
+    // Error handling could be added here if needed
   }
 };

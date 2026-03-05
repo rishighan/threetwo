@@ -21,21 +21,7 @@ app.use(function (req, res, next) {
 // Getting data from body of requests
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-//
-// app.get("/", (req: Request, res: Response) => {
-//   console.log("sending index.html");
-//   res.sendFile(path.resolve(__dirname, "../dist/index.html"));
-// });
 
 // REGISTER ROUTES
 // all of the routes will be prefixed with /api
 const routes: Router[] = Object.values(router);
-// app.use("/api", routes);
-
-// Send index.html on root request
-// app.use(express.static("dist"));
-// app.use(express.static("public"));
-
-// app.listen(port);
-
-// console.log(`Server is listening on ${port}`);

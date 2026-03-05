@@ -7,9 +7,10 @@ import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
 import { determineCoverFile } from "../../shared/utils/metadata.utils";
 import Header from "../shared/Header";
 import useEmblaCarousel from "embla-carousel-react";
+import { GetWantedComicsQuery } from "../../graphql/generated";
 
 type WantedComicsListProps = {
-  comics: any;
+  comics?: GetWantedComicsQuery['getComicBooks']['docs'];
 };
 
 export const WantedComicsList = ({
@@ -38,12 +39,22 @@ export const WantedComicsList = ({
           <div className="flex">
             {map(
                   comics,
-                  ({
-                    _id,
-                    rawFileDetails,
-                    sourcedMetadata: { comicvine, comicInfo, locg },
-                    wanted,
-                  }) => {
+                  (comic) => {
+                    const {
+                      id,
+                      rawFileDetails,
+                      sourcedMetadata,
+                    } = comic;
+
+                    // Parse sourced metadata (GraphQL returns as strings)
+                    const comicvine = typeof sourcedMetadata?.comicvine === 'string'
+                      ? JSON.parse(sourcedMetadata.comicvine)
+                      : sourcedMetadata?.comicvine;
+                    const comicInfo = typeof sourcedMetadata?.comicInfo === 'string'
+                      ? JSON.parse(sourcedMetadata.comicInfo)
+                      : sourcedMetadata?.comicInfo;
+                    const locg = sourcedMetadata?.locg;
+
                     const isComicBookMetadataAvailable = !isUndefined(comicvine);
                     const consolidatedComicMetadata = {
                       rawFileDetails,
@@ -58,14 +69,14 @@ export const WantedComicsList = ({
                       publisher = null,
                     } = determineCoverFile(consolidatedComicMetadata);
                     const titleElement = (
-                      <Link to={"/comic/details/" + _id}>
+                      <Link to={"/comic/details/" + id}>
                         {ellipsize(issueName, 20)}
                         <p>{publisher}</p>
                       </Link>
                     );
                     return (
                       <div
-                        key={_id}
+                        key={id}
                         className="flex-[0_0_200px] min-w-0 sm:flex-[0_0_220px] md:flex-[0_0_240px] lg:flex-[0_0_260px] xl:flex-[0_0_280px] pr-[15px]"
                       >
                         <Card
@@ -79,7 +90,7 @@ export const WantedComicsList = ({
                             <div className="flex flex-row gap-2">
                               {/* Issue type */}
                               {isComicBookMetadataAvailable &&
-                              !isNil(detectIssueTypes(comicvine.description)) ? (
+                              !isNil(detectIssueTypes(comicvine?.description)) ? (
                                 <div className="my-2">
                                   <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
                                     <span className="pr-1 pt-1">
@@ -88,29 +99,14 @@ export const WantedComicsList = ({
     
                                     <span className="text-md text-slate-500 dark:text-slate-900">
                                       {
-                                        detectIssueTypes(comicvine.description)
-                                          .displayName
+                                        detectIssueTypes(comicvine?.description)
+                                          ?.displayName
                                       }
                                     </span>
                                   </span>
                                 </div>
                               ) : null}
-                              {/* issues marked as wanted, part of this volume */}
-                              {wanted?.markEntireVolumeWanted ? (
-                                <div className="text-sm">sagla volume pahije</div>
-                              ) : (
-                                <div className="my-2">
-                                  <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-0.5 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                                    <span className="pr-1 pt-1">
-                                      <i className="icon-[solar--documents-bold-duotone] w-5 h-5"></i>
-                                    </span>
-    
-                                    <span className="text-md text-slate-500 dark:text-slate-900">
-                                      {wanted.issues.length}
-                                    </span>
-                                  </span>
-                                </div>
-                              )}
+                              {/* Wanted comics - info not available in current GraphQL query */}
                             </div>
                             {/* comicVine metadata presence */}
                             {isComicBookMetadataAvailable && (

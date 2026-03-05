@@ -55,7 +55,6 @@ export const toggleAirDCPPSocketConnectionStatus =
         break;
 
       default:
-        console.log("Can't set AirDC++ socket status.");
         break;
     }
   };

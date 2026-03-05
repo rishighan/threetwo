@@ -7,8 +7,6 @@ export const fetchMetronResource = async (options) => {
     `${METRON_SERVICE_URI}/fetchResource`,
     options,
   );
-  console.log(metronResourceResults);
-  console.log("has more? ", !isNil(metronResourceResults.data.next));
   const results = metronResourceResults.data.results.map((result) => {
     return {
       label: result.name || result.__str__,

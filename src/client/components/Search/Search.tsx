@@ -78,7 +78,6 @@ export const Search = ({}: ISearchProps): ReactElement => {
             coverDate: cover_date,
             issueNumber: issue_number,
           });
-          console.log(issues);
           // Get volume metadata from CV
           const response = await axios({
             url: `${COMICVINE_SERVICE_URI}/getVolumes`,
@@ -111,7 +110,6 @@ export const Search = ({}: ISearchProps): ReactElement => {
           break;
 
         default:
-          console.log("Invalid resource type.");
           break;
       }
       // Add to wanted list

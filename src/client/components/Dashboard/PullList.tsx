@@ -1,31 +1,22 @@
-import React, { ReactElement, useState, useCallback } from "react";
+import React, { ReactElement, useState } from "react";
 import { map } from "lodash";
 import Card from "../shared/Carda";
 import Header from "../shared/Header";
-import { importToDB } from "../../actions/fileops.actions";
 import ellipsize from "ellipsize";
-import { Link } from "react-router-dom";
 
 import axios from "axios";
-import rateLimiter from "axios-rate-limit";
-import { setupCache } from "axios-cache-interceptor";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useEmblaCarousel from "embla-carousel-react";
-import { COMICVINE_SERVICE_URI, LIBRARY_SERVICE_BASE_URI } from "../../constants/endpoints";
-import { Field, Form } from "react-final-form";
+import { LIBRARY_SERVICE_BASE_URI } from "../../constants/endpoints";
+import { Form } from "react-final-form";
 import DatePickerDialog from "../shared/DatePicker";
 import { format } from "date-fns";
+import { LocgMetadata, useGetWeeklyPullListQuery } from "../../graphql/generated";
 
-type PullListProps = {
-  issues: any;
-};
+interface PullListProps {
+  issues?: LocgMetadata[];
+}
 
-const http = rateLimiter(axios.create(), {
-  maxRequests: 1,
-  perMilliseconds: 1000,
-  maxRPS: 1,
-});
-const cachedAxios = setupCache(axios);
 export const PullList = (): ReactElement => {
   const queryClient = useQueryClient();
   
@@ -44,19 +35,21 @@ export const PullList = (): ReactElement => {
   });
 
   const {
-    data: pullList,
+    data: pullListData,
     refetch,
     isSuccess,
     isLoading,
     isError,
-  } = useQuery({
-    queryFn: async (): any =>
-      await cachedAxios(`${COMICVINE_SERVICE_URI}/getWeeklyPullList`, {
-        method: "get",
-        params: { startDate: inputValue, pageSize: "15", currentPage: "1" },
-      }),
-    queryKey: ["pullList", inputValue],
+  } = useGetWeeklyPullListQuery({
+    input: {
+      startDate: inputValue,
+      pageSize: 15,
+      currentPage: 1,
+    },
   });
+
+  // Transform the data to match the old structure
+  const pullList = pullListData ? { data: pullListData.getWeeklyPullList } : undefined;
 
   const { mutate: addToLibrary } = useMutation({
     mutationFn: async ({ sourceName, metadata }: { sourceName: string; metadata: any }) => {
@@ -146,7 +139,7 @@ export const PullList = (): ReactElement => {
         {isSuccess && !isLoading && (
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex">
-              {map(pullList?.data.result, (issue, idx) => {
+              {map(pullList?.data.result, (issue: LocgMetadata, idx: number) => {
                 return (
                   <div
                     key={idx}
@@ -154,13 +147,13 @@ export const PullList = (): ReactElement => {
                   >
                     <Card
                       orientation={"vertical-2"}
-                      imageUrl={issue.coverImageUrl}
+                      imageUrl={issue.cover || undefined}
                       hasDetails
-                      title={ellipsize(issue.issueName, 25)}
+                      title={ellipsize(issue.name || 'Unknown', 25)}
                     >
                       <div className="px-1">
                         <span className="inline-flex mb-2 items-center bg-slate-50 text-slate-800 text-xs font-medium px-2.5 py-1 rounded-md dark:text-slate-900 dark:bg-slate-400">
-                          {issue.publicationDate}
+                          {issue.publisher || 'Unknown Publisher'}
                         </span>
                         <div className="flex flex-row justify-end">
                           <button

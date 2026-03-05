@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 type IHeaderProps = {
   headerContent: string;
-  subHeaderContent: ReactElement;
+  subHeaderContent: ReactElement | string;
   iconClassNames: string;
   link?: string;
 };

@@ -43,7 +43,7 @@ export const getWeeklyPullList = (options) => async (dispatch) => {
       });
     });
   } catch (error) {
-    console.log(error);
+    // Error handling could be added here if needed
   }
 };
 
@@ -73,10 +73,9 @@ export const comicinfoAPICall = (options) => async (dispatch) => {
         break;
 
       default:
-        console.log("Could not complete request.");
+        break;
     }
   } catch (error) {
-    console.log(error);
     dispatch({
       type: CV_API_GENERIC_FAILURE,
       error,
@@ -99,7 +98,6 @@ export const getIssuesForSeries =
         comicObjectID,
       },
     });
-    console.log(issues);
     dispatch({
       type: CV_ISSUES_FOR_VOLUME_IN_LIBRARY_SUCCESS,
       issues: issues.data.results,

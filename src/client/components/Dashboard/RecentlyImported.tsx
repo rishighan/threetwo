@@ -4,23 +4,19 @@ import { Link } from "react-router-dom";
 import ellipsize from "ellipsize";
 import { isEmpty, isNil, isUndefined, map } from "lodash";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
-import {
-  determineCoverFile,
-  determineExternalMetadata,
-} from "../../shared/utils/metadata.utils";
+import { determineCoverFile } from "../../shared/utils/metadata.utils";
 import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
 import Header from "../shared/Header";
 import useEmblaCarousel from "embla-carousel-react";
+import { GetRecentComicsQuery } from "../../graphql/generated";
 
 type RecentlyImportedProps = {
-  comics: any;
+  comics: GetRecentComicsQuery['comics']['comics'];
 };
 
 export const RecentlyImported = (
-  comics: RecentlyImportedProps,
+  { comics }: RecentlyImportedProps,
 ): ReactElement => {
-  console.log(comics);
-  
   // embla carousel
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
@@ -39,31 +35,30 @@ export const RecentlyImported = (
       <div className="-mr-10 sm:-mr-17 lg:-mr-29 xl:-mr-36 2xl:-mr-42 mt-3">
         <div className="overflow-hidden" ref={emblaRef}>
           <div className="flex">
-            {comics?.comics.map(
-          (
-            {
-              _id,
+            {comics?.map((comic, idx) => {
+            const {
+              id,
               rawFileDetails,
-              sourcedMetadata: { comicvine, comicInfo, locg },
+              sourcedMetadata,
+              canonicalMetadata,
               inferredMetadata,
-              wanted: { source } = {},
-            },
-            idx,
-          ) => {
+            } = comic;
+
+            // Parse sourced metadata (GraphQL returns as strings)
+            const comicvine = typeof sourcedMetadata?.comicvine === 'string'
+              ? JSON.parse(sourcedMetadata.comicvine)
+              : sourcedMetadata?.comicvine;
+            const comicInfo = typeof sourcedMetadata?.comicInfo === 'string'
+              ? JSON.parse(sourcedMetadata.comicInfo)
+              : sourcedMetadata?.comicInfo;
+            const locg = sourcedMetadata?.locg;
+
             const { issueName, url } = determineCoverFile({
               rawFileDetails,
               comicvine,
               comicInfo,
               locg,
             });
-            const { issue, coverURL, icon } = determineExternalMetadata(
-              source,
-              {
-                comicvine,
-                comicInfo,
-                locg,
-              },
-            );
             const isComicVineMetadataAvailable =
               !isUndefined(comicvine) &&
               !isUndefined(comicvine.volumeInformation);
@@ -77,7 +72,7 @@ export const RecentlyImported = (
                 <Card
                   orientation="vertical-2"
                   imageUrl={url}
-                  title={inferredMetadata.issue.name}
+                  title={inferredMetadata?.issue?.name}
                   hasDetails
                   cardState={cardState}
                 >
@@ -89,7 +84,7 @@ export const RecentlyImported = (
                         <i className="icon-[solar--hashtag-outline]"></i>
                       </span>
                       <span className="text-md text-slate-900">
-                        {inferredMetadata.issue.number}
+                        {inferredMetadata?.issue?.number}
                       </span>
                     </span>
                     {/* File extension */}
@@ -99,7 +94,7 @@ export const RecentlyImported = (
                       </span>
 
                       <span className="text-md text-slate-500 dark:text-slate-900">
-                        {rawFileDetails.extension}
+                        {rawFileDetails?.extension}
                       </span>
                     </span>
                     {/* Uncompressed status  */}
@@ -142,8 +137,7 @@ export const RecentlyImported = (
               </Card>
               </div>
             );
-          },
-        )}
+          })}
           </div>
         </div>
       </div>

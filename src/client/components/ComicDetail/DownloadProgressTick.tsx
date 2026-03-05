@@ -77,8 +77,6 @@ export const DownloadProgressTick: React.FC<DownloadProgressTickProps> = ({
      */
     const onDownloadTick = (data: DownloadTickData) => {
       // Compare numeric data.id to string bundleId
-      console.log(data.id);
-      console.log(`bundleId is ${bundleId}`)
       if (data.id === parseInt(bundleId, 10)) {
         setTick(data);
       }

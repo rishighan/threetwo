@@ -18,7 +18,14 @@ import Volumes from "./components/Volumes/Volumes";
 import VolumeDetails from "./components/VolumeDetail/VolumeDetail";
 import WantedComics from "./components/WantedComics/WantedComics";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const router = createBrowserRouter([
   {

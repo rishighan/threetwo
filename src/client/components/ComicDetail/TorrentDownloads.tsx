@@ -4,7 +4,6 @@ import prettyBytes from "pretty-bytes";
 
 export const TorrentDownloads = (props) => {
   const { data } = props;
-  console.log(Object.values(data));
   return (
     <>
       {data.map(({ torrent }) => {

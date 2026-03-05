@@ -5,12 +5,17 @@ import { Link, useNavigate } from "react-router-dom";
 import Card from "../shared/Carda";
 import Header from "../shared/Header";
 import useEmblaCarousel from "embla-carousel-react";
+import { GetVolumeGroupsQuery } from "../../graphql/generated";
 
-export const VolumeGroups = (props): ReactElement => {
+type VolumeGroupsProps = {
+  volumeGroups?: GetVolumeGroupsQuery['getComicBookGroups'];
+};
+
+export const VolumeGroups = (props: VolumeGroupsProps): ReactElement => {
   // Till mongo gives us back the deduplicated results with the ObjectId
   const deduplicatedGroups = unionBy(props.volumeGroups, "volumes.id");
   const navigate = useNavigate();
-  const navigateToVolumes = (row) => {
+  const navigateToVolumes = (row: any) => {
     navigate(`/volumes/all`);
   };
 
@@ -36,18 +41,18 @@ export const VolumeGroups = (props): ReactElement => {
             {map(deduplicatedGroups, (data) => {
               return (
                 <div
-                  key={data._id}
+                  key={data.id}
                   className="flex-[0_0_200px] min-w-0 sm:flex-[0_0_220px] md:flex-[0_0_240px] lg:flex-[0_0_260px] xl:flex-[0_0_280px] pr-[15px]"
                 >
                   <Card
                     orientation="vertical-2"
-                    imageUrl={data.volumes.image.small_url}
+                    imageUrl={data.volumes?.image?.small_url || undefined}
                     hasDetails
                   >
                     <div className="py-3">
                       <div className="text-sm">
-                        <Link to={`/volume/details/${data._id}`}>
-                          {ellipsize(data.volumes.name, 48)}
+                        <Link to={`/volume/details/${data.id}`}>
+                          {ellipsize(data.volumes?.name || 'Unknown', 48)}
                         </Link>
                       </div>
                       {/* issue count */}
@@ -57,7 +62,7 @@ export const VolumeGroups = (props): ReactElement => {
                         </span>
 
                         <span className="text-md text-slate-500 dark:text-slate-900">
-                          {data.volumes.count_of_issues} issues
+                          {data.volumes?.count_of_issues || 0} issues
                         </span>
                       </span>
                     </div>

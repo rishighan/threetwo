@@ -1,10 +1,14 @@
-import React, { ReactElement, useEffect } from "react";
-import prettyBytes from "pretty-bytes";
+import React, { ReactElement } from "react";
 import { isEmpty, isUndefined, map } from "lodash";
 import Header from "../shared/Header";
+import { GetLibraryStatisticsQuery } from "../../graphql/generated";
+
+type LibraryStatisticsProps = {
+  stats: GetLibraryStatisticsQuery['getLibraryStatistics'];
+};
 
 export const LibraryStatistics = (
-  props: ILibraryStatisticsProps,
+  props: LibraryStatisticsProps,
 ): ReactElement => {
   const { stats } = props;
   return (
@@ -24,29 +28,30 @@ export const LibraryStatistics = (
             <dd className="text-3xl text-green-600 md:text-5xl">
               {props.stats.totalDocuments} files
             </dd>
-            <dd>
-              <span className="text-2xl text-green-600">
-                {props.stats.comicDirectorySize &&
-                  prettyBytes(props.stats.comicDirectorySize)}
-              </span>
-            </dd>
+            {props.stats.comicDirectorySize?.fileCount && (
+              <dd>
+                <span className="text-2xl text-green-600">
+                  {props.stats.comicDirectorySize.fileCount} comic files
+                </span>
+              </dd>
+            )}
           </div>
           {/* comicinfo and comicvine tagged issues */}
           <div className="flex flex-col gap-4">
             {!isUndefined(props.stats.statistics) &&
-              !isEmpty(props.stats.statistics[0].issues) && (
+              !isEmpty(props.stats.statistics?.[0]?.issues) && (
                 <div className="flex flex-col h-fit rounded-lg bg-green-100 dark:bg-green-200 px-4 py-3 text-center">
                   <span className="text-xl">
-                    {props.stats.statistics[0].issues.length}
+                    {props.stats.statistics?.[0]?.issues?.length || 0}
                   </span>{" "}
                   tagged with ComicVine
                 </div>
               )}
             {!isUndefined(props.stats.statistics) &&
-              !isEmpty(props.stats.statistics[0].issuesWithComicInfoXML) && (
+              !isEmpty(props.stats.statistics?.[0]?.issuesWithComicInfoXML) && (
                 <div className="flex flex-col h-fit rounded-lg bg-green-100 dark:bg-green-200 px-4 py-3 text-center">
                   <span className="text-xl">
-                    {props.stats.statistics[0].issuesWithComicInfoXML.length}
+                    {props.stats.statistics?.[0]?.issuesWithComicInfoXML?.length || 0}
                   </span>{" "}
                   <span className="tag is-warning has-text-weight-bold mr-2 ml-1">
                     with ComicInfo.xml
@@ -57,14 +62,14 @@ export const LibraryStatistics = (
 
           <div className="">
             {!isUndefined(props.stats.statistics) &&
-              !isEmpty(props.stats.statistics[0].fileTypes) &&
-              map(props.stats.statistics[0].fileTypes, (fileType, idx) => {
+              !isEmpty(props.stats.statistics?.[0]?.fileTypes) &&
+              map(props.stats.statistics?.[0]?.fileTypes, (fileType, idx) => {
                 return (
                   <span
                     key={idx}
                     className="flex flex-col mb-4 h-fit text-xl rounded-lg bg-green-100 dark:bg-green-200 px-4 py-3 text-center"
                   >
-                    {fileType.data.length} {fileType._id}
+                    {fileType.data.length} {fileType.id}
                   </span>
                 );
               })}
@@ -75,20 +80,20 @@ export const LibraryStatistics = (
             {/* publisher with most issues */}
             {!isUndefined(props.stats.statistics) &&
               !isEmpty(
-                props.stats.statistics[0].publisherWithMostComicsInLibrary[0],
+                props.stats.statistics?.[0]?.publisherWithMostComicsInLibrary?.[0],
               ) && (
                 <>
                   <span className="">
                     {
-                      props.stats.statistics[0]
-                        .publisherWithMostComicsInLibrary[0]._id
+                      props.stats.statistics?.[0]
+                        ?.publisherWithMostComicsInLibrary?.[0]?.id
                     }
                   </span>
                   {" has the most issues "}
                   <span className="">
                     {
-                      props.stats.statistics[0]
-                        .publisherWithMostComicsInLibrary[0].count
+                      props.stats.statistics?.[0]
+                        ?.publisherWithMostComicsInLibrary?.[0]?.count
                     }
                   </span>
                 </>

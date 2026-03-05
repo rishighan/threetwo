@@ -19,7 +19,6 @@ export const ProwlarrSettingsForm = (props) => {
     },
     queryKey: ["prowlarrConnectionResult"],
   });
-  console.log(data);
   const submitHandler = () => {};
   const initialData = {};
   return (

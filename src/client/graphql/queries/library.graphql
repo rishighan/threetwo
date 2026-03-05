@@ -1,0 +1,72 @@
+# Library queries
+# Note: The Library component currently uses Elasticsearch for search functionality
+# These queries are prepared for when the backend supports GraphQL-based library queries
+
+query GetLibraryComics($page: Int, $limit: Int, $search: String, $series: String) {
+  comics(page: $page, limit: $limit, search: $search, series: $series) {
+    comics {
+      id
+      inferredMetadata {
+        issue {
+          name
+          number
+          year
+          subtitle
+        }
+      }
+      rawFileDetails {
+        name
+        filePath
+        fileSize
+        extension
+        mimeType
+        pageCount
+        archive {
+          uncompressed
+        }
+        cover {
+          filePath
+        }
+      }
+      sourcedMetadata {
+        comicvine
+        comicInfo
+        locg {
+          name
+          publisher
+          cover
+        }
+      }
+      canonicalMetadata {
+        title {
+          value
+        }
+        series {
+          value
+        }
+        issueNumber {
+          value
+        }
+        publisher {
+          value
+        }
+        pageCount {
+          value
+        }
+      }
+      importStatus {
+        isImported
+        tagged
+      }
+      createdAt
+      updatedAt
+    }
+    totalCount
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      currentPage
+      totalPages
+    }
+  }
+}
