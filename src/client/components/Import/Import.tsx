@@ -11,24 +11,15 @@ import {
   useStartIncrementalImportMutation
 } from "../../graphql/generated";
 
-interface IProps {
-  matches?: unknown;
-  fetchComicMetadata?: any;
+interface ImportProps {
   path: string;
-  covers?: any;
 }
 
 /**
- * Component to facilitate the import of comics to the ThreeTwo library
- *
- * @param x - The first input number
- * @param y - The second input number
- * @returns The arithmetic mean of `x` and `y`
- *
- * @beta
+ * Import component for adding comics to the ThreeTwo library.
+ * Provides preview statistics, smart import, and queue management.
  */
-
-export const Import = (props: IProps): ReactElement => {
+export const Import = (props: ImportProps): ReactElement => {
   const queryClient = useQueryClient();
   const [socketReconnectTrigger, setSocketReconnectTrigger] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
@@ -40,7 +31,6 @@ export const Import = (props: IProps): ReactElement => {
     })),
   );
 
-  // Query to get import statistics (preview)
   const {
     data: importStats,
     isLoading: isLoadingStats,
@@ -53,7 +43,6 @@ export const Import = (props: IProps): ReactElement => {
     }
   );
 
-  // Mutation for incremental import (smart import)
   const { mutate: startIncrementalImport, isPending: isStartingImport } = useStartIncrementalImportMutation({
     onSuccess: (data) => {
       if (data.startIncrementalImport.success) {
@@ -76,19 +65,10 @@ export const Import = (props: IProps): ReactElement => {
 
   const { data, isError, isLoading, refetch } = useGetJobResultStatisticsQuery();
 
-  // Ensure socket connection is established and listen for import completion
   useEffect(() => {
     const socket = getSocket("/");
-    
-    // Listen for import queue drained event to refresh the table
-    const handleQueueDrained = () => {
-      refetch();
-    };
-
-    // Listen for individual import completions to refresh the table
-    const handleCoverExtracted = () => {
-      refetch();
-    };
+    const handleQueueDrained = () => refetch();
+    const handleCoverExtracted = () => refetch();
 
     socket.on("LS_IMPORT_QUEUE_DRAINED", handleQueueDrained);
     socket.on("LS_COVER_EXTRACTED", handleCoverExtracted);
@@ -99,6 +79,9 @@ export const Import = (props: IProps): ReactElement => {
     };
   }, [getSocket, refetch, socketReconnectTrigger]);
 
+  /**
+   * Toggles import queue pause/resume state
+   */
   const toggleQueue = (queueAction: string, queueStatus: string) => {
     const socket = getSocket("/");
     socket.emit(
@@ -116,18 +99,16 @@ export const Import = (props: IProps): ReactElement => {
     refetchStats();
   };
 
+  /**
+   * Starts smart import, resetting session if queue was drained
+   */
   const handleStartSmartImport = () => {
-    // Clear old sessionId when starting a new import after queue is drained
     if (importJobQueue.status === "drained") {
       localStorage.removeItem("sessionId");
-      // Disconnect and reconnect socket to get new sessionId
       disconnectSocket("/");
-      // Wait for socket to reconnect and get new sessionId before starting import
       setTimeout(() => {
         getSocket("/");
-        // Trigger useEffect to re-attach event listeners
         setSocketReconnectTrigger(prev => prev + 1);
-        // Wait a bit more for sessionInitialized event to fire
         setTimeout(() => {
           const sessionId = localStorage.getItem("sessionId") || "";
           startIncrementalImport({ sessionId });
@@ -140,11 +121,7 @@ export const Import = (props: IProps): ReactElement => {
   };
 
   /**
-   * Method to render import job queue pause/resume controls on the UI
-   *
-   * @param status The `string` status (either `"pause"` or `"resume"`)
-   * @returns ReactElement A `<button/>` that toggles queue status
-   * @remarks Sets the global `importJobQueue.status` state upon toggling
+   * Renders pause/resume controls based on queue status
    */
   const renderQueueControls = (status: string): ReactElement | null => {
     switch (status) {
@@ -230,7 +207,6 @@ export const Import = (props: IProps): ReactElement => {
             </div>
           </article>
 
-          {/* Import Preview Section */}
           {!showPreview && (importJobQueue.status === "drained" || importJobQueue.status === undefined) && (
             <div className="my-4 flex gap-3">
               <button
@@ -244,8 +220,7 @@ export const Import = (props: IProps): ReactElement => {
               </button>
             </div>
           )}
-
-          {/* Preview Statistics */}
+          {/* Import Preview Panel */}
           {showPreview && !isLoadingStats && importStats?.getImportStatistics && (
             <div className="my-6 max-w-screen-lg">
               <span className="flex items-center my-5">
@@ -362,7 +337,6 @@ export const Import = (props: IProps): ReactElement => {
             </div>
           )}
 
-          {/* Loading state for preview */}
           {showPreview && isLoadingStats && (
             <div className="my-6 flex justify-center items-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
@@ -372,7 +346,6 @@ export const Import = (props: IProps): ReactElement => {
             </div>
           )}
 
-          {/* Activity */}
           {(importJobQueue.status === "running" ||
             importJobQueue.status === "paused") && (
             <>
@@ -384,7 +357,6 @@ export const Import = (props: IProps): ReactElement => {
               </span>
               <div className="mt-5 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:items-center">
                 <dl className="grid grid-cols-2 gap-4 sm:grid-cols-2">
-                  {/* Successful import counts */}
                   <div className="flex flex-col rounded-lg bg-green-100 dark:bg-green-200 px-4 py-6 text-center">
                     <dd className="text-3xl text-green-600 md:text-5xl">
                       {importJobQueue.successfulJobCount}
@@ -393,7 +365,6 @@ export const Import = (props: IProps): ReactElement => {
                       imported
                     </dt>
                   </div>
-                  {/* Failed job counts */}
                   <div className="flex flex-col rounded-lg bg-red-100 dark:bg-red-200 px-4 py-6 text-center">
                     <dd className="text-3xl text-red-600 md:text-5xl">
                       {importJobQueue.failedJobCount}
@@ -416,7 +387,6 @@ export const Import = (props: IProps): ReactElement => {
             </>
           )}
 
-          {/* Past imports */}
           {!isLoading && !isEmpty(data?.getJobResultStatistics) && (
             <div className="max-w-screen-lg">
               <span className="flex items-center mt-6">
@@ -456,9 +426,9 @@ export const Import = (props: IProps): ReactElement => {
                             {index + 1}
                           </td>
                           <td className="whitespace-nowrap px-2 py-2 text-gray-700 dark:text-slate-300">
-                            {jobResult.earliestTimestamp && !isNaN(new Date(jobResult.earliestTimestamp).getTime())
+                            {jobResult.earliestTimestamp && !isNaN(parseInt(jobResult.earliestTimestamp))
                               ? format(
-                                  new Date(jobResult.earliestTimestamp),
+                                  new Date(parseInt(jobResult.earliestTimestamp)),
                                   "EEEE, hh:mma, do LLLL y",
                                 )
                               : "N/A"}
