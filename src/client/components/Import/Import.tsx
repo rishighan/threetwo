@@ -7,9 +7,10 @@ import { useShallow } from "zustand/react/shallow";
 import axios from "axios";
 import {
   useGetJobResultStatisticsQuery,
-  useGetImportStatisticsQuery,
+  useGetCachedImportStatisticsQuery,
   useStartIncrementalImportMutation
 } from "../../graphql/generated";
+import { RealTimeImportStats } from "./RealTimeImportStats";
 
 interface ImportProps {
   path: string;
@@ -22,7 +23,6 @@ interface ImportProps {
 export const Import = (props: ImportProps): ReactElement => {
   const queryClient = useQueryClient();
   const [socketReconnectTrigger, setSocketReconnectTrigger] = useState(0);
-  const [showPreview, setShowPreview] = useState(false);
   const { importJobQueue, getSocket, disconnectSocket } = useStore(
     useShallow((state) => ({
       importJobQueue: state.importJobQueue,
@@ -31,23 +31,10 @@ export const Import = (props: ImportProps): ReactElement => {
     })),
   );
 
-  const {
-    data: importStats,
-    isLoading: isLoadingStats,
-    refetch: refetchStats
-  } = useGetImportStatisticsQuery(
-    {},
-    {
-      enabled: showPreview,
-      refetchOnWindowFocus: false,
-    }
-  );
-
   const { mutate: startIncrementalImport, isPending: isStartingImport } = useStartIncrementalImportMutation({
     onSuccess: (data) => {
       if (data.startIncrementalImport.success) {
         importJobQueue.setStatus("running");
-        setShowPreview(false);
       }
     },
   });
@@ -64,6 +51,21 @@ export const Import = (props: ImportProps): ReactElement => {
   });
 
   const { data, isError, isLoading, refetch } = useGetJobResultStatisticsQuery();
+  
+  // Get cached import statistics to determine if Start Import button should be shown
+  const { data: cachedStats } = useGetCachedImportStatisticsQuery(
+    {},
+    {
+      refetchOnWindowFocus: false,
+      refetchInterval: false,
+    }
+  );
+
+  // Determine if we should show the Start Import button
+  const hasNewFiles = cachedStats?.getCachedImportStatistics?.success &&
+    cachedStats.getCachedImportStatistics.stats &&
+    cachedStats.getCachedImportStatistics.stats.newFiles > 0 &&
+    cachedStats.getCachedImportStatistics.stats.pendingFiles === 0;
 
   useEffect(() => {
     const socket = getSocket("/");
@@ -92,11 +94,6 @@ export const Import = (props: ImportProps): ReactElement => {
         queueStatus,
       },
     );
-  };
-
-  const handleShowPreview = () => {
-    setShowPreview(true);
-    refetchStats();
   };
 
   /**
@@ -188,6 +185,11 @@ export const Import = (props: ImportProps): ReactElement => {
         </header>
 
         <div className="mx-auto max-w-screen-xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
+          {/* Real-Time Import Statistics Widget */}
+          <div className="mb-6 max-w-screen-lg">
+            <RealTimeImportStats />
+          </div>
+
           <article
             role="alert"
             className="rounded-lg max-w-screen-md border-s-4 border-blue-500 bg-blue-50 p-4 dark:border-s-4 dark:border-blue-600 dark:bg-blue-300 dark:text-slate-600"
@@ -207,142 +209,22 @@ export const Import = (props: ImportProps): ReactElement => {
             </div>
           </article>
 
-          {!showPreview && (importJobQueue.status === "drained" || importJobQueue.status === undefined) && (
-            <div className="my-4 flex gap-3">
+          {/* Start Smart Import Button - shown when there are new files and no import is running */}
+          {hasNewFiles &&
+           (importJobQueue.status === "drained" || importJobQueue.status === undefined) && (
+            <div className="my-6 max-w-screen-lg">
               <button
-                className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-blue-400 dark:border-blue-200 bg-blue-200 px-5 py-3 text-gray-500 hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
-                onClick={handleShowPreview}
+                className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-5 py-3 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleStartSmartImport}
+                disabled={isStartingImport}
               >
-                <span className="text-md">Preview Import</span>
+                <span className="text-md font-medium">
+                  {isStartingImport ? "Starting Import..." : `Start Smart Import (${cachedStats?.getCachedImportStatistics?.stats?.newFiles} new files)`}
+                </span>
                 <span className="w-6 h-6">
-                  <i className="h-6 w-6 icon-[solar--eye-bold-duotone]"></i>
+                  <i className="h-6 w-6 icon-[solar--file-left-bold-duotone]"></i>
                 </span>
               </button>
-            </div>
-          )}
-          {/* Import Preview Panel */}
-          {showPreview && !isLoadingStats && importStats?.getImportStatistics && (
-            <div className="my-6 max-w-screen-lg">
-              <span className="flex items-center my-5">
-                <span className="text-xl text-slate-500 dark:text-slate-200 pr-5">
-                  Import Preview
-                </span>
-                <span className="h-px flex-1 bg-slate-200 dark:bg-slate-400"></span>
-              </span>
-
-              <div className="rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-slate-700 p-6">
-                <div className="mb-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
-                    <span className="font-semibold">Directory:</span> {importStats.getImportStatistics.directory}
-                  </p>
-                </div>
-
-                <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                  <div className="flex flex-col rounded-lg bg-blue-100 dark:bg-blue-200 px-4 py-6 text-center">
-                    <dd className="text-3xl text-blue-600 md:text-5xl">
-                      {importStats.getImportStatistics.stats.totalLocalFiles}
-                    </dd>
-                    <dt className="text-lg font-medium text-gray-500">
-                      Total Files
-                    </dt>
-                  </div>
-
-                  <div className="flex flex-col rounded-lg bg-green-100 dark:bg-green-200 px-4 py-6 text-center">
-                    <dd className="text-3xl text-green-600 md:text-5xl">
-                      {importStats.getImportStatistics.stats.newFiles}
-                    </dd>
-                    <dt className="text-lg font-medium text-gray-500">
-                      New Comics
-                    </dt>
-                  </div>
-
-                  <div className="flex flex-col rounded-lg bg-yellow-100 dark:bg-yellow-200 px-4 py-6 text-center">
-                    <dd className="text-3xl text-yellow-600 md:text-5xl">
-                      {importStats.getImportStatistics.stats.alreadyImported}
-                    </dd>
-                    <dt className="text-lg font-medium text-gray-500">
-                      Already Imported
-                    </dt>
-                  </div>
-
-                  <div className="flex flex-col rounded-lg bg-purple-100 dark:bg-purple-200 px-4 py-6 text-center">
-                    <dd className="text-3xl text-purple-600 md:text-5xl">
-                      {(() => {
-                        const percentage = importStats.getImportStatistics.stats.percentageImported;
-                        const numValue = typeof percentage === 'number' ? percentage : parseFloat(percentage);
-                        return !isNaN(numValue) ? numValue.toFixed(1) : '0.0';
-                      })()}%
-                    </dd>
-                    <dt className="text-lg font-medium text-gray-500">
-                      Already in Library
-                    </dt>
-                  </div>
-                </dl>
-
-                {importStats.getImportStatistics.stats.newFiles > 0 && (
-                  <div className="mt-6">
-                    <article
-                      role="alert"
-                      className="rounded-lg border-s-4 border-green-500 bg-green-50 p-4 dark:border-s-4 dark:border-green-600 dark:bg-green-300 dark:text-slate-600"
-                    >
-                      <p className="font-medium">
-                        Ready to import {importStats.getImportStatistics.stats.newFiles} new comic{importStats.getImportStatistics.stats.newFiles !== 1 ? 's' : ''}!
-                      </p>
-                      <p className="text-sm mt-1">
-                        {importStats.getImportStatistics.stats.alreadyImported} comic{importStats.getImportStatistics.stats.alreadyImported !== 1 ? 's' : ''} will be skipped (already in library).
-                      </p>
-                    </article>
-                  </div>
-                )}
-
-                {importStats.getImportStatistics.stats.newFiles === 0 && (
-                  <div className="mt-6">
-                    <article
-                      role="alert"
-                      className="rounded-lg border-s-4 border-yellow-500 bg-yellow-50 p-4 dark:border-s-4 dark:border-yellow-600 dark:bg-yellow-300 dark:text-slate-600"
-                    >
-                      <p className="font-medium">
-                        No new comics to import!
-                      </p>
-                      <p className="text-sm mt-1">
-                        All {importStats.getImportStatistics.stats.totalLocalFiles} comic{importStats.getImportStatistics.stats.totalLocalFiles !== 1 ? 's' : ''} in the directory {importStats.getImportStatistics.stats.totalLocalFiles !== 1 ? 'are' : 'is'} already in your library.
-                      </p>
-                    </article>
-                  </div>
-                )}
-
-                <div className="mt-6 flex gap-3">
-                  {importStats.getImportStatistics.stats.newFiles > 0 && (
-                    <button
-                      className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-5 py-3 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-green-500"
-                      onClick={handleStartSmartImport}
-                      disabled={isStartingImport}
-                    >
-                      <span className="text-md">
-                        {isStartingImport ? "Starting..." : "Start Smart Import"}
-                      </span>
-                      <span className="w-6 h-6">
-                        <i className="h-6 w-6 icon-[solar--file-left-bold-duotone]"></i>
-                      </span>
-                    </button>
-                  )}
-                  <button
-                    className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-gray-400 dark:border-gray-200 bg-gray-200 px-5 py-3 text-gray-500 hover:bg-transparent hover:text-gray-600 focus:outline-none focus:ring active:text-gray-500"
-                    onClick={() => setShowPreview(false)}
-                  >
-                    <span className="text-md">Cancel</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {showPreview && isLoadingStats && (
-            <div className="my-6 flex justify-center items-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-              <span className="ml-3 text-gray-600 dark:text-gray-300">
-                Analyzing comics folder...
-              </span>
             </div>
           )}
 

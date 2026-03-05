@@ -11,6 +11,21 @@ query GetImportStatistics($directoryPath: String) {
   }
 }
 
+query GetCachedImportStatistics {
+  getCachedImportStatistics {
+    success
+    message
+    stats {
+      totalLocalFiles
+      alreadyImported
+      newFiles
+      percentageImported
+      pendingFiles
+    }
+    lastUpdated
+  }
+}
+
 mutation StartNewImport($sessionId: String!) {
   startNewImport(sessionId: $sessionId) {
     success

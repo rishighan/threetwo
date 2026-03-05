@@ -52,6 +52,23 @@ export type AutoMergeSettingsInput = {
   onMetadataUpdate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type CachedImportStatistics = {
+  __typename?: 'CachedImportStatistics';
+  lastUpdated?: Maybe<Scalars['String']['output']>;
+  message?: Maybe<Scalars['String']['output']>;
+  stats?: Maybe<CachedImportStats>;
+  success: Scalars['Boolean']['output'];
+};
+
+export type CachedImportStats = {
+  __typename?: 'CachedImportStats';
+  alreadyImported: Scalars['Int']['output'];
+  newFiles: Scalars['Int']['output'];
+  pendingFiles: Scalars['Int']['output'];
+  percentageImported: Scalars['String']['output'];
+  totalLocalFiles: Scalars['Int']['output'];
+};
+
 export type CanonicalMetadata = {
   __typename?: 'CanonicalMetadata';
   ageRating?: Maybe<MetadataField>;
@@ -615,6 +632,7 @@ export type Query = {
   comics: ComicConnection;
   /** Fetch resource from Metron API */
   fetchMetronResource: MetronResponse;
+  getCachedImportStatistics: CachedImportStatistics;
   getComicBookGroups: Array<ComicBookGroup>;
   getComicBooks: ComicBooksResult;
   /** Get generic ComicVine resource (issues, volumes, etc.) */
@@ -1083,6 +1101,11 @@ export type GetImportStatisticsQueryVariables = Exact<{
 
 
 export type GetImportStatisticsQuery = { __typename?: 'Query', getImportStatistics: { __typename?: 'ImportStatistics', success: boolean, directory: string, stats: { __typename?: 'ImportStats', totalLocalFiles: number, alreadyImported: number, newFiles: number, percentageImported: string } } };
+
+export type GetCachedImportStatisticsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCachedImportStatisticsQuery = { __typename?: 'Query', getCachedImportStatistics: { __typename?: 'CachedImportStatistics', success: boolean, message?: string | null, lastUpdated?: string | null, stats?: { __typename?: 'CachedImportStats', totalLocalFiles: number, alreadyImported: number, newFiles: number, percentageImported: string, pendingFiles: number } | null } };
 
 export type StartNewImportMutationVariables = Exact<{
   sessionId: Scalars['String']['input'];
@@ -1883,6 +1906,65 @@ useInfiniteGetImportStatisticsQuery.getKey = (variables?: GetImportStatisticsQue
 
 
 useGetImportStatisticsQuery.fetcher = (variables?: GetImportStatisticsQueryVariables, options?: RequestInit['headers']) => fetcher<GetImportStatisticsQuery, GetImportStatisticsQueryVariables>(GetImportStatisticsDocument, variables, options);
+
+export const GetCachedImportStatisticsDocument = `
+    query GetCachedImportStatistics {
+  getCachedImportStatistics {
+    success
+    message
+    stats {
+      totalLocalFiles
+      alreadyImported
+      newFiles
+      percentageImported
+      pendingFiles
+    }
+    lastUpdated
+  }
+}
+    `;
+
+export const useGetCachedImportStatisticsQuery = <
+      TData = GetCachedImportStatisticsQuery,
+      TError = unknown
+    >(
+      variables?: GetCachedImportStatisticsQueryVariables,
+      options?: Omit<UseQueryOptions<GetCachedImportStatisticsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<GetCachedImportStatisticsQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useQuery<GetCachedImportStatisticsQuery, TError, TData>(
+      {
+    queryKey: variables === undefined ? ['GetCachedImportStatistics'] : ['GetCachedImportStatistics', variables],
+    queryFn: fetcher<GetCachedImportStatisticsQuery, GetCachedImportStatisticsQueryVariables>(GetCachedImportStatisticsDocument, variables),
+    ...options
+  }
+    )};
+
+useGetCachedImportStatisticsQuery.getKey = (variables?: GetCachedImportStatisticsQueryVariables) => variables === undefined ? ['GetCachedImportStatistics'] : ['GetCachedImportStatistics', variables];
+
+export const useInfiniteGetCachedImportStatisticsQuery = <
+      TData = InfiniteData<GetCachedImportStatisticsQuery>,
+      TError = unknown
+    >(
+      variables: GetCachedImportStatisticsQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<GetCachedImportStatisticsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<GetCachedImportStatisticsQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useInfiniteQuery<GetCachedImportStatisticsQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? variables === undefined ? ['GetCachedImportStatistics.infinite'] : ['GetCachedImportStatistics.infinite', variables],
+      queryFn: (metaData) => fetcher<GetCachedImportStatisticsQuery, GetCachedImportStatisticsQueryVariables>(GetCachedImportStatisticsDocument, {...variables, ...(metaData.pageParam ?? {})})(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteGetCachedImportStatisticsQuery.getKey = (variables?: GetCachedImportStatisticsQueryVariables) => variables === undefined ? ['GetCachedImportStatistics.infinite'] : ['GetCachedImportStatistics.infinite', variables];
+
+
+useGetCachedImportStatisticsQuery.fetcher = (variables?: GetCachedImportStatisticsQueryVariables, options?: RequestInit['headers']) => fetcher<GetCachedImportStatisticsQuery, GetCachedImportStatisticsQueryVariables>(GetCachedImportStatisticsDocument, variables, options);
 
 export const StartNewImportDocument = `
     mutation StartNewImport($sessionId: String!) {

@@ -49,7 +49,9 @@ export const useStore = create<StoreState>((set, get) => ({
   getSocket: (namespace = "/") => {
     const ns = namespace === "/" ? "" : namespace;
     const existing = get().socketInstances[namespace];
-    if (existing?.connected) return existing;
+    // Return existing socket if it exists, regardless of connection state
+    // This prevents creating duplicate sockets during connection phase
+    if (existing) return existing;
 
     const sessionId = localStorage.getItem("sessionId");
     const socket = io(`${SOCKET_BASE_URI}${ns}`, {
