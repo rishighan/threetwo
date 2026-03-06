@@ -217,6 +217,12 @@ export type FileTypeStats = {
   id: Scalars['String']['output'];
 };
 
+export type ForceCompleteResult = {
+  __typename?: 'ForceCompleteResult';
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
 export type GetResourceInput = {
   fieldList?: InputMaybe<Scalars['String']['input']>;
   filter?: InputMaybe<Scalars['String']['input']>;
@@ -510,6 +516,7 @@ export type Mutation = {
   /** Placeholder for future mutations */
   _empty?: Maybe<Scalars['String']['output']>;
   bulkResolveMetadata: Array<Comic>;
+  forceCompleteSession: ForceCompleteResult;
   importComic: ImportComicResult;
   refreshMetadataFromSource: Comic;
   removeMetadataOverride: Comic;
@@ -524,6 +531,11 @@ export type Mutation = {
 
 export type MutationBulkResolveMetadataArgs = {
   comicIds: Array<Scalars['ID']['input']>;
+};
+
+
+export type MutationForceCompleteSessionArgs = {
+  sessionId: Scalars['String']['input'];
 };
 
 

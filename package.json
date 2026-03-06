@@ -2,7 +2,7 @@
   "name": "threetwo",
   "version": "0.1.0",
   "description": "ThreeTwo! A good comic book curator.",
-"scripts": {
+  "scripts": {
     "build": "vite build",
     "dev": "rimraf dist && yarn build && vite",
     "start": "yarn build && vite",
@@ -25,8 +25,7 @@
     "@floating-ui/react-dom": "^2.1.7",
     "@fortawesome/fontawesome-free": "^7.2.0",
     "@popperjs/core": "^2.11.8",
-    "@rollup/plugin-node-resolve": "^16.0.3",
-    "@tanstack/react-query": "^5.90.21",
+"@tanstack/react-query": "^5.90.21",
     "@tanstack/react-table": "^8.21.3",
     "@types/mime-types": "^3.0.1",
     "@types/react-router-dom": "^5.3.3",
@@ -139,7 +138,8 @@
     "tailwindcss": "^4.2.1",
     "ts-jest": "^29.4.6",
     "tui-jsdoc-template": "^1.2.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "wait-on": "^9.0.4"
   },
   "resolutions": {
     "jackspeak": "2.1.1"
