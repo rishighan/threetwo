@@ -1,22 +1,21 @@
-import React from "react";
-import { render } from "react-dom";
+import { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
+const root = createRoot(document.getElementById("root")!);
 import App from "./components/App";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Settings from "./components/Settings/Settings";
 import { ErrorPage } from "./components/shared/ErrorPage";
-const rootEl = document.getElementById("root");
-const root = createRoot(rootEl);
-import i18n from "./shared/utils/i18n.util";
+import "./shared/utils/i18n.util";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Import from "./components/Import/Import";
-import Dashboard from "./components/Dashboard/Dashboard";
-import Search from "./components/Search/Search";
-import TabulatedContentContainer from "./components/Library/TabulatedContentContainer";
-import { ComicDetailContainer } from "./components/ComicDetail/ComicDetailContainer";
-import Volumes from "./components/Volumes/Volumes";
-import VolumeDetails from "./components/VolumeDetail/VolumeDetail";
-import WantedComics from "./components/WantedComics/WantedComics";
+
+const Settings = lazy(() => import("./components/Settings/Settings"));
+const Import = lazy(() => import("./components/Import/Import"));
+const Dashboard = lazy(() => import("./components/Dashboard/Dashboard"));
+const Search = lazy(() => import("./components/Search/Search"));
+const TabulatedContentContainer = lazy(() => import("./components/Library/TabulatedContentContainer"));
+const ComicDetailContainer = lazy(() => import("./components/ComicDetail/ComicDetailContainer").then(m => ({ default: m.ComicDetailContainer })));
+const Volumes = lazy(() => import("./components/Volumes/Volumes"));
+const VolumeDetails = lazy(() => import("./components/VolumeDetail/VolumeDetail"));
+const WantedComics = lazy(() => import("./components/WantedComics/WantedComics"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -55,6 +54,8 @@ const router = createBrowserRouter([
 
 root.render(
   <QueryClientProvider client={queryClient}>
-    <RouterProvider router={router} />
+    <Suspense>
+      <RouterProvider router={router} />
+    </Suspense>
   </QueryClientProvider>,
 );

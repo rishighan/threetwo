@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, Suspense, useState } from "react";
 import { isNil } from "lodash";
 
 export const TabControls = (props): ReactElement => {
@@ -47,9 +47,11 @@ export const TabControls = (props): ReactElement => {
           </nav>
         </div>
       </div>
-      {filteredTabs.map(({ id, content }) => {
-        return currentActive === id ? content : null;
-      })}
+      <Suspense>
+        {filteredTabs.map(({ id, content }) => {
+          return currentActive === id ? content : null;
+        })}
+      </Suspense>
     </>
   );
 };

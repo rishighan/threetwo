@@ -7,6 +7,34 @@ export default defineConfig({
   base: "",
   build: {
     target: "esnext",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "react-vendor": ["react", "react-dom", "react-router", "react-router-dom"],
+          "query-vendor": ["@tanstack/react-query", "@tanstack/react-table"],
+          "ui-vendor": [
+            "styled-components",
+            "react-toastify",
+            "react-select",
+            "react-modal",
+            "react-sliding-pane",
+            "embla-carousel-react",
+            "react-day-picker",
+            "react-loader-spinner",
+          ],
+          "utils-vendor": [
+            "lodash",
+            "date-fns",
+            "dayjs",
+            "axios",
+            "rxjs",
+            "socket.io-client",
+            "i18next",
+            "react-i18next",
+          ],
+        },
+      },
+    },
   },
   esbuild: {
     supported: {

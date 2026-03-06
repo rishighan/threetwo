@@ -1,11 +1,12 @@
-import React from "react";
+import React, { lazy } from "react";
 import { isNil, isEmpty } from "lodash";
-import { VolumeInformation } from "./Tabs/VolumeInformation";
-import { ComicInfoXML } from "./Tabs/ComicInfoXML";
-import { ArchiveOperations } from "./Tabs/ArchiveOperations";
-import AcquisitionPanel from "./AcquisitionPanel";
-import TorrentSearchPanel from "./TorrentSearchPanel";
-import DownloadsPanel from "./DownloadsPanel";
+
+const VolumeInformation = lazy(() => import("./Tabs/VolumeInformation").then(m => ({ default: m.VolumeInformation })));
+const ComicInfoXML = lazy(() => import("./Tabs/ComicInfoXML").then(m => ({ default: m.ComicInfoXML })));
+const ArchiveOperations = lazy(() => import("./Tabs/ArchiveOperations").then(m => ({ default: m.ArchiveOperations })));
+const AcquisitionPanel = lazy(() => import("./AcquisitionPanel"));
+const TorrentSearchPanel = lazy(() => import("./TorrentSearchPanel"));
+const DownloadsPanel = lazy(() => import("./DownloadsPanel"));
 
 interface TabConfig {
   id: number;
