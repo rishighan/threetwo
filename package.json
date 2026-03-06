@@ -4,8 +4,8 @@
   "description": "ThreeTwo! A good comic book curator.",
 "scripts": {
     "build": "vite build",
-    "dev": "rimraf dist && npm run build && vite",
-    "start": "npm run build && vite",
+    "dev": "rimraf dist && yarn build && vite",
+    "start": "yarn build && vite",
     "docs": "jsdoc -c jsdoc.json",
     "test": "jest",
     "test:watch": "jest --watch",
