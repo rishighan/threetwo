@@ -1,5 +1,4 @@
 {
-  "extends": "@tsconfig/node14/tsconfig.json",
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "target": "ESNext",
@@ -26,6 +25,5 @@
       }
     ]
   },
-  "exclude": ["./src/server "],
   "include": ["./src/client/*", "./src/client/types/**/*.d.ts"]
 }
