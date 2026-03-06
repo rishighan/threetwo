@@ -52,23 +52,6 @@ export type AutoMergeSettingsInput = {
   onMetadataUpdate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type CachedImportStatistics = {
-  __typename?: 'CachedImportStatistics';
-  lastUpdated?: Maybe<Scalars['String']['output']>;
-  message?: Maybe<Scalars['String']['output']>;
-  stats?: Maybe<CachedImportStats>;
-  success: Scalars['Boolean']['output'];
-};
-
-export type CachedImportStats = {
-  __typename?: 'CachedImportStats';
-  alreadyImported: Scalars['Int']['output'];
-  newFiles: Scalars['Int']['output'];
-  pendingFiles: Scalars['Int']['output'];
-  percentageImported: Scalars['String']['output'];
-  totalLocalFiles: Scalars['Int']['output'];
-};
-
 export type CanonicalMetadata = {
   __typename?: 'CanonicalMetadata';
   ageRating?: Maybe<MetadataField>;
@@ -282,6 +265,26 @@ export type ImportJobResult = {
   jobsQueued: Scalars['Int']['output'];
   message: Scalars['String']['output'];
   success: Scalars['Boolean']['output'];
+};
+
+export type ImportSession = {
+  __typename?: 'ImportSession';
+  completedAt?: Maybe<Scalars['String']['output']>;
+  directoryPath?: Maybe<Scalars['String']['output']>;
+  sessionId: Scalars['String']['output'];
+  startedAt: Scalars['String']['output'];
+  stats: ImportSessionStats;
+  status: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+};
+
+export type ImportSessionStats = {
+  __typename?: 'ImportSessionStats';
+  filesFailed: Scalars['Int']['output'];
+  filesProcessed: Scalars['Int']['output'];
+  filesQueued: Scalars['Int']['output'];
+  filesSucceeded: Scalars['Int']['output'];
+  totalFiles: Scalars['Int']['output'];
 };
 
 export type ImportStatistics = {
@@ -632,7 +635,7 @@ export type Query = {
   comics: ComicConnection;
   /** Fetch resource from Metron API */
   fetchMetronResource: MetronResponse;
-  getCachedImportStatistics: CachedImportStatistics;
+  getActiveImportSession?: Maybe<ImportSession>;
   getComicBookGroups: Array<ComicBookGroup>;
   getComicBooks: ComicBooksResult;
   /** Get generic ComicVine resource (issues, volumes, etc.) */
@@ -1102,11 +1105,6 @@ export type GetImportStatisticsQueryVariables = Exact<{
 
 export type GetImportStatisticsQuery = { __typename?: 'Query', getImportStatistics: { __typename?: 'ImportStatistics', success: boolean, directory: string, stats: { __typename?: 'ImportStats', totalLocalFiles: number, alreadyImported: number, newFiles: number, percentageImported: string } } };
 
-export type GetCachedImportStatisticsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetCachedImportStatisticsQuery = { __typename?: 'Query', getCachedImportStatistics: { __typename?: 'CachedImportStatistics', success: boolean, message?: string | null, lastUpdated?: string | null, stats?: { __typename?: 'CachedImportStats', totalLocalFiles: number, alreadyImported: number, newFiles: number, percentageImported: string, pendingFiles: number } | null } };
-
 export type StartNewImportMutationVariables = Exact<{
   sessionId: Scalars['String']['input'];
 }>;
@@ -1126,6 +1124,11 @@ export type GetJobResultStatisticsQueryVariables = Exact<{ [key: string]: never;
 
 
 export type GetJobResultStatisticsQuery = { __typename?: 'Query', getJobResultStatistics: Array<{ __typename?: 'JobResultStatistics', sessionId: string, earliestTimestamp: string, completedJobs: number, failedJobs: number }> };
+
+export type GetActiveImportSessionQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetActiveImportSessionQuery = { __typename?: 'Query', getActiveImportSession?: { __typename?: 'ImportSession', sessionId: string, type: string, status: string, startedAt: string, completedAt?: string | null, directoryPath?: string | null, stats: { __typename?: 'ImportSessionStats', totalFiles: number, filesQueued: number, filesProcessed: number, filesSucceeded: number, filesFailed: number } } | null };
 
 export type GetLibraryComicsQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -1907,65 +1910,6 @@ useInfiniteGetImportStatisticsQuery.getKey = (variables?: GetImportStatisticsQue
 
 useGetImportStatisticsQuery.fetcher = (variables?: GetImportStatisticsQueryVariables, options?: RequestInit['headers']) => fetcher<GetImportStatisticsQuery, GetImportStatisticsQueryVariables>(GetImportStatisticsDocument, variables, options);
 
-export const GetCachedImportStatisticsDocument = `
-    query GetCachedImportStatistics {
-  getCachedImportStatistics {
-    success
-    message
-    stats {
-      totalLocalFiles
-      alreadyImported
-      newFiles
-      percentageImported
-      pendingFiles
-    }
-    lastUpdated
-  }
-}
-    `;
-
-export const useGetCachedImportStatisticsQuery = <
-      TData = GetCachedImportStatisticsQuery,
-      TError = unknown
-    >(
-      variables?: GetCachedImportStatisticsQueryVariables,
-      options?: Omit<UseQueryOptions<GetCachedImportStatisticsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<GetCachedImportStatisticsQuery, TError, TData>['queryKey'] }
-    ) => {
-    
-    return useQuery<GetCachedImportStatisticsQuery, TError, TData>(
-      {
-    queryKey: variables === undefined ? ['GetCachedImportStatistics'] : ['GetCachedImportStatistics', variables],
-    queryFn: fetcher<GetCachedImportStatisticsQuery, GetCachedImportStatisticsQueryVariables>(GetCachedImportStatisticsDocument, variables),
-    ...options
-  }
-    )};
-
-useGetCachedImportStatisticsQuery.getKey = (variables?: GetCachedImportStatisticsQueryVariables) => variables === undefined ? ['GetCachedImportStatistics'] : ['GetCachedImportStatistics', variables];
-
-export const useInfiniteGetCachedImportStatisticsQuery = <
-      TData = InfiniteData<GetCachedImportStatisticsQuery>,
-      TError = unknown
-    >(
-      variables: GetCachedImportStatisticsQueryVariables,
-      options: Omit<UseInfiniteQueryOptions<GetCachedImportStatisticsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<GetCachedImportStatisticsQuery, TError, TData>['queryKey'] }
-    ) => {
-    
-    return useInfiniteQuery<GetCachedImportStatisticsQuery, TError, TData>(
-      (() => {
-    const { queryKey: optionsQueryKey, ...restOptions } = options;
-    return {
-      queryKey: optionsQueryKey ?? variables === undefined ? ['GetCachedImportStatistics.infinite'] : ['GetCachedImportStatistics.infinite', variables],
-      queryFn: (metaData) => fetcher<GetCachedImportStatisticsQuery, GetCachedImportStatisticsQueryVariables>(GetCachedImportStatisticsDocument, {...variables, ...(metaData.pageParam ?? {})})(),
-      ...restOptions
-    }
-  })()
-    )};
-
-useInfiniteGetCachedImportStatisticsQuery.getKey = (variables?: GetCachedImportStatisticsQueryVariables) => variables === undefined ? ['GetCachedImportStatistics.infinite'] : ['GetCachedImportStatistics.infinite', variables];
-
-
-useGetCachedImportStatisticsQuery.fetcher = (variables?: GetCachedImportStatisticsQueryVariables, options?: RequestInit['headers']) => fetcher<GetCachedImportStatisticsQuery, GetCachedImportStatisticsQueryVariables>(GetCachedImportStatisticsDocument, variables, options);
-
 export const StartNewImportDocument = `
     mutation StartNewImport($sessionId: String!) {
   startNewImport(sessionId: $sessionId) {
@@ -2075,6 +2019,68 @@ useInfiniteGetJobResultStatisticsQuery.getKey = (variables?: GetJobResultStatist
 
 
 useGetJobResultStatisticsQuery.fetcher = (variables?: GetJobResultStatisticsQueryVariables, options?: RequestInit['headers']) => fetcher<GetJobResultStatisticsQuery, GetJobResultStatisticsQueryVariables>(GetJobResultStatisticsDocument, variables, options);
+
+export const GetActiveImportSessionDocument = `
+    query GetActiveImportSession {
+  getActiveImportSession {
+    sessionId
+    type
+    status
+    startedAt
+    completedAt
+    directoryPath
+    stats {
+      totalFiles
+      filesQueued
+      filesProcessed
+      filesSucceeded
+      filesFailed
+    }
+  }
+}
+    `;
+
+export const useGetActiveImportSessionQuery = <
+      TData = GetActiveImportSessionQuery,
+      TError = unknown
+    >(
+      variables?: GetActiveImportSessionQueryVariables,
+      options?: Omit<UseQueryOptions<GetActiveImportSessionQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<GetActiveImportSessionQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useQuery<GetActiveImportSessionQuery, TError, TData>(
+      {
+    queryKey: variables === undefined ? ['GetActiveImportSession'] : ['GetActiveImportSession', variables],
+    queryFn: fetcher<GetActiveImportSessionQuery, GetActiveImportSessionQueryVariables>(GetActiveImportSessionDocument, variables),
+    ...options
+  }
+    )};
+
+useGetActiveImportSessionQuery.getKey = (variables?: GetActiveImportSessionQueryVariables) => variables === undefined ? ['GetActiveImportSession'] : ['GetActiveImportSession', variables];
+
+export const useInfiniteGetActiveImportSessionQuery = <
+      TData = InfiniteData<GetActiveImportSessionQuery>,
+      TError = unknown
+    >(
+      variables: GetActiveImportSessionQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<GetActiveImportSessionQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<GetActiveImportSessionQuery, TError, TData>['queryKey'] }
+    ) => {
+    
+    return useInfiniteQuery<GetActiveImportSessionQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? variables === undefined ? ['GetActiveImportSession.infinite'] : ['GetActiveImportSession.infinite', variables],
+      queryFn: (metaData) => fetcher<GetActiveImportSessionQuery, GetActiveImportSessionQueryVariables>(GetActiveImportSessionDocument, {...variables, ...(metaData.pageParam ?? {})})(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteGetActiveImportSessionQuery.getKey = (variables?: GetActiveImportSessionQueryVariables) => variables === undefined ? ['GetActiveImportSession.infinite'] : ['GetActiveImportSession.infinite', variables];
+
+
+useGetActiveImportSessionQuery.fetcher = (variables?: GetActiveImportSessionQueryVariables, options?: RequestInit['headers']) => fetcher<GetActiveImportSessionQuery, GetActiveImportSessionQueryVariables>(GetActiveImportSessionDocument, variables, options);
 
 export const GetLibraryComicsDocument = `
     query GetLibraryComics($page: Int, $limit: Int, $search: String, $series: String) {

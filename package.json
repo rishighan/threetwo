@@ -14,7 +14,7 @@
     "test:coverage": "jest --coverage",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "codegen": "graphql-codegen --config codegen.yml",
+    "codegen": "wait-on http-get://localhost:3000/graphql/health && graphql-codegen",
     "codegen:watch": "graphql-codegen --config codegen.yml --watch"
   },
   "author": "Rishi Ghan",
