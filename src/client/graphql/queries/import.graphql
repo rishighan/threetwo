@@ -6,6 +6,7 @@ query GetImportStatistics($directoryPath: String) {
       totalLocalFiles
       alreadyImported
       newFiles
+      missingFiles
       percentageImported
     }
   }

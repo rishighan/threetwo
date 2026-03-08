@@ -1,28 +1,15 @@
-import React, { ReactElement, useCallback, useEffect, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { format } from "date-fns";
-import { isEmpty, isNil, isUndefined } from "lodash";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { isEmpty } from "lodash";
+import { useMutation } from "@tanstack/react-query";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
 import axios from "axios";
-import {
-  useGetJobResultStatisticsQuery,
-  useGetImportStatisticsQuery,
-  useStartIncrementalImportMutation
-} from "../../graphql/generated";
+import { useGetJobResultStatisticsQuery } from "../../graphql/generated";
 import { RealTimeImportStats } from "./RealTimeImportStats";
 import { useImportSessionStatus } from "../../hooks/useImportSessionStatus";
 
-interface ImportProps {
-  path: string;
-}
-
-/**
- * Import component for adding comics to the ThreeTwo library.
- * Provides preview statistics, smart import, and queue management.
- */
-export const Import = (props: ImportProps): ReactElement => {
-  const queryClient = useQueryClient();
+export const Import = (): ReactElement => {
   const [socketReconnectTrigger, setSocketReconnectTrigger] = useState(0);
   const [importError, setImportError] = useState<string | null>(null);
   const { importJobQueue, getSocket, disconnectSocket } = useStore(
@@ -32,30 +19,6 @@ export const Import = (props: ImportProps): ReactElement => {
       disconnectSocket: state.disconnectSocket,
     })),
   );
-
-  const { mutate: startIncrementalImport, isPending: isStartingImport } = useStartIncrementalImportMutation({
-    onSuccess: (data) => {
-      if (data.startIncrementalImport.success) {
-        importJobQueue.setStatus("running");
-        setImportError(null);
-      }
-    },
-    onError: (error: any) => {
-      console.error("Failed to start import:", error);
-      setImportError(error?.message || "Failed to start import. Please try again.");
-    },
-  });
-
-  const { mutate: initiateImport } = useMutation({
-    mutationFn: async () => {
-      const sessionId = localStorage.getItem("sessionId");
-      return await axios.request({
-        url: `http://localhost:3000/api/library/newImport`,
-        method: "POST",
-        data: { sessionId },
-      });
-    },
-  });
 
   // Force re-import mutation - re-imports all files regardless of import status
   const { mutate: forceReImport, isPending: isForceReImporting } = useMutation({
@@ -78,37 +41,15 @@ export const Import = (props: ImportProps): ReactElement => {
     },
   });
 
-  const { data, isError, isLoading, refetch } = useGetJobResultStatisticsQuery();
-  
-  // Get import statistics to determine if Start Import button should be shown
-  const { data: importStats } = useGetImportStatisticsQuery(
-    {},
-    {
-      refetchOnWindowFocus: false,
-      refetchInterval: false,
-    }
-  );
+  const { data, isLoading, refetch } = useGetJobResultStatisticsQuery();
 
-  // Use custom hook for definitive import session status tracking
-  // NO POLLING - relies on Socket.IO events only
   const importSession = useImportSessionStatus();
-
   const hasActiveSession = importSession.isActive;
-
-  // Determine if we should show the Start Import button
-  const hasNewFiles = importStats?.getImportStatistics?.success &&
-    importStats.getImportStatistics.stats &&
-    importStats.getImportStatistics.stats.newFiles > 0;
 
   useEffect(() => {
     const socket = getSocket("/");
     const handleQueueDrained = () => refetch();
     const handleCoverExtracted = () => refetch();
-    
-    const handleSessionStarted = () => {
-      importJobQueue.setStatus("running");
-    };
-
     const handleSessionCompleted = () => {
       refetch();
       importJobQueue.setStatus("drained");
@@ -116,63 +57,14 @@ export const Import = (props: ImportProps): ReactElement => {
 
     socket.on("LS_IMPORT_QUEUE_DRAINED", handleQueueDrained);
     socket.on("LS_COVER_EXTRACTED", handleCoverExtracted);
-    socket.on("IMPORT_SESSION_STARTED", handleSessionStarted);
     socket.on("IMPORT_SESSION_COMPLETED", handleSessionCompleted);
 
     return () => {
       socket.off("LS_IMPORT_QUEUE_DRAINED", handleQueueDrained);
       socket.off("LS_COVER_EXTRACTED", handleCoverExtracted);
-      socket.off("IMPORT_SESSION_STARTED", handleSessionStarted);
       socket.off("IMPORT_SESSION_COMPLETED", handleSessionCompleted);
     };
   }, [getSocket, refetch, importJobQueue, socketReconnectTrigger]);
-
-  /**
-   * Toggles import queue pause/resume state
-   */
-  const toggleQueue = (queueAction: string, queueStatus: string) => {
-    const socket = getSocket("/");
-    socket.emit(
-      "call",
-      "socket.setQueueStatus",
-      {
-        queueAction,
-        queueStatus,
-      },
-    );
-  };
-
-  /**
-   * Starts smart import with race condition prevention
-   */
-  const handleStartSmartImport = async () => {
-    // Clear any previous errors
-    setImportError(null);
-
-    // Check for active session before starting using definitive status
-    if (hasActiveSession) {
-      setImportError(
-        `Cannot start import: An import session "${importSession.sessionId}" is already active. Please wait for it to complete.`
-      );
-      return;
-    }
-
-    if (importJobQueue.status === "drained") {
-      localStorage.removeItem("sessionId");
-      disconnectSocket("/");
-      setTimeout(() => {
-        getSocket("/");
-        setSocketReconnectTrigger(prev => prev + 1);
-        setTimeout(() => {
-          const sessionId = localStorage.getItem("sessionId") || "";
-          startIncrementalImport({ sessionId });
-        }, 500);
-      }, 100);
-    } else {
-      const sessionId = localStorage.getItem("sessionId") || "";
-      startIncrementalImport({ sessionId });
-    }
-  };
 
   /**
    * Handles force re-import - re-imports all files to fix indexing issues
@@ -205,54 +97,6 @@ export const Import = (props: ImportProps): ReactElement => {
       } else {
         forceReImport();
       }
-    }
-  };
-
-  /**
-   * Renders pause/resume controls based on queue status
-   */
-  const renderQueueControls = (status: string): ReactElement | null => {
-    switch (status) {
-      case "running":
-        return (
-          <div>
-            <button
-              className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-3 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
-              onClick={() => {
-                toggleQueue("pause", "paused");
-                importJobQueue.setStatus("paused");
-              }}
-            >
-              <span className="text-md">Pause</span>
-              <span className="w-5 h-5">
-                <i className="h-5 w-5 icon-[solar--pause-bold]"></i>
-              </span>
-            </button>
-          </div>
-        );
-      case "paused":
-        return (
-          <div>
-            <button
-              className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-3 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
-              onClick={() => {
-                toggleQueue("resume", "running");
-                importJobQueue.setStatus("running");
-              }}
-            >
-              <span className="text-md">Resume</span>
-              <span className="w-5 h-5">
-                <i className="h-5 w-5 icon-[solar--play-bold]"></i>
-              </span>
-            </button>
-          </div>
-        );
-
-      case "drained":
-        return null;
-
-      default:
-        return null;
     }
   };
 
@@ -327,53 +171,10 @@ export const Import = (props: ImportProps): ReactElement => {
             </div>
           )}
 
-          {/* Active Session Warning */}
-          {hasActiveSession && !hasNewFiles && (
-            <div className="my-6 max-w-screen-lg rounded-lg border-s-4 border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 p-4">
-              <div className="flex items-start gap-3">
-                <span className="w-6 h-6 text-yellow-600 dark:text-yellow-400 mt-0.5">
-                  <i className="h-6 w-6 icon-[solar--info-circle-bold]"></i>
-                </span>
-                <div className="flex-1">
-                  <p className="font-semibold text-yellow-800 dark:text-yellow-300">
-                    Import In Progress
-                  </p>
-                  <p className="text-sm text-yellow-700 dark:text-yellow-400 mt-1">
-                    An import session is currently active. New imports cannot be started until it completes.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Import Action Buttons */}
-          <div className="my-6 max-w-screen-lg flex flex-col sm:flex-row gap-3">
-            {/* Start Smart Import Button - shown when there are new files, no active session, and no import is running */}
-            {hasNewFiles &&
-             !hasActiveSession &&
-             (importJobQueue.status === "drained" || importJobQueue.status === undefined) && (
-              <button
-                className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-5 py-3 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={handleStartSmartImport}
-                disabled={isStartingImport || hasActiveSession}
-              >
-                <span className="text-md font-medium">
-                  {isStartingImport
-                    ? "Starting Import..."
-                    : importStats?.getImportStatistics?.stats?.alreadyImported === 0
-                      ? `Start Import (${importStats?.getImportStatistics?.stats?.newFiles} files)`
-                      : `Start Incremental Import (${importStats?.getImportStatistics?.stats?.newFiles} new files)`
-                  }
-                </span>
-                <span className="w-6 h-6">
-                  <i className="h-6 w-6 icon-[solar--file-left-bold-duotone]"></i>
-                </span>
-              </button>
-            )}
-
-            {/* Force Re-Import Button - always shown when no import is running */}
-            {!hasActiveSession &&
-             (importJobQueue.status === "drained" || importJobQueue.status === undefined) && (
+          {/* Force Re-Import Button - always shown when no import is running */}
+          {!hasActiveSession &&
+           (importJobQueue.status === "drained" || importJobQueue.status === undefined) && (
+            <div className="my-6 max-w-screen-lg">
               <button
                 className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-orange-400 dark:border-orange-200 bg-orange-200 px-5 py-3 text-gray-700 hover:bg-transparent hover:text-orange-600 focus:outline-none focus:ring active:text-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleForceReImport}
@@ -387,8 +188,8 @@ export const Import = (props: ImportProps): ReactElement => {
                   <i className="h-6 w-6 icon-[solar--refresh-bold-duotone]"></i>
                 </span>
               </button>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Import activity is now shown in the RealTimeImportStats component above */}
 

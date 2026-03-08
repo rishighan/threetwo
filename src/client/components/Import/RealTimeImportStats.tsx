@@ -1,6 +1,8 @@
-import React, { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   useGetImportStatisticsQuery,
+  useGetWantedComicsQuery,
   useStartIncrementalImportMutation
 } from "../../graphql/generated";
 import { useStore } from "../../store";
@@ -8,11 +10,15 @@ import { useShallow } from "zustand/react/shallow";
 import { useImportSessionStatus } from "../../hooks/useImportSessionStatus";
 
 /**
- * Import statistics with card-based layout and progress bar
- * Updates in real-time via the useImportSessionStatus hook
+ * Import statistics with card-based layout and progress bar.
+ * Three states: pre-import (idle), importing (active), and post-import (complete).
+ * Also surfaces missing files detected by the file watcher.
  */
 export const RealTimeImportStats = (): ReactElement => {
   const [importError, setImportError] = useState<string | null>(null);
+  const [detectedFile, setDetectedFile] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+
   const { getSocket, disconnectSocket, importJobQueue } = useStore(
     useShallow((state) => ({
       getSocket: state.getSocket,
@@ -21,13 +27,28 @@ export const RealTimeImportStats = (): ReactElement => {
     }))
   );
 
-  // Get filesystem statistics (new files vs already imported)
-  const { data: importStats, isLoading, refetch: refetchStats } = useGetImportStatisticsQuery(
+  const { data: importStats, isLoading } = useGetImportStatisticsQuery(
     {},
     { refetchOnWindowFocus: false, refetchInterval: false }
   );
 
-  // Get definitive import session status (handles Socket.IO events internally)
+  const stats = importStats?.getImportStatistics?.stats;
+
+  // File list for the detail panel — only fetched when there are missing files
+  const { data: missingComicsData } = useGetWantedComicsQuery(
+    {
+      paginationOptions: { limit: 5, page: 1 },
+      predicate: { "importStatus.isRawFileMissing": true },
+    },
+    {
+      refetchOnWindowFocus: false,
+      refetchInterval: false,
+      enabled: (stats?.missingFiles ?? 0) > 0,
+    }
+  );
+
+  const missingDocs = missingComicsData?.getComicBooks?.docs ?? [];
+
   const importSession = useImportSessionStatus();
 
   const { mutate: startIncrementalImport, isPending: isStartingImport } = useStartIncrementalImportMutation({
@@ -38,53 +59,52 @@ export const RealTimeImportStats = (): ReactElement => {
       }
     },
     onError: (error: any) => {
-      console.error("Failed to start import:", error);
       setImportError(error?.message || "Failed to start import. Please try again.");
     },
   });
 
-  const stats = importStats?.getImportStatistics?.stats;
   const hasNewFiles = stats && stats.newFiles > 0;
+  const missingCount = stats?.missingFiles ?? 0;
 
-  // Refetch filesystem stats when import completes
+  // Mark queue drained when session completes — LS_LIBRARY_STATISTICS handles the refetch
   useEffect(() => {
     if (importSession.isComplete && importSession.status === "completed") {
-      console.log("[RealTimeImportStats] Import completed, refetching filesystem stats");
-      refetchStats();
       importJobQueue.setStatus("drained");
     }
-  }, [importSession.isComplete, importSession.status, refetchStats, importJobQueue]);
+  }, [importSession.isComplete, importSession.status, importJobQueue]);
 
-  // Listen to filesystem change events to refetch stats
+  // LS_LIBRARY_STATISTICS fires after every filesystem change and every import job completion.
+  // Invalidating GetImportStatistics covers: total files, imported, new files, and missing count.
+  // Invalidating GetWantedComics refreshes the missing file name list in the detail panel.
   useEffect(() => {
     const socket = getSocket("/");
 
-    const handleFilesystemChange = () => {
-      refetchStats();
+    const handleStatsChange = () => {
+      queryClient.invalidateQueries({ queryKey: ["GetImportStatistics"] });
+      queryClient.invalidateQueries({ queryKey: ["GetWantedComics"] });
     };
 
-    // File system changes that affect import statistics
-    socket.on("LS_FILE_ADDED", handleFilesystemChange);
-    socket.on("LS_FILE_REMOVED", handleFilesystemChange);
-    socket.on("LS_FILE_CHANGED", handleFilesystemChange);
-    socket.on("LS_DIRECTORY_ADDED", handleFilesystemChange);
-    socket.on("LS_DIRECTORY_REMOVED", handleFilesystemChange);
-    socket.on("LS_LIBRARY_STATISTICS", handleFilesystemChange);
+    const handleFileDetected = (payload: { filePath: string }) => {
+      handleStatsChange();
+      const name = payload.filePath.split("/").pop() ?? payload.filePath;
+      setDetectedFile(name);
+      setTimeout(() => setDetectedFile(null), 5000);
+    };
+
+    socket.on("LS_LIBRARY_STATS", handleStatsChange);
+    socket.on("LS_FILES_MISSING", handleStatsChange);
+    socket.on("LS_FILE_DETECTED", handleFileDetected);
 
     return () => {
-      socket.off("LS_FILE_ADDED", handleFilesystemChange);
-      socket.off("LS_FILE_REMOVED", handleFilesystemChange);
-      socket.off("LS_FILE_CHANGED", handleFilesystemChange);
-      socket.off("LS_DIRECTORY_ADDED", handleFilesystemChange);
-      socket.off("LS_DIRECTORY_REMOVED", handleFilesystemChange);
-      socket.off("LS_LIBRARY_STATISTICS", handleFilesystemChange);
+      socket.off("LS_LIBRARY_STATS", handleStatsChange);
+      socket.off("LS_FILES_MISSING", handleStatsChange);
+      socket.off("LS_FILE_DETECTED", handleFileDetected);
     };
-  }, [getSocket, refetchStats]);
+  }, [getSocket, queryClient]);
 
   const handleStartImport = async () => {
     setImportError(null);
 
-    // Check if import is already active using definitive status
     if (importSession.isActive) {
       setImportError(
         `Cannot start import: An import session "${importSession.sessionId}" is already active. Please wait for it to complete.`
@@ -112,24 +132,22 @@ export const RealTimeImportStats = (): ReactElement => {
     return <div className="text-gray-500 dark:text-gray-400">Loading...</div>;
   }
 
-  // Determine button text based on whether there are already imported files
   const isFirstImport = stats.alreadyImported === 0;
   const buttonText = isFirstImport
     ? `Start Import (${stats.newFiles} files)`
     : `Start Incremental Import (${stats.newFiles} new files)`;
 
-  // Calculate display statistics
-  const displayStats = importSession.isActive && importSession.stats
-    ? {
-        totalFiles: importSession.stats.filesQueued + stats.alreadyImported,
-        filesQueued: importSession.stats.filesQueued,
-        filesSucceeded: importSession.stats.filesSucceeded,
-      }
-    : {
-        totalFiles: stats.totalLocalFiles,
-        filesQueued: stats.newFiles,
-        filesSucceeded: stats.alreadyImported,
-      };
+  // Determine what to show in each card based on current phase
+  const sessionStats = importSession.stats;
+  const hasSessionStats = (importSession.isActive || importSession.isComplete) && sessionStats !== null;
+
+  const totalFiles = stats.totalLocalFiles;
+  const importedCount = hasSessionStats ? sessionStats!.filesSucceeded : stats.alreadyImported;
+  const failedCount = hasSessionStats ? sessionStats!.filesFailed : 0;
+
+  const showProgressBar = importSession.isActive || importSession.isComplete;
+  const showFailedCard = hasSessionStats && failedCount > 0;
+  const showMissingCard = missingCount > 0;
 
   return (
     <div className="space-y-6">
@@ -148,37 +166,45 @@ export const RealTimeImportStats = (): ReactElement => {
               onClick={() => setImportError(null)}
               className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200"
             >
-              <span className="w-5 h-5">
-                <i className="h-5 w-5 icon-[solar--close-circle-bold]"></i>
-              </span>
+              <i className="h-5 w-5 icon-[solar--close-circle-bold]"></i>
             </button>
           </div>
         </div>
       )}
 
-      {/* Import Button - only show when there are new files and no active import */}
+      {/* File detected toast */}
+      {detectedFile && (
+        <div className="rounded-lg border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-900/20 p-3 flex items-center gap-3">
+          <i className="h-5 w-5 text-blue-600 dark:text-blue-400 icon-[solar--file-add-bold-duotone] shrink-0"></i>
+          <p className="text-sm text-blue-800 dark:text-blue-300 font-mono truncate">
+            New file detected: {detectedFile}
+          </p>
+        </div>
+      )}
+
+      {/* Start Import button — only when idle with new files */}
       {hasNewFiles && !importSession.isActive && (
         <button
           onClick={handleStartImport}
           disabled={isStartingImport}
-          className="w-full flex items-center justify-center gap-2 rounded-lg bg-green-500 hover:bg-green-600 disabled:bg-gray-400 px-6 py-3 text-white font-medium transition-colors disabled:cursor-not-allowed"
+          className="flex items-center gap-2 rounded-lg bg-green-500 hover:bg-green-600 disabled:bg-gray-400 px-6 py-3 text-white font-medium transition-colors disabled:cursor-not-allowed"
         >
-          <span className="w-6 h-6">
-            <i className="h-6 w-6 icon-[solar--file-left-bold-duotone]"></i>
-          </span>
+          <i className="h-6 w-6 icon-[solar--file-left-bold-duotone]"></i>
           <span>{isStartingImport ? "Starting Import..." : buttonText}</span>
         </button>
       )}
 
-      {/* Active Import Progress Bar */}
-      {importSession.isActive && (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Importing {importSession.stats?.filesSucceeded || 0} / {importSession.stats?.filesQueued || 0}...
+      {/* Progress bar — shown while importing and once complete */}
+      {showProgressBar && (
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-medium text-gray-700 dark:text-gray-300">
+              {importSession.isActive
+                ? `Importing ${sessionStats?.filesSucceeded ?? 0} / ${sessionStats?.filesQueued ?? 0}`
+                : `${sessionStats?.filesSucceeded ?? 0} / ${sessionStats?.filesQueued ?? 0} imported`}
             </span>
-            <span className="text-sm font-semibold text-gray-900 dark:text-white">
-              {Math.round(importSession.progress)}%
+            <span className="font-semibold text-gray-900 dark:text-white">
+              {Math.round(importSession.progress)}% complete
             </span>
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
@@ -186,44 +212,77 @@ export const RealTimeImportStats = (): ReactElement => {
               className="bg-blue-600 dark:bg-blue-500 h-3 rounded-full transition-all duration-300 relative"
               style={{ width: `${importSession.progress}%` }}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
+              {importSession.isActive && (
+                <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+              )}
             </div>
           </div>
         </div>
       )}
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {/* Files Detected Card */}
+      {/* Stats cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {/* Total files */}
         <div className="rounded-lg p-6 text-center" style={{ backgroundColor: '#6b7280' }}>
-          <div className="text-4xl font-bold text-white mb-2">
-            {displayStats.totalFiles}
-          </div>
-          <div className="text-sm text-gray-200 font-medium">
-            files detected
-          </div>
+          <div className="text-4xl font-bold text-white mb-2">{totalFiles}</div>
+          <div className="text-sm text-gray-200 font-medium">total files</div>
         </div>
 
-        {/* To Import Card */}
-        <div className="rounded-lg p-6 text-center" style={{ backgroundColor: '#60a5fa' }}>
-          <div className="text-4xl font-bold text-white mb-2">
-            {displayStats.filesQueued}
-          </div>
-          <div className="text-sm text-gray-100 font-medium">
-            to import
-          </div>
-        </div>
-
-        {/* Already Imported Card */}
+        {/* Imported */}
         <div className="rounded-lg p-6 text-center" style={{ backgroundColor: '#d8dab2' }}>
-          <div className="text-4xl font-bold text-gray-800 mb-2">
-            {displayStats.filesSucceeded}
-          </div>
+          <div className="text-4xl font-bold text-gray-800 mb-2">{importedCount}</div>
           <div className="text-sm text-gray-700 font-medium">
-            already imported
+            {importSession.isActive ? "imported so far" : "imported"}
           </div>
         </div>
+
+        {/* Failed — only shown after a session with failures */}
+        {showFailedCard && (
+          <div className="rounded-lg p-6 text-center bg-red-500">
+            <div className="text-4xl font-bold text-white mb-2">{failedCount}</div>
+            <div className="text-sm text-red-100 font-medium">failed</div>
+          </div>
+        )}
+
+        {/* Missing files — shown when watcher detects moved/deleted files */}
+        {showMissingCard && (
+          <div className="rounded-lg p-6 text-center bg-amber-500">
+            <div className="text-4xl font-bold text-white mb-2">{missingCount}</div>
+            <div className="text-sm text-amber-100 font-medium">missing</div>
+          </div>
+        )}
       </div>
+
+      {/* Missing files detail panel */}
+      {showMissingCard && (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-900/20 p-4">
+          <div className="flex items-start gap-3">
+            <i className="h-6 w-6 text-amber-600 dark:text-amber-400 mt-0.5 icon-[solar--danger-triangle-bold] shrink-0"></i>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-amber-800 dark:text-amber-300">
+                {missingCount} {missingCount === 1 ? "file" : "files"} missing
+              </p>
+              <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
+                These files were previously imported but can no longer be found on disk. Move them back to restore access.
+              </p>
+              {missingDocs.length > 0 && (
+                <ul className="mt-2 space-y-1">
+                  {missingDocs.slice(0, 5).map((comic, i) => (
+                    <li key={i} className="text-xs text-amber-700 dark:text-amber-400 font-mono truncate">
+                      {comic.rawFileDetails?.name ?? comic.id}
+                    </li>
+                  ))}
+                  {missingDocs.length > 5 && (
+                    <li className="text-xs text-amber-600 dark:text-amber-500">
+                      +{missingDocs.length - 5} more
+                    </li>
+                  )}
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

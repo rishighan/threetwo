@@ -303,6 +303,7 @@ export type ImportStatistics = {
 export type ImportStats = {
   __typename?: 'ImportStats';
   alreadyImported: Scalars['Int']['output'];
+  missingFiles: Scalars['Int']['output'];
   newFiles: Scalars['Int']['output'];
   percentageImported: Scalars['String']['output'];
   totalLocalFiles: Scalars['Int']['output'];
@@ -1115,7 +1116,7 @@ export type GetImportStatisticsQueryVariables = Exact<{
 }>;
 
 
-export type GetImportStatisticsQuery = { __typename?: 'Query', getImportStatistics: { __typename?: 'ImportStatistics', success: boolean, directory: string, stats: { __typename?: 'ImportStats', totalLocalFiles: number, alreadyImported: number, newFiles: number, percentageImported: string } } };
+export type GetImportStatisticsQuery = { __typename?: 'Query', getImportStatistics: { __typename?: 'ImportStatistics', success: boolean, directory: string, stats: { __typename?: 'ImportStats', totalLocalFiles: number, alreadyImported: number, newFiles: number, missingFiles: number, percentageImported: string } } };
 
 export type StartNewImportMutationVariables = Exact<{
   sessionId: Scalars['String']['input'];
@@ -1874,6 +1875,7 @@ export const GetImportStatisticsDocument = `
       totalLocalFiles
       alreadyImported
       newFiles
+      missingFiles
       percentageImported
     }
   }
