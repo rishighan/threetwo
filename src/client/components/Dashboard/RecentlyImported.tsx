@@ -63,7 +63,10 @@ export const RecentlyImported = (
               !isUndefined(comicvine) &&
               !isUndefined(comicvine.volumeInformation);
             const hasComicInfo = !isNil(comicInfo) && !isEmpty(comicInfo);
-            const cardState = (hasComicInfo || isComicVineMetadataAvailable) ? "scraped" : "imported";
+            const isMissingFile = isNil(rawFileDetails);
+            const cardState = isMissingFile
+              ? "missing"
+              : (hasComicInfo || isComicVineMetadataAvailable) ? "scraped" : "imported";
             return (
               <div
                 key={idx}

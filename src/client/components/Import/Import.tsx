@@ -1,7 +1,7 @@
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
 import { isEmpty } from "lodash";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
 import axios from "axios";
@@ -10,8 +10,8 @@ import { RealTimeImportStats } from "./RealTimeImportStats";
 import { useImportSessionStatus } from "../../hooks/useImportSessionStatus";
 
 export const Import = (): ReactElement => {
-  const [socketReconnectTrigger, setSocketReconnectTrigger] = useState(0);
   const [importError, setImportError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
   const { importJobQueue, getSocket, disconnectSocket } = useStore(
     useShallow((state) => ({
       importJobQueue: state.importJobQueue,
@@ -45,26 +45,53 @@ export const Import = (): ReactElement => {
 
   const importSession = useImportSessionStatus();
   const hasActiveSession = importSession.isActive;
+  const wasComplete = useRef(false);
 
+  // React to importSession.isComplete rather than socket events — more reliable
+  // since it's derived from the actual GraphQL state, not a raw socket event.
+  useEffect(() => {
+    if (importSession.isComplete && !wasComplete.current) {
+      wasComplete.current = true;
+      // Small delay so the backend has time to commit job result stats
+      setTimeout(() => {
+        // Invalidate the cache to force a fresh fetch of job result statistics
+        queryClient.invalidateQueries({ queryKey: ["GetJobResultStatistics"] });
+        refetch();
+      }, 1500);
+      importJobQueue.setStatus("drained");
+    } else if (!importSession.isComplete) {
+      wasComplete.current = false;
+    }
+  }, [importSession.isComplete, refetch, importJobQueue, queryClient]);
+
+  // Listen to socket events to update Past Imports table in real-time
   useEffect(() => {
     const socket = getSocket("/");
-    const handleQueueDrained = () => refetch();
-    const handleCoverExtracted = () => refetch();
-    const handleSessionCompleted = () => {
-      refetch();
-      importJobQueue.setStatus("drained");
+
+    const handleImportCompleted = () => {
+      console.log("[Import] IMPORT_SESSION_COMPLETED event - refreshing Past Imports");
+      // Small delay to ensure backend has committed the job results
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["GetJobResultStatistics"] });
+      }, 1500);
     };
 
+    const handleQueueDrained = () => {
+      console.log("[Import] LS_IMPORT_QUEUE_DRAINED event - refreshing Past Imports");
+      // Small delay to ensure backend has committed the job results
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["GetJobResultStatistics"] });
+      }, 1500);
+    };
+
+    socket.on("IMPORT_SESSION_COMPLETED", handleImportCompleted);
     socket.on("LS_IMPORT_QUEUE_DRAINED", handleQueueDrained);
-    socket.on("LS_COVER_EXTRACTED", handleCoverExtracted);
-    socket.on("IMPORT_SESSION_COMPLETED", handleSessionCompleted);
 
     return () => {
+      socket.off("IMPORT_SESSION_COMPLETED", handleImportCompleted);
       socket.off("LS_IMPORT_QUEUE_DRAINED", handleQueueDrained);
-      socket.off("LS_COVER_EXTRACTED", handleCoverExtracted);
-      socket.off("IMPORT_SESSION_COMPLETED", handleSessionCompleted);
     };
-  }, [getSocket, refetch, importJobQueue, socketReconnectTrigger]);
+  }, [getSocket, queryClient]);
 
   /**
    * Handles force re-import - re-imports all files to fix indexing issues
@@ -89,7 +116,6 @@ export const Import = (): ReactElement => {
         disconnectSocket("/");
         setTimeout(() => {
           getSocket("/");
-          setSocketReconnectTrigger(prev => prev + 1);
           setTimeout(() => {
             forceReImport();
           }, 500);

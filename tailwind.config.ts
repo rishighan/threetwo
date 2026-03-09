@@ -13,6 +13,7 @@ module.exports = {
           scraped: "#b8edbc",
           uncompressed: "#FFF3E0",
           imported: "#d8dab0",
+          missing: "#fee2e2",
         },
       },
     },

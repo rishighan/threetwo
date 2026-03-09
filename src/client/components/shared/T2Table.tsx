@@ -17,6 +17,7 @@ interface T2TableProps {
     previousPage?(...args: unknown[]): unknown;
   };
   rowClickHandler?(...args: unknown[]): unknown;
+  getRowClassName?(row: any): string;
   children?: any;
 }
 
@@ -27,6 +28,7 @@ export const T2Table = (tableOptions: T2TableProps): ReactElement => {
     paginationHandlers: { nextPage, previousPage },
     totalPages,
     rowClickHandler,
+    getRowClassName,
   } = tableOptions;
 
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
@@ -140,7 +142,7 @@ export const T2Table = (tableOptions: T2TableProps): ReactElement => {
             <tr
               key={row.id}
               onClick={() => rowClickHandler(row)}
-              className="border-b border-gray-200 dark:border-slate-700 hover:bg-slate-100/30 dark:hover:bg-slate-700/20 transition-colors cursor-pointer"
+              className={`border-b border-gray-200 dark:border-slate-700 hover:bg-slate-100/30 dark:hover:bg-slate-700/20 transition-colors cursor-pointer ${getRowClassName ? getRowClassName(row) : ""}`}
             >
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id} className="px-3 py-2 align-top">

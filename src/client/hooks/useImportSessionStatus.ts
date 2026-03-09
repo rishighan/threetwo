@@ -60,13 +60,22 @@ export const useImportSessionStatus = (): ImportSessionState => {
   // Track if we've received completion events
   const completionEventReceived = useRef(false);
   const queueDrainedEventReceived = useRef(false);
+  // Only true if IMPORT_SESSION_STARTED fired in this browser session.
+  // Prevents a stale "running" DB session from showing as active on hard refresh.
+  const sessionStartedEventReceived = useRef(false);
 
-  // Query active import session - NO POLLING, only refetch on Socket.IO events
+  // Query active import session - polls every 3s as a fallback when a session is
+  // active (e.g. tab re-opened mid-import and socket events were missed)
   const { data: sessionData, refetch } = useGetActiveImportSessionQuery(
     {},
     {
-      refetchOnWindowFocus: false,
-      refetchInterval: false, // NO POLLING
+      refetchOnWindowFocus: true,
+      refetchInterval: (query) => {
+        const s = (query.state.data as any)?.getActiveImportSession;
+        return s?.status === "running" || s?.status === "active" || s?.status === "processing"
+          ? 3000
+          : false;
+      },
     }
   );
 
@@ -152,12 +161,18 @@ export const useImportSessionStatus = (): ImportSessionState => {
 
     // Case 3: Check if session is actually running/active
     if (status === "running" || status === "active" || status === "processing") {
-      // Check if there's actual progress happening
-      const hasProgress = stats.filesProcessed > 0 || stats.filesSucceeded > 0;
       const hasQueuedWork = stats.filesQueued > 0 && stats.filesProcessed < stats.filesQueued;
-      
-      // Only treat as active if there's progress OR it just started
-      if (hasProgress && hasQueuedWork) {
+      // Only treat as "just started" if the started event fired in this browser session.
+      // Prevents a stale DB session from showing a 0% progress bar on hard refresh.
+      const justStarted = stats.filesQueued === 0 && stats.filesProcessed === 0 && sessionStartedEventReceived.current;
+
+      // No in-session event AND no actual progress → stale unclosed session from a previous run.
+      // Covers the case where the backend stores filesQueued but never updates filesProcessed/filesSucceeded.
+      const likelyStale = !sessionStartedEventReceived.current
+        && stats.filesProcessed === 0
+        && stats.filesSucceeded === 0;
+
+      if ((hasQueuedWork || justStarted) && !likelyStale) {
         return {
           status: "running",
           sessionId,
@@ -172,8 +187,8 @@ export const useImportSessionStatus = (): ImportSessionState => {
           isActive: true,
         };
       } else {
-        // Session says "running" but no progress - likely stuck/stale
-        console.warn(`[useImportSessionStatus] Session "${sessionId}" appears stuck (status: "${status}", processed: ${stats.filesProcessed}, succeeded: ${stats.filesSucceeded}, queued: ${stats.filesQueued}) - treating as idle`);
+        // Session says "running" but all files processed — likely a stale session
+        console.warn(`[useImportSessionStatus] Session "${sessionId}" appears stale (status: "${status}", processed: ${stats.filesProcessed}, queued: ${stats.filesQueued}) - treating as idle`);
         return {
           status: "idle",
           sessionId: null,
@@ -247,6 +262,7 @@ export const useImportSessionStatus = (): ImportSessionState => {
       // Reset completion flags when new session starts
       completionEventReceived.current = false;
       queueDrainedEventReceived.current = false;
+      sessionStartedEventReceived.current = true;
       refetch();
     };
 

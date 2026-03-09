@@ -10,7 +10,7 @@ interface ICardProps {
   children?: PropTypes.ReactNodeLike;
   borderColorClass?: string;
   backgroundColor?: string;
-  cardState?: "wanted" | "delete" | "scraped" | "uncompressed" | "imported";
+  cardState?: "wanted" | "delete" | "scraped" | "uncompressed" | "imported" | "missing";
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
   cardContainerStyle?: React.CSSProperties;
   imageStyle?: React.CSSProperties;
@@ -28,6 +28,8 @@ const getCardStateClass = (cardState?: string): string => {
       return "bg-card-uncompressed";
     case "imported":
       return "bg-card-imported";
+    case "missing":
+      return "bg-card-missing";
     default:
       return "";
   }

@@ -44,21 +44,23 @@ export const determineCoverFile = (data): any => {
   };
   // comicvine
   if (!isEmpty(data.comicvine)) {
-    coverFile.comicvine.url = data?.comicvine?.image.small_url;
+    coverFile.comicvine.url = data?.comicvine?.image?.small_url;
     coverFile.comicvine.issueName = data.comicvine?.name;
     coverFile.comicvine.publisher = data.comicvine?.publisher?.name;
   }
   // rawFileDetails
-  if (!isEmpty(data.rawFileDetails)) {
+  if (!isEmpty(data.rawFileDetails) && data.rawFileDetails.cover?.filePath) {
     const encodedFilePath = encodeURI(
       `${LIBRARY_SERVICE_HOST}/${data.rawFileDetails.cover.filePath}`,
     );
     coverFile.rawFile.url = escapePoundSymbol(encodedFilePath);
     coverFile.rawFile.issueName = data.rawFileDetails.name;
+  } else if (!isEmpty(data.rawFileDetails)) {
+    coverFile.rawFile.issueName = data.rawFileDetails.name;
   }
   // wanted
 
-  if (!isUndefined(data.locg)) {
+  if (!isNil(data.locg)) {
     coverFile.locg.url = data.locg.cover;
     coverFile.locg.issueName = data.locg.name;
     coverFile.locg.publisher = data.locg.publisher;
@@ -66,14 +68,15 @@ export const determineCoverFile = (data): any => {
 
   const result = filter(coverFile, (item) => item.url !== "");
 
-  if (result.length > 1) {
+  if (result.length >= 1) {
     const highestPriorityCoverFile = minBy(result, (item) => item.priority);
     if (!isUndefined(highestPriorityCoverFile)) {
       return highestPriorityCoverFile;
     }
-  } else {
-    return result[0];
   }
+
+  // No cover URL available — return rawFile entry so the name is still shown
+  return coverFile.rawFile;
 };
 
 export const determineExternalMetadata = (
@@ -85,8 +88,8 @@ export const determineExternalMetadata = (
       case "comicvine":
         return {
           coverURL:
-            source.comicvine?.image.small_url ||
-            source.comicvine.volumeInformation?.image.small_url,
+            source.comicvine?.image?.small_url ||
+            source.comicvine?.volumeInformation?.image?.small_url,
           issue: source.comicvine.name,
           icon: "cvlogo.svg",
         };

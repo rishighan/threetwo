@@ -1,4 +1,5 @@
 import { ReactElement, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useGetImportStatisticsQuery,
@@ -37,7 +38,7 @@ export const RealTimeImportStats = (): ReactElement => {
   // File list for the detail panel — only fetched when there are missing files
   const { data: missingComicsData } = useGetWantedComicsQuery(
     {
-      paginationOptions: { limit: 5, page: 1 },
+      paginationOptions: { limit: 3, page: 1 },
       predicate: { "importStatus.isRawFileMissing": true },
     },
     {
@@ -48,6 +49,18 @@ export const RealTimeImportStats = (): ReactElement => {
   );
 
   const missingDocs = missingComicsData?.getComicBooks?.docs ?? [];
+
+  const getMissingComicLabel = (comic: any): string => {
+    const series =
+      comic.canonicalMetadata?.series?.value ??
+      comic.inferredMetadata?.issue?.name;
+    const issueNum =
+      comic.canonicalMetadata?.issueNumber?.value ??
+      comic.inferredMetadata?.issue?.number;
+    if (series && issueNum) return `${series} #${issueNum}`;
+    if (series) return series;
+    return comic.rawFileDetails?.name ?? comic.id;
+  };
 
   const importSession = useImportSessionStatus();
 
@@ -65,13 +78,6 @@ export const RealTimeImportStats = (): ReactElement => {
 
   const hasNewFiles = stats && stats.newFiles > 0;
   const missingCount = stats?.missingFiles ?? 0;
-
-  // Mark queue drained when session completes — LS_LIBRARY_STATISTICS handles the refetch
-  useEffect(() => {
-    if (importSession.isComplete && importSession.status === "completed") {
-      importJobQueue.setStatus("drained");
-    }
-  }, [importSession.isComplete, importSession.status, importJobQueue]);
 
   // LS_LIBRARY_STATISTICS fires after every filesystem change and every import job completion.
   // Invalidating GetImportStatistics covers: total files, imported, new files, and missing count.
@@ -139,13 +145,13 @@ export const RealTimeImportStats = (): ReactElement => {
 
   // Determine what to show in each card based on current phase
   const sessionStats = importSession.stats;
-  const hasSessionStats = (importSession.isActive || importSession.isComplete) && sessionStats !== null;
+  const hasSessionStats = importSession.isActive && sessionStats !== null;
 
   const totalFiles = stats.totalLocalFiles;
   const importedCount = hasSessionStats ? sessionStats!.filesSucceeded : stats.alreadyImported;
   const failedCount = hasSessionStats ? sessionStats!.filesFailed : 0;
 
-  const showProgressBar = importSession.isActive || importSession.isComplete;
+  const showProgressBar = importSession.isActive;
   const showFailedCard = hasSessionStats && failedCount > 0;
   const showMissingCard = missingCount > 0;
 
@@ -267,18 +273,25 @@ export const RealTimeImportStats = (): ReactElement => {
               </p>
               {missingDocs.length > 0 && (
                 <ul className="mt-2 space-y-1">
-                  {missingDocs.slice(0, 5).map((comic, i) => (
-                    <li key={i} className="text-xs text-amber-700 dark:text-amber-400 font-mono truncate">
-                      {comic.rawFileDetails?.name ?? comic.id}
+                  {missingDocs.map((comic, i) => (
+                    <li key={i} className="text-xs text-amber-700 dark:text-amber-400 truncate">
+                      {getMissingComicLabel(comic)} is missing
                     </li>
                   ))}
-                  {missingDocs.length > 5 && (
+                  {missingCount > 3 && (
                     <li className="text-xs text-amber-600 dark:text-amber-500">
-                      +{missingDocs.length - 5} more
+                      and {missingCount - 3} more.
                     </li>
                   )}
                 </ul>
               )}
+              <Link
+                to="/library?filter=missingFiles"
+                className="inline-flex items-center gap-1.5 mt-3 text-xs font-medium text-amber-800 dark:text-amber-300 underline underline-offset-2 hover:text-amber-600"
+              >
+                <i className="h-4 w-4 icon-[solar--library-bold-duotone]"></i>
+                View all in Library
+              </Link>
             </div>
           </div>
         </div>

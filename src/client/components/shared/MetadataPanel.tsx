@@ -8,14 +8,17 @@ import { determineCoverFile } from "../../shared/utils/metadata.utils";
 import { find, isUndefined } from "lodash";
 
 interface IMetadatPanelProps {
-  value: any;
-  children: any;
-  imageStyle: any;
-  titleStyle: any;
-  tagsStyle: any;
-  containerStyle: any;
+  data: any;
+  value?: any;
+  children?: any;
+  imageStyle?: any;
+  titleStyle?: any;
+  tagsStyle?: any;
+  containerStyle?: any;
+  isMissing?: boolean;
 }
 export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
+  const { isMissing = false } = props;
   const {
     rawFileDetails,
     inferredMetadata,
@@ -31,8 +34,11 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
     {
       name: "rawFileDetails",
       content: () => (
-        <dl className="dark:bg-card-imported bg-card-imported dark:text-slate-800 p-2 sm:p-3 rounded-lg">
-          <dt>
+        <dl className={`${isMissing ? "bg-card-missing dark:bg-card-missing" : "bg-card-imported dark:bg-card-imported"} dark:text-slate-800 p-2 sm:p-3 rounded-lg`}>
+          <dt className="flex items-center gap-2">
+            {isMissing && (
+              <i className="icon-[solar--file-remove-broken] w-4 h-4 text-red-600 shrink-0"></i>
+            )}
             <p className="text-sm sm:text-lg">{issueName}</p>
           </dt>
           <dd className="text-xs sm:text-sm">
@@ -58,26 +64,28 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
           )}
           <dd className="flex flex-row flex-wrap gap-1 sm:gap-2 w-full sm:w-max">
             {/* File extension */}
-            <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-1.5 sm:px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-              <span className="pr-1 pt-1">
-                <i className="icon-[solar--zip-file-bold-duotone] w-4 h-4 sm:w-5 sm:h-5"></i>
+            {rawFileDetails.mimeType && (
+              <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-1.5 sm:px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                <span className="pr-1 pt-1">
+                  <i className="icon-[solar--zip-file-bold-duotone] w-4 h-4 sm:w-5 sm:h-5"></i>
+                </span>
+                <span className="text-xs sm:text-md text-slate-500 dark:text-slate-900">
+                  {rawFileDetails.mimeType}
+                </span>
               </span>
-
-              <span className="text-xs sm:text-md text-slate-500 dark:text-slate-900">
-                {rawFileDetails.mimeType}
-              </span>
-            </span>
+            )}
 
             {/* size */}
-            <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-1.5 sm:px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
-              <span className="pr-1 pt-1">
-                <i className="icon-[solar--mirror-right-bold-duotone] w-4 h-4 sm:w-5 sm:h-5"></i>
+            {rawFileDetails.fileSize != null && (
+              <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-1.5 sm:px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                <span className="pr-1 pt-1">
+                  <i className="icon-[solar--mirror-right-bold-duotone] w-4 h-4 sm:w-5 sm:h-5"></i>
+                </span>
+                <span className="text-xs sm:text-md text-slate-500 dark:text-slate-900">
+                  {prettyBytes(rawFileDetails.fileSize)}
+                </span>
               </span>
-
-              <span className="text-xs sm:text-md text-slate-500 dark:text-slate-900">
-                {prettyBytes(rawFileDetails.fileSize)}
-              </span>
-            </span>
+            )}
 
             {/* Uncompressed version available? */}
             {rawFileDetails.archive?.uncompressed && (
@@ -177,10 +185,10 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
   const metadataPanel = find(metadataContentPanel, {
     name: objectReference,
   });
-
   return (
     <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 my-3">
       <div className="w-32 sm:w-56 lg:w-52 shrink-0">
+      
         <Card
           imageUrl={url}
           orientation={"cover-only"}
@@ -188,7 +196,7 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
           imageStyle={props.imageStyle}
         />
       </div>
-      <div className="flex-1">{metadataPanel.content()}</div>
+      <div className="flex-1">{metadataPanel?.content()}</div>
     </div>
   );
 };
