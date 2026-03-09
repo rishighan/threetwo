@@ -93,6 +93,9 @@ query GetRecentComics($limit: Int) {
           value
         }
       }
+      importStatus {
+        isRawFileMissing
+      }
       createdAt
       updatedAt
     }

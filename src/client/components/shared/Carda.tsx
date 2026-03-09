@@ -104,11 +104,22 @@ const renderCard = (props: ICardProps): ReactElement => {
     case "vertical-2":
       return (
         <div className={`block rounded-md max-w-64 h-fit shadow-md shadow-white-400 ${getCardStateClass(props.cardState) || "bg-gray-200 dark:bg-slate-500"}`}>
-          <img
-            alt="Home"
-            src={props.imageUrl}
-            className="rounded-t-md object-cover"
-          />
+          <div className="relative">
+            {props.imageUrl ? (
+              <img
+                alt="Home"
+                src={props.imageUrl}
+                className="rounded-t-md object-cover"
+              />
+            ) : (
+              <div className="rounded-t-md h-48 bg-gray-100 dark:bg-slate-600" />
+            )}
+            {props.cardState === "missing" && (
+              <div className="absolute inset-0 flex items-center justify-center rounded-t-md bg-card-missing/70">
+                <i className="icon-[solar--file-broken-bold] w-16 h-16 text-red-500" />
+              </div>
+            )}
+          </div>
 
           {props.title ? (
             <div className="px-3 pt-3 mb-2">

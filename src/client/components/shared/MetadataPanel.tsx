@@ -34,11 +34,10 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
     {
       name: "rawFileDetails",
       content: () => (
-        <dl className={`${isMissing ? "bg-card-missing dark:bg-card-missing" : "bg-card-imported dark:bg-card-imported"} dark:text-slate-800 p-2 sm:p-3 rounded-lg`}>
+        <dl
+          className={`${isMissing ? "bg-card-missing dark:bg-card-missing" : "bg-card-imported dark:bg-card-imported"} dark:text-slate-800 p-2 sm:p-3 rounded-lg`}
+        >
           <dt className="flex items-center gap-2">
-            {isMissing && (
-              <i className="icon-[solar--file-remove-broken] w-4 h-4 text-red-600 shrink-0"></i>
-            )}
             <p className="text-sm sm:text-lg">{issueName}</p>
           </dt>
           <dd className="text-xs sm:text-sm">
@@ -84,6 +83,13 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
                 <span className="text-xs sm:text-md text-slate-500 dark:text-slate-900">
                   {prettyBytes(rawFileDetails.fileSize)}
                 </span>
+              </span>
+            )}
+
+            {/* Missing file Icon */}
+            {isMissing && (
+              <span className="pr-2 pt-1" title="File backing this comic is missing">
+                <i className="icon-[solar--file-remove-broken] w-5 h-5 text-red-600 shrink-0"></i>
               </span>
             )}
 
@@ -188,7 +194,6 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
   return (
     <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 my-3">
       <div className="w-32 sm:w-56 lg:w-52 shrink-0">
-      
         <Card
           imageUrl={url}
           orientation={"cover-only"}

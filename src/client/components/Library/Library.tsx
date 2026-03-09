@@ -314,7 +314,7 @@ export const Library = (): ReactElement => {
               columns={missingFilesColumns}
               sourceData={missingFilesData?.getComicBooks?.docs ?? []}
               rowClickHandler={navigateToMissingComicDetail}
-              getRowClassName={() => "bg-card-missing/40"}
+              getRowClassName={() => "bg-card-missing/40 hover:bg-card-missing/20"}
               paginationHandlers={{ nextPage: () => {}, previousPage: () => {} }}
             >
               <FilterDropdown />
@@ -328,6 +328,11 @@ export const Library = (): ReactElement => {
             columns={columns}
             sourceData={searchResults?.hits.hits}
             rowClickHandler={navigateToComicDetail}
+            getRowClassName={(row) =>
+              missingIdSet.has(row.original._id)
+                ? "bg-card-missing/40 hover:bg-card-missing/20"
+                : "hover:bg-slate-100/30 dark:hover:bg-slate-700/20"
+            }
             paginationHandlers={{ nextPage, previousPage }}
           >
             <div className="flex items-center gap-2">

@@ -28,6 +28,16 @@ export type AcquisitionSourceInput = {
   wanted?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type AddTorrentInput = {
+  comicObjectId: Scalars['ID']['input'];
+  torrentToDownload: Scalars['String']['input'];
+};
+
+export type AddTorrentResult = {
+  __typename?: 'AddTorrentResult';
+  result?: Maybe<Scalars['JSON']['output']>;
+};
+
 export type AppSettings = {
   __typename?: 'AppSettings';
   bittorrent?: Maybe<BittorrentSettings>;
@@ -405,6 +415,7 @@ export type ImportStats = {
 export type ImportStatus = {
   __typename?: 'ImportStatus';
   isImported?: Maybe<Scalars['Boolean']['output']>;
+  isRawFileMissing?: Maybe<Scalars['Boolean']['output']>;
   matchedResult?: Maybe<MatchedResult>;
   tagged?: Maybe<Scalars['Boolean']['output']>;
 };
@@ -609,6 +620,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Placeholder for future mutations */
   _empty?: Maybe<Scalars['String']['output']>;
+  /** Add a torrent to qBittorrent */
+  addTorrent?: Maybe<AddTorrentResult>;
   analyzeImage: ImageAnalysisResult;
   applyComicVineMatch: Comic;
   bulkResolveMetadata: Array<Comic>;
@@ -623,6 +636,11 @@ export type Mutation = {
   uncompressArchive?: Maybe<Scalars['Boolean']['output']>;
   updateSourcedMetadata: Comic;
   updateUserPreferences: UserPreferences;
+};
+
+
+export type MutationAddTorrentArgs = {
+  input: AddTorrentInput;
 };
 
 
@@ -768,6 +786,7 @@ export type PublisherStats = {
 
 export type Query = {
   __typename?: 'Query';
+  _empty?: Maybe<Scalars['String']['output']>;
   analyzeMetadataConflicts: Array<MetadataConflict>;
   bundles: Array<Bundle>;
   comic?: Maybe<Comic>;
@@ -1265,7 +1284,7 @@ export type GetRecentComicsQueryVariables = Exact<{
 }>;
 
 
-export type GetRecentComicsQuery = { __typename?: 'Query', comics: { __typename?: 'ComicConnection', totalCount: number, comics: Array<{ __typename?: 'Comic', id: string, createdAt?: string | null, updatedAt?: string | null, inferredMetadata?: { __typename?: 'InferredMetadata', issue?: { __typename?: 'Issue', name?: string | null, number?: number | null, year?: string | null, subtitle?: string | null } | null } | null, rawFileDetails?: { __typename?: 'RawFileDetails', name?: string | null, extension?: string | null, cover?: { __typename?: 'Cover', filePath?: string | null } | null, archive?: { __typename?: 'Archive', uncompressed?: boolean | null } | null } | null, sourcedMetadata?: { __typename?: 'SourcedMetadata', comicvine?: string | null, comicInfo?: string | null, locg?: { __typename?: 'LOCGMetadata', name?: string | null, publisher?: string | null, cover?: string | null } | null } | null, canonicalMetadata?: { __typename?: 'CanonicalMetadata', title?: { __typename?: 'MetadataField', value?: string | null } | null, series?: { __typename?: 'MetadataField', value?: string | null } | null, issueNumber?: { __typename?: 'MetadataField', value?: string | null } | null, publisher?: { __typename?: 'MetadataField', value?: string | null } | null } | null }> } };
+export type GetRecentComicsQuery = { __typename?: 'Query', comics: { __typename?: 'ComicConnection', totalCount: number, comics: Array<{ __typename?: 'Comic', id: string, createdAt?: string | null, updatedAt?: string | null, inferredMetadata?: { __typename?: 'InferredMetadata', issue?: { __typename?: 'Issue', name?: string | null, number?: number | null, year?: string | null, subtitle?: string | null } | null } | null, rawFileDetails?: { __typename?: 'RawFileDetails', name?: string | null, extension?: string | null, cover?: { __typename?: 'Cover', filePath?: string | null } | null, archive?: { __typename?: 'Archive', uncompressed?: boolean | null } | null } | null, sourcedMetadata?: { __typename?: 'SourcedMetadata', comicvine?: string | null, comicInfo?: string | null, locg?: { __typename?: 'LOCGMetadata', name?: string | null, publisher?: string | null, cover?: string | null } | null } | null, canonicalMetadata?: { __typename?: 'CanonicalMetadata', title?: { __typename?: 'MetadataField', value?: string | null } | null, series?: { __typename?: 'MetadataField', value?: string | null } | null, issueNumber?: { __typename?: 'MetadataField', value?: string | null } | null, publisher?: { __typename?: 'MetadataField', value?: string | null } | null } | null, importStatus?: { __typename?: 'ImportStatus', isRawFileMissing?: boolean | null } | null }> } };
 
 export type GetWantedComicsQueryVariables = Exact<{
   paginationOptions: PaginationOptionsInput;
@@ -1705,6 +1724,9 @@ export const GetRecentComicsDocument = `
         publisher {
           value
         }
+      }
+      importStatus {
+        isRawFileMissing
       }
       createdAt
       updatedAt

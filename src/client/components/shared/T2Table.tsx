@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo, useState } from "react";
+import React, { ReactElement, useMemo, useState, useRef, useEffect, useLayoutEffect } from "react";
 import {
   ColumnDef,
   flexRender,
@@ -8,19 +8,38 @@ import {
   PaginationState,
 } from "@tanstack/react-table";
 
+/**
+ * Props for {@link T2Table}.
+ */
 interface T2TableProps {
+  /** Row data to render. */
   sourceData?: unknown[];
+  /** Total number of records across all pages, used for pagination display. */
   totalPages?: number;
+  /** Column definitions (TanStack Table {@link ColumnDef} array). */
   columns?: unknown[];
+  /** Callbacks for navigating between pages. */
   paginationHandlers?: {
     nextPage?(...args: unknown[]): unknown;
     previousPage?(...args: unknown[]): unknown;
   };
+  /** Called with the TanStack row object when a row is clicked. */
   rowClickHandler?(...args: unknown[]): unknown;
+  /** Returns additional CSS classes for a given row (e.g. for highlight states). */
   getRowClassName?(row: any): string;
+  /** Optional slot rendered in the toolbar area (e.g. a search input). */
   children?: any;
 }
 
+/**
+ * A paginated data table with a two-row sticky header.
+ *
+ * The header rounds its corners only while stuck to the top of the scroll
+ * container, detected via {@link IntersectionObserver} on a sentinel element
+ * placed immediately before the table.  The second header row's `top` offset
+ * is measured from the DOM at mount time so the two rows stay flush regardless
+ * of font size or padding changes.
+ */
 export const T2Table = (tableOptions: T2TableProps): ReactElement => {
   const {
     sourceData,
@@ -30,6 +49,27 @@ export const T2Table = (tableOptions: T2TableProps): ReactElement => {
     rowClickHandler,
     getRowClassName,
   } = tableOptions;
+
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const firstHeaderRowRef = useRef<HTMLTableRowElement>(null);
+  const [isSticky, setIsSticky] = useState(false);
+  const [firstRowHeight, setFirstRowHeight] = useState(0);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsSticky(!entry.isIntersecting),
+      { threshold: 0 },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
+
+  useLayoutEffect(() => {
+    if (firstHeaderRowRef.current)
+      setFirstRowHeight(firstHeaderRowRef.current.getBoundingClientRect().height);
+  }, []);
 
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 1,
@@ -44,10 +84,7 @@ export const T2Table = (tableOptions: T2TableProps): ReactElement => {
     [pageIndex, pageSize],
   );
 
-  /**
-   * Pagination control to move forward one page
-   * @returns void
-   */
+  /** Advances to the next page and notifies the parent via {@link T2TableProps.paginationHandlers}. */
   const goToNextPage = () => {
     setPagination({
       pageIndex: pageIndex + 1,
@@ -56,10 +93,7 @@ export const T2Table = (tableOptions: T2TableProps): ReactElement => {
     nextPage(pageIndex, pageSize);
   };
 
-  /**
-   * Pagination control to move backward one page
-   * @returns void
-   **/
+  /** Goes back one page and notifies the parent via {@link T2TableProps.paginationHandlers}. */
   const goToPreviousPage = () => {
     setPagination({
       pageIndex: pageIndex - 1,
@@ -115,26 +149,33 @@ export const T2Table = (tableOptions: T2TableProps): ReactElement => {
         </div>
       </div>
 
+      <div ref={sentinelRef} />
       <table className="table-auto w-full text-sm text-gray-900 dark:text-slate-100">
-        <thead className="sticky top-0 z-10 bg-white dark:bg-slate-900">
-          {table.getHeaderGroups().map((headerGroup, groupIndex) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header, index) => (
-                <th
-                  key={header.id}
-                  colSpan={header.colSpan}
-                  className="px-3 py-2 text-[11px] font-semibold tracking-wide uppercase text-left text-gray-500 dark:text-slate-400 border-b border-gray-300 dark:border-slate-700"
-                >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                </th>
-              ))}
-            </tr>
-          ))}
+        <thead>
+          {table.getHeaderGroups().map((headerGroup, groupIndex) => {
+            return (
+              <tr key={headerGroup.id} ref={groupIndex === 0 ? firstHeaderRowRef : undefined}>
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    style={groupIndex === 1 ? { top: firstRowHeight } : undefined}
+                    className={[
+                      'sticky z-10 px-3 py-2 text-[11px] font-semibold tracking-wide uppercase text-left',
+                      'text-gray-500 dark:text-slate-400 bg-white dark:bg-slate-900',
+                      groupIndex === 0
+                        ? `top-0 ${isSticky ? 'first:rounded-tl-xl last:rounded-tr-xl' : ''}`
+                        : `border-b-2 border-gray-200 dark:border-slate-600 shadow-md ${isSticky ? 'first:rounded-bl-xl last:rounded-br-xl' : ''}`,
+                    ].join(' ')}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </th>
+                ))}
+              </tr>
+            );
+          })}
         </thead>
 
         <tbody>
@@ -142,7 +183,7 @@ export const T2Table = (tableOptions: T2TableProps): ReactElement => {
             <tr
               key={row.id}
               onClick={() => rowClickHandler(row)}
-              className={`border-b border-gray-200 dark:border-slate-700 hover:bg-slate-100/30 dark:hover:bg-slate-700/20 transition-colors cursor-pointer ${getRowClassName ? getRowClassName(row) : ""}`}
+              className={`border-b border-gray-200 dark:border-slate-700 transition-colors cursor-pointer ${getRowClassName ? getRowClassName(row) : "hover:bg-slate-100/30 dark:hover:bg-slate-700/20"}`}
             >
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id} className="px-3 py-2 align-top">
