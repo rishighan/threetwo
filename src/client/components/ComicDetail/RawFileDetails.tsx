@@ -1,29 +1,24 @@
 import React, { ReactElement, ReactNode } from "react";
 import prettyBytes from "pretty-bytes";
 import { isEmpty } from "lodash";
-import { format, parseISO } from "date-fns";
-import { RawFileDetails as RawFileDetailsType } from "../../graphql/generated";
+import { format, parseISO, isValid } from "date-fns";
+import {
+  RawFileDetails as RawFileDetailsType,
+  InferredMetadata,
+} from "../../graphql/generated";
 
 type RawFileDetailsProps = {
   data?: {
     rawFileDetails?: RawFileDetailsType;
-    inferredMetadata?: {
-      issue?: {
-        year?: string;
-        name?: string;
-        number?: number;
-        subtitle?: string;
-      };
-    };
-    created_at?: string;
-    updated_at?: string;
+    inferredMetadata?: InferredMetadata;
+    createdAt?: string;
   };
   children?: ReactNode;
 };
 
+/** Renders raw file info, inferred metadata, and import timestamp for a comic. */
 export const RawFileDetails = (props: RawFileDetailsProps): ReactElement => {
-  const { rawFileDetails, inferredMetadata, created_at, updated_at } =
-    props.data || {};
+  const { rawFileDetails, inferredMetadata, createdAt } = props.data || {};
   return (
     <>
       <div className="max-w-2xl ml-5">
@@ -97,10 +92,10 @@ export const RawFileDetails = (props: RawFileDetailsProps): ReactElement => {
                 Import Details
               </dt>
               <dd className="mt-1 text-sm text-gray-900 dark:text-gray-400">
-                {created_at ? (
+                {createdAt && isValid(parseISO(createdAt)) ? (
                   <>
-                    {format(parseISO(created_at), "dd MMMM, yyyy")},{" "}
-                    {format(parseISO(created_at), "h aaaa")}
+                    {format(parseISO(createdAt), "dd MMMM, yyyy")},{" "}
+                    {format(parseISO(createdAt), "h aaaa")}
                   </>
                 ) : "N/A"}
               </dd>

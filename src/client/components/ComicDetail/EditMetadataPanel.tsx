@@ -1,55 +1,41 @@
-import React, { ReactElement, useCallback, useEffect, useState } from "react";
-import { Form, Field } from "react-final-form";
+import React, { ReactElement } from "react";
+import { Form, Field, FieldRenderProps } from "react-final-form";
 import arrayMutators from "final-form-arrays";
 import { FieldArray } from "react-final-form-arrays";
 import AsyncSelectPaginate from "./AsyncSelectPaginate/AsyncSelectPaginate";
 import TextareaAutosize from "react-textarea-autosize";
 
-export const EditMetadataPanel = (props): ReactElement => {
-  const validate = async () => {};
+interface EditMetadataPanelProps {
+  data: {
+    name?: string;
+    [key: string]: any;
+  };
+}
+
+/** Adapts react-final-form's Field render prop to AsyncSelectPaginate. */
+const AsyncSelectPaginateAdapter = ({ input, ...rest }: FieldRenderProps<any>) => (
+  <AsyncSelectPaginate {...input} {...rest} onChange={(value) => input.onChange(value)} />
+);
+
+/** Adapts react-final-form's Field render prop to TextareaAutosize. */
+const TextareaAutosizeAdapter = ({ input, ...rest }: FieldRenderProps<any>) => (
+  <TextareaAutosize {...input} {...rest} onChange={(value) => input.onChange(value)} />
+);
+
+/** Sliding panel form for manually editing comic metadata fields. */
+export const EditMetadataPanel = ({ data }: EditMetadataPanelProps): ReactElement => {
   const onSubmit = async () => {};
-
-  const { data } = props;
-
-  const AsyncSelectPaginateAdapter = ({ input, ...rest }) => {
-    return (
-      <AsyncSelectPaginate
-        {...input}
-        {...rest}
-        onChange={(value) => input.onChange(value)}
-      />
-    );
-  };
-  const TextareaAutosizeAdapter = ({ input, ...rest }) => {
-    return (
-      <TextareaAutosize
-        {...input}
-        {...rest}
-        onChange={(value) => input.onChange(value)}
-      />
-    );
-  };
-  // const rawFileDetails = useSelector(
-  //   (state: RootState) => state.comicInfo.comicBookDetail.rawFileDetails.name,
-  // );
 
   return (
     <>
       <Form
         onSubmit={onSubmit}
-        validate={validate}
-        mutators={{
-          ...arrayMutators,
-        }}
+        mutators={{ ...arrayMutators }}
         render={({
           handleSubmit,
           form: {
             mutators: { push, pop },
-          }, // injected from final-form-arrays above
-          pristine,
-          form,
-          submitting,
-          values,
+          },
         }) => (
           <form onSubmit={handleSubmit}>
             {/* Issue Name */}
@@ -80,7 +66,6 @@ export const EditMetadataPanel = (props): ReactElement => {
                 <p className="text-xs">Do not enter the first zero</p>
               </div>
               <div>
-                {/* year */}
                 <div className="text-sm">Issue Year</div>
                 <Field
                   name="issue_year"
@@ -100,8 +85,6 @@ export const EditMetadataPanel = (props): ReactElement => {
               </div>
             </div>
 
-            {/* page count */}
-
             {/* Description */}
             <div className="mt-2">
               <label className="text-sm">Description</label>
@@ -113,7 +96,7 @@ export const EditMetadataPanel = (props): ReactElement => {
               />
             </div>
 
-            <hr size="1" />
+            <hr />
 
             <div className="field is-horizontal">
               <div className="field-label">
@@ -153,7 +136,7 @@ export const EditMetadataPanel = (props): ReactElement => {
               </div>
             </div>
 
-            <hr size="1" />
+            <hr />
 
             {/* Publisher */}
             <div className="field is-horizontal">
@@ -224,7 +207,7 @@ export const EditMetadataPanel = (props): ReactElement => {
               </div>
             </div>
 
-            <hr size="1" />
+            <hr />
 
             {/* team credits */}
             <div className="field is-horizontal">
@@ -302,7 +285,6 @@ export const EditMetadataPanel = (props): ReactElement => {
                 ))
               }
             </FieldArray>
-            <pre>{JSON.stringify(values, undefined, 2)}</pre>
           </form>
         )}
       />

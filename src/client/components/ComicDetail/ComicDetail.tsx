@@ -67,13 +67,8 @@ type ComicDetailProps = {
 };
 
 /**
- * Component for displaying the metadata for a comic in greater detail.
- *
- * @component
- * @example
- * return (
- *   <ComicDetail/>
- * )
+ * Displays full comic detail: cover, file info, action menu, and tabbed panels
+ * for metadata, archive operations, and acquisition.
  */
 export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   const {
@@ -84,7 +79,6 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
       sourcedMetadata: { comicvine, locg, comicInfo },
       acquisition,
       createdAt,
-      updatedAt,
     },
     userSettings,
     queryClient,
@@ -94,23 +88,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   const [activeTab, setActiveTab] = useState<number | undefined>(undefined);
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
-  const [modalIsOpen, setIsOpen] = useState(false);
 
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
   const { comicVineMatches, prepareAndFetchMatches } = useComicVineMatching();
-
-  // Modal handlers (currently unused but kept for future use)
-  const openModal = useCallback((filePath: string) => {
-    setIsOpen(true);
-  }, []);
-
-  const afterOpenModal = useCallback((things: any) => {
-    // Modal opened callback
-  }, []);
-
-  const closeModal = useCallback(() => {
-    setIsOpen(false);
-  }, []);
 
   // Action event handlers
   const openDrawerWithCVMatches = () => {
@@ -224,10 +204,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                     <div className="grid">
                       <RawFileDetails
                         data={{
-                          rawFileDetails: rawFileDetails,
-                          inferredMetadata: inferredMetadata,
-                          created_at: createdAt,
-                          updated_at: updatedAt,
+                          rawFileDetails,
+                          inferredMetadata,
+                          createdAt,
                         }}
                       >
                         {/* action dropdown */}

@@ -1,12 +1,21 @@
 import React, { ReactElement } from "react";
-import { ComicVineSearchForm } from "../ComicVineSearchForm";
 import MatchResult from "./MatchResult";
 import { isEmpty } from "lodash";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
 
-export const ComicVineMatchPanel = (comicVineData): ReactElement => {
-  const { comicObjectId, comicVineMatches, queryClient, onMatchApplied } = comicVineData.props;
+interface ComicVineMatchPanelProps {
+  props: {
+    comicObjectId: string;
+    comicVineMatches: any[];
+    queryClient?: any;
+    onMatchApplied?: () => void;
+  };
+}
+
+/** Displays ComicVine search results or a status message while searching. */
+export const ComicVineMatchPanel = ({ props: comicVineData }: ComicVineMatchPanelProps): ReactElement => {
+  const { comicObjectId, comicVineMatches, queryClient, onMatchApplied } = comicVineData;
   const { comicvine } = useStore(
     useShallow((state) => ({
       comicvine: state.comicvine,

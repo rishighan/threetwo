@@ -28,6 +28,13 @@ export type AcquisitionSourceInput = {
   wanted?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type AppSettings = {
+  __typename?: 'AppSettings';
+  bittorrent?: Maybe<BittorrentSettings>;
+  directConnect?: Maybe<DirectConnectSettings>;
+  prowlarr?: Maybe<ProwlarrSettings>;
+};
+
 export type Archive = {
   __typename?: 'Archive';
   expandedPath?: Maybe<Scalars['String']['output']>;
@@ -50,6 +57,26 @@ export type AutoMergeSettingsInput = {
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
   onImport?: InputMaybe<Scalars['Boolean']['input']>;
   onMetadataUpdate?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type BittorrentClient = {
+  __typename?: 'BittorrentClient';
+  host?: Maybe<HostConfig>;
+  name?: Maybe<Scalars['String']['output']>;
+};
+
+export type BittorrentSettings = {
+  __typename?: 'BittorrentSettings';
+  client?: Maybe<BittorrentClient>;
+};
+
+export type Bundle = {
+  __typename?: 'Bundle';
+  id?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  size?: Maybe<Scalars['String']['output']>;
+  speed?: Maybe<Scalars['String']['output']>;
+  status?: Maybe<Scalars['String']['output']>;
 };
 
 export type CanonicalMetadata = {
@@ -123,6 +150,11 @@ export type ComicConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type ComicVineMatchInput = {
+  volume: ComicVineVolumeRefInput;
+  volumeInformation?: InputMaybe<Scalars['JSON']['input']>;
+};
+
 export type ComicVineResourceResponse = {
   __typename?: 'ComicVineResourceResponse';
   error: Scalars['String']['output'];
@@ -143,6 +175,24 @@ export type ComicVineSearchResult = {
   offset: Scalars['Int']['output'];
   results: Array<SearchResultItem>;
   status_code: Scalars['Int']['output'];
+  total: Scalars['Int']['output'];
+};
+
+export type ComicVineVolume = {
+  __typename?: 'ComicVineVolume';
+  api_detail_url?: Maybe<Scalars['String']['output']>;
+  count_of_issues?: Maybe<Scalars['Int']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  image?: Maybe<VolumeImage>;
+  name?: Maybe<Scalars['String']['output']>;
+  publisher?: Maybe<Publisher>;
+  site_detail_url?: Maybe<Scalars['String']['output']>;
+  start_year?: Maybe<Scalars['String']['output']>;
+};
+
+export type ComicVineVolumeRefInput = {
+  api_detail_url: Scalars['String']['input'];
 };
 
 export enum ConflictResolutionStrategy {
@@ -177,8 +227,20 @@ export type DirectConnectBundleInput = {
   size?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type DirectConnectClient = {
+  __typename?: 'DirectConnectClient';
+  airDCPPUserSettings?: Maybe<Scalars['JSON']['output']>;
+  host?: Maybe<HostConfig>;
+  hubs?: Maybe<Array<Maybe<Scalars['JSON']['output']>>>;
+};
+
 export type DirectConnectInput = {
   downloads?: InputMaybe<Array<DirectConnectBundleInput>>;
+};
+
+export type DirectConnectSettings = {
+  __typename?: 'DirectConnectSettings';
+  client?: Maybe<DirectConnectClient>;
 };
 
 export type DirectorySize = {
@@ -232,6 +294,37 @@ export type GetResourceInput = {
 export type GetVolumesInput = {
   fieldList?: InputMaybe<Scalars['String']['input']>;
   volumeURI: Scalars['String']['input'];
+};
+
+export type HostConfig = {
+  __typename?: 'HostConfig';
+  hostname?: Maybe<Scalars['String']['output']>;
+  password?: Maybe<Scalars['String']['output']>;
+  port?: Maybe<Scalars['String']['output']>;
+  protocol?: Maybe<Scalars['String']['output']>;
+  username?: Maybe<Scalars['String']['output']>;
+};
+
+export type HostInput = {
+  hostname: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  port: Scalars['String']['input'];
+  protocol: Scalars['String']['input'];
+  username: Scalars['String']['input'];
+};
+
+export type Hub = {
+  __typename?: 'Hub';
+  description?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['Int']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  userCount?: Maybe<Scalars['Int']['output']>;
+};
+
+export type ImageAnalysisResult = {
+  __typename?: 'ImageAnalysisResult';
+  analyzedData?: Maybe<Scalars['JSON']['output']>;
+  colorHistogramData?: Maybe<Scalars['JSON']['output']>;
 };
 
 export type ImageUrls = {
@@ -516,6 +609,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Placeholder for future mutations */
   _empty?: Maybe<Scalars['String']['output']>;
+  analyzeImage: ImageAnalysisResult;
+  applyComicVineMatch: Comic;
   bulkResolveMetadata: Array<Comic>;
   forceCompleteSession: ForceCompleteResult;
   importComic: ImportComicResult;
@@ -525,8 +620,20 @@ export type Mutation = {
   setMetadataField: Comic;
   startIncrementalImport: IncrementalImportResult;
   startNewImport: ImportJobResult;
+  uncompressArchive?: Maybe<Scalars['Boolean']['output']>;
   updateSourcedMetadata: Comic;
   updateUserPreferences: UserPreferences;
+};
+
+
+export type MutationAnalyzeImageArgs = {
+  imageFilePath: Scalars['String']['input'];
+};
+
+
+export type MutationApplyComicVineMatchArgs = {
+  comicObjectId: Scalars['ID']['input'];
+  match: ComicVineMatchInput;
 };
 
 
@@ -580,6 +687,13 @@ export type MutationStartNewImportArgs = {
 };
 
 
+export type MutationUncompressArchiveArgs = {
+  comicObjectId: Scalars['ID']['input'];
+  filePath: Scalars['String']['input'];
+  options?: InputMaybe<Scalars['JSON']['input']>;
+};
+
+
 export type MutationUpdateSourcedMetadataArgs = {
   comicId: Scalars['ID']['input'];
   metadata: Scalars['String']['input'];
@@ -628,6 +742,17 @@ export type Provenance = {
   url?: Maybe<Scalars['String']['output']>;
 };
 
+export type ProwlarrClient = {
+  __typename?: 'ProwlarrClient';
+  apiKey?: Maybe<Scalars['String']['output']>;
+  host?: Maybe<HostConfig>;
+};
+
+export type ProwlarrSettings = {
+  __typename?: 'ProwlarrSettings';
+  client?: Maybe<ProwlarrClient>;
+};
+
 export type Publisher = {
   __typename?: 'Publisher';
   api_detail_url?: Maybe<Scalars['String']['output']>;
@@ -644,6 +769,7 @@ export type PublisherStats = {
 export type Query = {
   __typename?: 'Query';
   analyzeMetadataConflicts: Array<MetadataConflict>;
+  bundles: Array<Bundle>;
   comic?: Maybe<Comic>;
   comics: ComicConnection;
   /** Fetch resource from Metron API */
@@ -664,18 +790,29 @@ export type Query = {
   getVolume: VolumeDetailResponse;
   /** Get weekly pull list from League of Comic Geeks */
   getWeeklyPullList: MetadataPullListResponse;
+  hubs: Array<Hub>;
   previewCanonicalMetadata?: Maybe<CanonicalMetadata>;
   /** Search ComicVine for volumes, issues, characters, etc. */
   searchComicVine: ComicVineSearchResult;
   searchIssue: SearchIssueResult;
+  searchTorrents: Array<TorrentSearchResult>;
+  settings?: Maybe<AppSettings>;
+  torrentJobs?: Maybe<TorrentJob>;
   userPreferences?: Maybe<UserPreferences>;
   /** Advanced volume-based search with scoring and filtering */
   volumeBasedSearch: VolumeBasedSearchResponse;
+  walkFolders: Array<Scalars['String']['output']>;
 };
 
 
 export type QueryAnalyzeMetadataConflictsArgs = {
   comicId: Scalars['ID']['input'];
+};
+
+
+export type QueryBundlesArgs = {
+  comicObjectId: Scalars['ID']['input'];
+  config?: InputMaybe<Scalars['JSON']['input']>;
 };
 
 
@@ -734,6 +871,11 @@ export type QueryGetWeeklyPullListArgs = {
 };
 
 
+export type QueryHubsArgs = {
+  host: HostInput;
+};
+
+
 export type QueryPreviewCanonicalMetadataArgs = {
   comicId: Scalars['ID']['input'];
   preferences?: InputMaybe<UserPreferencesInput>;
@@ -752,6 +894,21 @@ export type QuerySearchIssueArgs = {
 };
 
 
+export type QuerySearchTorrentsArgs = {
+  query: Scalars['String']['input'];
+};
+
+
+export type QuerySettingsArgs = {
+  settingsKey?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryTorrentJobsArgs = {
+  trigger: Scalars['String']['input'];
+};
+
+
 export type QueryUserPreferencesArgs = {
   userId?: InputMaybe<Scalars['String']['input']>;
 };
@@ -759,6 +916,12 @@ export type QueryUserPreferencesArgs = {
 
 export type QueryVolumeBasedSearchArgs = {
   input: VolumeSearchInput;
+};
+
+
+export type QueryWalkFoldersArgs = {
+  basePathToWalk: Scalars['String']['input'];
+  extensions?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 export type RawFileDetails = {
@@ -937,6 +1100,24 @@ export type TeamCredit = {
   id?: Maybe<Scalars['Int']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   site_detail_url?: Maybe<Scalars['String']['output']>;
+};
+
+export type TorrentJob = {
+  __typename?: 'TorrentJob';
+  id?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+};
+
+export type TorrentSearchResult = {
+  __typename?: 'TorrentSearchResult';
+  downloadUrl?: Maybe<Scalars['String']['output']>;
+  guid?: Maybe<Scalars['String']['output']>;
+  indexer?: Maybe<Scalars['String']['output']>;
+  leechers?: Maybe<Scalars['Int']['output']>;
+  publishDate?: Maybe<Scalars['String']['output']>;
+  seeders?: Maybe<Scalars['Int']['output']>;
+  size?: Maybe<Scalars['Float']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
 };
 
 export type UserPreferences = {
