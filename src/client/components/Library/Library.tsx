@@ -243,21 +243,17 @@ export const Library = (): ReactElement => {
             accessorKey: "_source.acquisition",
             cell: (info: any) => (
               <div className="flex flex-col gap-2 ml-3 my-3">
-                <span className="inline-flex items-center w-fit bg-slate-50 text-slate-800 text-xs px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                <span className="inline-flex items-center w-fit bg-slate-50 text-slate-800 text-xs px-2 rounded-md dark:text-slate-900 dark:bg-slate-400 whitespace-nowrap">
                   <span className="pr-1 pt-1">
                     <i className="icon-[solar--folder-path-connect-bold-duotone] w-5 h-5"></i>
                   </span>
-                  <span className="text-md text-slate-900 dark:text-slate-900">
-                    DC++: {info.getValue().directconnect.downloads.length}
-                  </span>
+                  DC++: {info.getValue().directconnect.downloads.length}
                 </span>
-                <span className="inline-flex w-fit items-center bg-slate-50 text-slate-800 text-xs px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                <span className="inline-flex items-center w-fit bg-slate-50 text-slate-800 text-xs px-2 rounded-md dark:text-slate-900 dark:bg-slate-400 whitespace-nowrap">
                   <span className="pr-1 pt-1">
                     <i className="icon-[solar--magnet-bold-duotone] w-5 h-5"></i>
                   </span>
-                  <span className="text-md text-slate-900 dark:text-slate-900">
-                    Torrent: {info.getValue().torrent.length}
-                  </span>
+                  Torrent: {info.getValue().torrent.length}
                 </span>
               </div>
             ),
