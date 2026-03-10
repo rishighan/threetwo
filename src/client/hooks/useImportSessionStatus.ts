@@ -258,7 +258,7 @@ export const useImportSessionStatus = (): ImportSessionState => {
     };
 
     const handleSessionStarted = () => {
-      console.log("[useImportSessionStatus] IMPORT_SESSION_STARTED event received");
+      console.log("[useImportSessionStatus] IMPORT_SESSION_STARTED / LS_INCREMENTAL_IMPORT_STARTED event received");
       // Reset completion flags when new session starts
       completionEventReceived.current = false;
       queueDrainedEventReceived.current = false;
@@ -275,12 +275,14 @@ export const useImportSessionStatus = (): ImportSessionState => {
     socket.on("IMPORT_SESSION_COMPLETED", handleSessionCompleted);
     socket.on("LS_IMPORT_QUEUE_DRAINED", handleQueueDrained);
     socket.on("IMPORT_SESSION_STARTED", handleSessionStarted);
+    socket.on("LS_INCREMENTAL_IMPORT_STARTED", handleSessionStarted);
     socket.on("IMPORT_SESSION_UPDATED", handleSessionUpdated);
 
     return () => {
       socket.off("IMPORT_SESSION_COMPLETED", handleSessionCompleted);
       socket.off("LS_IMPORT_QUEUE_DRAINED", handleQueueDrained);
       socket.off("IMPORT_SESSION_STARTED", handleSessionStarted);
+      socket.off("LS_INCREMENTAL_IMPORT_STARTED", handleSessionStarted);
       socket.off("IMPORT_SESSION_UPDATED", handleSessionUpdated);
     };
   }, [getSocket, refetch]);

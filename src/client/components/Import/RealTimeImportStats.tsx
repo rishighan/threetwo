@@ -18,6 +18,12 @@ import { useImportSessionStatus } from "../../hooks/useImportSessionStatus";
 export const RealTimeImportStats = (): ReactElement => {
   const [importError, setImportError] = useState<string | null>(null);
   const [detectedFile, setDetectedFile] = useState<string | null>(null);
+  const [socketImport, setSocketImport] = useState<{
+    active: boolean;
+    completed: number;
+    total: number;
+    failed: number;
+  } | null>(null);
   const queryClient = useQueryClient();
 
   const { getSocket, disconnectSocket, importJobQueue } = useStore(
@@ -100,14 +106,53 @@ export const RealTimeImportStats = (): ReactElement => {
       setTimeout(() => setDetectedFile(null), 5000);
     };
 
+    const handleImportStarted = () => {
+      setSocketImport({ active: true, completed: 0, total: 0, failed: 0 });
+    };
+
+    const handleCoverExtracted = (payload: {
+      completedJobCount: number;
+      totalJobCount: number;
+      importResult: unknown;
+    }) => {
+      setSocketImport((prev) => ({
+        active: true,
+        completed: payload.completedJobCount,
+        total: payload.totalJobCount,
+        failed: prev?.failed ?? 0,
+      }));
+    };
+
+    const handleCoverExtractionFailed = (payload: {
+      failedJobCount: number;
+      importResult: unknown;
+    }) => {
+      setSocketImport((prev) =>
+        prev ? { ...prev, failed: payload.failedJobCount } : null,
+      );
+    };
+
+    const handleQueueDrained = () => {
+      setSocketImport((prev) => (prev ? { ...prev, active: false } : null));
+      handleStatsChange();
+    };
+
     socket.on("LS_LIBRARY_STATS", handleStatsChange);
     socket.on("LS_FILES_MISSING", handleStatsChange);
     socket.on("LS_FILE_DETECTED", handleFileDetected);
+    socket.on("LS_INCREMENTAL_IMPORT_STARTED", handleImportStarted);
+    socket.on("LS_COVER_EXTRACTED", handleCoverExtracted);
+    socket.on("LS_COVER_EXTRACTION_FAILED", handleCoverExtractionFailed);
+    socket.on("LS_IMPORT_QUEUE_DRAINED", handleQueueDrained);
 
     return () => {
       socket.off("LS_LIBRARY_STATS", handleStatsChange);
       socket.off("LS_FILES_MISSING", handleStatsChange);
       socket.off("LS_FILE_DETECTED", handleFileDetected);
+      socket.off("LS_INCREMENTAL_IMPORT_STARTED", handleImportStarted);
+      socket.off("LS_COVER_EXTRACTED", handleCoverExtracted);
+      socket.off("LS_COVER_EXTRACTION_FAILED", handleCoverExtractionFailed);
+      socket.off("LS_IMPORT_QUEUE_DRAINED", handleQueueDrained);
     };
   }, [getSocket, queryClient]);
 
@@ -151,12 +196,14 @@ export const RealTimeImportStats = (): ReactElement => {
   const hasSessionStats = importSession.isActive && sessionStats !== null;
 
   const totalFiles = stats.totalLocalFiles;
-  const importedCount = hasSessionStats
-    ? sessionStats!.filesSucceeded
-    : stats.alreadyImported;
+  const importedCount = stats.alreadyImported;
   const failedCount = hasSessionStats ? sessionStats!.filesFailed : 0;
 
-  const showProgressBar = importSession.isActive;
+  const showProgressBar = socketImport !== null;
+  const socketProgressPct =
+    socketImport && socketImport.total > 0
+      ? Math.round((socketImport.completed / socketImport.total) * 100)
+      : 0;
   const showFailedCard = hasSessionStats && failedCount > 0;
   const showMissingCard = missingCount > 0;
 
@@ -214,20 +261,20 @@ export const RealTimeImportStats = (): ReactElement => {
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-sm">
             <span className="font-medium text-gray-700 dark:text-gray-300">
-              {importSession.isActive
-                ? `Importing ${sessionStats?.filesSucceeded ?? 0} / ${sessionStats?.filesQueued ?? 0}`
-                : `${sessionStats?.filesSucceeded ?? 0} / ${sessionStats?.filesQueued ?? 0} imported`}
+              {socketImport!.active
+                ? `Importing ${socketImport!.completed} / ${socketImport!.total}`
+                : `${socketImport!.completed} / ${socketImport!.total} imported`}
             </span>
             <span className="font-semibold text-gray-900 dark:text-white">
-              {Math.round(importSession.progress)}% complete
+              {socketProgressPct}% complete
             </span>
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
             <div
               className="bg-blue-600 dark:bg-blue-500 h-3 rounded-full transition-all duration-300 relative"
-              style={{ width: `${importSession.progress}%` }}
+              style={{ width: `${socketProgressPct}%` }}
             >
-              {importSession.isActive && (
+              {socketImport!.active && (
                 <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
               )}
             </div>
@@ -243,7 +290,7 @@ export const RealTimeImportStats = (): ReactElement => {
           style={{ backgroundColor: "#6b7280" }}
         >
           <div className="text-4xl font-bold text-white mb-2">{totalFiles}</div>
-          <div className="text-sm text-gray-200 font-medium">total files</div>
+          <div className="text-sm text-gray-200 font-medium">in import folder</div>
         </div>
 
         {/* Imported */}
@@ -255,7 +302,7 @@ export const RealTimeImportStats = (): ReactElement => {
             {importedCount}
           </div>
           <div className="text-sm text-gray-700 font-medium">
-            {importSession.isActive ? "imported so far" : "imported"}
+            {importSession.isActive ? "imported so far" : "imported in database"}
           </div>
         </div>
 
