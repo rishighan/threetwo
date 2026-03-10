@@ -11,9 +11,11 @@ type VolumeGroupsProps = {
   volumeGroups?: GetVolumeGroupsQuery['getComicBookGroups'];
 };
 
-export const VolumeGroups = (props: VolumeGroupsProps): ReactElement => {
+export const VolumeGroups = (props: VolumeGroupsProps): ReactElement | null => {
   // Till mongo gives us back the deduplicated results with the ObjectId
   const deduplicatedGroups = unionBy(props.volumeGroups, "volumes.id");
+  if (!deduplicatedGroups || deduplicatedGroups.length === 0) return null;
+
   const navigate = useNavigate();
   const navigateToVolumes = (row: any) => {
     navigate(`/volumes/all`);

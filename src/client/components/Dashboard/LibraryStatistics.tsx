@@ -19,7 +19,7 @@ interface LibraryStatisticsProps {
  * Returns `null` when `stats` is absent or the statistics array is empty.
  */
 export const LibraryStatistics = ({ stats }: LibraryStatisticsProps): ReactElement | null => {
-  if (!stats) return null;
+  if (!stats || !stats.totalDocuments) return null;
 
   const facet = stats.statistics?.[0];
   if (!facet) return null;

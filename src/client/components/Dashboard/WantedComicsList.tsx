@@ -15,7 +15,9 @@ type WantedComicsListProps = {
 
 export const WantedComicsList = ({
   comics,
-}: WantedComicsListProps): ReactElement => {
+}: WantedComicsListProps): ReactElement | null => {
+  if (!comics || comics.length === 0) return null;
+
   const navigate = useNavigate();
 
   // embla carousel
