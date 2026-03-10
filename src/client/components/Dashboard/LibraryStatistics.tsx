@@ -1,105 +1,106 @@
 import React, { ReactElement } from "react";
-import { isEmpty, isUndefined, map } from "lodash";
 import Header from "../shared/Header";
-import { GetLibraryStatisticsQuery } from "../../graphql/generated";
+import { GetLibraryStatisticsQuery, DirectorySize } from "../../graphql/generated";
 
-type LibraryStatisticsProps = {
-  stats: GetLibraryStatisticsQuery['getLibraryStatistics'];
+type Stats = Omit<GetLibraryStatisticsQuery["getLibraryStatistics"], "comicDirectorySize"> & {
+  comicDirectorySize: DirectorySize;
 };
 
-export const LibraryStatistics = (
-  props: LibraryStatisticsProps,
-): ReactElement => {
-  const { stats } = props;
+/** Props for {@link LibraryStatistics}. */
+interface LibraryStatisticsProps {
+  stats: Stats | null | undefined;
+}
+
+/**
+ * Displays a snapshot of library metrics: total comic files, tagging coverage,
+ * file-type breakdown, and the publisher with the most issues.
+ *
+ * Returns `null` when `stats` is absent or the statistics array is empty.
+ */
+export const LibraryStatistics = ({ stats }: LibraryStatisticsProps): ReactElement | null => {
+  if (!stats) return null;
+
+  const facet = stats.statistics?.[0];
+  if (!facet) return null;
+
+  const { issues, issuesWithComicInfoXML, fileTypes, publisherWithMostComicsInLibrary, fileLessComics } = facet;
+  const topPublisher = publisherWithMostComicsInLibrary?.[0];
+
   return (
     <div className="mt-5">
       <Header
         headerContent="Your Library In Numbers"
-        subHeaderContent={
-          <span className="text-md">A brief snapshot of your library.</span>
-        }
+        subHeaderContent={<span className="text-md">A brief snapshot of your library.</span>}
         iconClassNames="fa-solid fa-binoculars mr-2"
       />
 
-      <div className="mt-3">
-        <div className="flex flex-row gap-5">
-          <div className="flex flex-col rounded-lg bg-green-100 dark:bg-green-200 px-4 py-6 text-center">
-            <dt className="text-lg font-medium text-gray-500">Library size</dt>
-            <dd className="text-3xl text-green-600 md:text-5xl">
-              {props.stats.totalDocuments} files
-            </dd>
-            {props.stats.comicDirectorySize?.fileCount && (
-              <dd>
-                <span className="text-2xl text-green-600">
-                  {props.stats.comicDirectorySize.fileCount} comic files
-                </span>
-              </dd>
-            )}
-          </div>
-          {/* comicinfo and comicvine tagged issues */}
-          <div className="flex flex-col gap-4">
-            {!isUndefined(props.stats.statistics) &&
-              !isEmpty(props.stats.statistics?.[0]?.issues) && (
-                <div className="flex flex-col h-fit rounded-lg bg-green-100 dark:bg-green-200 px-4 py-3 text-center">
-                  <span className="text-xl">
-                    {props.stats.statistics?.[0]?.issues?.length || 0}
-                  </span>{" "}
-                  tagged with ComicVine
-                </div>
-              )}
-            {!isUndefined(props.stats.statistics) &&
-              !isEmpty(props.stats.statistics?.[0]?.issuesWithComicInfoXML) && (
-                <div className="flex flex-col h-fit rounded-lg bg-green-100 dark:bg-green-200 px-4 py-3 text-center">
-                  <span className="text-xl">
-                    {props.stats.statistics?.[0]?.issuesWithComicInfoXML?.length || 0}
-                  </span>{" "}
-                  <span className="tag is-warning has-text-weight-bold mr-2 ml-1">
-                    with ComicInfo.xml
-                  </span>
-                </div>
-              )}
-          </div>
-
-          <div className="">
-            {!isUndefined(props.stats.statistics) &&
-              !isEmpty(props.stats.statistics?.[0]?.fileTypes) &&
-              map(props.stats.statistics?.[0]?.fileTypes, (fileType, idx) => {
-                return (
-                  <span
-                    key={idx}
-                    className="flex flex-col mb-4 h-fit text-xl rounded-lg bg-green-100 dark:bg-green-200 px-4 py-3 text-center"
-                  >
-                    {fileType.data.length} {fileType.id}
-                  </span>
-                );
-              })}
-          </div>
-
-          {/* file types */}
-          <div className="flex flex-col h-fit text-lg rounded-lg bg-green-100 dark:bg-green-200 px-4 py-3">
-            {/* publisher with most issues */}
-            {!isUndefined(props.stats.statistics) &&
-              !isEmpty(
-                props.stats.statistics?.[0]?.publisherWithMostComicsInLibrary?.[0],
-              ) && (
-                <>
-                  <span className="">
-                    {
-                      props.stats.statistics?.[0]
-                        ?.publisherWithMostComicsInLibrary?.[0]?.id
-                    }
-                  </span>
-                  {" has the most issues "}
-                  <span className="">
-                    {
-                      props.stats.statistics?.[0]
-                        ?.publisherWithMostComicsInLibrary?.[0]?.count
-                    }
-                  </span>
-                </>
-              )}
-          </div>
+      <div className="mt-3 flex flex-row gap-5">
+        {/* Total records in database */}
+        <div className="flex flex-col rounded-lg bg-green-100 dark:bg-green-200 px-4 py-6 text-center">
+          <dt className="text-lg font-medium text-gray-500">In database</dt>
+          <dd className="text-3xl text-green-600 md:text-5xl">
+            {stats.totalDocuments} comics
+          </dd>
         </div>
+
+        {/* Missing files */}
+        {fileLessComics && fileLessComics.length > 0 && (
+          <div className="flex flex-col rounded-lg bg-red-100 dark:bg-red-200 px-4 py-6 text-center">
+            <dt className="text-lg font-medium text-gray-500">Missing files</dt>
+            <dd className="text-3xl text-red-600 md:text-5xl">
+              {fileLessComics.length}
+            </dd>
+          </div>
+        )}
+
+        {/* Disk space consumed */}
+        {stats.comicDirectorySize.totalSizeInGB != null && (
+          <div className="flex flex-col rounded-lg bg-green-100 dark:bg-green-200 px-4 py-6 text-center">
+            <dt className="text-lg font-medium text-gray-500">Size on disk</dt>
+            <dd className="text-3xl text-green-600 md:text-5xl">
+              {stats.comicDirectorySize.totalSizeInGB.toFixed(2)} GB
+            </dd>
+          </div>
+        )}
+
+        {/* Tagging coverage */}
+        <div className="flex flex-col gap-4">
+          {issues && issues.length > 0 && (
+            <div className="flex flex-col h-fit rounded-lg bg-green-100 dark:bg-green-200 px-4 py-3 text-center">
+              <span className="text-xl">{issues.length}</span>
+              tagged with ComicVine
+            </div>
+          )}
+          {issuesWithComicInfoXML && issuesWithComicInfoXML.length > 0 && (
+            <div className="flex flex-col h-fit rounded-lg bg-green-100 dark:bg-green-200 px-4 py-3 text-center">
+              <span className="text-xl">{issuesWithComicInfoXML.length}</span>
+              with ComicInfo.xml
+            </div>
+          )}
+        </div>
+
+        {/* File-type breakdown */}
+        {fileTypes && fileTypes.length > 0 && (
+          <div>
+            {fileTypes.map((ft) => (
+              <span
+                key={ft.id}
+                className="flex flex-col mb-4 h-fit text-xl rounded-lg bg-green-100 dark:bg-green-200 px-4 py-3 text-center"
+              >
+                {ft.data.length} {ft.id}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Publisher with most issues */}
+        {topPublisher && (
+          <div className="flex flex-col h-fit text-lg rounded-lg bg-green-100 dark:bg-green-200 px-4 py-3">
+            <span>{topPublisher.id}</span>
+            {" has the most issues "}
+            <span>{topPublisher.count}</span>
+          </div>
+        )}
       </div>
     </div>
   );

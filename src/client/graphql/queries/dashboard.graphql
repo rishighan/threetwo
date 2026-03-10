@@ -181,6 +181,7 @@ query GetLibraryStatistics {
     totalDocuments
     comicDirectorySize {
       fileCount
+      totalSizeInGB
     }
     statistics {
       fileTypes {
