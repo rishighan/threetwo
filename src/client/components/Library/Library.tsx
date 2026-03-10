@@ -176,7 +176,7 @@ export const Library = (): ReactElement => {
             id: "missingStatus",
             cell: () => (
               <div className="flex flex-col items-center gap-1.5 px-2 py-3 min-w-[80px]">
-                <i className="icon-[solar--file-broken-bold] w-8 h-8 text-red-500"></i>
+                <i className="icon-[solar--file-corrupted-outline] w-8 h-8 text-red-500"></i>
                 <span className="inline-flex items-center rounded-md bg-red-100 px-2 py-1 text-xs font-semibold text-red-700 ring-1 ring-inset ring-red-600/20">
                   MISSING
                 </span>

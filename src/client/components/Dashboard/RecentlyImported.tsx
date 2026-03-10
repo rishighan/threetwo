@@ -131,12 +131,6 @@ export const RecentlyImported = (
                       </span>
                     )}
                   </div>
-                  {/* Raw file presence  */}
-                  {isMissingFile && (
-                    <span className="h-6 w-5 sm:shrink-0 sm:items-center sm:gap-2">
-                      <i className="icon-[solar--file-corrupted-outline] h-5 w-5" />
-                    </span>
-                  )}
                 </div>
               </Card>
               </div>

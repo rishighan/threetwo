@@ -78,7 +78,7 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
             {rawFileDetails.fileSize != null && (
               <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-1.5 sm:px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
                 <span className="pr-1 pt-1">
-                  <i className="icon-[solar--mirror-right-bold-duotone] w-4 h-4 sm:w-5 sm:h-5"></i>
+                  <i className="icon-[solar--database-bold-duotone] w-4 h-4 sm:w-5 sm:h-5"></i>
                 </span>
                 <span className="text-xs sm:text-md text-slate-500 dark:text-slate-900">
                   {prettyBytes(rawFileDetails.fileSize)}
@@ -89,7 +89,7 @@ export const MetadataPanel = (props: IMetadatPanelProps): ReactElement => {
             {/* Missing file Icon */}
             {isMissing && (
               <span className="pr-2 pt-1" title="File backing this comic is missing">
-                <i className="icon-[solar--file-remove-broken] w-5 h-5 text-red-600 shrink-0"></i>
+                <i className="icon-[solar--file-corrupted-outline] w-5 h-5 text-red-600 shrink-0"></i>
               </span>
             )}
 

@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useGetImportStatisticsQuery,
   useGetWantedComicsQuery,
-  useStartIncrementalImportMutation
+  useStartIncrementalImportMutation,
 } from "../../graphql/generated";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
@@ -25,12 +25,12 @@ export const RealTimeImportStats = (): ReactElement => {
       getSocket: state.getSocket,
       disconnectSocket: state.disconnectSocket,
       importJobQueue: state.importJobQueue,
-    }))
+    })),
   );
 
   const { data: importStats, isLoading } = useGetImportStatisticsQuery(
     {},
-    { refetchOnWindowFocus: false, refetchInterval: false }
+    { refetchOnWindowFocus: false, refetchInterval: false },
   );
 
   const stats = importStats?.getImportStatistics?.stats;
@@ -45,7 +45,7 @@ export const RealTimeImportStats = (): ReactElement => {
       refetchOnWindowFocus: false,
       refetchInterval: false,
       enabled: (stats?.missingFiles ?? 0) > 0,
-    }
+    },
   );
 
   const missingDocs = missingComicsData?.getComicBooks?.docs ?? [];
@@ -64,17 +64,20 @@ export const RealTimeImportStats = (): ReactElement => {
 
   const importSession = useImportSessionStatus();
 
-  const { mutate: startIncrementalImport, isPending: isStartingImport } = useStartIncrementalImportMutation({
-    onSuccess: (data) => {
-      if (data.startIncrementalImport.success) {
-        importJobQueue.setStatus("running");
-        setImportError(null);
-      }
-    },
-    onError: (error: any) => {
-      setImportError(error?.message || "Failed to start import. Please try again.");
-    },
-  });
+  const { mutate: startIncrementalImport, isPending: isStartingImport } =
+    useStartIncrementalImportMutation({
+      onSuccess: (data) => {
+        if (data.startIncrementalImport.success) {
+          importJobQueue.setStatus("running");
+          setImportError(null);
+        }
+      },
+      onError: (error: any) => {
+        setImportError(
+          error?.message || "Failed to start import. Please try again.",
+        );
+      },
+    });
 
   const hasNewFiles = stats && stats.newFiles > 0;
   const missingCount = stats?.missingFiles ?? 0;
@@ -113,7 +116,7 @@ export const RealTimeImportStats = (): ReactElement => {
 
     if (importSession.isActive) {
       setImportError(
-        `Cannot start import: An import session "${importSession.sessionId}" is already active. Please wait for it to complete.`
+        `Cannot start import: An import session "${importSession.sessionId}" is already active. Please wait for it to complete.`,
       );
       return;
     }
@@ -148,7 +151,9 @@ export const RealTimeImportStats = (): ReactElement => {
   const hasSessionStats = importSession.isActive && sessionStats !== null;
 
   const totalFiles = stats.totalLocalFiles;
-  const importedCount = hasSessionStats ? sessionStats!.filesSucceeded : stats.alreadyImported;
+  const importedCount = hasSessionStats
+    ? sessionStats!.filesSucceeded
+    : stats.alreadyImported;
   const failedCount = hasSessionStats ? sessionStats!.filesFailed : 0;
 
   const showProgressBar = importSession.isActive;
@@ -165,8 +170,12 @@ export const RealTimeImportStats = (): ReactElement => {
               <i className="h-6 w-6 icon-[solar--danger-circle-bold]"></i>
             </span>
             <div className="flex-1">
-              <p className="font-semibold text-red-800 dark:text-red-300">Import Error</p>
-              <p className="text-sm text-red-700 dark:text-red-400 mt-1">{importError}</p>
+              <p className="font-semibold text-red-800 dark:text-red-300">
+                Import Error
+              </p>
+              <p className="text-sm text-red-700 dark:text-red-400 mt-1">
+                {importError}
+              </p>
             </div>
             <button
               onClick={() => setImportError(null)}
@@ -181,7 +190,7 @@ export const RealTimeImportStats = (): ReactElement => {
       {/* File detected toast */}
       {detectedFile && (
         <div className="rounded-lg border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-900/20 p-3 flex items-center gap-3">
-          <i className="h-5 w-5 text-blue-600 dark:text-blue-400 icon-[solar--file-add-bold-duotone] shrink-0"></i>
+          <i className="h-5 w-5 text-blue-600 dark:text-blue-400 icon-[solar--document-add-bold-duotone] shrink-0"></i>
           <p className="text-sm text-blue-800 dark:text-blue-300 font-mono truncate">
             New file detected: {detectedFile}
           </p>
@@ -229,14 +238,22 @@ export const RealTimeImportStats = (): ReactElement => {
       {/* Stats cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {/* Total files */}
-        <div className="rounded-lg p-6 text-center" style={{ backgroundColor: '#6b7280' }}>
+        <div
+          className="rounded-lg p-6 text-center"
+          style={{ backgroundColor: "#6b7280" }}
+        >
           <div className="text-4xl font-bold text-white mb-2">{totalFiles}</div>
           <div className="text-sm text-gray-200 font-medium">total files</div>
         </div>
 
         {/* Imported */}
-        <div className="rounded-lg p-6 text-center" style={{ backgroundColor: '#d8dab2' }}>
-          <div className="text-4xl font-bold text-gray-800 mb-2">{importedCount}</div>
+        <div
+          className="rounded-lg p-6 text-center"
+          style={{ backgroundColor: "#d8dab2" }}
+        >
+          <div className="text-4xl font-bold text-gray-800 mb-2">
+            {importedCount}
+          </div>
           <div className="text-sm text-gray-700 font-medium">
             {importSession.isActive ? "imported so far" : "imported"}
           </div>
@@ -245,16 +262,20 @@ export const RealTimeImportStats = (): ReactElement => {
         {/* Failed — only shown after a session with failures */}
         {showFailedCard && (
           <div className="rounded-lg p-6 text-center bg-red-500">
-            <div className="text-4xl font-bold text-white mb-2">{failedCount}</div>
+            <div className="text-4xl font-bold text-white mb-2">
+              {failedCount}
+            </div>
             <div className="text-sm text-red-100 font-medium">failed</div>
           </div>
         )}
 
         {/* Missing files — shown when watcher detects moved/deleted files */}
         {showMissingCard && (
-          <div className="rounded-lg p-6 text-center bg-amber-500">
-            <div className="text-4xl font-bold text-white mb-2">{missingCount}</div>
-            <div className="text-sm text-amber-100 font-medium">missing</div>
+          <div className="rounded-lg p-6 text-center bg-card-missing">
+            <div className="text-4xl font-bold text-slate-700 mb-2">
+              {missingCount}
+            </div>
+            <div className="text-sm text-slate-800 font-medium">missing</div>
           </div>
         )}
       </div>
@@ -269,12 +290,16 @@ export const RealTimeImportStats = (): ReactElement => {
                 {missingCount} {missingCount === 1 ? "file" : "files"} missing
               </p>
               <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
-                These files were previously imported but can no longer be found on disk. Move them back to restore access.
+                These files were previously imported but can no longer be found
+                on disk. Move them back to restore access.
               </p>
               {missingDocs.length > 0 && (
                 <ul className="mt-2 space-y-1">
                   {missingDocs.map((comic, i) => (
-                    <li key={i} className="text-xs text-amber-700 dark:text-amber-400 truncate">
+                    <li
+                      key={i}
+                      className="text-xs text-amber-700 dark:text-amber-400 truncate"
+                    >
                       {getMissingComicLabel(comic)} is missing
                     </li>
                   ))}
@@ -289,8 +314,12 @@ export const RealTimeImportStats = (): ReactElement => {
                 to="/library?filter=missingFiles"
                 className="inline-flex items-center gap-1.5 mt-3 text-xs font-medium text-amber-800 dark:text-amber-300 underline underline-offset-2 hover:text-amber-600"
               >
-                <i className="h-4 w-4 icon-[solar--library-bold-duotone]"></i>
-                View all in Library
+                
+                <span className="underline">
+                  <i className="icon-[solar--file-corrupted-outline] w-4 h-4 px-3" />
+                  View Missing Files In Library
+                  <i className="icon-[solar--arrow-right-up-outline] w-3 h-3" />
+                </span>
               </Link>
             </div>
           </div>

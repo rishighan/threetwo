@@ -116,7 +116,7 @@ const renderCard = (props: ICardProps): ReactElement => {
             )}
             {props.cardState === "missing" && (
               <div className="absolute inset-0 flex items-center justify-center rounded-t-md bg-card-missing/70">
-                <i className="icon-[solar--file-broken-bold] w-16 h-16 text-red-500" />
+                <i className="icon-[solar--file-corrupted-outline] w-16 h-16 text-red-500" />
               </div>
             )}
           </div>
