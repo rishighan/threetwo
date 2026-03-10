@@ -14,6 +14,7 @@ module.exports = {
           uncompressed: "#FFF3E0",
           imported: "#d8dab0",
           missing: "#fee2e2",
+          info: "#cdd9eb",
         },
       },
     },

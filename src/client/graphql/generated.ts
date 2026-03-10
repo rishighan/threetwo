@@ -526,6 +526,7 @@ export type LocgMetadataInput = {
 export type LibraryStatistics = {
   __typename?: 'LibraryStatistics';
   comicDirectorySize: DirectorySize;
+  comicsMissingFiles: Scalars['Int']['output'];
   statistics: Array<StatisticsFacet>;
   totalDocuments: Scalars['Int']['output'];
 };
@@ -1302,7 +1303,7 @@ export type GetVolumeGroupsQuery = { __typename?: 'Query', getComicBookGroups: A
 export type GetLibraryStatisticsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetLibraryStatisticsQuery = { __typename?: 'Query', getLibraryStatistics: { __typename?: 'LibraryStatistics', totalDocuments: number, comicDirectorySize: { __typename?: 'DirectorySize', fileCount: number, totalSizeInGB: number }, statistics: Array<{ __typename?: 'StatisticsFacet', fileTypes?: Array<{ __typename?: 'FileTypeStats', id: string, data: Array<string> }> | null, issues?: Array<{ __typename?: 'IssueStats', data: Array<string>, id?: { __typename?: 'VolumeInfo', id?: number | null, name?: string | null } | null }> | null, fileLessComics?: Array<{ __typename?: 'Comic', id: string }> | null, issuesWithComicInfoXML?: Array<{ __typename?: 'Comic', id: string }> | null, publisherWithMostComicsInLibrary?: Array<{ __typename?: 'PublisherStats', id: string, count: number }> | null }> } };
+export type GetLibraryStatisticsQuery = { __typename?: 'Query', getLibraryStatistics: { __typename?: 'LibraryStatistics', totalDocuments: number, comicsMissingFiles: number, comicDirectorySize: { __typename?: 'DirectorySize', fileCount: number, totalSizeInGB: number }, statistics: Array<{ __typename?: 'StatisticsFacet', fileTypes?: Array<{ __typename?: 'FileTypeStats', id: string, data: Array<string> }> | null, issues?: Array<{ __typename?: 'IssueStats', data: Array<string>, id?: { __typename?: 'VolumeInfo', id?: number | null, name?: string | null } | null }> | null, fileLessComics?: Array<{ __typename?: 'Comic', id: string }> | null, issuesWithComicInfoXML?: Array<{ __typename?: 'Comic', id: string }> | null, publisherWithMostComicsInLibrary?: Array<{ __typename?: 'PublisherStats', id: string, count: number }> | null }> } };
 
 export type GetWeeklyPullListQueryVariables = Exact<{
   input: WeeklyPullListInput;
@@ -1943,6 +1944,7 @@ export const GetLibraryStatisticsDocument = `
     query GetLibraryStatistics {
   getLibraryStatistics {
     totalDocuments
+    comicsMissingFiles
     comicDirectorySize {
       fileCount
       totalSizeInGB

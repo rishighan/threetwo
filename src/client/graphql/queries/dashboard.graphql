@@ -179,6 +179,7 @@ query GetVolumeGroups {
 query GetLibraryStatistics {
   getLibraryStatistics {
     totalDocuments
+    comicsMissingFiles
     comicDirectorySize {
       fileCount
       totalSizeInGB
