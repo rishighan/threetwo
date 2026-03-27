@@ -4,6 +4,7 @@ import { convert } from "html-to-text";
 import ellipsize from "ellipsize";
 import { LIBRARY_SERVICE_BASE_URI } from "../../constants/endpoints";
 import axios from "axios";
+import { useGetComicByIdQuery } from "../../graphql/generated";
 
 interface MatchResultProps {
   matchData: any;
@@ -31,7 +32,7 @@ export const MatchResult = (props: MatchResultProps) => {
       // Invalidate and refetch the comic book metadata
       if (props.queryClient) {
         await props.queryClient.invalidateQueries({
-          queryKey: ["comicBookMetadata", comicObjectId],
+          queryKey: useGetComicByIdQuery.getKey({ id: comicObjectId }),
         });
       }
       
