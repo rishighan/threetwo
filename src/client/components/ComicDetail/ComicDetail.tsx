@@ -10,7 +10,7 @@ import "react-sliding-pane/dist/react-sliding-pane.css";
 import SlidingPane from "react-sliding-pane";
 import { determineCoverFile } from "../../shared/utils/metadata.utils";
 import { styled } from "styled-components";
-import { RawFileDetails as RawFileDetailsType } from "../../graphql/generated";
+import type { RawFileDetails as RawFileDetailsType, InferredMetadata } from "../../graphql/generated";
 
 // Extracted modules
 import { useComicVineMatching } from "./useComicVineMatching";
@@ -23,52 +23,47 @@ const StyledSlidingPanel = styled(SlidingPane)`
   background: #ccc;
 `;
 
-type InferredIssue = {
+interface ComicVineMetadata {
   name?: string;
-  number?: number;
-  year?: string;
-  subtitle?: string;
-  [key: string]: any;
-};
+  volumeInformation?: Record<string, unknown>;
+  [key: string]: unknown;
+}
 
-type ComicVineMetadata = {
-  name?: string;
-  volumeInformation?: any;
-  [key: string]: any;
-};
-
-type Acquisition = {
+interface Acquisition {
   directconnect?: {
-    downloads?: any[];
+    downloads?: unknown[];
   };
-  torrent?: any[];
-  [key: string]: any;
-};
+  torrent?: unknown[];
+  [key: string]: unknown;
+}
 
-type ComicDetailProps = {
+interface ComicDetailProps {
   data: {
     _id: string;
     rawFileDetails?: RawFileDetailsType;
-    inferredMetadata: {
-      issue?: InferredIssue;
-    };
+    inferredMetadata: InferredMetadata;
     sourcedMetadata: {
       comicvine?: ComicVineMetadata;
-      locg?: any;
-      comicInfo?: any;
+      locg?: Record<string, unknown>;
+      comicInfo?: Record<string, unknown>;
     };
     acquisition?: Acquisition;
     createdAt: string;
     updatedAt: string;
   };
-  userSettings?: any;
-  queryClient?: any;
+  userSettings?: Record<string, unknown>;
+  queryClient?: unknown;
   comicObjectId?: string;
-};
+}
 
 /**
  * Displays full comic detail: cover, file info, action menu, and tabbed panels
  * for metadata, archive operations, and acquisition.
+ *
+ * @param data.queryClient - react-query client passed through to the CV match
+ *   panel so it can invalidate queries after a match is applied.
+ * @param data.comicObjectId - optional override for the comic ID; used when the
+ *   component is rendered outside a route that provides the ID via `useParams`.
  */
 export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   const {
@@ -104,7 +99,8 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     setVisible(true);
   }, []);
 
-  // Action menu handler
+  // Hide "match on Comic Vine" when there are no raw file details — matching
+  // requires file metadata to seed the search query.
   const Placeholder = components.Placeholder;
   const filteredActionOptions = filter(actionOptions, (item) => {
     if (isUndefined(rawFileDetails)) {
@@ -180,6 +176,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
             rawFileDetails={rawFileDetails}
             inferredMetadata={inferredMetadata}
             comicVineMatches={comicVineMatches}
+            // Prefer the route param; fall back to the data ID when rendered outside a route.
             comicObjectId={comicObjectId || _id}
             queryClient={queryClient}
             onMatchApplied={() => {

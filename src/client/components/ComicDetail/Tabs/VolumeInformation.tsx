@@ -30,6 +30,7 @@ interface VolumeInformationProps {
   onReconcile?: () => void;
 }
 
+/** Sources stored under `sourcedMetadata` — excludes `inferredMetadata`, which is checked separately. */
 const SOURCED_METADATA_KEYS = ["comicvine", "locg", "comicInfo", "metron", "gcd"];
 
 const SOURCE_LABELS: Record<string, string> = {
@@ -72,6 +73,17 @@ const MetadataSourceChips = ({
   </div>
 );
 
+/**
+ * Displays volume metadata for a comic.
+ *
+ * - When multiple sources are present, renders a chip bar listing each source
+ *   with a "Reconcile sources" action to merge them.
+ * - When exactly one source is present and it is ComicVine, renders the full
+ *   ComicVine detail panel directly.
+ *
+ * @param props.data - Comic data containing sourced and inferred metadata.
+ * @param props.onReconcile - Called when the user triggers source reconciliation.
+ */
 export const VolumeInformation = (props: VolumeInformationProps): ReactElement => {
   const { data, onReconcile } = props;
 
@@ -83,7 +95,7 @@ export const VolumeInformation = (props: VolumeInformationProps): ReactElement =
       if (key === "locg") return Object.values(val as Record<string, unknown>).some((v) => !isNil(v) && v !== "");
       return true;
     });
-    if (!isNil(data?.inferredMetadata?.issue) && !isEmpty(data.inferredMetadata.issue)) {
+    if (!isNil(data?.inferredMetadata?.issue) && !isEmpty(data?.inferredMetadata?.issue)) {
       sources.push("inferredMetadata");
     }
     return sources;

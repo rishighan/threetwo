@@ -7,7 +7,7 @@ import TextareaAutosize from "react-textarea-autosize";
 
 interface EditMetadataPanelProps {
   data: {
-    name?: string;
+    name?: string | null;
     [key: string]: any;
   };
 }

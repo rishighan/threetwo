@@ -2,27 +2,27 @@ import React from "react";
 import { ComicVineSearchForm } from "./ComicVineSearchForm";
 import { ComicVineMatchPanel } from "./ComicVineMatchPanel";
 import { EditMetadataPanel } from "./EditMetadataPanel";
-import { RawFileDetails } from "../../graphql/generated";
+import type { RawFileDetails, InferredMetadata } from "../../graphql/generated";
 
-type InferredIssue = {
-  name?: string;
-  number?: number;
-  year?: string;
-  subtitle?: string;
-  [key: string]: any;
-};
-
-type CVMatchesPanelProps = {
+interface CVMatchesPanelProps {
   rawFileDetails?: RawFileDetails;
-  inferredMetadata: {
-    issue?: InferredIssue;
-  };
+  inferredMetadata: InferredMetadata;
   comicVineMatches: any[];
   comicObjectId: string;
   queryClient: any;
   onMatchApplied: () => void;
 };
 
+/**
+ * Sliding panel content for ComicVine match search.
+ *
+ * Renders a search form pre-populated from `rawFileDetails`, a preview of the
+ * inferred issue being searched for, and a list of ComicVine match candidates
+ * the user can apply to the comic.
+ *
+ * @param props.onMatchApplied - Called after the user selects and applies a match,
+ *   allowing the parent to close the panel and refresh state.
+ */
 export const CVMatchesPanel: React.FC<CVMatchesPanelProps> = ({
   rawFileDetails,
   inferredMetadata,
@@ -62,4 +62,4 @@ type EditMetadataPanelWrapperProps = {
 
 export const EditMetadataPanelWrapper: React.FC<EditMetadataPanelWrapperProps> = ({
   rawFileDetails,
-}) => <EditMetadataPanel data={rawFileDetails} />;
+}) => <EditMetadataPanel data={rawFileDetails ?? {}} />;
