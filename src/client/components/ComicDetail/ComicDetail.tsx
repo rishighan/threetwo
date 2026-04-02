@@ -130,6 +130,11 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   const isComicBookMetadataAvailable =
     !isUndefined(comicvine) && !isUndefined(comicvine?.volumeInformation);
 
+  const hasAnyMetadata =
+    isComicBookMetadataAvailable ||
+    !isEmpty(comicInfo) ||
+    !isNil(locg);
+
   const areRawFileDetailsAvailable =
     !isUndefined(rawFileDetails) && !isEmpty(rawFileDetails);
 
@@ -147,16 +152,21 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   };
 
   // Create tab configuration
+  const openReconcilePanel = useCallback(() => {
+    setSlidingPanelContentId("metadataReconciliation");
+    setVisible(true);
+  }, []);
+
   const tabGroup = createTabConfig({
     data: data.data,
-    comicInfo,
-    isComicBookMetadataAvailable,
+    hasAnyMetadata,
     areRawFileDetailsAvailable,
     airDCPPQuery,
     comicObjectId: _id,
     userSettings,
     issueName,
     acquisition,
+    onReconcileMetadata: openReconcilePanel,
   });
 
   const filteredTabs = tabGroup.filter((tab) => tab.shouldShow);

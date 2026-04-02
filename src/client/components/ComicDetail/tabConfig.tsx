@@ -2,7 +2,6 @@ import React, { lazy } from "react";
 import { isNil, isEmpty } from "lodash";
 
 const VolumeInformation = lazy(() => import("./Tabs/VolumeInformation").then(m => ({ default: m.VolumeInformation })));
-const ComicInfoXML = lazy(() => import("./Tabs/ComicInfoXML").then(m => ({ default: m.ComicInfoXML })));
 const ArchiveOperations = lazy(() => import("./Tabs/ArchiveOperations").then(m => ({ default: m.ArchiveOperations })));
 const AcquisitionPanel = lazy(() => import("./AcquisitionPanel"));
 const TorrentSearchPanel = lazy(() => import("./TorrentSearchPanel"));
@@ -18,26 +17,26 @@ interface TabConfig {
 
 interface TabConfigParams {
   data: any;
-  comicInfo: any;
-  isComicBookMetadataAvailable: boolean;
+  hasAnyMetadata: boolean;
   areRawFileDetailsAvailable: boolean;
   airDCPPQuery: any;
   comicObjectId: string;
   userSettings: any;
   issueName: string;
   acquisition?: any;
+  onReconcileMetadata?: () => void;
 }
 
 export const createTabConfig = ({
   data,
-  comicInfo,
-  isComicBookMetadataAvailable,
+  hasAnyMetadata,
   areRawFileDetailsAvailable,
   airDCPPQuery,
   comicObjectId,
   userSettings,
   issueName,
   acquisition,
+  onReconcileMetadata,
 }: TabConfigParams): TabConfig[] => {
   return [
     {
@@ -46,23 +45,10 @@ export const createTabConfig = ({
       icon: (
         <i className="h-5 w-5 icon-[solar--book-2-bold] text-slate-500 dark:text-slate-300"></i>
       ),
-      content: isComicBookMetadataAvailable ? (
-        <VolumeInformation data={data} key={1} />
+      content: hasAnyMetadata ? (
+        <VolumeInformation data={data} onReconcile={onReconcileMetadata} key={1} />
       ) : null,
-      shouldShow: isComicBookMetadataAvailable,
-    },
-    {
-      id: 2,
-      name: "ComicInfo.xml",
-      icon: (
-        <i className="h-5 w-5 icon-[solar--code-file-bold-duotone] text-slate-500 dark:text-slate-300" />
-      ),
-      content: (
-        <div key={2}>
-          {!isNil(comicInfo) && <ComicInfoXML json={comicInfo} />}
-        </div>
-      ),
-      shouldShow: !isEmpty(comicInfo),
+      shouldShow: hasAnyMetadata,
     },
     {
       id: 3,

@@ -1,15 +1,108 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useMemo } from "react";
+import { isEmpty, isNil } from "lodash";
 import ComicVineDetails from "../ComicVineDetails";
 
-export const VolumeInformation = (props): ReactElement => {
-  const { data } = props;
+interface ComicVineMetadata {
+  volumeInformation?: Record<string, unknown>;
+  name?: string;
+  number?: string;
+  resource_type?: string;
+  id?: number;
+}
+
+interface SourcedMetadata {
+  comicvine?: ComicVineMetadata;
+  locg?: Record<string, unknown>;
+  comicInfo?: unknown;
+  metron?: unknown;
+  gcd?: unknown;
+  [key: string]: unknown;
+}
+
+interface VolumeInformationData {
+  sourcedMetadata?: SourcedMetadata;
+  inferredMetadata?: { issue?: unknown };
+  updatedAt?: string;
+}
+
+interface VolumeInformationProps {
+  data: VolumeInformationData;
+  onReconcile?: () => void;
+}
+
+const SOURCED_METADATA_KEYS = ["comicvine", "locg", "comicInfo", "metron", "gcd"];
+
+const SOURCE_LABELS: Record<string, string> = {
+  comicvine: "ComicVine",
+  locg: "League of Comic Geeks",
+  comicInfo: "ComicInfo.xml",
+  metron: "Metron",
+  gcd: "Grand Comics Database",
+  inferredMetadata: "Local File",
+};
+
+const MetadataSourceChips = ({
+  sources,
+  onReconcile,
+}: {
+  sources: string[];
+  onReconcile: () => void;
+}): ReactElement => (
+  <div className="flex flex-row flex-wrap items-center gap-2 mb-5 p-3 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+    <span className="text-xs text-slate-500 dark:text-slate-400 mr-1">
+      <i className="icon-[solar--database-outline] w-4 h-4 inline-block align-middle mr-1" />
+      {sources.length} metadata sources detected
+    </span>
+    {sources.map((source) => (
+      <span
+        key={source}
+        className="inline-flex items-center gap-1 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium px-2 py-1 rounded-md border border-slate-200 dark:border-slate-600"
+      >
+        <i className="icon-[solar--check-circle-outline] w-3 h-3" />
+        {SOURCE_LABELS[source] ?? source}
+      </span>
+    ))}
+    <button
+      onClick={onReconcile}
+      className="ml-auto inline-flex items-center gap-1 text-xs font-semibold text-sky-600 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-200 transition-colors cursor-pointer"
+    >
+      <i className="icon-[solar--refresh-outline] w-4 h-4" />
+      Reconcile sources
+    </button>
+  </div>
+);
+
+export const VolumeInformation = (props: VolumeInformationProps): ReactElement => {
+  const { data, onReconcile } = props;
+
+  const presentSources = useMemo(() => {
+    const sources = SOURCED_METADATA_KEYS.filter((key) => {
+      const val = (data?.sourcedMetadata ?? {})[key];
+      if (isNil(val) || isEmpty(val)) return false;
+      // locg returns an object even when empty; require at least one non-null value
+      if (key === "locg") return Object.values(val as Record<string, unknown>).some((v) => !isNil(v) && v !== "");
+      return true;
+    });
+    if (!isNil(data?.inferredMetadata?.issue) && !isEmpty(data.inferredMetadata.issue)) {
+      sources.push("inferredMetadata");
+    }
+    return sources;
+  }, [data?.sourcedMetadata, data?.inferredMetadata]);
 
   return (
     <div key={1}>
-      <ComicVineDetails
-        data={data.sourcedMetadata.comicvine}
-        updatedAt={data.updatedAt}
-      />
+      {presentSources.length > 1 && (
+        <MetadataSourceChips
+          sources={presentSources}
+          onReconcile={onReconcile ?? (() => {})}
+        />
+      )}
+      {presentSources.length === 1 && data.sourcedMetadata?.comicvine?.volumeInformation && (
+        <ComicVineDetails
+          data={data.sourcedMetadata.comicvine}
+          updatedAt={data.updatedAt}
+        />
+      )}
     </div>
   );
 };
