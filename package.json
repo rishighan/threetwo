@@ -51,7 +51,7 @@
     "i18next-http-backend": "^3.0.2",
     "immer": "^11.1.4",
     "jsdoc": "^4.0.5",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.1",
     "motion": "^12.38.0",
     "pretty-bytes": "^7.1.0",
     "prop-types": "^15.8.1",
