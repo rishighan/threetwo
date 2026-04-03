@@ -131,10 +131,12 @@ export const ArchiveOperations = (props: { data: any }): ReactElement => {
     enabled: false,
   });
 
-  if (isSuccess && shouldRefetchComicBookData) {
-    queryClient.invalidateQueries({ queryKey: ["comicBookMetadata"] });
-    setShouldRefetchComicBookData(false);
-  }
+  useEffect(() => {
+    if (isSuccess && shouldRefetchComicBookData) {
+      queryClient.invalidateQueries({ queryKey: ["comicBookMetadata"] });
+      setShouldRefetchComicBookData(false);
+    }
+  }, [isSuccess, shouldRefetchComicBookData, queryClient]);
 
   // sliding panel init
   const contentForSlidingPanel: Record<string, { content: () => JSX.Element }> = {

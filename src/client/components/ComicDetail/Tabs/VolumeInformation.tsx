@@ -1,6 +1,6 @@
 import React, { ReactElement, useMemo, useState } from "react";
 import { isEmpty, isNil } from "lodash";
-import { Sheet } from "react-modal-sheet";
+import { Drawer } from "vaul";
 import ComicVineDetails from "../ComicVineDetails";
 
 interface ComicVineMetadata {
@@ -60,10 +60,8 @@ const SOURCE_ICONS: Record<string, string> = {
 
 const MetadataSourceChips = ({
   sources,
-  onReconcile,
 }: {
   sources: string[];
-  onReconcile: () => void;
 }): ReactElement => {
   const [isSheetOpen, setSheetOpen] = useState(false);
 
@@ -98,17 +96,18 @@ const MetadataSourceChips = ({
         Reconcile sources
       </button>
 
-      <Sheet isOpen={isSheetOpen} onClose={() => setSheetOpen(false)}>
-        <Sheet.Container>
-          <Sheet.Header />
-          <Sheet.Content>
+      <Drawer.Root open={isSheetOpen} onOpenChange={setSheetOpen}>
+        <Drawer.Portal>
+          <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+          <Drawer.Content aria-describedby={undefined} className="fixed bottom-0 left-0 right-0 rounded-t-2xl bg-white dark:bg-slate-800 p-4 outline-none">
+            <Drawer.Title className="sr-only">Reconcile metadata sources</Drawer.Title>
+            <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-slate-300 dark:bg-slate-600" />
             <div className="p-4">
               {/* Reconciliation UI goes here */}
             </div>
-          </Sheet.Content>
-        </Sheet.Container>
-        <Sheet.Backdrop />
-      </Sheet>
+          </Drawer.Content>
+        </Drawer.Portal>
+      </Drawer.Root>
     </>
   );
 };
@@ -127,7 +126,7 @@ const MetadataSourceChips = ({
 export const VolumeInformation = (
   props: VolumeInformationProps,
 ): ReactElement => {
-  const { data, onReconcile } = props;
+  const { data } = props;
 
   const presentSources = useMemo(() => {
     const sources = SOURCED_METADATA_KEYS.filter((key) => {
@@ -152,10 +151,7 @@ export const VolumeInformation = (
   return (
     <div key={1}>
       {presentSources.length > 1 && (
-        <MetadataSourceChips
-          sources={presentSources}
-          onReconcile={onReconcile ?? (() => {})}
-        />
+        <MetadataSourceChips sources={presentSources} />
       )}
       {presentSources.length === 1 &&
         data.sourcedMetadata?.comicvine?.volumeInformation && (

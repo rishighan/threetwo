@@ -35,6 +35,9 @@ export default defineConfig({
       },
     },
   },
+  resolve: {
+    dedupe: ["react", "react-dom"],
+  },
   esbuild: {
     supported: {
       "top-level-await": true, //browsers can handle top-level-await features

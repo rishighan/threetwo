@@ -47,10 +47,12 @@ export const TabControls = (props): ReactElement => {
           </nav>
         </div>
       </div>
-      <Suspense>
-        {filteredTabs.map(({ id, content }) => {
-          return currentActive === id ? content : null;
-        })}
+      <Suspense fallback={null}>
+        {filteredTabs.map(({ id, content }) => (
+          <React.Fragment key={id}>
+            {currentActive === id ? content : null}
+          </React.Fragment>
+        ))}
       </Suspense>
     </>
   );

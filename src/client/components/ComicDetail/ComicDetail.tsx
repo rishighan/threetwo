@@ -1,4 +1,4 @@
-import React, { useState, ReactElement, useCallback } from "react";
+import React, { useState, ReactElement, useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import Card from "../shared/Carda";
 import { RawFileDetails } from "./RawFileDetails";
@@ -141,11 +141,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   });
 
   // Query for airdc++
-  const airDCPPQuery = {
-    issue: {
-      name: issueName,
-    },
-  };
+  const airDCPPQuery = useMemo(() => ({
+    issue: { name: issueName },
+  }), [issueName]);
 
   // Create tab configuration
   const openReconcilePanel = useCallback(() => {
@@ -153,7 +151,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     setVisible(true);
   }, []);
 
-  const tabGroup = createTabConfig({
+  const tabGroup = useMemo(() => createTabConfig({
     data: data.data,
     hasAnyMetadata,
     areRawFileDetailsAvailable,
@@ -163,9 +161,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     issueName,
     acquisition,
     onReconcileMetadata: openReconcilePanel,
-  });
+  }), [data.data, hasAnyMetadata, areRawFileDetailsAvailable, airDCPPQuery, _id, userSettings, issueName, acquisition, openReconcilePanel]);
 
-  const filteredTabs = tabGroup.filter((tab) => tab.shouldShow);
+  const filteredTabs = useMemo(() => tabGroup.filter((tab) => tab.shouldShow), [tabGroup]);
 
   // Sliding panel content mapping
   const renderSlidingPanelContent = () => {

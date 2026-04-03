@@ -46,7 +46,7 @@ export const createTabConfig = ({
         <i className="h-5 w-5 icon-[solar--book-2-bold] text-slate-500 dark:text-slate-300"></i>
       ),
       content: hasAnyMetadata ? (
-        <VolumeInformation data={data} onReconcile={onReconcileMetadata} key={1} />
+        <VolumeInformation data={data} onReconcile={onReconcileMetadata} />
       ) : null,
       shouldShow: hasAnyMetadata,
     },
@@ -56,7 +56,7 @@ export const createTabConfig = ({
         <i className="h-5 w-5 icon-[solar--winrar-bold-duotone] text-slate-500 dark:text-slate-300" />
       ),
       name: "Archive Operations",
-      content: <ArchiveOperations data={data} key={3} />,
+      content: <ArchiveOperations data={data} />,
       shouldShow: areRawFileDetailsAvailable,
     },
     {
@@ -71,7 +71,6 @@ export const createTabConfig = ({
           comicObjectId={comicObjectId}
           comicObject={data}
           settings={userSettings}
-          key={4}
         />
       ),
       shouldShow: true,
@@ -98,7 +97,7 @@ export const createTabConfig = ({
       ),
       content:
         !isNil(data) && !isEmpty(data) ? (
-          <DownloadsPanel key={5} />
+          <DownloadsPanel />
         ) : (
           <div className="column is-three-fifths">
             <article className="message is-info">
