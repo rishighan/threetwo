@@ -1,5 +1,6 @@
-import React, { ReactElement, useMemo } from "react";
+import React, { ReactElement, useMemo, useState } from "react";
 import { isEmpty, isNil } from "lodash";
+import { Sheet } from "react-modal-sheet";
 import ComicVineDetails from "../ComicVineDetails";
 
 interface ComicVineMetadata {
@@ -31,7 +32,13 @@ interface VolumeInformationProps {
 }
 
 /** Sources stored under `sourcedMetadata` — excludes `inferredMetadata`, which is checked separately. */
-const SOURCED_METADATA_KEYS = ["comicvine", "locg", "comicInfo", "metron", "gcd"];
+const SOURCED_METADATA_KEYS = [
+  "comicvine",
+  "locg",
+  "comicInfo",
+  "metron",
+  "gcd",
+];
 
 const SOURCE_LABELS: Record<string, string> = {
   comicvine: "ComicVine",
@@ -42,36 +49,69 @@ const SOURCE_LABELS: Record<string, string> = {
   inferredMetadata: "Local File",
 };
 
+const SOURCE_ICONS: Record<string, string> = {
+  comicvine: "icon-[solar--database-bold]",
+  locg: "icon-[solar--users-group-rounded-outline]",
+  comicInfo: "icon-[solar--file-text-outline]",
+  metron: "icon-[solar--planet-outline]",
+  gcd: "icon-[solar--book-outline]",
+  inferredMetadata: "icon-[solar--folder-outline]",
+};
+
 const MetadataSourceChips = ({
   sources,
   onReconcile,
 }: {
   sources: string[];
   onReconcile: () => void;
-}): ReactElement => (
-  <div className="flex flex-row flex-wrap items-center gap-2 mb-5 p-3 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-    <span className="text-xs text-slate-500 dark:text-slate-400 mr-1">
-      <i className="icon-[solar--database-outline] w-4 h-4 inline-block align-middle mr-1" />
-      {sources.length} metadata sources detected
-    </span>
-    {sources.map((source) => (
-      <span
-        key={source}
-        className="inline-flex items-center gap-1 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium px-2 py-1 rounded-md border border-slate-200 dark:border-slate-600"
+}): ReactElement => {
+  const [isSheetOpen, setSheetOpen] = useState(false);
+
+  return (
+    <>
+      <div className="flex flex-col gap-2 mb-5 p-3 w-fit">
+        <div className="flex flex-row items-center justify-between">
+          <span className="text-md text-slate-500 dark:text-slate-400">
+            <i className="icon-[solar--database-outline] w-4 h-4 inline-block align-middle mr-1" />
+            {sources.length} metadata sources detected
+          </span>
+        </div>
+        <div className="flex flex-row flex-wrap gap-2">
+          {sources.map((source) => (
+            <span
+              key={source}
+              className="inline-flex items-center gap-1 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium px-2 py-1 rounded-md border border-slate-200 dark:border-slate-600"
+            >
+              <i
+                className={`${SOURCE_ICONS[source] ?? "icon-[solar--check-circle-outline]"} w-3 h-3`}
+              />
+              {SOURCE_LABELS[source] ?? source}
+            </span>
+          ))}
+        </div>
+      </div>
+      <button
+        className="flex space-x-1 mb-2 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-2 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
+        onClick={() => setSheetOpen(true)}
       >
-        <i className="icon-[solar--check-circle-outline] w-3 h-3" />
-        {SOURCE_LABELS[source] ?? source}
-      </span>
-    ))}
-    <button
-      onClick={onReconcile}
-      className="ml-auto inline-flex items-center gap-1 text-xs font-semibold text-sky-600 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-200 transition-colors cursor-pointer"
-    >
-      <i className="icon-[solar--refresh-outline] w-4 h-4" />
-      Reconcile sources
-    </button>
-  </div>
-);
+        <i className="icon-[solar--refresh-outline] w-4 h-4 px-3" />
+        Reconcile sources
+      </button>
+
+      <Sheet isOpen={isSheetOpen} onClose={() => setSheetOpen(false)}>
+        <Sheet.Container>
+          <Sheet.Header />
+          <Sheet.Content>
+            <div className="p-4">
+              {/* Reconciliation UI goes here */}
+            </div>
+          </Sheet.Content>
+        </Sheet.Container>
+        <Sheet.Backdrop />
+      </Sheet>
+    </>
+  );
+};
 
 /**
  * Displays volume metadata for a comic.
@@ -84,7 +124,9 @@ const MetadataSourceChips = ({
  * @param props.data - Comic data containing sourced and inferred metadata.
  * @param props.onReconcile - Called when the user triggers source reconciliation.
  */
-export const VolumeInformation = (props: VolumeInformationProps): ReactElement => {
+export const VolumeInformation = (
+  props: VolumeInformationProps,
+): ReactElement => {
   const { data, onReconcile } = props;
 
   const presentSources = useMemo(() => {
@@ -92,10 +134,16 @@ export const VolumeInformation = (props: VolumeInformationProps): ReactElement =
       const val = (data?.sourcedMetadata ?? {})[key];
       if (isNil(val) || isEmpty(val)) return false;
       // locg returns an object even when empty; require at least one non-null value
-      if (key === "locg") return Object.values(val as Record<string, unknown>).some((v) => !isNil(v) && v !== "");
+      if (key === "locg")
+        return Object.values(val as Record<string, unknown>).some(
+          (v) => !isNil(v) && v !== "",
+        );
       return true;
     });
-    if (!isNil(data?.inferredMetadata?.issue) && !isEmpty(data?.inferredMetadata?.issue)) {
+    if (
+      !isNil(data?.inferredMetadata?.issue) &&
+      !isEmpty(data?.inferredMetadata?.issue)
+    ) {
       sources.push("inferredMetadata");
     }
     return sources;
@@ -109,12 +157,13 @@ export const VolumeInformation = (props: VolumeInformationProps): ReactElement =
           onReconcile={onReconcile ?? (() => {})}
         />
       )}
-      {presentSources.length === 1 && data.sourcedMetadata?.comicvine?.volumeInformation && (
-        <ComicVineDetails
-          data={data.sourcedMetadata.comicvine}
-          updatedAt={data.updatedAt}
-        />
-      )}
+      {presentSources.length === 1 &&
+        data.sourcedMetadata?.comicvine?.volumeInformation && (
+          <ComicVineDetails
+            data={data.sourcedMetadata.comicvine}
+            updatedAt={data.updatedAt}
+          />
+        )}
     </div>
   );
 };
