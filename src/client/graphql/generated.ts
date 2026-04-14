@@ -93,23 +93,37 @@ export type CanonicalMetadata = {
   __typename?: 'CanonicalMetadata';
   ageRating?: Maybe<MetadataField>;
   characters?: Maybe<Array<MetadataField>>;
+  collectionTitle?: Maybe<MetadataField>;
   communityRating?: Maybe<MetadataField>;
   coverDate?: Maybe<MetadataField>;
   coverImage?: Maybe<MetadataField>;
   creators?: Maybe<Array<Creator>>;
   description?: Maybe<MetadataField>;
+  externalIDs?: Maybe<Array<ExternalId>>;
   format?: Maybe<MetadataField>;
   genres?: Maybe<Array<MetadataField>>;
+  gtin?: Maybe<GtinField>;
+  imprint?: Maybe<MetadataField>;
   issueNumber?: Maybe<MetadataField>;
+  language?: Maybe<MetadataField>;
+  lastModified?: Maybe<MetadataField>;
   locations?: Maybe<Array<MetadataField>>;
+  notes?: Maybe<MetadataField>;
   pageCount?: Maybe<MetadataField>;
+  prices?: Maybe<Array<PriceField>>;
   publicationDate?: Maybe<MetadataField>;
   publisher?: Maybe<MetadataField>;
+  reprints?: Maybe<Array<ReprintField>>;
   series?: Maybe<MetadataField>;
-  storyArcs?: Maybe<Array<MetadataField>>;
+  seriesInfo?: Maybe<SeriesInfo>;
+  storeDate?: Maybe<MetadataField>;
+  stories?: Maybe<Array<MetadataField>>;
+  storyArcs?: Maybe<Array<StoryArcField>>;
   tags?: Maybe<Array<MetadataField>>;
   teams?: Maybe<Array<MetadataField>>;
   title?: Maybe<MetadataField>;
+  universes?: Maybe<Array<UniverseField>>;
+  urls?: Maybe<Array<UrlField>>;
   volume?: Maybe<MetadataField>;
 };
 
@@ -226,6 +240,7 @@ export type CoverInput = {
 
 export type Creator = {
   __typename?: 'Creator';
+  id?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   provenance: Provenance;
   role: Scalars['String']['output'];
@@ -261,6 +276,14 @@ export type DirectorySize = {
   totalSizeInMB: Scalars['Float']['output'];
 };
 
+export type ExternalId = {
+  __typename?: 'ExternalID';
+  externalId: Scalars['String']['output'];
+  primary?: Maybe<Scalars['Boolean']['output']>;
+  provenance: Provenance;
+  source: MetadataSource;
+};
+
 export type FieldOverride = {
   __typename?: 'FieldOverride';
   field: Scalars['String']['output'];
@@ -293,6 +316,14 @@ export type ForceCompleteResult = {
   __typename?: 'ForceCompleteResult';
   message: Scalars['String']['output'];
   success: Scalars['Boolean']['output'];
+};
+
+export type GtinField = {
+  __typename?: 'GTINField';
+  isbn?: Maybe<Scalars['String']['output']>;
+  provenance: Provenance;
+  upc?: Maybe<Scalars['String']['output']>;
+  userOverride?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type GetResourceInput = {
@@ -544,13 +575,6 @@ export type MatchedResult = {
   score?: Maybe<Scalars['String']['output']>;
 };
 
-export type MetadataArrayField = {
-  __typename?: 'MetadataArrayField';
-  provenance: Provenance;
-  userOverride?: Maybe<Scalars['Boolean']['output']>;
-  values: Array<Scalars['String']['output']>;
-};
-
 export type MetadataConflict = {
   __typename?: 'MetadataConflict';
   candidates: Array<MetadataField>;
@@ -750,6 +774,14 @@ export type PersonCredit = {
   name?: Maybe<Scalars['String']['output']>;
   role?: Maybe<Scalars['String']['output']>;
   site_detail_url?: Maybe<Scalars['String']['output']>;
+};
+
+export type PriceField = {
+  __typename?: 'PriceField';
+  amount: Scalars['Float']['output'];
+  country: Scalars['String']['output'];
+  currency?: Maybe<Scalars['String']['output']>;
+  provenance: Provenance;
 };
 
 export type Provenance = {
@@ -969,6 +1001,13 @@ export type RawFileDetailsInput = {
   pageCount?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type ReprintField = {
+  __typename?: 'ReprintField';
+  description: Scalars['String']['output'];
+  id?: Maybe<Scalars['String']['output']>;
+  provenance: Provenance;
+};
+
 export type ScorerConfigurationInput = {
   searchParams?: InputMaybe<SearchParamsInput>;
 };
@@ -1052,6 +1091,17 @@ export enum SearchType {
   Wanted = 'wanted'
 }
 
+export type SeriesInfo = {
+  __typename?: 'SeriesInfo';
+  alternativeNames?: Maybe<Array<MetadataField>>;
+  issueCount?: Maybe<Scalars['Int']['output']>;
+  language?: Maybe<Scalars['String']['output']>;
+  provenance: Provenance;
+  sortName?: Maybe<Scalars['String']['output']>;
+  startYear?: Maybe<Scalars['Int']['output']>;
+  volumeCount?: Maybe<Scalars['Int']['output']>;
+};
+
 export type SourcePriority = {
   __typename?: 'SourcePriority';
   enabled: Scalars['Boolean']['output'];
@@ -1114,6 +1164,14 @@ export type StoryArcCredit = {
   site_detail_url?: Maybe<Scalars['String']['output']>;
 };
 
+export type StoryArcField = {
+  __typename?: 'StoryArcField';
+  id?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  number?: Maybe<Scalars['Int']['output']>;
+  provenance: Provenance;
+};
+
 export type TeamCredit = {
   __typename?: 'TeamCredit';
   api_detail_url?: Maybe<Scalars['String']['output']>;
@@ -1138,6 +1196,21 @@ export type TorrentSearchResult = {
   seeders?: Maybe<Scalars['Int']['output']>;
   size?: Maybe<Scalars['Float']['output']>;
   title?: Maybe<Scalars['String']['output']>;
+};
+
+export type UrlField = {
+  __typename?: 'URLField';
+  primary?: Maybe<Scalars['Boolean']['output']>;
+  provenance: Provenance;
+  url: Scalars['String']['output'];
+};
+
+export type UniverseField = {
+  __typename?: 'UniverseField';
+  designation?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  provenance: Provenance;
 };
 
 export type UserPreferences = {
