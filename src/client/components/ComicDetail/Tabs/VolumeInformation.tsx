@@ -1,7 +1,11 @@
 import React, { ReactElement, useMemo, useState } from "react";
 import { isEmpty, isNil } from "lodash";
-import { Drawer } from "vaul";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ComicVineDetails from "../ComicVineDetails";
+import { ReconcilerDrawer } from "./ReconcilerDrawer";
+import { fetcher } from "../../../graphql/fetcher";
+import { useGetComicByIdQuery } from "../../../graphql/generated";
+import type { CanonicalRecord } from "./useReconciler";
 
 interface ComicVineMetadata {
   volumeInformation?: Record<string, unknown>;
@@ -21,6 +25,7 @@ interface SourcedMetadata {
 }
 
 interface VolumeInformationData {
+  id?: string;
   sourcedMetadata?: SourcedMetadata;
   inferredMetadata?: { issue?: unknown };
   updatedAt?: string;
@@ -30,6 +35,14 @@ interface VolumeInformationProps {
   data: VolumeInformationData;
   onReconcile?: () => void;
 }
+
+const SET_METADATA_FIELD = `
+  mutation SetMetadataField($comicId: ID!, $field: String!, $value: String!) {
+    setMetadataField(comicId: $comicId, field: $field, value: $value) {
+      id
+    }
+  }
+`;
 
 /** Sources stored under `sourcedMetadata` — excludes `inferredMetadata`, which is checked separately. */
 const SOURCED_METADATA_KEYS = [
@@ -60,55 +73,40 @@ const SOURCE_ICONS: Record<string, string> = {
 
 const MetadataSourceChips = ({
   sources,
+  onOpenReconciler,
 }: {
   sources: string[];
+  onOpenReconciler: () => void;
 }): ReactElement => {
-  const [isSheetOpen, setSheetOpen] = useState(false);
-
   return (
-    <>
-      <div className="flex flex-col gap-2 mb-5 p-3 w-fit">
-        <div className="flex flex-row items-center justify-between">
-          <span className="text-md text-slate-500 dark:text-slate-400">
-            <i className="icon-[solar--database-outline] w-4 h-4 inline-block align-middle mr-1" />
-            {sources.length} metadata sources detected
+    <div className="flex flex-col gap-2 mb-5 p-3 w-fit">
+      <div className="flex flex-row items-center justify-between">
+        <span className="text-md text-slate-500 dark:text-slate-400">
+          <i className="icon-[solar--database-outline] w-4 h-4 inline-block align-middle mr-1" />
+          {sources.length} metadata sources detected
+        </span>
+      </div>
+      <div className="flex flex-row flex-wrap gap-2">
+        {sources.map((source) => (
+          <span
+            key={source}
+            className="inline-flex items-center gap-1 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium px-2 py-1 rounded-md border border-slate-200 dark:border-slate-600"
+          >
+            <i
+              className={`${SOURCE_ICONS[source] ?? "icon-[solar--check-circle-outline]"} w-3 h-3`}
+            />
+            {SOURCE_LABELS[source] ?? source}
           </span>
-        </div>
-        <div className="flex flex-row flex-wrap gap-2">
-          {sources.map((source) => (
-            <span
-              key={source}
-              className="inline-flex items-center gap-1 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium px-2 py-1 rounded-md border border-slate-200 dark:border-slate-600"
-            >
-              <i
-                className={`${SOURCE_ICONS[source] ?? "icon-[solar--check-circle-outline]"} w-3 h-3`}
-              />
-              {SOURCE_LABELS[source] ?? source}
-            </span>
-          ))}
-        </div>
+        ))}
       </div>
       <button
         className="flex space-x-1 mb-2 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-2 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
-        onClick={() => setSheetOpen(true)}
+        onClick={onOpenReconciler}
       >
         <i className="icon-[solar--refresh-outline] w-4 h-4 px-3" />
         Reconcile sources
       </button>
-
-      <Drawer.Root open={isSheetOpen} onOpenChange={setSheetOpen}>
-        <Drawer.Portal>
-          <Drawer.Overlay className="fixed inset-0 bg-black/40" />
-          <Drawer.Content aria-describedby={undefined} className="fixed bottom-0 left-0 right-0 rounded-t-2xl bg-white dark:bg-slate-800 p-4 outline-none">
-            <Drawer.Title className="sr-only">Reconcile metadata sources</Drawer.Title>
-            <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-slate-300 dark:bg-slate-600" />
-            <div className="p-4">
-              {/* Reconciliation UI goes here */}
-            </div>
-          </Drawer.Content>
-        </Drawer.Portal>
-      </Drawer.Root>
-    </>
+    </div>
   );
 };
 
@@ -127,6 +125,35 @@ export const VolumeInformation = (
   props: VolumeInformationProps,
 ): ReactElement => {
   const { data } = props;
+  const [isReconcilerOpen, setReconcilerOpen] = useState(false);
+  const queryClient = useQueryClient();
+
+  const { mutate: saveCanonical } = useMutation({
+    mutationFn: async (record: CanonicalRecord) => {
+      const saves = Object.entries(record)
+        .filter(([, fv]) => fv != null)
+        .map(([field, fv]) => ({
+          field,
+          value:
+            typeof fv!.value === "string"
+              ? fv!.value
+              : JSON.stringify(fv!.value),
+        }));
+      await Promise.all(
+        saves.map(({ field, value }) =>
+          fetcher<unknown, { comicId: string; field: string; value: string }>(
+            SET_METADATA_FIELD,
+            { comicId: data.id ?? "", field, value },
+          )(),
+        ),
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: useGetComicByIdQuery.getKey({ id: data.id ?? "" }),
+      });
+    },
+  });
 
   const presentSources = useMemo(() => {
     const sources = SOURCED_METADATA_KEYS.filter((key) => {
@@ -151,7 +178,10 @@ export const VolumeInformation = (
   return (
     <div key={1}>
       {presentSources.length > 1 && (
-        <MetadataSourceChips sources={presentSources} />
+        <MetadataSourceChips
+          sources={presentSources}
+          onOpenReconciler={() => setReconcilerOpen(true)}
+        />
       )}
       {presentSources.length === 1 &&
         data.sourcedMetadata?.comicvine?.volumeInformation && (
@@ -160,6 +190,13 @@ export const VolumeInformation = (
             updatedAt={data.updatedAt}
           />
         )}
+      <ReconcilerDrawer
+        open={isReconcilerOpen}
+        onOpenChange={setReconcilerOpen}
+        sourcedMetadata={(data.sourcedMetadata ?? {}) as import("./useReconciler").RawSourcedMetadata}
+        inferredMetadata={data.inferredMetadata as import("./useReconciler").RawInferredMetadata | undefined}
+        onSave={saveCanonical}
+      />
     </div>
   );
 };

@@ -1,7 +1,21 @@
+fragment ProvenanceFull on Provenance {
+  source
+  sourceId
+  confidence
+  fetchedAt
+  url
+}
+
+fragment MetadataFieldFull on MetadataField {
+  value
+  provenance { ...ProvenanceFull }
+  userOverride
+}
+
 query GetComicById($id: ID!) {
   comic(id: $id) {
     id
-    
+
     # Inferred metadata
     inferredMetadata {
       issue {
@@ -11,132 +25,106 @@ query GetComicById($id: ID!) {
         subtitle
       }
     }
-    
+
     # Canonical metadata
     canonicalMetadata {
-      title {
-        value
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
-        }
-        userOverride
+      # ── Identity ──────────────────────────────────────────────────────────
+      title { ...MetadataFieldFull }
+      series { ...MetadataFieldFull }
+      volume { ...MetadataFieldFull }
+      issueNumber { ...MetadataFieldFull }
+      collectionTitle { ...MetadataFieldFull }
+
+      # ── Series ────────────────────────────────────────────────────────────
+      seriesInfo {
+        issueCount
+        startYear
+        volumeCount
+        sortName
+        language
+        alternativeNames { ...MetadataFieldFull }
+        provenance { ...ProvenanceFull }
       }
-      series {
-        value
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
-        }
-        userOverride
+
+      # ── Publication ───────────────────────────────────────────────────────
+      publisher { ...MetadataFieldFull }
+      imprint { ...MetadataFieldFull }
+      coverDate { ...MetadataFieldFull }
+      storeDate { ...MetadataFieldFull }
+      publicationDate { ...MetadataFieldFull }
+      language { ...MetadataFieldFull }
+
+      # ── Content ───────────────────────────────────────────────────────────
+      description { ...MetadataFieldFull }
+      notes { ...MetadataFieldFull }
+      stories { ...MetadataFieldFull }
+      storyArcs {
+        name
+        number
+        id
+        provenance { ...ProvenanceFull }
       }
-      volume {
-        value
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
-        }
-        userOverride
+      characters { ...MetadataFieldFull }
+      teams { ...MetadataFieldFull }
+      locations { ...MetadataFieldFull }
+      universes {
+        name
+        designation
+        id
+        provenance { ...ProvenanceFull }
       }
-      issueNumber {
-        value
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
-        }
-        userOverride
-      }
-      publisher {
-        value
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
-        }
-        userOverride
-      }
-      publicationDate {
-        value
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
-        }
-        userOverride
-      }
-      coverDate {
-        value
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
-        }
-        userOverride
-      }
-      description {
-        value
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
-        }
-        userOverride
-      }
+      coverImage { ...MetadataFieldFull }
+
+      # ── Credits ───────────────────────────────────────────────────────────
       creators {
         name
         role
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
-        }
+        provenance { ...ProvenanceFull }
       }
-      pageCount {
-        value
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
-        }
-        userOverride
+
+      # ── Classification ────────────────────────────────────────────────────
+      genres { ...MetadataFieldFull }
+      tags { ...MetadataFieldFull }
+      ageRating { ...MetadataFieldFull }
+
+      # ── Physical ──────────────────────────────────────────────────────────
+      pageCount { ...MetadataFieldFull }
+      format { ...MetadataFieldFull }
+
+      # ── Commercial ────────────────────────────────────────────────────────
+      prices {
+        amount
+        currency
+        country
+        provenance { ...ProvenanceFull }
       }
-      coverImage {
-        value
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
-        }
+      gtin {
+        isbn
+        upc
         userOverride
+        provenance { ...ProvenanceFull }
+      }
+      reprints {
+        description
+        id
+        provenance { ...ProvenanceFull }
+      }
+      communityRating { ...MetadataFieldFull }
+
+      # ── External ──────────────────────────────────────────────────────────
+      externalIDs {
+        source
+        externalId
+        primary
+        provenance { ...ProvenanceFull }
+      }
+      urls {
+        url
+        primary
+        provenance { ...ProvenanceFull }
       }
     }
-    
+
     # Sourced metadata
     sourcedMetadata {
       comicInfo
@@ -155,7 +143,7 @@ query GetComicById($id: ID!) {
         potw
       }
     }
-    
+
     # Raw file details
     rawFileDetails {
       name
@@ -174,7 +162,7 @@ query GetComicById($id: ID!) {
         stats
       }
     }
-    
+
     # Import status
     importStatus {
       isImported
@@ -183,7 +171,7 @@ query GetComicById($id: ID!) {
         score
       }
     }
-    
+
     # Timestamps
     createdAt
     updatedAt
