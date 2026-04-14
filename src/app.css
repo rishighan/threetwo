@@ -1,0 +1,43 @@
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+/* Custom Project Fonts */
+@font-face {
+  font-family: "PP Object Sans Regular";
+  src: url("/fonts/PPObjectSans-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PP Object Sans Heavy";
+  src: url("/fonts/PPObjectSans-Heavy.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PP Object Sans Slanted";
+  src: url("/fonts/PPObjectSans-Slanted.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PP Object Sans HeavySlanted";
+  src: url("/fonts/PPObjectSans-HeavySlanted.otf") format("opentype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Hasklig Regular";
+  src: url("/fonts/Hasklig-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
