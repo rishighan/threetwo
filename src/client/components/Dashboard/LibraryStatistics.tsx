@@ -29,6 +29,7 @@ export const LibraryStatistics = ({ stats }: LibraryStatisticsProps): ReactEleme
 
   return (
     <div className="mt-5">
+      {/* TODO: Switch iconClassNames to Solar icon */}
       <Header
         headerContent="Your Library In Numbers"
         subHeaderContent={<span className="text-md">A brief snapshot of your library.</span>}

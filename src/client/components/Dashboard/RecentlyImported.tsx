@@ -27,6 +27,7 @@ export const RecentlyImported = (
 
   return (
     <div>
+      {/* TODO: Switch iconClassNames to Solar icon */}
       <Header
         headerContent="Recently Imported"
         subHeaderContent="Recent Library activity such as imports, tagging, etc."

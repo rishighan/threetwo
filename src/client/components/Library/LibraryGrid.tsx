@@ -79,6 +79,7 @@ export const LibraryGrid = (libraryGridProps: ILibraryGridProps) => {
                       />
                     </span>
                   )}
+                  {/* TODO: Switch to Solar icon */}
                   {isNil(rawFileDetails) && (
                     <span className="icon has-text-info">
                       <i className="fas fa-adjust" />

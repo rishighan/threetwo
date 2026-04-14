@@ -47,6 +47,7 @@ export const SearchBar = (data: ISearchBarProps): ReactElement => {
           onChange={(e) => performSearch(e)}
         />
 
+        {/* TODO: Switch to Solar icon */}
         <span className="icon is-right mt-2">
           <i className="fa-solid fa-magnifying-glass"></i>
         </span>

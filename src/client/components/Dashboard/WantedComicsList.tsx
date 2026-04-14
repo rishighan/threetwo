@@ -30,6 +30,7 @@ export const WantedComicsList = ({
 
   return (
     <div>
+      {/* TODO: Switch iconClassNames to Solar icon */}
       <Header
         headerContent="Wanted Comics"
         subHeaderContent={<>Comics marked as wanted from various sources</>}

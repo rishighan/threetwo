@@ -66,6 +66,7 @@ export const DnD = (data) => {
                 >
                   <div className="box p-2 control-palette">
                     <span className="tag is-warning mr-2">{index}</span>
+                    {/* TODO: Switch to Solar icons */}
                     <span className="icon is-small mr-2">
                       <i className="fa-solid fa-vial"></i>
                     </span>

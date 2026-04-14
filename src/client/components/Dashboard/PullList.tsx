@@ -92,6 +92,7 @@ export const PullList = (): ReactElement => {
 
   return (
     <>
+      {/* TODO: Switch iconClassNames to Solar icon */}
       <Header
           headerContent="Discover"
           subHeaderContent={

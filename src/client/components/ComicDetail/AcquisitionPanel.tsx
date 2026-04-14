@@ -329,6 +329,7 @@ export const AcquisitionPanel = (
                       {/* NAME */}
                       <td className="whitespace-nowrap px-3 py-3 text-gray-700 dark:text-slate-300 max-w-xs">
                         <p className="mb-2">
+                          {/* TODO: Switch to Solar icon */}
                           {type.id === "directory" && (
                             <i className="fas fa-folder mr-1"></i>
                           )}

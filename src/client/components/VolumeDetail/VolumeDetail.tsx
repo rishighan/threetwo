@@ -129,6 +129,7 @@ const VolumeDetails = (props): ReactElement => {
                 <span className="tag is-warning mr-1">
                   {issue.issue_number}
                 </span>
+                {/* TODO: Switch to Solar icon */}
                 {!isEmpty(issue.matches) ? (
                   <>
                     <span className="icon has-text-success">

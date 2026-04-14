@@ -112,6 +112,7 @@ export const EditMetadataPanel = ({ data }: EditMetadataPanelProps): ReactElemen
                         className="input"
                         placeholder="SKU"
                       />
+                      {/* TODO: Switch to Solar icon */}
                       <span className="icon is-small is-left">
                         <i className="fa-solid fa-barcode"></i>
                       </span>
@@ -128,6 +129,7 @@ export const EditMetadataPanel = ({ data }: EditMetadataPanelProps): ReactElemen
                       className="input"
                       placeholder="UPC Code"
                     />
+                    {/* TODO: Switch to Solar icon */}
                     <span className="icon is-small is-left">
                       <i className="fa-solid fa-box"></i>
                     </span>
@@ -150,6 +152,7 @@ export const EditMetadataPanel = ({ data }: EditMetadataPanelProps): ReactElemen
                       name={"publisher"}
                       component={AsyncSelectPaginateAdapter}
                       placeholder={
+                        /* TODO: Switch to Solar icon */
                         <div>
                           <i className="fas fa-print mr-2"></i> Publisher
                         </div>
@@ -173,6 +176,7 @@ export const EditMetadataPanel = ({ data }: EditMetadataPanelProps): ReactElemen
                       name={"story_arc"}
                       component={AsyncSelectPaginateAdapter}
                       placeholder={
+                        /* TODO: Switch to Solar icon */
                         <div>
                           <i className="fas fa-book-open mr-2"></i> Story Arc
                         </div>
@@ -196,6 +200,7 @@ export const EditMetadataPanel = ({ data }: EditMetadataPanelProps): ReactElemen
                       name={"series"}
                       component={AsyncSelectPaginateAdapter}
                       placeholder={
+                        /* TODO: Switch to Solar icon */
                         <div>
                           <i className="fas fa-layer-group mr-2"></i> Series
                         </div>
@@ -250,6 +255,7 @@ export const EditMetadataPanel = ({ data }: EditMetadataPanelProps): ReactElemen
                             name={`${name}.creator`}
                             component={AsyncSelectPaginateAdapter}
                             placeholder={
+                              /* TODO: Switch to Solar icon */
                               <div>
                                 <i className="fa-solid fa-ghost"></i> Creator
                               </div>
@@ -265,6 +271,7 @@ export const EditMetadataPanel = ({ data }: EditMetadataPanelProps): ReactElemen
                             name={`${name}.role`}
                             metronResource={"role"}
                             placeholder={
+                              /* TODO: Switch to Solar icon */
                               <div>
                                 <i className="fa-solid fa-key"></i> Role
                               </div>
@@ -273,6 +280,7 @@ export const EditMetadataPanel = ({ data }: EditMetadataPanelProps): ReactElemen
                           />
                         </p>
                       </div>
+                      {/* TODO: Switch to Solar icon */}
                       <span
                         className="icon is-danger mt-2"
                         onClick={() => fields.remove(index)}

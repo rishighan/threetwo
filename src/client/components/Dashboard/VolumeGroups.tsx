@@ -31,6 +31,7 @@ export const VolumeGroups = (props: VolumeGroupsProps): ReactElement | null => {
 
   return (
     <div>
+      {/* TODO: Switch iconClassNames to Solar icon */}
       <Header
         headerContent="Volumes"
         subHeaderContent={<>Based on ComicVine Volume information</>}
