@@ -11,19 +11,57 @@ import { useShallow } from "zustand/react/shallow";
 import { useImportSessionStatus } from "../../hooks/useImportSessionStatus";
 
 /**
- * Import statistics with card-based layout and progress bar.
- * Three states: pre-import (idle), importing (active), and post-import (complete).
- * Also surfaces missing files detected by the file watcher.
+ * RealTimeImportStats component displays import statistics with a card-based layout and progress bar.
+ *
+ * This component manages three distinct states:
+ * - **Pre-import (idle)**: Shows current file counts and "Start Import" button when new files exist
+ * - **Importing (active)**: Displays real-time progress bar with completed/total counts
+ * - **Post-import (complete)**: Shows final statistics including failed imports
+ *
+ * Additionally, it surfaces missing files detected by the file watcher, allowing users
+ * to see which previously-imported files are no longer found on disk.
+ *
+ * @component
+ * @example
+ * ```tsx
+ * <RealTimeImportStats />
+ * ```
+ *
+ * @returns {ReactElement} The rendered import statistics component
+ *
+ * @remarks
+ * The component subscribes to multiple socket events for real-time updates:
+ * - `LS_LIBRARY_STATS` / `LS_FILES_MISSING`: Triggers statistics refresh
+ * - `LS_FILE_DETECTED`: Shows toast notification for newly detected files
+ * - `LS_INCREMENTAL_IMPORT_STARTED`: Initializes progress tracking
+ * - `LS_COVER_EXTRACTED` / `LS_COVER_EXTRACTION_FAILED`: Updates progress counts
+ * - `LS_IMPORT_QUEUE_DRAINED`: Marks import as complete
+ *
+ * @see {@link useImportSessionStatus} for import session state management
+ * @see {@link useGetImportStatisticsQuery} for fetching import statistics
  */
 export const RealTimeImportStats = (): ReactElement => {
+  /** Current import error message to display, or null if no error */
   const [importError, setImportError] = useState<string | null>(null);
+
+  /** Name of recently detected file for toast notification, auto-clears after 5 seconds */
   const [detectedFile, setDetectedFile] = useState<string | null>(null);
+
+  /**
+   * Real-time import progress state tracked via socket events.
+   * Separate from GraphQL query data to provide immediate UI updates.
+   */
   const [socketImport, setSocketImport] = useState<{
+    /** Whether import is currently in progress */
     active: boolean;
+    /** Number of successfully completed import jobs */
     completed: number;
+    /** Total number of jobs in the import queue */
     total: number;
+    /** Number of failed import jobs */
     failed: number;
   } | null>(null);
+
   const queryClient = useQueryClient();
 
   const { getSocket, disconnectSocket, importJobQueue } = useStore(
@@ -34,7 +72,7 @@ export const RealTimeImportStats = (): ReactElement => {
     })),
   );
 
-  const { data: importStats, isLoading } = useGetImportStatisticsQuery(
+  const { data: importStats, isLoading, isError: isStatsError, error: statsError } = useGetImportStatisticsQuery(
     {},
     { refetchOnWindowFocus: false, refetchInterval: false },
   );
@@ -182,8 +220,33 @@ export const RealTimeImportStats = (): ReactElement => {
     }
   };
 
-  if (isLoading || !stats) {
+  if (isLoading) {
     return <div className="text-gray-500 dark:text-gray-400">Loading...</div>;
+  }
+
+  if (isStatsError || !stats) {
+    return (
+      <div className="rounded-lg border-l-4 border-red-500 bg-red-50 dark:bg-red-900/20 p-4">
+        <div className="flex items-start gap-3">
+          <span className="w-6 h-6 text-red-600 dark:text-red-400 mt-0.5">
+            <i className="h-6 w-6 icon-[solar--danger-circle-bold]"></i>
+          </span>
+          <div className="flex-1">
+            <p className="font-semibold text-red-800 dark:text-red-300">
+              Failed to Load Import Statistics
+            </p>
+            <p className="text-sm text-red-700 dark:text-red-400 mt-1">
+              Unable to retrieve import statistics from the server. Please check that the backend service is running.
+            </p>
+            {isStatsError && (
+              <p className="text-sm text-red-700 dark:text-red-400 mt-2">
+                Error: {statsError instanceof Error ? statsError.message : "Unknown error"}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const isFirstImport = stats.alreadyImported === 0;

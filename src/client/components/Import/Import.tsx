@@ -1,13 +1,24 @@
 import { ReactElement, useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
 import { isEmpty } from "lodash";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
 import axios from "axios";
 import { useGetJobResultStatisticsQuery } from "../../graphql/generated";
 import { RealTimeImportStats } from "./RealTimeImportStats";
 import { useImportSessionStatus } from "../../hooks/useImportSessionStatus";
+import { SETTINGS_SERVICE_BASE_URI } from "../../constants/endpoints";
+
+interface DirectoryIssue {
+  directory: string;
+  issue: string;
+}
+
+interface DirectoryStatus {
+  isValid: boolean;
+  issues: DirectoryIssue[];
+}
 
 export const Import = (): ReactElement => {
   const [importError, setImportError] = useState<string | null>(null);
@@ -19,6 +30,24 @@ export const Import = (): ReactElement => {
       disconnectSocket: state.disconnectSocket,
     })),
   );
+
+  // Check if required directories exist
+  const { data: directoryStatus, isLoading: isCheckingDirectories, isError: isDirectoryCheckError, error: directoryError } = useQuery({
+    queryKey: ["directoryStatus"],
+    queryFn: async (): Promise<DirectoryStatus> => {
+      const response = await axios.get(`${SETTINGS_SERVICE_BASE_URI}/getDirectoryStatus`);
+      return response.data;
+    },
+    refetchOnWindowFocus: false,
+    staleTime: 30000, // Cache for 30 seconds
+    retry: false, // Don't retry on failure - show error immediately
+  });
+
+  // Use isValid for quick check, issues array for detailed display
+  // If there's an error fetching directory status, assume directories are invalid
+  const directoryCheckFailed = isDirectoryCheckError;
+  const hasAllDirectories = directoryCheckFailed ? false : (directoryStatus?.isValid ?? true);
+  const directoryIssues = directoryStatus?.issues ?? [];
 
   // Force re-import mutation - re-imports all files regardless of import status
   const { mutate: forceReImport, isPending: isForceReImporting } = useMutation({
@@ -98,6 +127,21 @@ export const Import = (): ReactElement => {
    */
   const handleForceReImport = async () => {
     setImportError(null);
+
+    // Check for missing directories before starting
+    if (!hasAllDirectories) {
+      if (directoryCheckFailed) {
+        setImportError(
+          "Cannot start import: Failed to verify directory status. Please check that the backend service is running."
+        );
+      } else {
+        const issueDetails = directoryIssues.map(i => `${i.directory}: ${i.issue}`).join(", ");
+        setImportError(
+          `Cannot start import: ${issueDetails || "Required directories are missing"}. Please check your Docker volume configuration.`
+        );
+      }
+      return;
+    }
 
     // Check for active session before starting using definitive status
     if (hasActiveSession) {
@@ -197,6 +241,58 @@ export const Import = (): ReactElement => {
             </div>
           )}
 
+          {/* Directory Check Error - shown when API call fails */}
+          {!isCheckingDirectories && directoryCheckFailed && (
+            <div className="my-6 max-w-screen-lg rounded-lg border-s-4 border-red-500 bg-red-50 dark:bg-red-900/20 p-4">
+              <div className="flex items-start gap-3">
+                <span className="w-6 h-6 text-red-600 dark:text-red-400 mt-0.5">
+                  <i className="h-6 w-6 icon-[solar--danger-circle-bold]"></i>
+                </span>
+                <div className="flex-1">
+                  <p className="font-semibold text-red-800 dark:text-red-300">
+                    Failed to Check Directory Status
+                  </p>
+                  <p className="text-sm text-red-700 dark:text-red-400 mt-1">
+                    Unable to verify if required directories exist. Import functionality has been disabled.
+                  </p>
+                  <p className="text-sm text-red-700 dark:text-red-400 mt-2">
+                    Error: {(directoryError as Error)?.message || "Unknown error"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Directory Status Warning - shown when directories have issues */}
+          {!isCheckingDirectories && !directoryCheckFailed && directoryIssues.length > 0 && (
+            <div className="my-6 max-w-screen-lg rounded-lg border-s-4 border-amber-500 bg-amber-50 dark:bg-amber-900/20 p-4">
+              <div className="flex items-start gap-3">
+                <span className="w-6 h-6 text-amber-600 dark:text-amber-400 mt-0.5">
+                  <i className="h-6 w-6 icon-[solar--folder-error-bold]"></i>
+                </span>
+                <div className="flex-1">
+                  <p className="font-semibold text-amber-800 dark:text-amber-300">
+                    Directory Configuration Issues
+                  </p>
+                  <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
+                    The following issues were detected with your directory configuration:
+                  </p>
+                  <ul className="list-disc list-inside text-sm text-amber-700 dark:text-amber-400 mt-2">
+                    {directoryIssues.map((item) => (
+                      <li key={item.directory}>
+                        <code className="bg-amber-100 dark:bg-amber-900/50 px-1 rounded">{item.directory}</code>
+                        <span className="ml-1">— {item.issue}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="text-sm text-amber-700 dark:text-amber-400 mt-2">
+                    Please ensure these directories are mounted correctly in your Docker configuration.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Force Re-Import Button - always shown when no import is running */}
           {!hasActiveSession &&
            (importJobQueue.status === "drained" || importJobQueue.status === undefined) && (
@@ -204,8 +300,10 @@ export const Import = (): ReactElement => {
               <button
                 className="flex space-x-1 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-orange-400 dark:border-orange-200 bg-orange-200 px-5 py-3 text-gray-700 hover:bg-transparent hover:text-orange-600 focus:outline-none focus:ring active:text-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleForceReImport}
-                disabled={isForceReImporting || hasActiveSession}
-                title="Re-import all files to fix Elasticsearch indexing issues"
+                disabled={isForceReImporting || hasActiveSession || !hasAllDirectories}
+                title={!hasAllDirectories
+                  ? "Cannot import: Required directories are missing"
+                  : "Re-import all files to fix Elasticsearch indexing issues"}
               >
                 <span className="text-md font-medium">
                   {isForceReImporting ? "Starting Re-Import..." : "Force Re-Import All Files"}

@@ -490,4 +490,188 @@ describe('Import Component - Real-time Updates', () => {
   });
 });
 
+describe('Import Component - Directory Status', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (axios as any).mockResolvedValue({ data: [] });
+    (axios.request as jest.Mock) = jest.fn().mockResolvedValue({ data: {} });
+    // Mock successful directory status by default
+    (axios.get as jest.Mock) = jest.fn().mockResolvedValue({
+      data: { comics: { exists: true }, userdata: { exists: true } }
+    });
+  });
+
+  test('should show warning banner when comics directory is missing', async () => {
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: { comics: { exists: false }, userdata: { exists: true } }
+    });
+
+    const { useStore } = require('../../store');
+    useStore.mockImplementation((selector: any) =>
+      selector({
+        importJobQueue: {
+          status: 'drained',
+          successfulJobCount: 0,
+          failedJobCount: 0,
+          mostRecentImport: '',
+          setStatus: mockSetStatus,
+        },
+        getSocket: mockGetSocket,
+        disconnectSocket: mockDisconnectSocket,
+      })
+    );
+
+    render(<Import />, { wrapper: createWrapper() });
+
+    await waitFor(() => {
+      expect(screen.getByText('Required Directories Missing')).toBeInTheDocument();
+    });
+    expect(screen.getByText('comics')).toBeInTheDocument();
+  });
+
+  test('should show warning banner when userdata directory is missing', async () => {
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: { comics: { exists: true }, userdata: { exists: false } }
+    });
+
+    const { useStore } = require('../../store');
+    useStore.mockImplementation((selector: any) =>
+      selector({
+        importJobQueue: {
+          status: 'drained',
+          successfulJobCount: 0,
+          failedJobCount: 0,
+          mostRecentImport: '',
+          setStatus: mockSetStatus,
+        },
+        getSocket: mockGetSocket,
+        disconnectSocket: mockDisconnectSocket,
+      })
+    );
+
+    render(<Import />, { wrapper: createWrapper() });
+
+    await waitFor(() => {
+      expect(screen.getByText('Required Directories Missing')).toBeInTheDocument();
+    });
+    expect(screen.getByText('userdata')).toBeInTheDocument();
+  });
+
+  test('should show warning banner when both directories are missing', async () => {
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: { comics: { exists: false }, userdata: { exists: false } }
+    });
+
+    const { useStore } = require('../../store');
+    useStore.mockImplementation((selector: any) =>
+      selector({
+        importJobQueue: {
+          status: 'drained',
+          successfulJobCount: 0,
+          failedJobCount: 0,
+          mostRecentImport: '',
+          setStatus: mockSetStatus,
+        },
+        getSocket: mockGetSocket,
+        disconnectSocket: mockDisconnectSocket,
+      })
+    );
+
+    render(<Import />, { wrapper: createWrapper() });
+
+    await waitFor(() => {
+      expect(screen.getByText('Required Directories Missing')).toBeInTheDocument();
+    });
+    expect(screen.getByText('comics')).toBeInTheDocument();
+    expect(screen.getByText('userdata')).toBeInTheDocument();
+  });
+
+  test('should disable import button when directories are missing', async () => {
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: { comics: { exists: false }, userdata: { exists: true } }
+    });
+
+    const { useStore } = require('../../store');
+    useStore.mockImplementation((selector: any) =>
+      selector({
+        importJobQueue: {
+          status: 'drained',
+          successfulJobCount: 0,
+          failedJobCount: 0,
+          mostRecentImport: '',
+          setStatus: mockSetStatus,
+        },
+        getSocket: mockGetSocket,
+        disconnectSocket: mockDisconnectSocket,
+      })
+    );
+
+    render(<Import />, { wrapper: createWrapper() });
+
+    await waitFor(() => {
+      const button = screen.getByRole('button', { name: /Force Re-Import/i });
+      expect(button).toBeDisabled();
+    });
+  });
+
+  test('should enable import button when all directories exist', async () => {
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: { comics: { exists: true }, userdata: { exists: true } }
+    });
+
+    const { useStore } = require('../../store');
+    useStore.mockImplementation((selector: any) =>
+      selector({
+        importJobQueue: {
+          status: 'drained',
+          successfulJobCount: 0,
+          failedJobCount: 0,
+          mostRecentImport: '',
+          setStatus: mockSetStatus,
+        },
+        getSocket: mockGetSocket,
+        disconnectSocket: mockDisconnectSocket,
+      })
+    );
+
+    render(<Import />, { wrapper: createWrapper() });
+
+    await waitFor(() => {
+      const button = screen.getByRole('button', { name: /Force Re-Import/i });
+      expect(button).not.toBeDisabled();
+    });
+  });
+
+  test('should not show warning banner when all directories exist', async () => {
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: { comics: { exists: true }, userdata: { exists: true } }
+    });
+
+    const { useStore } = require('../../store');
+    useStore.mockImplementation((selector: any) =>
+      selector({
+        importJobQueue: {
+          status: 'drained',
+          successfulJobCount: 0,
+          failedJobCount: 0,
+          mostRecentImport: '',
+          setStatus: mockSetStatus,
+        },
+        getSocket: mockGetSocket,
+        disconnectSocket: mockDisconnectSocket,
+      })
+    );
+
+    render(<Import />, { wrapper: createWrapper() });
+
+    // Wait for the component to finish loading
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Force Re-Import/i })).toBeInTheDocument();
+    });
+
+    // The warning banner should not be present
+    expect(screen.queryByText('Required Directories Missing')).not.toBeInTheDocument();
+  });
+});
+
 export {};
