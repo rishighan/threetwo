@@ -1,6 +1,5 @@
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useState } from "react";
 import { Link } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   useGetImportStatisticsQuery,
   useGetWantedComicsQuery,
@@ -9,6 +8,11 @@ import {
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
 import { useImportSessionStatus } from "../../hooks/useImportSessionStatus";
+import { useImportSocketEvents } from "../../hooks/useImportSocketEvents";
+import { getComicDisplayLabel } from "../../shared/utils/formatting.utils";
+import { AlertCard } from "../shared/AlertCard";
+import { StatsCard } from "../shared/StatsCard";
+import { ProgressBar } from "../shared/ProgressBar";
 
 /**
  * RealTimeImportStats component displays import statistics with a card-based layout and progress bar.
@@ -21,48 +25,13 @@ import { useImportSessionStatus } from "../../hooks/useImportSessionStatus";
  * Additionally, it surfaces missing files detected by the file watcher, allowing users
  * to see which previously-imported files are no longer found on disk.
  *
- * @component
- * @example
- * ```tsx
- * <RealTimeImportStats />
- * ```
- *
  * @returns {ReactElement} The rendered import statistics component
- *
- * @remarks
- * The component subscribes to multiple socket events for real-time updates:
- * - `LS_LIBRARY_STATS` / `LS_FILES_MISSING`: Triggers statistics refresh
- * - `LS_FILE_DETECTED`: Shows toast notification for newly detected files
- * - `LS_INCREMENTAL_IMPORT_STARTED`: Initializes progress tracking
- * - `LS_COVER_EXTRACTED` / `LS_COVER_EXTRACTION_FAILED`: Updates progress counts
- * - `LS_IMPORT_QUEUE_DRAINED`: Marks import as complete
- *
- * @see {@link useImportSessionStatus} for import session state management
- * @see {@link useGetImportStatisticsQuery} for fetching import statistics
  */
 export const RealTimeImportStats = (): ReactElement => {
-  /** Current import error message to display, or null if no error */
   const [importError, setImportError] = useState<string | null>(null);
 
-  /** Name of recently detected file for toast notification, auto-clears after 5 seconds */
-  const [detectedFile, setDetectedFile] = useState<string | null>(null);
-
-  /**
-   * Real-time import progress state tracked via socket events.
-   * Separate from GraphQL query data to provide immediate UI updates.
-   */
-  const [socketImport, setSocketImport] = useState<{
-    /** Whether import is currently in progress */
-    active: boolean;
-    /** Number of successfully completed import jobs */
-    completed: number;
-    /** Total number of jobs in the import queue */
-    total: number;
-    /** Number of failed import jobs */
-    failed: number;
-  } | null>(null);
-
-  const queryClient = useQueryClient();
+  const { socketImport, detectedFile } = useImportSocketEvents();
+  const importSession = useImportSessionStatus();
 
   const { getSocket, disconnectSocket, importJobQueue } = useStore(
     useShallow((state) => ({
@@ -78,8 +47,8 @@ export const RealTimeImportStats = (): ReactElement => {
   );
 
   const stats = importStats?.getImportStatistics?.stats;
+  const missingCount = stats?.missingFiles ?? 0;
 
-  // File list for the detail panel — only fetched when there are missing files
   const { data: missingComicsData } = useGetWantedComicsQuery(
     {
       paginationOptions: { limit: 3, page: 1 },
@@ -88,25 +57,11 @@ export const RealTimeImportStats = (): ReactElement => {
     {
       refetchOnWindowFocus: false,
       refetchInterval: false,
-      enabled: (stats?.missingFiles ?? 0) > 0,
+      enabled: missingCount > 0,
     },
   );
 
   const missingDocs = missingComicsData?.getComicBooks?.docs ?? [];
-
-  const getMissingComicLabel = (comic: any): string => {
-    const series =
-      comic.canonicalMetadata?.series?.value ??
-      comic.inferredMetadata?.issue?.name;
-    const issueNum =
-      comic.canonicalMetadata?.issueNumber?.value ??
-      comic.inferredMetadata?.issue?.number;
-    if (series && issueNum) return `${series} #${issueNum}`;
-    if (series) return series;
-    return comic.rawFileDetails?.name ?? comic.id;
-  };
-
-  const importSession = useImportSessionStatus();
 
   const { mutate: startIncrementalImport, isPending: isStartingImport } =
     useStartIncrementalImportMutation({
@@ -117,82 +72,9 @@ export const RealTimeImportStats = (): ReactElement => {
         }
       },
       onError: (error: any) => {
-        setImportError(
-          error?.message || "Failed to start import. Please try again.",
-        );
+        setImportError(error?.message || "Failed to start import. Please try again.");
       },
     });
-
-  const hasNewFiles = stats && stats.newFiles > 0;
-  const missingCount = stats?.missingFiles ?? 0;
-
-  // LS_LIBRARY_STATISTICS fires after every filesystem change and every import job completion.
-  // Invalidating GetImportStatistics covers: total files, imported, new files, and missing count.
-  // Invalidating GetWantedComics refreshes the missing file name list in the detail panel.
-  useEffect(() => {
-    const socket = getSocket("/");
-
-    const handleStatsChange = () => {
-      queryClient.invalidateQueries({ queryKey: ["GetImportStatistics"] });
-      queryClient.invalidateQueries({ queryKey: ["GetWantedComics"] });
-    };
-
-    const handleFileDetected = (payload: { filePath: string }) => {
-      handleStatsChange();
-      const name = payload.filePath.split("/").pop() ?? payload.filePath;
-      setDetectedFile(name);
-      setTimeout(() => setDetectedFile(null), 5000);
-    };
-
-    const handleImportStarted = () => {
-      setSocketImport({ active: true, completed: 0, total: 0, failed: 0 });
-    };
-
-    const handleCoverExtracted = (payload: {
-      completedJobCount: number;
-      totalJobCount: number;
-      importResult: unknown;
-    }) => {
-      setSocketImport((prev) => ({
-        active: true,
-        completed: payload.completedJobCount,
-        total: payload.totalJobCount,
-        failed: prev?.failed ?? 0,
-      }));
-    };
-
-    const handleCoverExtractionFailed = (payload: {
-      failedJobCount: number;
-      importResult: unknown;
-    }) => {
-      setSocketImport((prev) =>
-        prev ? { ...prev, failed: payload.failedJobCount } : null,
-      );
-    };
-
-    const handleQueueDrained = () => {
-      setSocketImport((prev) => (prev ? { ...prev, active: false } : null));
-      handleStatsChange();
-    };
-
-    socket.on("LS_LIBRARY_STATS", handleStatsChange);
-    socket.on("LS_FILES_MISSING", handleStatsChange);
-    socket.on("LS_FILE_DETECTED", handleFileDetected);
-    socket.on("LS_INCREMENTAL_IMPORT_STARTED", handleImportStarted);
-    socket.on("LS_COVER_EXTRACTED", handleCoverExtracted);
-    socket.on("LS_COVER_EXTRACTION_FAILED", handleCoverExtractionFailed);
-    socket.on("LS_IMPORT_QUEUE_DRAINED", handleQueueDrained);
-
-    return () => {
-      socket.off("LS_LIBRARY_STATS", handleStatsChange);
-      socket.off("LS_FILES_MISSING", handleStatsChange);
-      socket.off("LS_FILE_DETECTED", handleFileDetected);
-      socket.off("LS_INCREMENTAL_IMPORT_STARTED", handleImportStarted);
-      socket.off("LS_COVER_EXTRACTED", handleCoverExtracted);
-      socket.off("LS_COVER_EXTRACTION_FAILED", handleCoverExtractionFailed);
-      socket.off("LS_IMPORT_QUEUE_DRAINED", handleQueueDrained);
-    };
-  }, [getSocket, queryClient]);
 
   const handleStartImport = async () => {
     setImportError(null);
@@ -226,78 +108,37 @@ export const RealTimeImportStats = (): ReactElement => {
 
   if (isStatsError || !stats) {
     return (
-      <div className="rounded-lg border-l-4 border-red-500 bg-red-50 dark:bg-red-900/20 p-4">
-        <div className="flex items-start gap-3">
-          <span className="w-6 h-6 text-red-600 dark:text-red-400 mt-0.5">
-            <i className="h-6 w-6 icon-[solar--danger-circle-bold]"></i>
-          </span>
-          <div className="flex-1">
-            <p className="font-semibold text-red-800 dark:text-red-300">
-              Failed to Load Import Statistics
-            </p>
-            <p className="text-sm text-red-700 dark:text-red-400 mt-1">
-              Unable to retrieve import statistics from the server. Please check that the backend service is running.
-            </p>
-            {isStatsError && (
-              <p className="text-sm text-red-700 dark:text-red-400 mt-2">
-                Error: {statsError instanceof Error ? statsError.message : "Unknown error"}
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
+      <AlertCard variant="error" title="Failed to Load Import Statistics">
+        <p>Unable to retrieve import statistics from the server. Please check that the backend service is running.</p>
+        {isStatsError && (
+          <p className="mt-2">Error: {statsError instanceof Error ? statsError.message : "Unknown error"}</p>
+        )}
+      </AlertCard>
     );
   }
 
+  const hasNewFiles = stats.newFiles > 0;
   const isFirstImport = stats.alreadyImported === 0;
   const buttonText = isFirstImport
     ? `Start Import (${stats.newFiles} files)`
     : `Start Incremental Import (${stats.newFiles} new files)`;
 
-  // Determine what to show in each card based on current phase
   const sessionStats = importSession.stats;
   const hasSessionStats = importSession.isActive && sessionStats !== null;
-
-  const totalFiles = stats.totalLocalFiles;
-  const importedCount = stats.alreadyImported;
   const failedCount = hasSessionStats ? sessionStats!.filesFailed : 0;
 
   const showProgressBar = socketImport !== null;
-  const socketProgressPct =
-    socketImport && socketImport.total > 0
-      ? Math.round((socketImport.completed / socketImport.total) * 100)
-      : 0;
   const showFailedCard = hasSessionStats && failedCount > 0;
   const showMissingCard = missingCount > 0;
 
   return (
     <div className="space-y-6">
-      {/* Error Message */}
       {importError && (
-        <div className="rounded-lg border-l-4 border-red-500 bg-red-50 dark:bg-red-900/20 p-4">
-          <div className="flex items-start gap-3">
-            <span className="w-6 h-6 text-red-600 dark:text-red-400 mt-0.5">
-              <i className="h-6 w-6 icon-[solar--danger-circle-bold]"></i>
-            </span>
-            <div className="flex-1">
-              <p className="font-semibold text-red-800 dark:text-red-300">
-                Import Error
-              </p>
-              <p className="text-sm text-red-700 dark:text-red-400 mt-1">
-                {importError}
-              </p>
-            </div>
-            <button
-              onClick={() => setImportError(null)}
-              className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200"
-            >
-              <i className="h-5 w-5 icon-[solar--close-circle-bold]"></i>
-            </button>
-          </div>
-        </div>
+        <AlertCard variant="error" title="Import Error" onDismiss={() => setImportError(null)}>
+          {importError}
+        </AlertCard>
       )}
 
-      {/* File detected toast */}
       {detectedFile && (
         <div className="rounded-lg border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-900/20 p-3 flex items-center gap-3">
           <i className="h-5 w-5 text-blue-600 dark:text-blue-400 icon-[solar--document-add-bold-duotone] shrink-0"></i>
@@ -307,7 +148,6 @@ export const RealTimeImportStats = (): ReactElement => {
         </div>
       )}
 
-      {/* Start Import button — only when idle with new files */}
       {hasNewFiles && !importSession.isActive && (
         <button
           onClick={handleStartImport}
@@ -319,121 +159,74 @@ export const RealTimeImportStats = (): ReactElement => {
         </button>
       )}
 
-      {/* Progress bar — shown while importing and once complete */}
       {showProgressBar && (
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-sm">
-            <span className="font-medium text-gray-700 dark:text-gray-300">
-              {socketImport!.active
-                ? `Importing ${socketImport!.completed} / ${socketImport!.total}`
-                : `${socketImport!.completed} / ${socketImport!.total} imported`}
-            </span>
-            <span className="font-semibold text-gray-900 dark:text-white">
-              {socketProgressPct}% complete
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
-            <div
-              className="bg-blue-600 dark:bg-blue-500 h-3 rounded-full transition-all duration-300 relative"
-              style={{ width: `${socketProgressPct}%` }}
-            >
-              {socketImport!.active && (
-                <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
-              )}
-            </div>
-          </div>
-        </div>
+        <ProgressBar
+          current={socketImport!.completed}
+          total={socketImport!.total}
+          isActive={socketImport!.active}
+          activeLabel={`Importing ${socketImport!.completed} / ${socketImport!.total}`}
+          completeLabel={`${socketImport!.completed} / ${socketImport!.total} imported`}
+        />
       )}
 
-      {/* Stats cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {/* Total files */}
-        <div
-          className="rounded-lg p-6 text-center"
-          style={{ backgroundColor: "#6b7280" }}
-        >
-          <div className="text-4xl font-bold text-white mb-2">{totalFiles}</div>
-          <div className="text-sm text-gray-200 font-medium">in import folder</div>
-        </div>
-
-        {/* Imported */}
-        <div
-          className="rounded-lg p-6 text-center"
-          style={{ backgroundColor: "#d8dab2" }}
-        >
-          <div className="text-4xl font-bold text-gray-800 mb-2">
-            {importedCount}
-          </div>
-          <div className="text-sm text-gray-700 font-medium">
-            {importSession.isActive ? "imported so far" : "imported in database"}
-          </div>
-        </div>
-
-        {/* Failed — only shown after a session with failures */}
+        <StatsCard
+          value={stats.totalLocalFiles}
+          label="in import folder"
+          backgroundColor="#6b7280"
+        />
+        <StatsCard
+          value={stats.alreadyImported}
+          label={importSession.isActive ? "imported so far" : "imported in database"}
+          backgroundColor="#d8dab2"
+          valueColor="text-gray-800"
+          labelColor="text-gray-700"
+        />
         {showFailedCard && (
-          <div className="rounded-lg p-6 text-center bg-red-500">
-            <div className="text-4xl font-bold text-white mb-2">
-              {failedCount}
-            </div>
-            <div className="text-sm text-red-100 font-medium">failed</div>
-          </div>
+          <StatsCard
+            value={failedCount}
+            label="failed"
+            backgroundColor="bg-red-500"
+            labelColor="text-red-100"
+          />
         )}
-
-        {/* Missing files — shown when watcher detects moved/deleted files */}
         {showMissingCard && (
-          <div className="rounded-lg p-6 text-center bg-card-missing">
-            <div className="text-4xl font-bold text-slate-700 mb-2">
-              {missingCount}
-            </div>
-            <div className="text-sm text-slate-800 font-medium">missing</div>
-          </div>
+          <StatsCard
+            value={missingCount}
+            label="missing"
+            backgroundColor="bg-card-missing"
+            valueColor="text-slate-700"
+            labelColor="text-slate-800"
+          />
         )}
       </div>
 
-      {/* Missing files detail panel */}
       {showMissingCard && (
-        <div className="rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-900/20 p-4">
-          <div className="flex items-start gap-3">
-            <i className="h-6 w-6 text-amber-600 dark:text-amber-400 mt-0.5 icon-[solar--danger-triangle-bold] shrink-0"></i>
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-amber-800 dark:text-amber-300">
-                {missingCount} {missingCount === 1 ? "file" : "files"} missing
-              </p>
-              <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
-                These files were previously imported but can no longer be found
-                on disk. Move them back to restore access.
-              </p>
-              {missingDocs.length > 0 && (
-                <ul className="mt-2 space-y-1">
-                  {missingDocs.map((comic, i) => (
-                    <li
-                      key={i}
-                      className="text-xs text-amber-700 dark:text-amber-400 truncate"
-                    >
-                      {getMissingComicLabel(comic)} is missing
-                    </li>
-                  ))}
-                  {missingCount > 3 && (
-                    <li className="text-xs text-amber-600 dark:text-amber-500">
-                      and {missingCount - 3} more.
-                    </li>
-                  )}
-                </ul>
+        <AlertCard variant="warning" title={`${missingCount} ${missingCount === 1 ? "file" : "files"} missing`}>
+          <p>These files were previously imported but can no longer be found on disk. Move them back to restore access.</p>
+          {missingDocs.length > 0 && (
+            <ul className="mt-2 space-y-1">
+              {missingDocs.map((comic, i) => (
+                <li key={i} className="text-xs truncate">
+                  {getComicDisplayLabel(comic)} is missing
+                </li>
+              ))}
+              {missingCount > 3 && (
+                <li className="text-xs text-amber-600 dark:text-amber-500">
+                  and {missingCount - 3} more.
+                </li>
               )}
-              <Link
-                to="/library?filter=missingFiles"
-                className="inline-flex items-center gap-1.5 mt-3 text-xs font-medium text-amber-800 dark:text-amber-300 underline underline-offset-2 hover:text-amber-600"
-              >
-                
-                <span className="underline">
-                  <i className="icon-[solar--file-corrupted-outline] w-4 h-4 px-3" />
-                  View Missing Files In Library
-                  <i className="icon-[solar--arrow-right-up-outline] w-3 h-3" />
-                </span>
-              </Link>
-            </div>
-          </div>
-        </div>
+            </ul>
+          )}
+          <Link
+            to="/library?filter=missingFiles"
+            className="inline-flex items-center gap-1.5 mt-3 text-xs font-medium underline underline-offset-2 hover:opacity-70"
+          >
+            <i className="icon-[solar--file-corrupted-outline] w-4 h-4" />
+            View Missing Files In Library
+            <i className="icon-[solar--arrow-right-up-outline] w-3 h-3" />
+          </Link>
+        </AlertCard>
       )}
     </div>
   );
