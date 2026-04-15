@@ -1,5 +1,16 @@
+/**
+ * @fileoverview Reusable alert card component for displaying status messages.
+ * Supports multiple variants (error, warning, info, success) with consistent
+ * styling and optional dismiss functionality.
+ * @module components/shared/AlertCard
+ */
+
 import { ReactElement, ReactNode } from "react";
 
+/**
+ * Visual style variants for the alert card.
+ * @typedef {"error"|"warning"|"info"|"success"} AlertVariant
+ */
 export type AlertVariant = "error" | "warning" | "info" | "success";
 
 interface AlertCardProps {

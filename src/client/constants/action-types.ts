@@ -1,8 +1,23 @@
+/**
+ * @fileoverview Redux action type constants for the application.
+ * Organizes action types by feature/domain for better maintainability.
+ * @module constants/action-types
+ */
+
+// =============================================================================
+// COMICVINE API ACTION TYPES
+// =============================================================================
+
+/** @constant {string} CV_API_CALL_IN_PROGRESS - ComicVine API call started */
 export const CV_API_CALL_IN_PROGRESS = "CV_SEARCH_IN_PROGRESS";
+/** @constant {string} CV_SEARCH_FAILURE - ComicVine search failed */
 export const CV_SEARCH_FAILURE = "CV_SEARCH_FAILURE";
+/** @constant {string} CV_SEARCH_SUCCESS - ComicVine search completed successfully */
 export const CV_SEARCH_SUCCESS = "CV_SEARCH_SUCCESS";
+/** @constant {string} CV_CLEANUP - Reset ComicVine state */
 export const CV_CLEANUP = "CV_CLEANUP";
 
+/** @constant {string} CV_API_GENERIC_FAILURE - Generic ComicVine API error */
 export const CV_API_GENERIC_FAILURE = "CV_API_GENERIC_FAILURE";
 
 export const IMS_COMICBOOK_METADATA_FETCHED = "IMS_SOCKET_DATA_FETCHED";

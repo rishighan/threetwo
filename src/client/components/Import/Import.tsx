@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Import page component for managing comic library imports.
+ * Provides UI for starting imports, monitoring progress, viewing history,
+ * and handling directory configuration issues.
+ * @module components/Import/Import
+ */
+
 import { ReactElement, useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
 import { isEmpty } from "lodash";
@@ -10,16 +17,40 @@ import { RealTimeImportStats } from "./RealTimeImportStats";
 import { useImportSessionStatus } from "../../hooks/useImportSessionStatus";
 import { SETTINGS_SERVICE_BASE_URI } from "../../constants/endpoints";
 
+/**
+ * Represents an issue with a configured directory.
+ * @interface DirectoryIssue
+ * @property {string} directory - Path to the directory with issues
+ * @property {string} issue - Description of the issue
+ */
 interface DirectoryIssue {
   directory: string;
   issue: string;
 }
 
+/**
+ * Result of directory status check from the backend.
+ * @interface DirectoryStatus
+ * @property {boolean} isValid - Whether all required directories are accessible
+ * @property {DirectoryIssue[]} issues - List of specific issues found
+ */
 interface DirectoryStatus {
   isValid: boolean;
   issues: DirectoryIssue[];
 }
 
+/**
+ * Import page component for managing comic library imports.
+ *
+ * Features:
+ * - Real-time import progress tracking via WebSocket
+ * - Directory status validation before import
+ * - Force re-import functionality for fixing indexing issues
+ * - Past import history table
+ * - Session management for import tracking
+ *
+ * @returns {ReactElement} The import page UI
+ */
 export const Import = (): ReactElement => {
   const [importError, setImportError] = useState<string | null>(null);
   const queryClient = useQueryClient();

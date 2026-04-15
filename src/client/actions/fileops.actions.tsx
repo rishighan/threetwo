@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Redux action creators for file operations and library management.
+ * Provides actions for importing comics, searching the library, managing folders,
+ * extracting comic archives, and analyzing images.
+ * @module actions/fileops
+ */
+
 import axios from "axios";
 import { IFolderData } from "threetwo-ui-typings";
 import {
@@ -37,6 +44,13 @@ import {
 
 import { isNil } from "lodash";
 
+/**
+ * Redux thunk action creator to fetch library service health status.
+ * Retrieves health information from the library microservice.
+ *
+ * @param {string} [serviceName] - Optional specific service name to check
+ * @returns {Function} Redux thunk function that dispatches LIBRARY_SERVICE_HEALTH
+ */
 export const getServiceStatus = (serviceName?: string) => async (dispatch) => {
   axios
     .request({

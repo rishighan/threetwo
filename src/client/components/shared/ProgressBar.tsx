@@ -1,5 +1,15 @@
+/**
+ * @fileoverview Reusable progress bar component with percentage display.
+ * Supports animated shimmer effect for active states and customizable labels.
+ * @module components/shared/ProgressBar
+ */
+
 import { ReactElement } from "react";
 
+/**
+ * Props for the ProgressBar component.
+ * @interface ProgressBarProps
+ */
 interface ProgressBarProps {
   /** Current progress value */
   current: number;

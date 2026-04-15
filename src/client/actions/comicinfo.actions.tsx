@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Redux action creators for ComicVine API and comic book information.
+ * Provides actions for searching ComicVine, fetching comic metadata, managing
+ * library statistics, and applying ComicVine matches to local comic records.
+ * @module actions/comicinfo
+ */
+
 import axios from "axios";
 import rateLimiter from "axios-rate-limit";
 import { setupCache } from "axios-cache-interceptor";
@@ -22,12 +29,30 @@ import {
   LIBRARY_SERVICE_BASE_URI,
 } from "../constants/endpoints";
 
+/**
+ * Rate-limited axios instance for ComicVine API calls.
+ * Limited to 1 request per second to comply with API rate limits.
+ * @constant {AxiosInstance}
+ */
 const http = rateLimiter(axios.create(), {
   maxRequests: 1,
   perMilliseconds: 1000,
   maxRPS: 1,
 });
+
+/**
+ * Cached axios instance for reducing redundant API calls.
+ * @constant {AxiosInstance}
+ */
 const cachedAxios = setupCache(axios);
+
+/**
+ * Redux thunk action creator to fetch the weekly comic pull list.
+ * Retrieves upcoming comic releases from the ComicVine service.
+ *
+ * @param {Object} options - Query parameters for the pull list request
+ * @returns {Function} Redux thunk function that dispatches CV_WEEKLY_PULLLIST_FETCHED
+ */
 export const getWeeklyPullList = (options) => async (dispatch) => {
   try {
     dispatch({
@@ -47,6 +72,18 @@ export const getWeeklyPullList = (options) => async (dispatch) => {
   }
 };
 
+/**
+ * Generic Redux thunk action creator for ComicVine API calls.
+ * Handles rate-limited requests to the ComicVine service with configurable
+ * endpoints, methods, and parameters.
+ *
+ * @param {Object} options - API call configuration options
+ * @param {string} options.callURIAction - API endpoint action (e.g., "search")
+ * @param {string} options.callMethod - HTTP method (GET, POST, etc.)
+ * @param {Object} options.callParams - Query parameters for the request
+ * @param {any} [options.data] - Request body data
+ * @returns {Function} Redux thunk function that dispatches appropriate action based on callURIAction
+ */
 export const comicinfoAPICall = (options) => async (dispatch) => {
   try {
     dispatch({
@@ -82,6 +119,14 @@ export const comicinfoAPICall = (options) => async (dispatch) => {
     });
   }
 };
+
+/**
+ * Redux thunk action creator to fetch all issues for a comic series.
+ * Retrieves issue list from ComicVine for a given volume/series.
+ *
+ * @param {string} comicObjectID - ComicVine volume/series ID
+ * @returns {Function} Redux thunk function that dispatches CV_ISSUES_FOR_VOLUME_IN_LIBRARY_SUCCESS
+ */
 export const getIssuesForSeries =
   (comicObjectID: string) => async (dispatch) => {
     dispatch({
@@ -104,6 +149,18 @@ export const getIssuesForSeries =
     });
   };
 
+/**
+ * Redux thunk action creator to analyze library issues against ComicVine data.
+ * Maps issues to query objects and finds matching issues in the local library.
+ *
+ * @param {Array} issues - Array of ComicVine issue objects to analyze
+ * @param {string} issues[].id - Issue ID
+ * @param {string} issues[].name - Issue name
+ * @param {string} issues[].issue_number - Issue number
+ * @param {Object} issues[].volume - Volume information
+ * @param {string} issues[].volume.name - Volume name
+ * @returns {Function} Redux thunk function that dispatches CV_ISSUES_MATCHES_IN_LIBRARY_FETCHED
+ */
 export const analyzeLibrary = (issues) => async (dispatch) => {
   dispatch({
     type: CV_ISSUES_METADATA_CALL_IN_PROGRESS,
@@ -131,6 +188,12 @@ export const analyzeLibrary = (issues) => async (dispatch) => {
   });
 };
 
+/**
+ * Redux thunk action creator to fetch library statistics.
+ * Retrieves aggregate statistics about the comic library.
+ *
+ * @returns {Function} Redux thunk function that dispatches LIBRARY_STATISTICS_FETCHED
+ */
 export const getLibraryStatistics = () => async (dispatch) => {
   dispatch({
     type: LIBRARY_STATISTICS_CALL_IN_PROGRESS,
@@ -146,6 +209,13 @@ export const getLibraryStatistics = () => async (dispatch) => {
   });
 };
 
+/**
+ * Redux thunk action creator to fetch detailed comic book information.
+ * Retrieves full comic book document from the library database by ID.
+ *
+ * @param {string} comicBookObjectId - Database ID of the comic book
+ * @returns {Function} Redux thunk function that dispatches IMS_COMIC_BOOK_DB_OBJECT_FETCHED
+ */
 export const getComicBookDetailById =
   (comicBookObjectId: string) => async (dispatch) => {
     dispatch({
@@ -166,6 +236,13 @@ export const getComicBookDetailById =
     });
   };
 
+/**
+ * Redux thunk action creator to fetch multiple comic books by their IDs.
+ * Retrieves full comic book documents from the library database for a list of IDs.
+ *
+ * @param {Array<string>} comicBookObjectIds - Array of database IDs
+ * @returns {Function} Redux thunk function that dispatches IMS_COMIC_BOOKS_DB_OBJECTS_FETCHED
+ */
 export const getComicBooksDetailsByIds =
   (comicBookObjectIds: Array<string>) => async (dispatch) => {
     dispatch({
@@ -185,6 +262,15 @@ export const getComicBooksDetailsByIds =
     });
   };
 
+/**
+ * Redux thunk action creator to apply ComicVine metadata to a local comic.
+ * Associates a ComicVine match with a comic book record in the database,
+ * updating the comic with metadata from ComicVine.
+ *
+ * @param {Object} match - ComicVine match object containing metadata to apply
+ * @param {string} comicObjectId - Database ID of the local comic book to update
+ * @returns {Function} Redux thunk function that dispatches IMS_COMIC_BOOK_DB_OBJECT_FETCHED
+ */
 export const applyComicVineMatch =
   (match, comicObjectId) => async (dispatch) => {
     dispatch({

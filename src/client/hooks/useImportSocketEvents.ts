@@ -1,8 +1,23 @@
+/**
+ * @fileoverview Custom React hook for managing real-time import events via Socket.IO.
+ * Provides reactive state tracking for import progress, file detection notifications,
+ * and automatic query invalidation when import status changes.
+ * @module hooks/useImportSocketEvents
+ */
+
 import { useEffect, useState, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useStore } from "../store";
 import { useShallow } from "zustand/react/shallow";
 
+/**
+ * State object tracking real-time import progress via socket events.
+ * @interface SocketImportState
+ * @property {boolean} active - Whether import is currently in progress
+ * @property {number} completed - Number of successfully completed import jobs
+ * @property {number} total - Total number of jobs in the import queue
+ * @property {number} failed - Number of failed import jobs
+ */
 export interface SocketImportState {
   /** Whether import is currently in progress */
   active: boolean;
@@ -14,6 +29,13 @@ export interface SocketImportState {
   failed: number;
 }
 
+/**
+ * Return type for the useImportSocketEvents hook.
+ * @interface UseImportSocketEventsReturn
+ * @property {SocketImportState|null} socketImport - Real-time import progress state, null when no import active
+ * @property {string|null} detectedFile - Name of recently detected file for toast notification
+ * @property {Function} clearDetectedFile - Callback to clear the detected file notification
+ */
 export interface UseImportSocketEventsReturn {
   /** Real-time import progress state tracked via socket events */
   socketImport: SocketImportState | null;
@@ -25,13 +47,28 @@ export interface UseImportSocketEventsReturn {
 
 /**
  * Custom hook that manages socket event subscriptions for import-related events.
- * 
- * Subscribes to:
+ * Automatically handles subscription lifecycle and query cache invalidation.
+ *
+ * Subscribes to the following Socket.IO events:
  * - `LS_LIBRARY_STATS` / `LS_FILES_MISSING`: Triggers statistics refresh
  * - `LS_FILE_DETECTED`: Shows toast notification for newly detected files
  * - `LS_INCREMENTAL_IMPORT_STARTED`: Initializes progress tracking
  * - `LS_COVER_EXTRACTED` / `LS_COVER_EXTRACTION_FAILED`: Updates progress counts
  * - `LS_IMPORT_QUEUE_DRAINED`: Marks import as complete
+ *
+ * @returns {UseImportSocketEventsReturn} Object containing import state and notification handlers
+ * @example
+ * const { socketImport, detectedFile, clearDetectedFile } = useImportSocketEvents();
+ *
+ * // Show progress bar when import is active
+ * {socketImport?.active && (
+ *   <ProgressBar value={socketImport.completed} max={socketImport.total} />
+ * )}
+ *
+ * // Show toast when file detected
+ * {detectedFile && (
+ *   <Toast message={`Detected: ${detectedFile}`} onClose={clearDetectedFile} />
+ * )}
  */
 export function useImportSocketEvents(): UseImportSocketEventsReturn {
   const [socketImport, setSocketImport] = useState<SocketImportState | null>(null);

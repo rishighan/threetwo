@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Redux action creators for AirDC++ integration.
+ * Provides actions for Direct Connect protocol operations including
+ * search, download management, and socket connection handling.
+ * @module actions/airdcpp
+ */
+
 import {
   SearchQuery,
   SearchInstance,
@@ -27,16 +34,41 @@ import {
 import { isNil } from "lodash";
 import axios from "axios";
 
+/**
+ * Configuration data for an AirDC++ search operation.
+ * @interface SearchData
+ * @property {Object} query - Search query parameters
+ * @property {string} query.pattern - Search pattern/term (required)
+ * @property {string[]|undefined|null} hub_urls - List of hub URLs to search
+ * @property {PriorityEnum} priority - Download priority level
+ */
 interface SearchData {
   query: Pick<SearchQuery, "pattern"> & Partial<Omit<SearchQuery, "pattern">>;
   hub_urls: string[] | undefined | null;
   priority: PriorityEnum;
 }
 
+/**
+ * Creates a promise that resolves after a specified delay.
+ * Useful for rate limiting or adding delays between operations.
+ *
+ * @param {number} ms - Number of milliseconds to sleep
+ * @returns {Promise<NodeJS.Timeout>} Promise that resolves after the delay
+ * @example
+ * await sleep(1000); // Wait 1 second
+ */
 export const sleep = (ms: number): Promise<NodeJS.Timeout> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
+/**
+ * Redux thunk action creator to toggle AirDC++ socket connection status.
+ * Dispatches connection or disconnection events to update application state.
+ *
+ * @param {String} status - Connection status ("connected" or "disconnected")
+ * @param {any} [payload] - Optional payload data for the status change
+ * @returns {Function} Redux thunk function
+ */
 export const toggleAirDCPPSocketConnectionStatus =
   (status: String, payload?: any) => async (dispatch) => {
     switch (status) {
@@ -58,6 +90,23 @@ export const toggleAirDCPPSocketConnectionStatus =
         break;
     }
   };
+
+/**
+ * Redux thunk action creator to download an item from AirDC++ search results.
+ * Initiates the download, stores bundle metadata in the database, and updates
+ * the comic book record with download information.
+ *
+ * @param {Number} searchInstanceId - ID of the active search instance
+ * @param {String} resultId - ID of the search result to download
+ * @param {String} comicObjectId - ID of the comic book in the database
+ * @param {String} name - Name of the file to download
+ * @param {Number} size - Size of the file in bytes
+ * @param {any} type - File type information
+ * @param {any} ADCPPSocket - AirDC++ socket connection instance
+ * @param {any} credentials - Authentication credentials for AirDC++
+ * @returns {Function} Redux thunk function
+ * @throws {Error} If download initiation or database update fails
+ */
 export const downloadAirDCPPItem =
   (
     searchInstanceId: Number,
@@ -112,6 +161,17 @@ export const downloadAirDCPPItem =
     }
   };
 
+/**
+ * Redux thunk action creator to fetch AirDC++ download bundles for a specific comic.
+ * Retrieves the comic book record, extracts associated bundle IDs, and fetches
+ * bundle details from the AirDC++ queue.
+ *
+ * @param {string} comicObjectId - ID of the comic book in the database
+ * @param {any} ADCPPSocket - AirDC++ socket connection instance
+ * @param {any} credentials - Authentication credentials for AirDC++
+ * @returns {Function} Redux thunk function that dispatches AIRDCPP_BUNDLES_FETCHED
+ * @throws {Error} If fetching comic or bundles fails
+ */
 export const getBundlesForComic =
   (comicObjectId: string, ADCPPSocket: any, credentials: any) =>
   async (dispatch) => {
@@ -147,6 +207,17 @@ export const getBundlesForComic =
     }
   };
 
+/**
+ * Redux thunk action creator to fetch all active transfers from AirDC++.
+ * Retrieves current download bundles and groups library issues by their
+ * associated bundle IDs for display in the UI.
+ *
+ * @param {any} ADCPPSocket - AirDC++ socket connection instance
+ * @param {any} credentials - Authentication credentials for AirDC++
+ * @returns {Function} Redux thunk function that dispatches AIRDCPP_TRANSFERS_FETCHED
+ *                     and LIBRARY_ISSUE_BUNDLES actions
+ * @throws {Error} If fetching transfers fails
+ */
 export const getTransfers =
   (ADCPPSocket: any, credentials: any) => async (dispatch) => {
     try {

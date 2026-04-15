@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Real-time import statistics component with live progress tracking.
+ * Displays import statistics, progress bars, and file detection notifications
+ * using WebSocket events for real-time updates.
+ * @module components/Import/RealTimeImportStats
+ */
+
 import { ReactElement, useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -15,7 +22,7 @@ import { StatsCard } from "../shared/StatsCard";
 import { ProgressBar } from "../shared/ProgressBar";
 
 /**
- * RealTimeImportStats component displays import statistics with a card-based layout and progress bar.
+ * Real-time import statistics component with card-based layout and progress tracking.
  *
  * This component manages three distinct states:
  * - **Pre-import (idle)**: Shows current file counts and "Start Import" button when new files exist

@@ -1,15 +1,38 @@
+/**
+ * @fileoverview Utility functions for deep object comparison and traversal.
+ * Provides tools for finding differences between objects and recursively
+ * traversing nested object structures.
+ * @module shared/utils/object
+ */
+
 import { transform, isEqual, isObject } from "lodash";
 
 /**
- * Deep diff between two object, using lodash
- * @param  {Object} object Object compared
- * @param  {Object} base   Object to compare with
- * @return {Object}        Return a new object who represent the diff
+ * Calculates the deep difference between two objects.
+ * Returns a new object containing only the properties that differ between
+ * the compared object and the base object.
+ *
+ * @param {Object} object - The object to compare
+ * @param {Object} base - The base object to compare against
+ * @returns {Object} A new object representing the differences, where each key
+ *                   contains the value from `object` that differs from `base`
+ * @example
+ * const obj1 = { a: 1, b: { c: 2, d: 3 } };
+ * const obj2 = { a: 1, b: { c: 2, d: 4 } };
+ * difference(obj1, obj2); // returns { b: { d: 3 } }
  */
 export const difference = (object, base) => {
   return changes(object, base);
 };
 
+/**
+ * Internal recursive function that computes changes between two objects.
+ *
+ * @private
+ * @param {Object} object - The object to compare
+ * @param {Object} base - The base object to compare against
+ * @returns {Object} Object containing the differences
+ */
 const changes = (object, base) => {
   return transform(object, (result, value, key) => {
     if (!isEqual(value, base[key])) {
@@ -21,6 +44,17 @@ const changes = (object, base) => {
   });
 };
 
+/**
+ * Callback function type for object traversal.
+ * Called for each property encountered during traversal.
+ *
+ * @template T - The type of the object being traversed
+ * @callback TraverseFunction
+ * @param {T} obj - The root object being traversed
+ * @param {string} prop - The current property name
+ * @param {unknown} value - The value of the current property
+ * @param {string[]} scope - Array of property names representing the path to current property
+ */
 export type TraverseFunction<T> = (
   obj: T,
   prop: string,
@@ -29,16 +63,39 @@ export type TraverseFunction<T> = (
 ) => void;
 
 /**
- * Deep diff between two object, using lodash
- * @param  {Object} object Object to traverse
- * @param  {Object} fn     Callback function
- * @return {Object}        Return a new object who represent the diff
+ * Recursively traverses all properties of an object, invoking a callback
+ * for each property encountered. Useful for deep inspection or transformation
+ * of nested object structures.
+ *
+ * @template T - The type of the object being traversed
+ * @param {T} object - The object to traverse
+ * @param {TraverseFunction<T>} fn - Callback function invoked for each property
+ * @returns {void}
+ * @example
+ * const obj = { a: 1, b: { c: 2 } };
+ * traverseObject(obj, (obj, prop, value, scope) => {
+ *   console.log(`${scope.join('.')}.${prop} = ${value}`);
+ * });
+ * // Logs:
+ * // ".a = 1"
+ * // ".b = [object Object]"
+ * // "b.c = 2"
  */
 export const traverseObject = <T = Record<string, unknown>>(
   object: T,
   fn: TraverseFunction<T>,
 ): void => traverseInternal(object, fn, []);
 
+/**
+ * Internal recursive implementation for object traversal.
+ *
+ * @private
+ * @template T - The type of the object being traversed
+ * @param {T} object - The object to traverse
+ * @param {TraverseFunction<T>} fn - Callback function invoked for each property
+ * @param {string[]} [scope=[]] - Current path scope in the object hierarchy
+ * @returns {void}
+ */
 const traverseInternal = <T = Record<string, unknown>>(
   object: T,
   fn: TraverseFunction<T>,

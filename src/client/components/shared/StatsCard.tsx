@@ -1,5 +1,15 @@
+/**
+ * @fileoverview Reusable stats card component for displaying numeric metrics.
+ * Used for dashboards and import statistics displays.
+ * @module components/shared/StatsCard
+ */
+
 import { ReactElement } from "react";
 
+/**
+ * Props for the StatsCard component.
+ * @interface StatsCardProps
+ */
 interface StatsCardProps {
   /** The main numeric value to display */
   value: number;

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Global Zustand store for application state management.
+ * Manages socket connections, import job tracking, and ComicVine scraping state.
+ * Uses Zustand for lightweight, hook-based state management with React.
+ * @module store
+ */
+
 import { create } from "zustand";
 import io, { Socket } from "socket.io-client";
 import { SOCKET_BASE_URI } from "../constants/endpoints";
@@ -5,10 +12,17 @@ import { QueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+/**
+ * React Query client instance for managing server state.
+ * @constant {QueryClient}
+ */
 const queryClient = new QueryClient();
 
 /**
- * Global application state interface
+ * Global application state interface.
+ * Defines the shape of the Zustand store including socket management,
+ * import job tracking, and external service state.
+ * @interface StoreState
  */
 interface StoreState {
   /** Active socket.io connections by namespace */
