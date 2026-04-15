@@ -36,24 +36,31 @@ const b = 2;
 // const a = 1, b = 2;  // WRONG
 
 Types and Interfaces
-Prefer Interfaces Over Type Aliases
+Prefer Type Aliases Over Interfaces
 
-// Good: interface for object shapes
-interface User {
-  id: string;
-  name: string;
-  email?: string;
-}
-
-// Avoid: type alias for object shapes
+// Good: type alias for object shapes
 type User = {
   id: string;
   name: string;
+  email?: string;
 };
 
-// Type aliases OK for unions, intersections, mapped types
+// Avoid: interface for object shapes
+// interface User {
+//   id: string;
+//   name: string;
+// }
+
+// Type aliases work for everything: objects, unions, intersections, mapped types
 type Status = 'active' | 'inactive';
 type Combined = TypeA & TypeB;
+type Handler = (event: Event) => void;
+
+// Benefits of types over interfaces:
+// 1. Consistent syntax for all type definitions
+// 2. Cannot be merged/extended unexpectedly (no declaration merging)
+// 3. Better for union types and computed properties
+// 4. Works with utility types more naturally
 
 Type Inference
 
