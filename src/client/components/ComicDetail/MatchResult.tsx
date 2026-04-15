@@ -7,12 +7,37 @@ import axios from "axios";
 import { useGetComicByIdQuery } from "../../graphql/generated";
 import type { MatchResultProps } from "../../types";
 
-const handleBrokenImage = (e) => {
-  e.target.src = "http://localhost:3050/dist/img/noimage.svg";
+const handleBrokenImage = (e: React.SyntheticEvent<HTMLImageElement>) => {
+  e.currentTarget.src = "http://localhost:3050/dist/img/noimage.svg";
 };
 
+interface ComicVineMatch {
+  description?: string;
+  name?: string;
+  score: string | number;
+  issue_number: string | number;
+  cover_date: string;
+  image: {
+    thumb_url: string;
+  };
+  volume: {
+    name: string;
+  };
+  volumeInformation: {
+    results: {
+      image: {
+        icon_url: string;
+      };
+      count_of_issues: number;
+      publisher: {
+        name: string;
+      };
+    };
+  };
+}
+
 export const MatchResult = (props: MatchResultProps) => {
-  const applyCVMatch = async (match, comicObjectId) => {
+  const applyCVMatch = async (match: ComicVineMatch, comicObjectId: string) => {
     try {
       const response = await axios.request({
         url: `${LIBRARY_SERVICE_BASE_URI}/applyComicVineMetadata`,

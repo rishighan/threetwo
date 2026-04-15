@@ -7,10 +7,17 @@ import { searchIssue } from "../../actions/fileops.actions";
 import MetadataPanel from "../shared/MetadataPanel";
 import type { GlobalSearchBarProps } from "../../types";
 
+interface AppRootState {
+  fileOps: {
+    librarySearchResultsFormatted: Record<string, unknown>[];
+  };
+}
+
 export const SearchBar = (data: GlobalSearchBarProps): ReactElement => {
-  const dispatch = useDispatch();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const dispatch = useDispatch<any>();
   const searchResults = useSelector(
-    (state: RootState) => state.fileOps.librarySearchResultsFormatted,
+    (state: AppRootState) => state.fileOps.librarySearchResultsFormatted,
   );
 
   const performSearch = useCallback(

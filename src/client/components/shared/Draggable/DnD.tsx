@@ -8,6 +8,8 @@ import {
   DragOverlay,
   useSensor,
   useSensors,
+  DragStartEvent,
+  DragEndEvent,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -20,22 +22,27 @@ import { SortableCover } from "./SortableCover";
 import { Cover } from "./Cover";
 import { map } from "lodash";
 
-export const DnD = (data) => {
-  const [items, setItems] = useState(data.data);
-  const [activeId, setActiveId] = useState(null);
+interface DnDProps {
+  data: string[];
+  onClickHandler: (url: string) => void;
+}
+
+export const DnD = ({ data, onClickHandler }: DnDProps) => {
+  const [items, setItems] = useState<string[]>(data);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
-  function handleDragStart(event) {
-    setActiveId(event.active.id);
+  function handleDragStart(event: DragStartEvent) {
+    setActiveId(event.active.id as string);
   }
 
-  function handleDragEnd(event) {
+  function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
 
-    if (active.id !== over.id) {
-      setItems((items) => {
-        const oldIndex = items.indexOf(active.id);
-        const newIndex = items.indexOf(over.id);
+    if (over && active.id !== over.id) {
+      setItems((items: string[]) => {
+        const oldIndex = items.indexOf(active.id as string);
+        const newIndex = items.indexOf(over.id as string);
 
         return arrayMove(items, oldIndex, newIndex);
       });
@@ -56,13 +63,13 @@ export const DnD = (data) => {
     >
       <SortableContext items={items} strategy={rectSortingStrategy}>
         <Grid columns={4}>
-          {map(items, (url, index) => {
+          {map(items, (url: string, index: number) => {
             return (
-              <div>
-                <SortableCover key={url} url={url} index={index} />
+              <div key={url}>
+                <SortableCover url={url} index={index} />
                 <div
                   className="mt-2 mb-2"
-                  onClick={(e) => data.onClickHandler(url)}
+                  onClick={() => onClickHandler(url)}
                 >
                   <div className="box p-2 control-palette">
                     <span className="tag is-warning mr-2">{index}</span>

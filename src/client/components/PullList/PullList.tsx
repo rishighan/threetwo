@@ -1,16 +1,28 @@
-import React, { ReactElement, useEffect, useMemo } from "react";
+import React, { ReactElement, useEffect, useMemo, useState } from "react";
 import T2Table from "../shared/T2Table";
 import { getWeeklyPullList } from "../../actions/comicinfo.actions";
 import Card from "../shared/Carda";
 import ellipsize from "ellipsize";
 import { isNil } from "lodash";
+import type { CellContext } from "@tanstack/react-table";
+
+interface PullListComic {
+  issue: {
+    cover: string;
+    name: string;
+    publisher: string;
+    description: string;
+    price: string;
+    pulls: number;
+  };
+}
 
 export const PullList = (): ReactElement => {
-  // const pullListComics = useSelector(
-  //   (state: RootState) => state.comicInfo.pullList,
-  // );
+  // Placeholder for pull list comics - would come from API/store
+  const [pullListComics, setPullListComics] = useState<PullListComic[] | null>(null);
 
   useEffect(() => {
+    // TODO: Implement pull list fetching
     // dispatch(
     //   getWeeklyPullList({
     //     startDate: "2023-7-28",
@@ -31,7 +43,7 @@ export const PullList = (): ReactElement => {
             id: "comicDetails",
             minWidth: 450,
             accessorKey: "issue",
-            cell: (row) => {
+            cell: (row: CellContext<PullListComic, PullListComic["issue"]>) => {
               const item = row.getValue();
               return (
                 <div className="columns">

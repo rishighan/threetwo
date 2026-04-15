@@ -11,12 +11,37 @@ import {
   SETTINGS_CALL_IN_PROGRESS,
   SETTINGS_DB_FLUSH_SUCCESS,
   SETTINGS_QBITTORRENT_TORRENTS_LIST_FETCHED,
-} from "../reducers/settings.reducer";
+} from "../constants/action-types";
 import {
   LIBRARY_SERVICE_BASE_URI,
   SETTINGS_SERVICE_BASE_URI,
   QBITTORRENT_SERVICE_BASE_URI,
 } from "../constants/endpoints";
+import type { Dispatch } from "react";
+
+/** Redux action type for settings actions */
+interface SettingsAction {
+  type: string;
+  data?: unknown;
+}
+
+/** Host info for qBittorrent */
+interface QBittorrentHostInfo {
+  host: string;
+  port: number;
+  username?: string;
+  password?: string;
+}
+
+/** Host info for Prowlarr */
+interface ProwlarrHostInfo {
+  host: string;
+  port: number;
+  apiKey: string;
+}
+
+/** Thunk dispatch type */
+type ThunkDispatch = Dispatch<SettingsAction>;
 
 /**
  * Redux thunk action creator to fetch application settings.
@@ -25,7 +50,7 @@ import {
  * @param {string} [settingsKey] - Optional specific settings key to fetch
  * @returns {Function} Redux thunk function that dispatches SETTINGS_OBJECT_FETCHED
  */
-export const getSettings = (settingsKey?) => async (dispatch) => {
+export const getSettings = (settingsKey?: string) => async (dispatch: ThunkDispatch) => {
   const result = await axios({
     url: `${SETTINGS_SERVICE_BASE_URI}/getSettings`,
     method: "POST",
@@ -45,7 +70,7 @@ export const getSettings = (settingsKey?) => async (dispatch) => {
  *
  * @returns {Function} Redux thunk function that dispatches SETTINGS_OBJECT_FETCHED with empty data
  */
-export const deleteSettings = () => async (dispatch) => {
+export const deleteSettings = () => async (dispatch: ThunkDispatch) => {
   const result = await axios({
     url: `${SETTINGS_SERVICE_BASE_URI}/deleteSettings`,
     method: "POST",
@@ -65,7 +90,7 @@ export const deleteSettings = () => async (dispatch) => {
  *
  * @returns {Function} Redux thunk function that dispatches SETTINGS_DB_FLUSH_SUCCESS
  */
-export const flushDb = () => async (dispatch) => {
+export const flushDb = () => async (dispatch: ThunkDispatch) => {
   dispatch({
     type: SETTINGS_CALL_IN_PROGRESS,
   });
@@ -94,7 +119,7 @@ export const flushDb = () => async (dispatch) => {
  * @param {string} [hostInfo.password] - Authentication password
  * @returns {Function} Redux thunk function that dispatches SETTINGS_QBITTORRENT_TORRENTS_LIST_FETCHED
  */
-export const getQBitTorrentClientInfo = (hostInfo) => async (dispatch) => {
+export const getQBitTorrentClientInfo = (hostInfo: QBittorrentHostInfo) => async (dispatch: ThunkDispatch) => {
   await axios.request({
     url: `${QBITTORRENT_SERVICE_BASE_URI}/connect`,
     method: "POST",
@@ -122,4 +147,4 @@ export const getQBitTorrentClientInfo = (hostInfo) => async (dispatch) => {
  * @returns {Function} Redux thunk function (currently not implemented)
  * @todo Implement Prowlarr connection verification
  */
-export const getProwlarrConnectionInfo = (hostInfo) => async (dispatch) => {};
+export const getProwlarrConnectionInfo = (hostInfo: ProwlarrHostInfo) => async (_dispatch: ThunkDispatch) => {};

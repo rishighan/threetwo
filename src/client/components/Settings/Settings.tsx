@@ -10,6 +10,19 @@ import settingsObject from "../../constants/settings/settingsMenu.json";
 import { isUndefined, map } from "lodash";
 import type { SettingsProps } from "../../types";
 
+interface SettingsMenuItem {
+  id: string | number;
+  displayName: string;
+  children?: SettingsMenuItem[];
+}
+
+interface SettingsCategory {
+  id: number;
+  category: string;
+  displayName: string;
+  children?: SettingsMenuItem[];
+}
+
 export const Settings = (props: SettingsProps): ReactElement => {
   const [active, setActive] = useState("gen-db");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
@@ -62,70 +75,70 @@ export const Settings = (props: SettingsProps): ReactElement => {
              overflow-hidden"
             >
               <div className="px-4 py-6 overflow-y-auto">
-                {map(settingsObject, (settingObject, idx) => (
-                  <div
-                    key={idx}
-                    className="mb-6 text-slate-700 dark:text-slate-300"
-                  >
-                    <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide mb-3">
-                      {settingObject.category.toUpperCase()}
-                    </h3>
-
-                    {!isUndefined(settingObject.children) && (
-                      <ul>
-                        {map(settingObject.children, (item, idx) => {
-                          const isOpen = expanded[item.id];
-
-                          return (
-                            <li key={idx} className="mb-1">
-                              <div
-                                onClick={() => toggleExpanded(item.id)}
-                                className={`cursor-pointer flex justify-between items-center px-1 py-1 rounded-md transition-colors hover:bg-white/50 dark:hover:bg-slate-700 ${
-                                  item.id === active
-                                    ? "font-semibold text-blue-600 dark:text-blue-400"
-                                    : ""
-                                }`}
-                              >
-                                <span
-                                  onClick={() => setActive(item.id.toString())}
-                                  className="flex-1"
+                {map(settingsObject as SettingsCategory[], (settingObject, idx) => (
+                    <div
+                      key={idx}
+                      className="mb-6 text-slate-700 dark:text-slate-300"
+                    >
+                      <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide mb-3">
+                        {settingObject.category.toUpperCase()}
+                      </h3>
+  
+                      {!isUndefined(settingObject.children) && (
+                        <ul>
+                          {map(settingObject.children, (item: SettingsMenuItem, idx) => {
+                            const isOpen = expanded[String(item.id)];
+  
+                            return (
+                              <li key={idx} className="mb-1">
+                                <div
+                                  onClick={() => toggleExpanded(String(item.id))}
+                                  className={`cursor-pointer flex justify-between items-center px-1 py-1 rounded-md transition-colors hover:bg-white/50 dark:hover:bg-slate-700 ${
+                                    String(item.id) === active
+                                      ? "font-semibold text-blue-600 dark:text-blue-400"
+                                      : ""
+                                  }`}
                                 >
-                                  {item.displayName}
-                                </span>
-                                {!isUndefined(item.children) && (
-                                  <span className="text-xs opacity-60">
-                                    {isOpen ? "−" : "+"}
+                                  <span
+                                    onClick={() => setActive(String(item.id))}
+                                    className="flex-1"
+                                  >
+                                    {item.displayName}
                                   </span>
+                                  {!isUndefined(item.children) && (
+                                    <span className="text-xs opacity-60">
+                                      {isOpen ? "−" : "+"}
+                                    </span>
+                                  )}
+                                </div>
+  
+                                {!isUndefined(item.children) && isOpen && (
+                                  <ul className="pl-4 mt-1">
+                                    {map(item.children, (subItem: SettingsMenuItem) => (
+                                      <li key={String(subItem.id)} className="mb-1">
+                                        <a
+                                          onClick={() =>
+                                            setActive(String(subItem.id))
+                                          }
+                                          className={`cursor-pointer flex items-center px-1 py-1 rounded-md transition-colors hover:bg-white/50 dark:hover:bg-slate-700 ${
+                                            String(subItem.id) === active
+                                              ? "font-semibold text-blue-600 dark:text-blue-400"
+                                              : ""
+                                          }`}
+                                        >
+                                          {subItem.displayName}
+                                        </a>
+                                      </li>
+                                    ))}
+                                  </ul>
                                 )}
-                              </div>
-
-                              {!isUndefined(item.children) && isOpen && (
-                                <ul className="pl-4 mt-1">
-                                  {map(item.children, (subItem) => (
-                                    <li key={subItem.id} className="mb-1">
-                                      <a
-                                        onClick={() =>
-                                          setActive(subItem.id.toString())
-                                        }
-                                        className={`cursor-pointer flex items-center px-1 py-1 rounded-md transition-colors hover:bg-white/50 dark:hover:bg-slate-700 ${
-                                          subItem.id.toString() === active
-                                            ? "font-semibold text-blue-600 dark:text-blue-400"
-                                            : ""
-                                        }`}
-                                      >
-                                        {subItem.displayName}
-                                      </a>
-                                    </li>
-                                  ))}
-                                </ul>
-                              )}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    )}
-                  </div>
-                ))}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
               </div>
             </aside>
           </div>

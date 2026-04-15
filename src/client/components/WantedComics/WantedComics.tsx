@@ -1,12 +1,39 @@
-import React, { ReactElement, useCallback, useEffect, useMemo } from "react";
-import SearchBar from "../Library/SearchBar";
+import React, { ReactElement } from "react";
 import T2Table from "../shared/T2Table";
 import MetadataPanel from "../shared/MetadataPanel";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { SEARCH_SERVICE_BASE_URI } from "../../constants/endpoints";
+import { CellContext } from "@tanstack/react-table";
 
-export const WantedComics = (props): ReactElement => {
+interface WantedComicsProps {
+  [key: string]: unknown;
+}
+
+interface WantedSourceData {
+  _id: string;
+  _source: {
+    acquisition?: {
+      directconnect?: {
+        downloads: DownloadItem[];
+      };
+    };
+    [key: string]: unknown;
+  };
+}
+
+interface DownloadItem {
+  name: string;
+  [key: string]: unknown;
+}
+
+interface AcquisitionData {
+  directconnect?: {
+    downloads: DownloadItem[];
+  };
+}
+
+export const WantedComics = (_props: WantedComicsProps): ReactElement => {
   const {
     data: wantedComics,
     isSuccess,
@@ -39,9 +66,9 @@ export const WantedComics = (props): ReactElement => {
         {
           header: "Details",
           id: "comicDetails",
-          minWidth: 350,
-          accessorFn: (data) => data,
-          cell: (value) => {
+          size: 350,
+          accessorFn: (data: WantedSourceData) => data,
+          cell: (value: CellContext<WantedSourceData, WantedSourceData>) => {
             const row = value.getValue()._source;
             return row && <MetadataPanel data={row} />;
           },
@@ -53,17 +80,14 @@ export const WantedComics = (props): ReactElement => {
       columns: [
         {
           header: "Files",
-          align: "right",
           accessorKey: "_source.acquisition",
-          cell: (props) => {
-            const {
-              directconnect: { downloads },
-            } = props.getValue();
+          cell: (props: CellContext<WantedSourceData, AcquisitionData | undefined>) => {
+            const acquisition = props.getValue();
+            const downloads = acquisition?.directconnect?.downloads || [];
             return (
               <div
                 style={{
                   display: "flex",
-                  // flexDirection: "column",
                   justifyContent: "center",
                 }}
               >
@@ -78,17 +102,21 @@ export const WantedComics = (props): ReactElement => {
           header: "Download Details",
           id: "downloadDetails",
           accessorKey: "_source.acquisition",
-          cell: (data) => (
-            <ol>
-              {data.getValue().directconnect.downloads.map((download, idx) => {
-                return (
-                  <li className="is-size-7" key={idx}>
-                    {download.name}
-                  </li>
-                );
-              })}
-            </ol>
-          ),
+          cell: (data: CellContext<WantedSourceData, AcquisitionData | undefined>) => {
+            const acquisition = data.getValue();
+            const downloads = acquisition?.directconnect?.downloads || [];
+            return (
+              <ol>
+                {downloads.map((download: DownloadItem, idx: number) => {
+                  return (
+                    <li className="is-size-7" key={idx}>
+                      {download.name}
+                    </li>
+                  );
+                })}
+              </ol>
+            );
+          },
         },
         {
           header: "Type",

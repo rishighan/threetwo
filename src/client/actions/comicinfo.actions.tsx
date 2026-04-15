@@ -28,6 +28,52 @@ import {
   COMICVINE_SERVICE_URI,
   LIBRARY_SERVICE_BASE_URI,
 } from "../constants/endpoints";
+import type { Dispatch } from "react";
+
+/** Redux action type for comic info actions */
+interface ComicInfoAction {
+  type: string;
+  data?: unknown;
+  inProgress?: boolean;
+  searchResults?: unknown;
+  error?: unknown;
+  issues?: unknown[];
+  matches?: unknown;
+  comicBookDetail?: unknown;
+  comicBooks?: unknown[];
+  IMS_inProgress?: boolean;
+}
+
+/** Options for the weekly pull list */
+interface PullListOptions {
+  [key: string]: unknown;
+}
+
+/** Options for the comicinfo API call */
+interface ComicInfoAPIOptions {
+  callURIAction: string;
+  callMethod: string;
+  callParams: Record<string, unknown>;
+  data?: unknown;
+}
+
+/** Issue type from ComicVine */
+interface ComicVineIssue {
+  id: string;
+  name: string;
+  issue_number: string;
+  volume: {
+    name: string;
+  };
+}
+
+/** Match object for ComicVine metadata */
+interface ComicVineMatch {
+  [key: string]: unknown;
+}
+
+/** Thunk dispatch type */
+type ThunkDispatch = Dispatch<ComicInfoAction>;
 
 /**
  * Rate-limited axios instance for ComicVine API calls.
@@ -53,7 +99,7 @@ const cachedAxios = setupCache(axios);
  * @param {Object} options - Query parameters for the pull list request
  * @returns {Function} Redux thunk function that dispatches CV_WEEKLY_PULLLIST_FETCHED
  */
-export const getWeeklyPullList = (options) => async (dispatch) => {
+export const getWeeklyPullList = (options: PullListOptions) => async (dispatch: ThunkDispatch) => {
   try {
     dispatch({
       type: CV_WEEKLY_PULLLIST_CALL_IN_PROGRESS,
@@ -84,7 +130,7 @@ export const getWeeklyPullList = (options) => async (dispatch) => {
  * @param {any} [options.data] - Request body data
  * @returns {Function} Redux thunk function that dispatches appropriate action based on callURIAction
  */
-export const comicinfoAPICall = (options) => async (dispatch) => {
+export const comicinfoAPICall = (options: ComicInfoAPIOptions) => async (dispatch: ThunkDispatch) => {
   try {
     dispatch({
       type: CV_API_CALL_IN_PROGRESS,
@@ -128,7 +174,7 @@ export const comicinfoAPICall = (options) => async (dispatch) => {
  * @returns {Function} Redux thunk function that dispatches CV_ISSUES_FOR_VOLUME_IN_LIBRARY_SUCCESS
  */
 export const getIssuesForSeries =
-  (comicObjectID: string) => async (dispatch) => {
+  (comicObjectID: string) => async (dispatch: ThunkDispatch) => {
     dispatch({
       type: CV_ISSUES_METADATA_CALL_IN_PROGRESS,
     });
@@ -161,11 +207,11 @@ export const getIssuesForSeries =
  * @param {string} issues[].volume.name - Volume name
  * @returns {Function} Redux thunk function that dispatches CV_ISSUES_MATCHES_IN_LIBRARY_FETCHED
  */
-export const analyzeLibrary = (issues) => async (dispatch) => {
+export const analyzeLibrary = (issues: ComicVineIssue[]) => async (dispatch: ThunkDispatch) => {
   dispatch({
     type: CV_ISSUES_METADATA_CALL_IN_PROGRESS,
   });
-  const queryObjects = issues.map((issue) => {
+  const queryObjects = issues.map((issue: ComicVineIssue) => {
     const { id, name, issue_number } = issue;
     return {
       issueId: id,
@@ -194,7 +240,7 @@ export const analyzeLibrary = (issues) => async (dispatch) => {
  *
  * @returns {Function} Redux thunk function that dispatches LIBRARY_STATISTICS_FETCHED
  */
-export const getLibraryStatistics = () => async (dispatch) => {
+export const getLibraryStatistics = () => async (dispatch: ThunkDispatch) => {
   dispatch({
     type: LIBRARY_STATISTICS_CALL_IN_PROGRESS,
   });
@@ -217,7 +263,7 @@ export const getLibraryStatistics = () => async (dispatch) => {
  * @returns {Function} Redux thunk function that dispatches IMS_COMIC_BOOK_DB_OBJECT_FETCHED
  */
 export const getComicBookDetailById =
-  (comicBookObjectId: string) => async (dispatch) => {
+  (comicBookObjectId: string) => async (dispatch: ThunkDispatch) => {
     dispatch({
       type: IMS_COMIC_BOOK_DB_OBJECT_CALL_IN_PROGRESS,
       IMS_inProgress: true,
@@ -244,7 +290,7 @@ export const getComicBookDetailById =
  * @returns {Function} Redux thunk function that dispatches IMS_COMIC_BOOKS_DB_OBJECTS_FETCHED
  */
 export const getComicBooksDetailsByIds =
-  (comicBookObjectIds: Array<string>) => async (dispatch) => {
+  (comicBookObjectIds: Array<string>) => async (dispatch: ThunkDispatch) => {
     dispatch({
       type: IMS_COMIC_BOOK_DB_OBJECT_CALL_IN_PROGRESS,
       IMS_inProgress: true,
@@ -272,7 +318,7 @@ export const getComicBooksDetailsByIds =
  * @returns {Function} Redux thunk function that dispatches IMS_COMIC_BOOK_DB_OBJECT_FETCHED
  */
 export const applyComicVineMatch =
-  (match, comicObjectId) => async (dispatch) => {
+  (match: ComicVineMatch, comicObjectId: string) => async (dispatch: ThunkDispatch) => {
     dispatch({
       type: IMS_COMIC_BOOK_DB_OBJECT_CALL_IN_PROGRESS,
       IMS_inProgress: true,

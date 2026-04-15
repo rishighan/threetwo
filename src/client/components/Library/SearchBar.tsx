@@ -3,7 +3,11 @@ import PropTypes from "prop-types";
 import { Form, Field } from "react-final-form";
 import { Link } from "react-router-dom";
 
-export const SearchBar = (props): ReactElement => {
+interface SearchBarProps {
+  searchHandler: (values: Record<string, unknown>) => void;
+}
+
+export const SearchBar = (props: SearchBarProps): ReactElement => {
   const { searchHandler } = props;
   return (
     <Form

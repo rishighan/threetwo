@@ -1,35 +1,45 @@
 import React, {
-  useCallback,
   ReactElement,
   useEffect,
   useRef,
   useState,
 } from "react";
-import { SearchQuery, PriorityEnum, SearchResponse } from "threetwo-ui-typings";
-import { RootState, SearchInstance } from "threetwo-ui-typings";
 import ellipsize from "ellipsize";
 import { Form, Field } from "react-final-form";
-import { difference } from "../../shared/utils/object.utils";
 import { isEmpty, isNil, map } from "lodash";
 import { useStore } from "../../store";
-import { useShallow } from "zustand/react/shallow";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { AIRDCPP_SERVICE_BASE_URI } from "../../constants/endpoints";
 import type { Socket } from "socket.io-client";
 import type { AcquisitionPanelProps } from "../../types";
 
+interface HubData {
+  hub_url: string;
+  identity: { name: string };
+  value: string;
+}
+
+interface AirDCPPSearchResult {
+  id: string;
+  dupe?: unknown;
+  type: { id: string; str: string };
+  name: string;
+  slots: { total: number; free: number };
+  users: { user: { nicks: string; flags: string[] } };
+  size: number;
+}
+
 export const AcquisitionPanel = (
   props: AcquisitionPanelProps,
 ): ReactElement => {
-  const socketRef = useRef<Socket>();
-  const queryClient = useQueryClient();
+  const socketRef = useRef<Socket | undefined>(undefined);
 
   const [dcppQuery, setDcppQuery] = useState({});
-  const [airDCPPSearchResults, setAirDCPPSearchResults] = useState<any[]>([]);
+  const [airDCPPSearchResults, setAirDCPPSearchResults] = useState<AirDCPPSearchResult[]>([]);
   const [airDCPPSearchStatus, setAirDCPPSearchStatus] = useState(false);
-  const [airDCPPSearchInstance, setAirDCPPSearchInstance] = useState<any>({});
-  const [airDCPPSearchInfo, setAirDCPPSearchInfo] = useState<any>({});
+  const [airDCPPSearchInstance, setAirDCPPSearchInstance] = useState<{ id?: string; owner?: string; expires_in?: number }>({});
+  const [airDCPPSearchInfo, setAirDCPPSearchInfo] = useState<{ query?: { pattern: string; extensions: string[]; file_type: string } }>({});
 
   const { comicObjectId } = props;
   const issueName = props.query.issue.name || "";
@@ -134,13 +144,13 @@ export const AcquisitionPanel = (
   };
 
   const download = async (
-    searchInstanceId: Number,
-    resultId: String,
-    comicObjectId: String,
-    name: String,
-    size: Number,
-    type: any,
-    config: any,
+    searchInstanceId: string | number,
+    resultId: string,
+    comicObjectId: string,
+    name: string,
+    size: number,
+    type: unknown,
+    config: Record<string, unknown>,
   ): Promise<void> => {
     socketRef.current?.emit(
       "call",
@@ -160,7 +170,7 @@ export const AcquisitionPanel = (
     );
   };
 
-  const getDCPPSearchResults = async (searchQuery) => {
+  const getDCPPSearchResults = async (searchQuery: { issueName: string }) => {
     const manualQuery = {
       query: {
         pattern: `${searchQuery.issueName}`,
@@ -249,7 +259,7 @@ export const AcquisitionPanel = (
               <dl>
                 <dt>
                   <div className="mb-1">
-                    {hubs?.data.map((value, idx: string) => (
+                    {hubs?.data.map((value: HubData, idx: number) => (
                       <span className="tag is-warning" key={idx}>
                         {value.identity.name}
                       </span>
@@ -260,19 +270,19 @@ export const AcquisitionPanel = (
                 <dt>
                   Query:
                   <span className="has-text-weight-semibold">
-                    {airDCPPSearchInfo.query.pattern}
+                    {airDCPPSearchInfo.query?.pattern}
                   </span>
                 </dt>
                 <dd>
                   Extensions:
                   <span className="has-text-weight-semibold">
-                    {airDCPPSearchInfo.query.extensions.join(", ")}
+                    {airDCPPSearchInfo.query?.extensions.join(", ")}
                   </span>
                 </dd>
                 <dd>
                   File type:
                   <span className="has-text-weight-semibold">
-                    {airDCPPSearchInfo.query.file_type}
+                    {airDCPPSearchInfo.query?.file_type}
                   </span>
                 </dd>
               </dl>
@@ -378,7 +388,7 @@ export const AcquisitionPanel = (
                           className="inline-flex items-center gap-1 rounded border border-green-500 bg-green-500 px-2 py-1 text-xs font-medium text-white hover:bg-transparent hover:text-green-400 dark:border-green-300 dark:bg-green-300 dark:text-slate-900 dark:hover:bg-transparent"
                           onClick={() =>
                             download(
-                              airDCPPSearchInstance.id,
+                              airDCPPSearchInstance.id ?? "",
                               id,
                               comicObjectId,
                               name,

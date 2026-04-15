@@ -139,7 +139,7 @@ export const ArchiveOperations = (props: { data: any }): ReactElement => {
   }, [isSuccess, shouldRefetchComicBookData, queryClient]);
 
   // sliding panel init
-  const contentForSlidingPanel: Record<string, { content: () => JSX.Element }> = {
+  const contentForSlidingPanel: Record<string, { content: () => React.ReactElement }> = {
     imageAnalysis: {
       content: () => {
         return (

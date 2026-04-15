@@ -4,12 +4,17 @@ import { CSS } from "@dnd-kit/utilities";
 
 import { Cover } from "./Cover";
 
-export const SortableCover = (props) => {
+interface SortableCoverProps {
+  url: string;
+  index: number;
+  faded?: boolean;
+}
+
+export const SortableCover = (props: SortableCoverProps) => {
   const sortable = useSortable({ id: props.url });
   const {
     attributes,
     listeners,
-    isDragging,
     setNodeRef,
     transform,
     transition,

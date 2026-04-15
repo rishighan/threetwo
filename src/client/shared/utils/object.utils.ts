@@ -21,7 +21,7 @@ import { transform, isEqual, isObject } from "lodash";
  * const obj2 = { a: 1, b: { c: 2, d: 4 } };
  * difference(obj1, obj2); // returns { b: { d: 3 } }
  */
-export const difference = (object, base) => {
+export const difference = (object: Record<string, unknown>, base: Record<string, unknown>): Record<string, unknown> => {
   return changes(object, base);
 };
 
@@ -33,12 +33,12 @@ export const difference = (object, base) => {
  * @param {Object} base - The base object to compare against
  * @returns {Object} Object containing the differences
  */
-const changes = (object, base) => {
-  return transform(object, (result, value, key) => {
+const changes = (object: Record<string, unknown>, base: Record<string, unknown>): Record<string, unknown> => {
+  return transform(object, (result: Record<string, unknown>, value: unknown, key: string) => {
     if (!isEqual(value, base[key])) {
-      result[key] =
+      (result as Record<string, unknown>)[key] =
         isObject(value) && isObject(base[key])
-          ? changes(value, base[key])
+          ? changes(value as Record<string, unknown>, base[key] as Record<string, unknown>)
           : value;
     }
   });
@@ -81,7 +81,7 @@ export type TraverseFunction<T> = (
  * // ".b = [object Object]"
  * // "b.c = 2"
  */
-export const traverseObject = <T = Record<string, unknown>>(
+export const traverseObject = <T extends Record<string, unknown> = Record<string, unknown>>(
   object: T,
   fn: TraverseFunction<T>,
 ): void => traverseInternal(object, fn, []);
@@ -96,15 +96,15 @@ export const traverseObject = <T = Record<string, unknown>>(
  * @param {string[]} [scope=[]] - Current path scope in the object hierarchy
  * @returns {void}
  */
-const traverseInternal = <T = Record<string, unknown>>(
+const traverseInternal = <T extends Record<string, unknown>>(
   object: T,
   fn: TraverseFunction<T>,
   scope: string[] = [],
 ): void => {
-  Object.entries(object).forEach(([key, value]) => {
-    fn.apply(this, [object, key, value, scope]);
+  Object.entries(object as Record<string, unknown>).forEach(([key, value]) => {
+    fn.apply(undefined, [object, key, value, scope]);
     if (value !== null && typeof value === "object") {
-      traverseInternal(value, fn, scope.concat(key));
+      traverseInternal(value as T, fn, scope.concat(key));
     }
   });
 };

@@ -3,11 +3,17 @@ import { Form, Field } from "react-final-form";
 import { hostNameValidator } from "../../../shared/utils/validator.utils";
 import { isEmpty } from "lodash";
 
+interface ConnectionFormProps {
+  initialData?: Record<string, unknown>;
+  submitHandler: (values: Record<string, unknown>) => void;
+  formHeading: string;
+}
+
 export const ConnectionForm = ({
   initialData,
   submitHandler,
   formHeading,
-}): ReactElement => {
+}: ConnectionFormProps): ReactElement => {
   return (
     <>
       <Form

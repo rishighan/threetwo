@@ -1,6 +1,5 @@
 import React, { ReactElement, useState } from "react";
 import { isNil, isEmpty, isUndefined } from "lodash";
-import { IExtractedComicBookCoverFile, RootState } from "threetwo-ui-typings";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
 import { Form, Field } from "react-final-form";
 import Card from "../shared/Carda";
@@ -16,17 +15,35 @@ import {
   LIBRARY_SERVICE_BASE_URI,
 } from "../../constants/endpoints";
 import axios from "axios";
-import type { SearchPageProps } from "../../types";
+import type { SearchPageProps, ComicVineSearchResult } from "../../types";
+
+interface ComicData {
+  id: number;
+  api_detail_url: string;
+  image: { small_url: string; thumb_url?: string };
+  cover_date?: string;
+  issue_number?: string;
+  name?: string;
+  description?: string;
+  volume?: { name: string; api_detail_url: string };
+  start_year?: string;
+  count_of_issues?: number;
+  publisher?: { name: string };
+  resource_type?: string;
+}
 
 export const Search = ({}: SearchPageProps): ReactElement => {
   const queryClient = useQueryClient();
   const formData = {
     search: "",
   };
-  const [comicVineMetadata, setComicVineMetadata] = useState({});
+  const [comicVineMetadata, setComicVineMetadata] = useState<{
+    sourceName?: string;
+    comicData?: ComicData;
+  }>({});
   const [selectedResource, setSelectedResource] = useState("volume");
   const { t } = useTranslation();
-  const handleResourceChange = (value) => {
+  const handleResourceChange = (value: string) => {
     setSelectedResource(value);
   };
 
@@ -62,6 +79,11 @@ export const Search = ({}: SearchPageProps): ReactElement => {
       comicObject,
       markEntireVolumeWanted,
       resourceType,
+    }: {
+      source: string;
+      comicObject: any;
+      markEntireVolumeWanted: boolean;
+      resourceType: string;
     }) => {
       let volumeInformation = {};
       let issues = [];
@@ -142,14 +164,14 @@ export const Search = ({}: SearchPageProps): ReactElement => {
     },
   });
 
-  const addToLibrary = (sourceName: string, comicData) =>
+  const addToLibrary = (sourceName: string, comicData: ComicData) =>
     setComicVineMetadata({ sourceName, comicData });
 
-  const createDescriptionMarkup = (html) => {
+  const createDescriptionMarkup = (html: string) => {
     return { __html: html };
   };
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: { search: string }) => {
     const formData = { ...values, resource: selectedResource };
     try {
       mutate(formData);
@@ -269,7 +291,7 @@ export const Search = ({}: SearchPageProps): ReactElement => {
         )}
         {!isEmpty(comicVineSearchResults?.data?.results) ? (
           <div className="mx-auto max-w-screen-xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
-            {comicVineSearchResults.data.results.map((result) => {
+            {comicVineSearchResults?.data?.results?.map((result: ComicData) => {
               return result.resource_type === "issue" ? (
                 <div
                   key={result.id}
@@ -286,8 +308,8 @@ export const Search = ({}: SearchPageProps): ReactElement => {
                     </div>
                     <div className="w-3/4">
                       <div className="text-xl">
-                        {!isEmpty(result.volume.name) ? (
-                          result.volume.name
+                        {!isEmpty(result.volume?.name) ? (
+                          result.volume?.name
                         ) : (
                           <span className="is-size-3">No Name</span>
                         )}
@@ -305,18 +327,18 @@ export const Search = ({}: SearchPageProps): ReactElement => {
                         {result.api_detail_url}
                       </a>
                       <p className="text-sm">
-                        {ellipsize(
+                        {result.description ? ellipsize(
                           convert(result.description, {
                             baseElements: {
                               selectors: ["p", "div"],
                             },
                           }),
                           320,
-                        )}
+                        ) : ''}
                       </p>
                       <div className="mt-2">
                         <PopoverButton
-                          content={`This will add ${result.volume.name} to your wanted list.`}
+                          content={`This will add ${result.volume?.name || 'this issue'} to your wanted list.`}
                           clickHandler={() =>
                             addToWantedList({
                               source: "comicvine",
@@ -407,14 +429,14 @@ export const Search = ({}: SearchPageProps): ReactElement => {
 
                         {/* description */}
                         <p className="text-sm">
-                          {ellipsize(
+                          {result.description ? ellipsize(
                             convert(result.description, {
                               baseElements: {
                                 selectors: ["p", "div"],
                               },
                             }),
                             320,
-                          )}
+                          ) : ''}
                         </p>
                         <div className="mt-2">
                           <PopoverButton

@@ -4,7 +4,19 @@ import dayjs from "dayjs";
 import ellipsize from "ellipsize";
 import { map } from "lodash";
 import { DownloadProgressTick } from "./DownloadProgressTick";
-export const AirDCPPBundles = (props) => {
+
+interface BundleData {
+  id: string;
+  name: string;
+  target: string;
+  size: number;
+}
+
+interface AirDCPPBundlesProps {
+  data: BundleData[];
+}
+
+export const AirDCPPBundles = (props: AirDCPPBundlesProps) => {
   return (
     <div className="overflow-x-auto w-fit mt-6">
       <table className="min-w-full text-sm text-gray-900 dark:text-slate-100">

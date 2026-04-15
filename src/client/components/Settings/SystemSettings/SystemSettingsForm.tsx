@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
 export const SystemSettingsForm = (): ReactElement => {
-  const { mutate: flushDb, isLoading } = useMutation({
+  const { mutate: flushDb, isPending } = useMutation({
     mutationFn: async () => {
       await axios({
         url: `http://localhost:3000/api/library/flushDb`,

@@ -1,7 +1,7 @@
 import React, { useEffect, ReactElement, useState, useMemo } from "react";
 import { isEmpty, isNil, isUndefined, map } from "lodash";
 import { AirDCPPBundles } from "./AirDCPPBundles";
-import { TorrentDownloads } from "./TorrentDownloads";
+import { TorrentDownloads, TorrentData } from "./TorrentDownloads";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import {
@@ -32,7 +32,7 @@ export interface TorrentDetails {
 export const DownloadsPanel = (): ReactElement | null => {
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
   const [infoHashes, setInfoHashes] = useState<string[]>([]);
-  const [torrentDetails, setTorrentDetails] = useState<TorrentDetails[]>([]);
+  const [torrentDetails, setTorrentDetails] = useState<TorrentData[]>([]);
   const [activeTab, setActiveTab] = useState<"directconnect" | "torrents">(
     "directconnect",
   );

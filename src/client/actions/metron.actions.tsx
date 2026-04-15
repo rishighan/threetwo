@@ -8,6 +8,32 @@ import axios from "axios";
 import { isNil } from "lodash";
 import { METRON_SERVICE_URI } from "../constants/endpoints";
 
+/** Options for fetching Metron resources */
+interface MetronFetchOptions {
+  query: {
+    page: number;
+    resource?: string;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+}
+
+/** Metron resource result item */
+interface MetronResultItem {
+  name?: string;
+  __str__?: string;
+  id: number;
+}
+
+/** Metron resource result format */
+interface MetronResourceResult {
+  options: Array<{ label: string; value: number }>;
+  hasMore: boolean;
+  additional: {
+    page: number | null;
+  };
+}
+
 /**
  * @typedef {Object} MetronResourceResult
  * @property {Array<{label: string, value: number}>} options - Formatted options for select components
@@ -31,12 +57,12 @@ import { METRON_SERVICE_URI } from "../constants/endpoints";
  * });
  * // Returns: { options: [{label: "DC Comics", value: 1}], hasMore: true, additional: { page: 2 } }
  */
-export const fetchMetronResource = async (options) => {
+export const fetchMetronResource = async (options: MetronFetchOptions): Promise<MetronResourceResult> => {
   const metronResourceResults = await axios.post(
     `${METRON_SERVICE_URI}/fetchResource`,
     options,
   );
-  const results = metronResourceResults.data.results.map((result) => {
+  const results = metronResourceResults.data.results.map((result: MetronResultItem) => {
     return {
       label: result.name || result.__str__,
       value: result.id,

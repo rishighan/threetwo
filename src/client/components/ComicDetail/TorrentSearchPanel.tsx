@@ -10,7 +10,31 @@ import { isEmpty, isNil } from "lodash";
 import ellipsize from "ellipsize";
 import prettyBytes from "pretty-bytes";
 
-export const TorrentSearchPanel = (props) => {
+interface TorrentSearchPanelProps {
+  issueName: string;
+  comicObjectId: string;
+}
+
+interface SearchFormValues {
+  issueName: string;
+}
+
+interface TorrentResult {
+  fileName: string;
+  seeders: number;
+  leechers: number;
+  size: number;
+  files: number;
+  indexer: string;
+  downloadUrl: string;
+}
+
+interface TorrentDownloadPayload {
+  comicObjectId: string;
+  torrentToDownload: string;
+}
+
+export const TorrentSearchPanel = (props: TorrentSearchPanelProps) => {
   const { issueName, comicObjectId } = props;
   // Initialize searchTerm with issueName from props
   const [searchTerm, setSearchTerm] = useState({ issueName });
@@ -40,19 +64,19 @@ export const TorrentSearchPanel = (props) => {
     enabled: !isNil(searchTerm.issueName) && searchTerm.issueName.trim() !== "", // Make sure searchTerm is not empty
   });
   const mutation = useMutation({
-    mutationFn: async (newTorrent) =>
+    mutationFn: async (newTorrent: TorrentDownloadPayload) =>
       axios.post(`${QBITTORRENT_SERVICE_BASE_URI}/addTorrent`, newTorrent),
-    onSuccess: async (data) => {
+    onSuccess: async () => {
       // Torrent added successfully
     },
   });
-  const searchIndexer = (values) => {
+  const searchIndexer = (values: SearchFormValues) => {
     setSearchTerm({ issueName: values.issueName }); // Update searchTerm based on the form submission
   };
-  const downloadTorrent = (evt) => {
-    const newTorrent = {
+  const downloadTorrent = (downloadUrl: string) => {
+    const newTorrent: TorrentDownloadPayload = {
       comicObjectId,
-      torrentToDownload: evt,
+      torrentToDownload: downloadUrl,
     };
     mutation.mutate(newTorrent);
   };
@@ -125,7 +149,7 @@ export const TorrentSearchPanel = (props) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-gray-500">
-              {data?.data.map((result, idx) => (
+              {data?.data.map((result: TorrentResult, idx: number) => (
                 <tr key={idx}>
                   <td className="px-3 py-3 text-gray-700 dark:text-slate-300 text-md">
                     <p>{ellipsize(result.fileName, 90)}</p>

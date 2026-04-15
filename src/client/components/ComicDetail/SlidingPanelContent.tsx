@@ -33,7 +33,7 @@ export const CVMatchesPanel: React.FC<CVMatchesPanelProps> = ({
 }) => (
   <>
     <div>
-      <ComicVineSearchForm data={rawFileDetails} />
+      <ComicVineSearchForm rawFileDetails={rawFileDetails} />
     </div>
 
     <div className="border-slate-500 border rounded-lg p-2 mt-3">

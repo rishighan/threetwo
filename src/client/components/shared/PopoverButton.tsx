@@ -1,9 +1,14 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { useFloating, offset, flip } from "@floating-ui/react-dom";
 import { useTranslation } from "react-i18next";
 import "../../shared/utils/i18n.util"; // Ensure you import your i18n configuration
 
-const PopoverButton = ({ content, clickHandler }) => {
+interface PopoverButtonProps {
+  content: ReactNode;
+  clickHandler: () => void;
+}
+
+const PopoverButton = ({ content, clickHandler }: PopoverButtonProps) => {
   const [isVisible, setIsVisible] = useState(false);
   // Use destructuring to obtain the reference and floating setters, among other values.
   const { x, y, refs, strategy, floatingStyles } = useFloating({

@@ -6,8 +6,8 @@ interface ICardProps {
   orientation: string;
   imageUrl?: string;
   hasDetails?: boolean;
-  title?: PropTypes.ReactElementLike | null;
-  children?: PropTypes.ReactNodeLike;
+  title?: React.ReactNode;
+  children?: React.ReactNode;
   borderColorClass?: string;
   backgroundColor?: string;
   cardState?: "wanted" | "delete" | "scraped" | "uncompressed" | "imported" | "missing";

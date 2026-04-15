@@ -5,14 +5,12 @@
  * @module services/api/SearchApi
  */
 
-import SocketService from "../DcppSearchService";
+import createAirDCPPSocket, { AirDCPPConfiguration } from "../DcppSearchService";
 import {
   SearchQuery,
   SearchInstance,
   PriorityEnum,
-  SearchResponse,
 } from "threetwo-ui-typings";
-import SearchConstants from "../../constants/search.constants";
 
 /**
  * Configuration data for initiating an AirDC++ search.
@@ -27,6 +25,31 @@ interface SearchData {
   hub_urls: string[] | undefined | null;
   priority: PriorityEnum;
 }
+
+interface SearchInfo {
+  [key: string]: unknown;
+}
+
+// Socket instance holder
+let socketInstance: ReturnType<typeof createAirDCPPSocket> | null = null;
+
+/**
+ * Initialize the socket service with configuration
+ */
+const initializeSocket = (config: AirDCPPConfiguration) => {
+  socketInstance = createAirDCPPSocket(config);
+  return socketInstance;
+};
+
+/**
+ * Get the current socket instance
+ */
+const getSocket = () => {
+  if (!socketInstance) {
+    throw new Error("Socket not initialized. Call initializeSocket first.");
+  }
+  return socketInstance;
+};
 
 /**
  * Pauses execution for a specified duration.
@@ -55,18 +78,19 @@ function sleep(ms: number): Promise<NodeJS.Timeout> {
  * });
  */
 export const search = async (data: SearchData) => {
-  await SocketService.connect();
-  const instance: SearchInstance = await SocketService.post("search");
-  const unsubscribe = await SocketService.addListener(
+  const socket = getSocket();
+  await socket.connect();
+  const instance: SearchInstance = await socket.post("search");
+  const unsubscribe = await socket.addListener(
     "search",
     "search_hub_searches_sent",
-    (searchInfo) => {
+    (searchInfo: SearchInfo) => {
       onSearchSent(data, instance, unsubscribe, searchInfo);
     },
     instance.id,
   );
 
-  const searchQueueInfo = await SocketService.post(
+  const searchQueueInfo = await socket.post(
     `search/${instance.id}/hub_search`,
     data,
   );
@@ -84,19 +108,25 @@ export const search = async (data: SearchData) => {
  * @param {Function} unsubscribe - Cleanup function to remove the event listener
  * @param {Object} searchInfo - Information about the sent search
  */
-const onSearchSent = async (item, instance, unsubscribe, searchInfo) => {
+const onSearchSent = async (
+  item: SearchData,
+  instance: SearchInstance,
+  unsubscribe: () => void,
+  searchInfo: SearchInfo
+) => {
   // Collect the results for 5 seconds
   await sleep(5000);
 
+  const socket = getSocket();
   // Get only the first result (results are sorted by relevance)
-  const results = await SocketService.get(
+  const results = await socket.get(
     `search/${instance.id}/results/0/100`,
-  );
+  ) as unknown[] | undefined;
 
-  if (results.length > 0) {
+  if (results && Array.isArray(results) && results.length > 0) {
     // We have results, download the best one
     // const result = results[0];
-    // SocketService.post(`search/${instance.id}/results/${result.id}/download`, {
+    // socket.post(`search/${instance.id}/results/${result.id}/download`, {
     //   priority: Utils.toApiPriority(item.priority),
     //   target_directory: item.target_directory,
     // });
@@ -104,3 +134,5 @@ const onSearchSent = async (item, instance, unsubscribe, searchInfo) => {
   // Remove listener for this search instance
   unsubscribe();
 };
+
+export { initializeSocket };

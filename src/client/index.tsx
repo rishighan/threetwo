@@ -43,7 +43,7 @@ const router = createBrowserRouter([
         path: "comic/details/:comicObjectId",
         element: <ComicDetailContainer />,
       },
-      { path: "import", element: <Import path={"./comics"} /> },
+      { path: "import", element: <Import /> },
       { path: "search", element: <Search /> },
       { path: "volume/details/:comicObjectId", element: <VolumeDetails /> },
       { path: "volumes", element: <Volumes /> },

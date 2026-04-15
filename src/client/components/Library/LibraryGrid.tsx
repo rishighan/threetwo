@@ -18,12 +18,42 @@ import { Link } from "react-router-dom";
 import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
 import type { LibraryGridProps } from "../../types";
 
+interface ComicDoc {
+  _id: string;
+  rawFileDetails?: {
+    cover?: {
+      filePath: string;
+    };
+    name?: string;
+  };
+  sourcedMetadata?: {
+    comicvine?: {
+      image?: {
+        small_url?: string;
+      };
+      name?: string;
+      volumeInformation?: {
+        description?: string;
+      };
+    };
+  };
+}
+
+interface AppRootState {
+  fileOps: {
+    recentComics: {
+      docs: ComicDoc[];
+      totalDocs: number;
+    };
+  };
+}
+
 export const LibraryGrid = (libraryGridProps: LibraryGridProps) => {
   const data = useSelector(
-    (state: RootState) => state.fileOps.recentComics.docs,
+    (state: AppRootState) => state.fileOps.recentComics.docs,
   );
   const pageTotal = useSelector(
-    (state: RootState) => state.fileOps.recentComics.totalDocs,
+    (state: AppRootState) => state.fileOps.recentComics.totalDocs,
   );
   const breakpointColumnsObj = {
     default: 5,
@@ -42,20 +72,20 @@ export const LibraryGrid = (libraryGridProps: LibraryGridProps) => {
           className="my-masonry-grid"
           columnClassName="my-masonry-grid_column"
         >
-          {data.map(({ _id, rawFileDetails, sourcedMetadata }) => {
+          {data.map(({ _id, rawFileDetails, sourcedMetadata }: ComicDoc) => {
             let imagePath = "";
             let comicName = "";
-            if (!isEmpty(rawFileDetails.cover)) {
+            if (rawFileDetails && !isEmpty(rawFileDetails.cover)) {
               const encodedFilePath = encodeURI(
                 `${LIBRARY_SERVICE_HOST}/${removeLeadingPeriod(
-                  rawFileDetails.cover.filePath,
+                  rawFileDetails.cover?.filePath || '',
                 )}`,
               );
               imagePath = escapePoundSymbol(encodedFilePath);
-              comicName = rawFileDetails.name;
-            } else if (!isNil(sourcedMetadata)) {
+              comicName = rawFileDetails.name || '';
+            } else if (!isNil(sourcedMetadata) && sourcedMetadata.comicvine?.image?.small_url) {
               imagePath = sourcedMetadata.comicvine.image.small_url;
-              comicName = sourcedMetadata.comicvine.name;
+              comicName = sourcedMetadata.comicvine?.name || '';
             }
             const titleElement = (
               <Link to={"/comic/details/" + _id}>
@@ -71,7 +101,7 @@ export const LibraryGrid = (libraryGridProps: LibraryGridProps) => {
                 title={comicName ? titleElement : null}
               >
                 <div className="content is-flex is-flex-direction-row">
-                  {!isEmpty(sourcedMetadata.comicvine) && (
+                  {sourcedMetadata && !isEmpty(sourcedMetadata.comicvine) && (
                     <span className="icon cv-icon is-small inline-block w-6 h-6 md:w-7 md:h-7 flex-shrink-0">
                       <img
                         src="/src/client/assets/img/cvlogo.svg"
@@ -85,7 +115,7 @@ export const LibraryGrid = (libraryGridProps: LibraryGridProps) => {
                       <i className="fas fa-adjust" />
                     </span>
                   )}
-                  {!isUndefined(sourcedMetadata.comicvine.volumeInformation) &&
+                  {sourcedMetadata?.comicvine?.volumeInformation?.description &&
                   !isEmpty(
                     detectIssueTypes(
                       sourcedMetadata.comicvine.volumeInformation.description,
@@ -94,8 +124,7 @@ export const LibraryGrid = (libraryGridProps: LibraryGridProps) => {
                     <span className="tag is-warning ml-1">
                       {
                         detectIssueTypes(
-                          sourcedMetadata.comicvine.volumeInformation
-                            .description,
+                          sourcedMetadata.comicvine.volumeInformation.description || '',
                         ).displayName
                       }
                     </span>

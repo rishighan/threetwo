@@ -1,7 +1,17 @@
 import React, { useCallback } from "react";
 import { Form, Field } from "react-final-form";
-import Collapsible from "react-collapsible";
+import { ValidationErrors } from "final-form";
 import { fetchComicVineMatches } from "../../actions/fileops.actions";
+
+interface ComicVineSearchFormProps {
+  rawFileDetails?: Record<string, unknown>;
+}
+
+interface SearchFormValues {
+  issueName?: string;
+  issueNumber?: string;
+  issueYear?: string;
+}
 
 /**
  * Component for performing search against ComicVine
@@ -12,8 +22,8 @@ import { fetchComicVineMatches } from "../../actions/fileops.actions";
  *   <ComicVineSearchForm data={rawFileDetails} />
  * )
  */
-export const ComicVineSearchForm = (data) => {
-  const onSubmit = useCallback((value) => {
+export const ComicVineSearchForm = (props: ComicVineSearchFormProps) => {
+  const onSubmit = useCallback((value: SearchFormValues) => {
     const userInititatedQuery = {
       inferredIssueDetails: {
         name: value.issueName,
@@ -24,8 +34,8 @@ export const ComicVineSearchForm = (data) => {
     };
     // dispatch(fetchComicVineMatches(data, userInititatedQuery));
   }, []);
-  const validate = () => {
-    return true;
+  const validate = (_values: SearchFormValues): ValidationErrors | undefined => {
+    return undefined;
   };
 
   const MyForm = () => (

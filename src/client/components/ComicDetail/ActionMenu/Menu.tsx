@@ -1,17 +1,31 @@
 import React, { ReactElement } from "react";
-import Select from "react-select";
+import Select, { StylesConfig, SingleValue } from "react-select";
+import { ActionOption } from "../actionMenuConfig";
 
-export const Menu = (props): ReactElement => {
+interface MenuConfiguration {
+  filteredActionOptions: ActionOption[];
+  customStyles: StylesConfig<ActionOption, false>;
+  handleActionSelection: (action: SingleValue<ActionOption>) => void;
+}
+
+interface MenuProps {
+  data?: unknown;
+  handlers?: {
+    setSlidingPanelContentId: (id: string) => void;
+    setVisible: (visible: boolean) => void;
+  };
+  configuration: MenuConfiguration;
+}
+
+export const Menu = (props: MenuProps): ReactElement => {
   const {
     filteredActionOptions,
     customStyles,
     handleActionSelection,
-    Placeholder,
   } = props.configuration;
 
   return (
-    <Select
-      components={{ Placeholder }}
+    <Select<ActionOption, false>
       placeholder={
         <span className="inline-flex flex-row items-center gap-2 pt-1">
           <div className="w-6 h-6">

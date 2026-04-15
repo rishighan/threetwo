@@ -1,12 +1,25 @@
 import React, { useEffect, useRef } from "react";
 
-export const Canvas = ({ data }) => {
+interface ColorHistogramData {
+  r: number[];
+  g: number[];
+  b: number[];
+  maxBrightness: number;
+}
+
+interface CanvasProps {
+  data: {
+    colorHistogramData: ColorHistogramData;
+  };
+}
+
+export const Canvas = ({ data }: CanvasProps) => {
   const { colorHistogramData } = data;
   const width = 559;
   const height = 200;
   const pixelRatio = window.devicePixelRatio;
 
-  const canvas = useRef(null);
+  const canvas = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const context = canvas.current?.getContext("2d");

@@ -68,15 +68,15 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
 
   // Hide "match on Comic Vine" when there are no raw file details — matching
   // requires file metadata to seed the search query.
-  const Placeholder = components.Placeholder;
-  const filteredActionOptions = filter(actionOptions, (item) => {
+  const filteredActionOptions: ActionOption[] = actionOptions.filter((item) => {
     if (isUndefined(rawFileDetails)) {
       return item.value !== "match-on-comic-vine";
     }
-    return item;
+    return true;
   });
 
-  const handleActionSelection = (action: ActionOption) => {
+  const handleActionSelection = (action: ActionOption | null) => {
+    if (!action) return;
     switch (action.value) {
       case "match-on-comic-vine":
         openDrawerWithCVMatches();
@@ -190,7 +190,6 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
                               filteredActionOptions,
                               customStyles,
                               handleActionSelection,
-                              Placeholder,
                             }}
                           />
                         </div>

@@ -1,20 +1,41 @@
 import React, { ReactElement, Suspense, useState } from "react";
 import { isNil } from "lodash";
 
-export const TabControls = (props): ReactElement => {
+interface TabItem {
+  id: number;
+  name: string;
+  icon: React.ReactNode;
+  content: React.ReactNode;
+  shouldShow?: boolean;
+}
+
+interface TabControlsProps {
+  filteredTabs: TabItem[];
+  downloadCount: number;
+  activeTab?: number;
+  setActiveTab?: (id: number) => void;
+}
+
+export const TabControls = (props: TabControlsProps): ReactElement => {
   const { filteredTabs, downloadCount, activeTab, setActiveTab } = props;
   const [active, setActive] = useState(filteredTabs[0].id);
   
   // Use controlled state if provided, otherwise use internal state
   const currentActive = activeTab !== undefined ? activeTab : active;
-  const handleSetActive = activeTab !== undefined ? setActiveTab : setActive;
+  const handleSetActive = (id: number) => {
+    if (setActiveTab) {
+      setActiveTab(id);
+    } else {
+      setActive(id);
+    }
+  };
 
   return (
     <>
       <div className="hidden sm:block mt-7 mb-3 w-fit">
         <div className="border-b border-gray-200">
           <nav className="flex gap-6" aria-label="Tabs">
-            {filteredTabs.map(({ id, name, icon }) => (
+            {filteredTabs.map(({ id, name, icon }: TabItem) => (
               <a
                 key={id}
                 className={`inline-flex shrink-0 items-center gap-2 px-1 py-1 text-md font-medium text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:border-b hover:dark:text-slate-200 ${
@@ -48,7 +69,7 @@ export const TabControls = (props): ReactElement => {
         </div>
       </div>
       <Suspense fallback={null}>
-        {filteredTabs.map(({ id, content }) => (
+        {filteredTabs.map(({ id, content }: TabItem) => (
           <React.Fragment key={id}>
             {currentActive === id ? content : null}
           </React.Fragment>

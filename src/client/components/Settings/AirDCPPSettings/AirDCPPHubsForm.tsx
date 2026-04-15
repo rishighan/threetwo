@@ -38,16 +38,21 @@ export const AirDCPPHubsForm = (): ReactElement => {
     enabled: !isEmpty(settings?.data.directConnect?.client?.host),
   });
 
-  let hubList: any[] = [];
+  interface HubOption {
+    value: string;
+    label: string;
+  }
+  
+  let hubList: HubOption[] = [];
   if (!isNil(hubs)) {
-    hubList = hubs?.data.map(({ hub_url, identity }) => ({
+    hubList = hubs?.data.map(({ hub_url, identity }: { hub_url: string; identity: { name: string } }) => ({
       value: hub_url,
       label: identity.name,
     }));
   }
 
   const mutation = useMutation({
-    mutationFn: async (values) =>
+    mutationFn: async (values: Record<string, unknown>) =>
       await axios({
         url: `http://localhost:3000/api/settings/saveSettings`,
         method: "POST",
@@ -69,13 +74,24 @@ export const AirDCPPHubsForm = (): ReactElement => {
     },
   });
 
-  const validate = async (values) => {
-    const errors = {};
+  const validate = async (values: Record<string, unknown>) => {
+    const errors: Record<string, string> = {};
     // Add any validation logic here if needed
     return errors;
   };
 
-  const SelectAdapter = ({ input, ...rest }) => {
+  interface SelectAdapterProps {
+    input: {
+      value: unknown;
+      onChange: (value: unknown) => void;
+      onBlur: () => void;
+      onFocus: () => void;
+      name: string;
+    };
+    [key: string]: unknown;
+  }
+
+  const SelectAdapter = ({ input, ...rest }: SelectAdapterProps) => {
     return <Select {...input} {...rest} isClearable isMulti />;
   };
 
@@ -155,7 +171,7 @@ export const AirDCPPHubsForm = (): ReactElement => {
             </span>
             <div className="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-slate-400 dark:border-gray-700">
               {settings?.data.directConnect?.client.hubs.map(
-                ({ value, label }) => (
+                ({ value, label }: HubOption) => (
                   <div key={value}>
                     <div>{label}</div>
                     <span className="is-size-7">{value}</span>

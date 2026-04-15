@@ -27,20 +27,22 @@ export type LibraryStats = {
   totalDocuments: number;
   comicDirectorySize: {
     totalSizeInGB?: number | null;
+    fileCount?: number;
   };
   comicsMissingFiles: number;
   statistics?: Array<{
-    issues?: unknown[];
-    issuesWithComicInfoXML?: unknown[];
+    issues?: unknown[] | null;
+    issuesWithComicInfoXML?: unknown[] | null;
+    fileLessComics?: unknown[] | null;
     fileTypes?: Array<{
       id: string;
       data: unknown[];
-    }>;
+    }> | null;
     publisherWithMostComicsInLibrary?: Array<{
       id: string;
       count: number;
-    }>;
-  }>;
+    }> | null;
+  }> | null;
 };
 
 /**

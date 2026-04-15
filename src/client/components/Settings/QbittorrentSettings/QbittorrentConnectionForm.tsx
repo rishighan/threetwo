@@ -3,7 +3,7 @@ import { ConnectionForm } from "../../shared/ConnectionForm/ConnectionForm";
 import { useQuery, useMutation, QueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
-export const QbittorrentConnectionForm = (): ReactElement => {
+export const QbittorrentConnectionForm = (): ReactElement | null => {
   const queryClient = new QueryClient();
   // fetch settings
   const { data, isLoading, isError } = useQuery({
@@ -28,7 +28,7 @@ export const QbittorrentConnectionForm = (): ReactElement => {
   });
   // Update action using a mutation
   const { mutate } = useMutation({
-    mutationFn: async (values) =>
+    mutationFn: async (values: Record<string, unknown>) =>
       await axios({
         url: `http://localhost:3000/api/settings/saveSettings`,
         method: "POST",
@@ -77,6 +77,7 @@ export const QbittorrentConnectionForm = (): ReactElement => {
       </>
     );
   }
+  return null;
 };
 
 export default QbittorrentConnectionForm;

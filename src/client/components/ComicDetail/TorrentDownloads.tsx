@@ -2,11 +2,48 @@ import React from "react";
 import dayjs from "dayjs";
 import prettyBytes from "pretty-bytes";
 
-export const TorrentDownloads = (props) => {
+interface TorrentInfo {
+  name: string;
+  hash: string;
+  added_on: number;
+  progress: number;
+  downloaded: number;
+  uploaded: number;
+  trackers_count: number;
+  total_size: number;
+}
+
+interface TorrentData {
+  torrent?: TorrentInfo;
+  // Support direct TorrentDetails format from socket events
+  infoHash?: string;
+  downloadSpeed?: number;
+  uploadSpeed?: number;
+  name?: string;
+}
+
+export interface TorrentDownloadsProps {
+  data: TorrentData[];
+}
+
+export type { TorrentData };
+
+export const TorrentDownloads = (props: TorrentDownloadsProps) => {
   const { data } = props;
   return (
     <>
-      {data.map(({ torrent }) => {
+      {data.map((item: TorrentData, index: number) => {
+        // Support both wrapped format (item.torrent) and direct format
+        const torrent: TorrentInfo = item.torrent || {
+          name: item.name || 'Unknown',
+          hash: item.infoHash || '',
+          added_on: 0,
+          progress: (item as any).progress || 0,
+          downloaded: 0,
+          uploaded: 0,
+          trackers_count: 0,
+          total_size: 0,
+        };
         return (
           <dl className="mt-5 dark:text-slate-200 text-slate-600">
             <dt className="text-lg">{torrent.name}</dt>

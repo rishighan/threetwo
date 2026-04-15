@@ -1,7 +1,24 @@
 import React, { ReactElement } from "react";
 
-export const AirDCPPSettingsConfirmation = (settingsObject): ReactElement => {
-  const { settings } = settingsObject;
+interface AirDCPPSessionInfo {
+  _id: string;
+  system_info: {
+    client_version: string;
+    hostname: string;
+    platform: string;
+  };
+  user: {
+    username: string;
+    active_sessions: number;
+    permissions: string[];
+  };
+}
+
+interface AirDCPPSettingsConfirmationProps {
+  settings: AirDCPPSessionInfo;
+}
+
+export const AirDCPPSettingsConfirmation = ({ settings }: AirDCPPSettingsConfirmationProps): ReactElement => {
   return (
     <div>
       <span className="flex items-center mt-10 mb-4">

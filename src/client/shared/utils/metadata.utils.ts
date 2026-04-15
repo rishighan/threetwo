@@ -53,7 +53,42 @@ import { escapePoundSymbol } from "./formatting.utils";
  * });
  * // Returns rawFileDetails cover (priority 1) if available
  */
-export const determineCoverFile = (data): any => {
+interface CoverFileData {
+  rawFileDetails?: {
+    cover?: {
+      filePath?: string | null;
+    } | null;
+    name?: string | null;
+  } | null;
+  comicvine?: {
+    image?: {
+      small_url?: string | null;
+    } | null;
+    name?: string | null;
+    publisher?: {
+      name?: string | null;
+    } | null;
+  } | null;
+  locg?: {
+    cover?: string | null;
+    name?: string | null;
+    publisher?: string | null;
+  } | null;
+  wanted?: unknown;
+  comicInfo?: unknown;
+}
+
+export type { CoverFileData };
+
+interface CoverFileEntry {
+  objectReference: string;
+  priority: number;
+  url: string;
+  issueName: string;
+  publisher: string;
+}
+
+export const determineCoverFile = (data: CoverFileData): CoverFileEntry => {
   const coverFile = {
     rawFile: {
       objectReference: "rawFileDetails",
@@ -87,27 +122,27 @@ export const determineCoverFile = (data): any => {
 
   // Extract ComicVine metadata
   if (!isEmpty(data.comicvine)) {
-    coverFile.comicvine.url = data?.comicvine?.image?.small_url;
-    coverFile.comicvine.issueName = data.comicvine?.name;
-    coverFile.comicvine.publisher = data.comicvine?.publisher?.name;
+    coverFile.comicvine.url = data?.comicvine?.image?.small_url || "";
+    coverFile.comicvine.issueName = data.comicvine?.name || "";
+    coverFile.comicvine.publisher = data.comicvine?.publisher?.name || "";
   }
 
   // Extract raw file details
-  if (!isEmpty(data.rawFileDetails) && data.rawFileDetails.cover?.filePath) {
+  if (!isEmpty(data.rawFileDetails) && data.rawFileDetails?.cover?.filePath) {
     const encodedFilePath = encodeURI(
       `${LIBRARY_SERVICE_HOST}/${data.rawFileDetails.cover.filePath}`,
     );
     coverFile.rawFile.url = escapePoundSymbol(encodedFilePath);
-    coverFile.rawFile.issueName = data.rawFileDetails.name;
+    coverFile.rawFile.issueName = data.rawFileDetails.name || "";
   } else if (!isEmpty(data.rawFileDetails)) {
-    coverFile.rawFile.issueName = data.rawFileDetails.name;
+    coverFile.rawFile.issueName = data.rawFileDetails?.name || "";
   }
 
   // Extract League of Comic Geeks metadata
   if (!isNil(data.locg)) {
-    coverFile.locg.url = data.locg.cover;
-    coverFile.locg.issueName = data.locg.name;
-    coverFile.locg.publisher = data.locg.publisher;
+    coverFile.locg.url = data.locg.cover || "";
+    coverFile.locg.issueName = data.locg.name || "";
+    coverFile.locg.publisher = data.locg.publisher || "";
   }
 
   const result = filter(coverFile, (item) => item.url !== "");

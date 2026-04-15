@@ -2,7 +2,7 @@ import { isEmpty, isNil, isUndefined, map, partialRight, pick } from "lodash";
 import React, { ReactElement, useState, useCallback } from "react";
 import { useParams } from "react-router";
 import { analyzeLibrary } from "../../actions/comicinfo.actions";
-import { useQuery, useMutation, QueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import PotentialLibraryMatches from "./PotentialLibraryMatches";
 import { Card } from "../shared/Carda";
 import SlidingPane from "react-sliding-pane";
@@ -14,38 +14,87 @@ import {
 } from "../../constants/endpoints";
 import axios from "axios";
 
-const VolumeDetails = (props): ReactElement => {
+interface VolumeDetailsProps {
+  [key: string]: unknown;
+}
+
+interface ComicObjectData {
+  sourcedMetadata: {
+    comicvine: {
+      id?: string;
+      volumeInformation: {
+        id: string;
+        name: string;
+        description?: string;
+        image: {
+          small_url: string;
+        };
+        publisher: {
+          name: string;
+        };
+      };
+    };
+  };
+}
+
+interface IssueData {
+  id: string;
+  name: string;
+  issue_number: string;
+  description?: string;
+  matches?: unknown[];
+  image: {
+    small_url: string;
+    thumb_url: string;
+  };
+}
+
+interface StoryArc {
+  name?: string;
+}
+
+interface MatchItem {
+  _id?: string;
+  [key: string]: unknown;
+}
+
+interface ContentForSlidingPanel {
+  [key: string]: {
+    content: () => React.ReactNode;
+  };
+}
+
+const VolumeDetails = (_props: VolumeDetailsProps): ReactElement => {
   // sliding panel config
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
-  const [matches, setMatches] = useState([]);
-  const [storyArcsData, setStoryArcsData] = useState([]);
+  const [matches, setMatches] = useState<MatchItem[]>([]);
+  const [storyArcsData, setStoryArcsData] = useState<StoryArc[]>([]);
   const [active, setActive] = useState(1);
 
   // sliding panel init
-  const contentForSlidingPanel = {
+  const contentForSlidingPanel: ContentForSlidingPanel = {
     potentialMatchesInLibrary: {
       content: () => {
         const ids = map(matches, partialRight(pick, "_id"));
-        const matchIds = ids.map((id: any) => id._id);
-        {
-          /* return <PotentialLibraryMatches matches={matchIds} />; */
-        }
+        const matchIds = ids.map((id: MatchItem) => id._id).filter((id): id is string => !!id);
+        return <PotentialLibraryMatches matches={matchIds} />;
       },
     },
   };
 
   // sliding panel handlers
-  const openPotentialLibraryMatchesPanel = useCallback((potentialMatches) => {
+  const openPotentialLibraryMatchesPanel = useCallback((potentialMatches: MatchItem[]) => {
     setSlidingPanelContentId("potentialMatchesInLibrary");
     setMatches(potentialMatches);
     setVisible(true);
   }, []);
 
-  //   const analyzeIssues = useCallback((issues) => {
-  //     dispatch(analyzeLibrary(issues));
-  //   }, []);
-  //
+  // Function to analyze issues (commented out but typed for future use)
+  const analyzeIssues = useCallback((issues: IssueData[]) => {
+    // dispatch(analyzeLibrary(issues));
+    console.log("Analyzing issues:", issues);
+  }, []);
 
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
 
@@ -83,7 +132,7 @@ const VolumeDetails = (props): ReactElement => {
   // get story arcs
   const useGetStoryArcs = () => {
     return useMutation({
-      mutationFn: async (comicObject) =>
+      mutationFn: async (comicObject: ComicObjectData) =>
         axios({
           url: `${COMICVINE_SERVICE_URI}/getResource`,
           method: "POST",
@@ -93,7 +142,7 @@ const VolumeDetails = (props): ReactElement => {
             filter: `id:${comicObject?.sourcedMetadata.comicvine.id}`,
           },
         }),
-      onSuccess: (data) => {
+      onSuccess: (data: { data: { results: StoryArc[] } }) => {
         setStoryArcsData(data?.data.results);
       },
     });
@@ -111,13 +160,13 @@ const VolumeDetails = (props): ReactElement => {
   const IssuesInVolume = () => (
     <>
       {!isUndefined(issuesForSeries) ? (
-        <div className="button" onClick={() => analyzeIssues(issuesForSeries)}>
+        <div className="button" onClick={() => analyzeIssues(issuesForSeries?.data || [])}>
           Analyze Library
         </div>
       ) : null}
       <>
         {isSuccess &&
-          issuesForSeries.data.map((issue) => {
+          issuesForSeries.data.map((issue: IssueData) => {
             return (
               <>
                 <Card
@@ -157,7 +206,7 @@ const VolumeDetails = (props): ReactElement => {
       </article>
       <div className="flex flex-wrap">
         {isSuccess &&
-          issuesForSeries?.data.map((issue) => {
+          issuesForSeries?.data.map((issue: IssueData) => {
             return (
               <div className="my-3 dark:bg-slate-400 bg-slate-300 p-4 rounded-lg w-3/4">
                 <div className="flex flex-row gap-4 mb-2">
@@ -170,11 +219,11 @@ const VolumeDetails = (props): ReactElement => {
                   <div className="w-3/4">
                     <p className="text-xl">{issue.name}</p>
                     <p className="text-sm">
-                      {convert(issue.description, {
+                      {issue.description ? convert(issue.description, {
                         baseElements: {
                           selectors: ["p"],
                         },
-                      })}
+                      }) : ''}
                     </p>
                   </div>
                 </div>
@@ -216,9 +265,9 @@ const VolumeDetails = (props): ReactElement => {
           {!isEmpty(storyArcsData) && status === "success" && (
             <>
               <ul>
-                {storyArcsData.map((storyArc) => {
+                {storyArcsData.map((storyArc: StoryArc, idx: number) => {
                   return (
-                    <li>
+                    <li key={idx}>
                       <span className="text-lg">{storyArc?.name}</span>
                     </li>
                   );
@@ -355,7 +404,7 @@ const VolumeDetails = (props): ReactElement => {
             width={"600px"}
           >
             {slidingPanelContentId !== "" &&
-              contentForSlidingPanel[slidingPanelContentId].content()}
+              (contentForSlidingPanel as ContentForSlidingPanel)[slidingPanelContentId]?.content()}
           </SlidingPane>
         </div>
       </>

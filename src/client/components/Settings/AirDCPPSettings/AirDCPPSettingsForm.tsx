@@ -17,8 +17,16 @@ export const AirDCPPSettingsForm = () => {
     queryFn: () => axios.get(`${SETTINGS_SERVICE_BASE_URI}/getAllSettings`),
   });
 
+  interface HostConfig {
+    hostname: string;
+    port: string;
+    username: string;
+    password: string;
+    protocol: string;
+  }
+  
   // Fetch session information
-  const fetchSessionInfo = (host) => {
+  const fetchSessionInfo = (host: HostConfig) => {
     return axios.post(`${AIRDCPP_SERVICE_BASE_URI}/initialize`, { host });
   };
 
@@ -34,7 +42,7 @@ export const AirDCPPSettingsForm = () => {
 
   // Handle setting update and subsequent AirDC++ initialization
   const { mutate } = useMutation({
-    mutationFn: (values) => {
+    mutationFn: (values: Record<string, unknown>) => {
       return axios.post("http://localhost:3000/api/settings/saveSettings", {
         settingsPayload: values,
         settingsKey: "directConnect",
@@ -50,12 +58,13 @@ export const AirDCPPSettingsForm = () => {
     },
   });
 
-  const deleteSettingsMutation = useMutation(() =>
-    axios.post("http://localhost:3000/api/settings/saveSettings", {
-      settingsPayload: {},
-      settingsKey: "directConnect",
-    }),
-  );
+  const deleteSettingsMutation = useMutation({
+    mutationFn: () =>
+      axios.post("http://localhost:3000/api/settings/saveSettings", {
+        settingsPayload: {},
+        settingsKey: "directConnect",
+      }),
+  });
 
   const initFormData = settingsData?.data?.directConnect?.client?.host ?? {};
 

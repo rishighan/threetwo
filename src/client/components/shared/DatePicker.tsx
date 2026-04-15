@@ -1,21 +1,25 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, Dispatch, SetStateAction } from "react";
 import { format } from "date-fns";
 import FocusTrap from "focus-trap-react";
-import { ClassNames, DayPicker } from "react-day-picker";
+import { DayPicker } from "react-day-picker";
 import { useFloating, offset, flip, autoUpdate } from "@floating-ui/react-dom";
 import styles from "react-day-picker/dist/style.module.css";
 
-export const DatePickerDialog = (props) => {
+interface DatePickerDialogProps {
+  setter: Dispatch<SetStateAction<string>>;
+  apiAction?: () => void;
+  inputValue?: string;
+}
+
+export const DatePickerDialog = (props: DatePickerDialogProps) => {
   const { setter, apiAction } = props;
   const [selected, setSelected] = useState<Date>();
   const [isPopperOpen, setIsPopperOpen] = useState(false);
 
-  const classNames: ClassNames = {
-    ...styles,
-    head: "custom-head",
-  };
+  // Use styles without casting - let TypeScript infer
+  const classNames = styles as unknown as Record<string, string>;
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const { x, y, reference, floating, strategy, refs, update } = useFloating({
+  const { refs, floatingStyles, strategy, update } = useFloating({
     placement: "bottom-end",
     middleware: [offset(10), flip()],
     strategy: "absolute",
@@ -33,11 +37,11 @@ export const DatePickerDialog = (props) => {
     }
   };
 
-  const handleDaySelect = (date) => {
+  const handleDaySelect = (date: Date | undefined) => {
     setSelected(date);
     if (date) {
       setter(format(date, "yyyy/MM/dd"));
-      apiAction();
+      apiAction?.();
       closePopper();
     } else {
       setter("");
@@ -46,7 +50,7 @@ export const DatePickerDialog = (props) => {
 
   return (
     <div>
-      <div ref={reference}>
+      <div ref={refs.setReference}>
         <button
           ref={buttonRef}
           type="button"
@@ -69,10 +73,10 @@ export const DatePickerDialog = (props) => {
           }}
         >
           <div
-            ref={floating}
+            ref={refs.setFloating}
             style={{
-              position: strategy,
-              zIndex: "999",
+              ...floatingStyles,
+              zIndex: 999,
               borderRadius: "10px",
               boxShadow: "0 4px 6px rgba(0,0,0,0.1)", // Example of adding a shadow
             }}

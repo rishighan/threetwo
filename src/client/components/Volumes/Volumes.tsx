@@ -1,5 +1,4 @@
-import React, { ReactElement, useEffect, useMemo } from "react";
-import { searchIssue } from "../../actions/fileops.actions";
+import React, { ReactElement, useMemo } from "react";
 import Card from "../shared/Carda";
 import T2Table from "../shared/T2Table";
 import ellipsize from "ellipsize";
@@ -8,8 +7,45 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { SEARCH_SERVICE_BASE_URI } from "../../constants/endpoints";
+import { CellContext, ColumnDef } from "@tanstack/react-table";
 
-export const Volumes = (props): ReactElement => {
+interface VolumesProps {
+  [key: string]: unknown;
+}
+
+interface VolumeSourceData {
+  _id: string;
+  _source: {
+    sourcedMetadata: {
+      comicvine: {
+        volumeInformation: {
+          name: string;
+          description?: string;
+          image: {
+            small_url: string;
+          };
+          publisher: {
+            name: string;
+          };
+          count_of_issues: number;
+        };
+      };
+    };
+    acquisition?: {
+      directconnect?: unknown[];
+    };
+  };
+}
+
+interface VolumeInformation {
+  name: string;
+  publisher: {
+    name: string;
+  };
+  count_of_issues?: number;
+}
+
+export const Volumes = (_props: VolumesProps): ReactElement => {
   // const volumes = useSelector((state: RootState) => state.fileOps.volumes);
   const {
     data: volumes,
@@ -34,17 +70,18 @@ export const Volumes = (props): ReactElement => {
     queryKey: ["volumes"],
   });
   const columnData = useMemo(
-    (): any => [
+    (): ColumnDef<VolumeSourceData, unknown>[] => [
       {
         header: "Volume Details",
         id: "volumeDetails",
-        minWidth: 450,
-        accessorFn: (row) => row,
-        cell: (row): any => {
-          const comicObject = row.getValue();
+        size: 450,
+        accessorFn: (row: VolumeSourceData) => row,
+        cell: (info: CellContext<VolumeSourceData, VolumeSourceData>) => {
+          const comicObject = info.getValue();
           const {
             _source: { sourcedMetadata },
           } = comicObject;
+          const description = sourcedMetadata.comicvine.volumeInformation.description || '';
           return (
             <div className="flex flex-row gap-3 mt-5">
               <Link to={`/volume/details/${comicObject._id}`}>
@@ -61,9 +98,9 @@ export const Volumes = (props): ReactElement => {
                   {sourcedMetadata.comicvine.volumeInformation.name}
                 </div>
                 <p>
-                  {ellipsize(
+                  {description ? ellipsize(
                     convert(
-                      sourcedMetadata.comicvine.volumeInformation.description,
+                      description,
                       {
                         baseElements: {
                           selectors: ["p"],
@@ -71,7 +108,7 @@ export const Volumes = (props): ReactElement => {
                       },
                     ),
                     180,
-                  )}
+                  ) : ''}
                 </p>
               </div>
             </div>
@@ -84,9 +121,8 @@ export const Volumes = (props): ReactElement => {
           {
             header: "Downloads",
             accessorKey: "_source.acquisition.directconnect",
-            align: "right",
-            cell: (props) => {
-              const row = props.getValue();
+            cell: (props: CellContext<VolumeSourceData, unknown[] | undefined>) => {
+              const row = props.getValue() || [];
               return (
                 <div
                   style={{
@@ -105,16 +141,16 @@ export const Volumes = (props): ReactElement => {
           {
             header: "Publisher",
             accessorKey: "_source.sourcedMetadata.comicvine.volumeInformation",
-            cell: (props): any => {
+            cell: (props: CellContext<VolumeSourceData, VolumeInformation>) => {
               const row = props.getValue();
-              return <div className="mt-5 text-md">{row.publisher.name}</div>;
+              return <div className="mt-5 text-md">{row?.publisher?.name}</div>;
             },
           },
           {
             header: "Issue Count",
             accessorKey:
               "_source.sourcedMetadata.comicvine.volumeInformation.count_of_issues",
-            cell: (props): any => {
+            cell: (props: CellContext<VolumeSourceData, number>) => {
               const row = props.getValue();
               return (
                 <div className="mt-5">

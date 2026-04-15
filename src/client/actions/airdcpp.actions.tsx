@@ -32,9 +32,38 @@ import {
   AIRDCPP_SOCKET_DISCONNECTED,
 } from "../constants/action-types";
 import { isNil } from "lodash";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
 import type { AirDCPPSearchData } from "../types";
+import type { Dispatch } from "react";
+
+/** Redux action type for AirDC++ actions */
+interface AirDCPPAction {
+  type: string;
+  data?: unknown;
+  downloadResult?: unknown;
+  bundleDBImportResult?: AxiosResponse | null;
+  bundles?: AirDCPPBundle[];
+  issue_bundles?: AxiosResponse;
+  comicBookDetail?: unknown;
+  IMS_inProgress?: boolean;
+}
+
+/** AirDC++ Bundle type */
+interface AirDCPPBundle {
+  id: string;
+  name?: string;
+  [key: string]: unknown;
+}
+
+/** Download item in acquisition data */
+interface AirDCPPDownloadItem {
+  bundleId: string;
+  [key: string]: unknown;
+}
+
+/** Thunk dispatch type */
+type ThunkDispatch = Dispatch<AirDCPPAction>;
 
 /**
  * Creates a promise that resolves after a specified delay.
@@ -58,7 +87,7 @@ export const sleep = (ms: number): Promise<NodeJS.Timeout> => {
  * @returns {Function} Redux thunk function
  */
 export const toggleAirDCPPSocketConnectionStatus =
-  (status: String, payload?: any) => async (dispatch) => {
+  (status: String, payload?: unknown) => async (dispatch: ThunkDispatch) => {
     switch (status) {
       case "connected":
         dispatch({
@@ -102,16 +131,16 @@ export const downloadAirDCPPItem =
     comicObjectId: String,
     name: String,
     size: Number,
-    type: any,
-    ADCPPSocket: any,
-    credentials: any,
-  ): void =>
-  async (dispatch) => {
+    type: unknown,
+    ADCPPSocket: { isConnected: () => boolean; connect: () => Promise<void>; post: (url: string) => Promise<{ bundle_info: { id: string } }> },
+    credentials: unknown,
+  ) =>
+  async (dispatch: ThunkDispatch) => {
     try {
       if (!ADCPPSocket.isConnected()) {
         await ADCPPSocket.connect();
       }
-      let bundleDBImportResult = {};
+      let bundleDBImportResult: AxiosResponse | null = null;
       const downloadResult = await ADCPPSocket.post(
         `search/${searchInstanceId}/results/${resultId}/download`,
       );
@@ -140,7 +169,7 @@ export const downloadAirDCPPItem =
 
         dispatch({
           type: IMS_COMIC_BOOK_DB_OBJECT_FETCHED,
-          comicBookDetail: bundleDBImportResult.data,
+          comicBookDetail: bundleDBImportResult?.data,
           IMS_inProgress: false,
         });
       }
@@ -161,8 +190,8 @@ export const downloadAirDCPPItem =
  * @throws {Error} If fetching comic or bundles fails
  */
 export const getBundlesForComic =
-  (comicObjectId: string, ADCPPSocket: any, credentials: any) =>
-  async (dispatch) => {
+  (comicObjectId: string, ADCPPSocket: { isConnected: () => boolean; connect: () => Promise<void>; get: (url: string) => Promise<AirDCPPBundle> }, credentials: unknown) =>
+  async (dispatch: ThunkDispatch) => {
     try {
       if (!ADCPPSocket.isConnected()) {
         await ADCPPSocket.connect();
@@ -181,7 +210,7 @@ export const getBundlesForComic =
       if (comicObject.data.acquisition.directconnect) {
         const filteredBundles =
           comicObject.data.acquisition.directconnect.downloads.map(
-            async ({ bundleId }) => {
+            async ({ bundleId }: AirDCPPDownloadItem) => {
               return await ADCPPSocket.get(`queue/bundles/${bundleId}`);
             },
           );
@@ -207,7 +236,7 @@ export const getBundlesForComic =
  * @throws {Error} If fetching transfers fails
  */
 export const getTransfers =
-  (ADCPPSocket: any, credentials: any) => async (dispatch) => {
+  (ADCPPSocket: { isConnected: () => boolean; connect: () => Promise<void>; get: (url: string, options: Record<string, unknown>) => Promise<AirDCPPBundle[]> }, credentials: unknown) => async (dispatch: ThunkDispatch) => {
     try {
       if (!ADCPPSocket.isConnected()) {
         await ADCPPSocket.connect();
@@ -218,7 +247,7 @@ export const getTransfers =
           type: AIRDCPP_TRANSFERS_FETCHED,
           bundles,
         });
-        const bundleIds = bundles.map((bundle) => bundle.id);
+        const bundleIds = bundles.map((bundle: AirDCPPBundle) => bundle.id);
         // get issues with matching bundleIds
         const issue_bundles = await axios({
           url: `${SEARCH_SERVICE_BASE_URI}/groupIssuesByBundles`,

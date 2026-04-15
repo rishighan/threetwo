@@ -1,6 +1,11 @@
-import React from "react";
+import React, { ReactNode } from "react";
 
-export function Grid({ children, columns }) {
+interface GridProps {
+  children: ReactNode;
+  columns: number;
+}
+
+export function Grid({ children, columns }: GridProps) {
   return (
     <div
       style={{

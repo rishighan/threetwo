@@ -33,7 +33,7 @@ type DownloadTickData = {
 export const DownloadProgressTick: React.FC<DownloadProgressTickProps> = ({
   bundleId,
 }): ReactElement | null => {
-  const socketRef = useRef<Socket>();
+  const socketRef = useRef<Socket | undefined>(undefined);
   const [tick, setTick] = useState<DownloadTickData | null>(null);
   useEffect(() => {
     const socket = useStore.getState().getSocket("manual");

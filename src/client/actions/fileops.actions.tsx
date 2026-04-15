@@ -43,6 +43,55 @@ import {
 } from "../constants/action-types";
 
 import { isNil } from "lodash";
+import type { Dispatch } from "react";
+
+/** Redux action type for fileops actions */
+interface FileOpsAction {
+  type: string;
+  data?: unknown;
+  status?: unknown;
+  searchResults?: unknown;
+  searchQueryObject?: unknown;
+  importResult?: unknown;
+  importError?: unknown;
+  result?: unknown;
+  meta?: { remote: boolean };
+}
+
+/** Options for fetching comic books */
+interface GetComicBooksOptions {
+  paginationOptions: Record<string, unknown>;
+  predicate: Record<string, unknown>;
+  comicStatus: string;
+}
+
+/** Search payload for ComicVine matching */
+interface CVSearchPayload {
+  rawFileDetails: Record<string, unknown>;
+}
+
+/** Issue search query structure */
+interface IssueSearchQuery {
+  inferredIssueDetails: {
+    name: string;
+    [key: string]: unknown;
+  };
+}
+
+/** Search query options */
+interface SearchQueryOptions {
+  trigger: string;
+  [key: string]: unknown;
+}
+
+/** Match object for ComicVine */
+interface CVMatch {
+  score?: string;
+  [key: string]: unknown;
+}
+
+/** Thunk dispatch type */
+type ThunkDispatch = Dispatch<FileOpsAction>;
 
 /**
  * Redux thunk action creator to fetch library service health status.
@@ -51,7 +100,7 @@ import { isNil } from "lodash";
  * @param {string} [serviceName] - Optional specific service name to check
  * @returns {Function} Redux thunk function that dispatches LIBRARY_SERVICE_HEALTH
  */
-export const getServiceStatus = (serviceName?: string) => async (dispatch) => {
+export const getServiceStatus = (serviceName?: string) => async (dispatch: ThunkDispatch) => {
   axios
     .request({
       url: `${LIBRARY_SERVICE_BASE_URI}/getHealthInformation`,
@@ -86,7 +135,7 @@ export async function walkFolder(path: string): Promise<Array<IFolderData>> {
  * Fetches comic book covers along with some metadata
  * @return the comic book metadata
  */
-export const fetchComicBookMetadata = () => async (dispatch) => {
+export const fetchComicBookMetadata = () => async (dispatch: ThunkDispatch) => {
   dispatch({
     type: LS_IMPORT_CALL_IN_PROGRESS,
   });
@@ -113,7 +162,7 @@ export const fetchComicBookMetadata = () => async (dispatch) => {
   });
 };
 
-export const getImportJobResultStatistics = () => async (dispatch) => {
+export const getImportJobResultStatistics = () => async (dispatch: ThunkDispatch) => {
   const result = await axios.request({
     url: `${JOB_QUEUE_SERVICE_BASE_URI}/getJobResultStatistics`,
     method: "GET",
@@ -125,7 +174,7 @@ export const getImportJobResultStatistics = () => async (dispatch) => {
 };
 
 export const setQueueControl =
-  (queueAction: string, queueStatus: string) => async (dispatch) => {
+  (queueAction: string, queueStatus: string) => async (dispatch: ThunkDispatch) => {
     dispatch({
       type: LS_SET_QUEUE_STATUS,
       meta: { remote: true },
@@ -138,7 +187,7 @@ export const setQueueControl =
  * @return metadata for the comic book object categories
  * @param options
  **/
-export const getComicBooks = (options) => async (dispatch) => {
+export const getComicBooks = (options: GetComicBooksOptions) => async (dispatch: ThunkDispatch) => {
   const { paginationOptions, predicate, comicStatus } = options;
 
   const response = await axios.request({
@@ -174,7 +223,7 @@ export const getComicBooks = (options) => async (dispatch) => {
  * @param payload
  */
 export const importToDB =
-  (sourceName: string, metadata?: any) => (dispatch) => {
+  (sourceName: string, metadata?: unknown) => (dispatch: ThunkDispatch) => {
     try {
       const comicBookMetadata = {
         importType: "new",
@@ -218,7 +267,7 @@ export const importToDB =
     }
   };
 
-export const fetchVolumeGroups = () => async (dispatch) => {
+export const fetchVolumeGroups = () => async (dispatch: ThunkDispatch) => {
   try {
     dispatch({
       type: IMS_COMIC_BOOK_GROUPS_CALL_IN_PROGRESS,
@@ -236,7 +285,7 @@ export const fetchVolumeGroups = () => async (dispatch) => {
   }
 };
 export const fetchComicVineMatches =
-  (searchPayload, issueSearchQuery, seriesSearchQuery?) => async (dispatch) => {
+  (searchPayload: CVSearchPayload, issueSearchQuery: IssueSearchQuery, seriesSearchQuery?: unknown) => async (dispatch: ThunkDispatch) => {
     try {
       dispatch({
         type: CV_API_CALL_IN_PROGRESS,
@@ -266,14 +315,14 @@ export const fetchComicVineMatches =
           },
         })
         .then((response) => {
-          let matches: any = [];
+          let matches: CVMatch[] = [];
           if (
             !isNil(response.data.results) &&
             response.data.results.length === 1
           ) {
             matches = response.data.results;
           } else {
-            matches = response.data.map((match) => match);
+            matches = response.data.map((match: CVMatch) => match);
           }
           dispatch({
             type: CV_SEARCH_SUCCESS,
@@ -300,8 +349,8 @@ export const fetchComicVineMatches =
  * @returns {any}
  */
 export const extractComicArchive =
-  (path: string, options: any): any =>
-  async (dispatch) => {
+  (path: string, options: Record<string, unknown>) =>
+  async (dispatch: ThunkDispatch) => {
     dispatch({
       type: IMS_COMIC_BOOK_ARCHIVE_EXTRACTION_CALL_IN_PROGRESS,
     });
@@ -324,7 +373,7 @@ export const extractComicArchive =
  * @param {any} options
  * @returns {any}
  */
-export const searchIssue = (query, options) => async (dispatch) => {
+export const searchIssue = (query: Record<string, unknown>, options: SearchQueryOptions) => async (dispatch: ThunkDispatch) => {
   dispatch({
     type: SS_SEARCH_IN_PROGRESS,
   });
@@ -374,7 +423,7 @@ export const searchIssue = (query, options) => async (dispatch) => {
   }
 };
 export const analyzeImage =
-  (imageFilePath: string | Buffer) => async (dispatch) => {
+  (imageFilePath: string | Buffer) => async (dispatch: ThunkDispatch) => {
     dispatch({
       type: FILEOPS_STATE_RESET,
     });

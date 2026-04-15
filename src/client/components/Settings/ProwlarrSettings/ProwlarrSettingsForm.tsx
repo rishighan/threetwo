@@ -4,9 +4,13 @@ import { Form, Field } from "react-final-form";
 import { PROWLARR_SERVICE_BASE_URI } from "../../../constants/endpoints";
 import axios from "axios";
 
-export const ProwlarrSettingsForm = (props) => {
+interface ProwlarrSettingsFormProps {
+  // Add props here if needed
+}
+
+export const ProwlarrSettingsForm = (_props: ProwlarrSettingsFormProps) => {
   const { data } = useQuery({
-    queryFn: async (): any => {
+    queryFn: async () => {
       return await axios({
         url: `${PROWLARR_SERVICE_BASE_URI}/getIndexers`,
         method: "POST",

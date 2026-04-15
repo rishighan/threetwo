@@ -8,10 +8,33 @@ import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
 import { escapePoundSymbol } from "../../shared/utils/formatting.utils";
 import prettyBytes from "pretty-bytes";
 
-const PotentialLibraryMatches = (props): ReactElement => {
+interface PotentialLibraryMatchesProps {
+  matches: string[];
+}
+
+interface ComicBookMatch {
+  rawFileDetails: {
+    cover: {
+      filePath: string;
+    };
+    name: string;
+    containedIn: string;
+    extension: string;
+    fileSize: number;
+  };
+}
+
+// Local state type for redux selector
+interface LocalRootState {
+  comicInfo?: {
+    comicBooksDetails?: ComicBookMatch[];
+  };
+}
+
+const PotentialLibraryMatches = (props: PotentialLibraryMatchesProps): ReactElement => {
   const dispatch = useDispatch();
   const comicBooks = useSelector(
-    (state: RootState) => state.comicInfo.comicBooksDetails,
+    (state: LocalRootState) => state.comicInfo?.comicBooksDetails,
   );
   useEffect(() => {
     dispatch(getComicBooksDetailsByIds(props.matches));
