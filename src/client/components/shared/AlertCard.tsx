@@ -6,25 +6,7 @@
  */
 
 import { ReactElement, ReactNode } from "react";
-
-/**
- * Visual style variants for the alert card.
- * @typedef {"error"|"warning"|"info"|"success"} AlertVariant
- */
-export type AlertVariant = "error" | "warning" | "info" | "success";
-
-interface AlertCardProps {
-  /** The visual style variant of the alert */
-  variant: AlertVariant;
-  /** Optional title displayed prominently */
-  title?: string;
-  /** Main message content */
-  children: ReactNode;
-  /** Optional callback when dismiss button is clicked */
-  onDismiss?: () => void;
-  /** Additional CSS classes */
-  className?: string;
-}
+import type { AlertVariant, AlertCardProps } from "../../types";
 
 const variantStyles: Record<AlertVariant, {
   container: string;

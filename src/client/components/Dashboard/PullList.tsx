@@ -12,10 +12,7 @@ import { Form } from "react-final-form";
 import DatePickerDialog from "../shared/DatePicker";
 import { format } from "date-fns";
 import { LocgMetadata, useGetWeeklyPullListQuery } from "../../graphql/generated";
-
-interface PullListProps {
-  issues?: LocgMetadata[];
-}
+import type { PullListProps } from "../../types";
 
 export const PullList = (): ReactElement => {
   const queryClient = useQueryClient();

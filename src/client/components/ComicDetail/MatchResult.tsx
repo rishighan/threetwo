@@ -5,13 +5,7 @@ import ellipsize from "ellipsize";
 import { LIBRARY_SERVICE_BASE_URI } from "../../constants/endpoints";
 import axios from "axios";
 import { useGetComicByIdQuery } from "../../graphql/generated";
-
-interface MatchResultProps {
-  matchData: any;
-  comicObjectId: string;
-  queryClient?: any;
-  onMatchApplied?: () => void;
-}
+import type { MatchResultProps } from "../../types";
 
 const handleBrokenImage = (e) => {
   e.target.src = "http://localhost:3050/dist/img/noimage.svg";

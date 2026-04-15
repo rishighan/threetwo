@@ -10,7 +10,7 @@ import "react-sliding-pane/dist/react-sliding-pane.css";
 import SlidingPane from "react-sliding-pane";
 import { determineCoverFile } from "../../shared/utils/metadata.utils";
 import { styled } from "styled-components";
-import type { RawFileDetails as RawFileDetailsType, InferredMetadata } from "../../graphql/generated";
+import type { ComicDetailProps } from "../../types";
 
 // Extracted modules
 import { useComicVineMatching } from "./useComicVineMatching";
@@ -22,39 +22,6 @@ import { CVMatchesPanel, EditMetadataPanelWrapper } from "./SlidingPanelContent"
 const StyledSlidingPanel = styled(SlidingPane)`
   background: #ccc;
 `;
-
-interface ComicVineMetadata {
-  name?: string;
-  volumeInformation?: Record<string, unknown>;
-  [key: string]: unknown;
-}
-
-interface Acquisition {
-  directconnect?: {
-    downloads?: unknown[];
-  };
-  torrent?: unknown[];
-  [key: string]: unknown;
-}
-
-interface ComicDetailProps {
-  data: {
-    _id: string;
-    rawFileDetails?: RawFileDetailsType;
-    inferredMetadata: InferredMetadata;
-    sourcedMetadata: {
-      comicvine?: ComicVineMetadata;
-      locg?: Record<string, unknown>;
-      comicInfo?: Record<string, unknown>;
-    };
-    acquisition?: Acquisition;
-    createdAt: string;
-    updatedAt: string;
-  };
-  userSettings?: Record<string, unknown>;
-  queryClient?: unknown;
-  comicObjectId?: string;
-}
 
 /**
  * Displays full comic detail: cover, file info, action menu, and tabbed panels

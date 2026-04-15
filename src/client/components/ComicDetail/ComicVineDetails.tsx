@@ -4,16 +4,7 @@ import dayjs from "dayjs";
 import { isEmpty, isUndefined } from "lodash";
 import Card from "../shared/Carda";
 import { convert } from "html-to-text";
-
-interface ComicVineDetailsProps {
-  updatedAt?: string;
-  data?: {
-    name?: string;
-    number?: string;
-    resource_type?: string;
-    id?: number;
-  };
-}
+import type { ComicVineDetailsProps } from "../../types";
 
 export const ComicVineDetails = (props: ComicVineDetailsProps): ReactElement => {
   const { data, updatedAt } = props;

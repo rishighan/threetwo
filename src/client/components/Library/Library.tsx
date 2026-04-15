@@ -14,14 +14,7 @@ import axios from "axios";
 import { format, parseISO } from "date-fns";
 import { useGetWantedComicsQuery } from "../../graphql/generated";
 
-type FilterOption = "all" | "missingFiles";
-
-interface SearchQuery {
-  query: Record<string, any>;
-  pagination: { size: number; from: number };
-  type: string;
-  trigger: string;
-}
+import type { LibrarySearchQuery, FilterOption } from "../../types";
 
 const FILTER_OPTIONS: { value: FilterOption; label: string }[] = [
   { value: "all", label: "All Comics" },
@@ -37,7 +30,7 @@ export const Library = (): ReactElement => {
   const initialFilter = (searchParams.get("filter") as FilterOption) ?? "all";
 
   const [activeFilter, setActiveFilter] = useState<FilterOption>(initialFilter);
-  const [searchQuery, setSearchQuery] = useState<SearchQuery>({
+  const [searchQuery, setSearchQuery] = useState<LibrarySearchQuery>({
     query: {},
     pagination: { size: 25, from: 0 },
     type: "all",
@@ -47,7 +40,7 @@ export const Library = (): ReactElement => {
   const queryClient = useQueryClient();
 
   /** Fetches a page of issues from the search API. */
-  const fetchIssues = async (q: SearchQuery) => {
+  const fetchIssues = async (q: LibrarySearchQuery) => {
     const { pagination, query, type } = q;
     return await axios({
       method: "POST",

@@ -1,31 +1,12 @@
 import React, { lazy } from "react";
 import { isNil, isEmpty } from "lodash";
+import type { TabConfig, TabConfigParams } from "../../types";
 
 const VolumeInformation = lazy(() => import("./Tabs/VolumeInformation").then(m => ({ default: m.VolumeInformation })));
 const ArchiveOperations = lazy(() => import("./Tabs/ArchiveOperations").then(m => ({ default: m.ArchiveOperations })));
 const AcquisitionPanel = lazy(() => import("./AcquisitionPanel"));
 const TorrentSearchPanel = lazy(() => import("./TorrentSearchPanel"));
 const DownloadsPanel = lazy(() => import("./DownloadsPanel"));
-
-interface TabConfig {
-  id: number;
-  name: string;
-  icon: React.ReactElement;
-  content: React.ReactElement | null;
-  shouldShow: boolean;
-}
-
-interface TabConfigParams {
-  data: any;
-  hasAnyMetadata: boolean;
-  areRawFileDetailsAvailable: boolean;
-  airDCPPQuery: any;
-  comicObjectId: string;
-  userSettings: any;
-  issueName: string;
-  acquisition?: any;
-  onReconcileMetadata?: () => void;
-}
 
 export const createTabConfig = ({
   data,

@@ -5,25 +5,7 @@
  */
 
 import { ReactElement } from "react";
-
-/**
- * Props for the ProgressBar component.
- * @interface ProgressBarProps
- */
-interface ProgressBarProps {
-  /** Current progress value */
-  current: number;
-  /** Total/maximum value */
-  total: number;
-  /** Whether the progress is actively running (shows animation) */
-  isActive?: boolean;
-  /** Label shown on the left side */
-  activeLabel?: string;
-  /** Label shown when complete */
-  completeLabel?: string;
-  /** Additional CSS classes */
-  className?: string;
-}
+import type { ProgressBarProps } from "../../types";
 
 /**
  * A reusable progress bar component with percentage display.

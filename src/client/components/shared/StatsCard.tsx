@@ -5,25 +5,7 @@
  */
 
 import { ReactElement } from "react";
-
-/**
- * Props for the StatsCard component.
- * @interface StatsCardProps
- */
-interface StatsCardProps {
-  /** The main numeric value to display */
-  value: number;
-  /** Label text below the value */
-  label: string;
-  /** Background color (CSS color string or Tailwind class) */
-  backgroundColor?: string;
-  /** Text color for the value (defaults to white) */
-  valueColor?: string;
-  /** Text color for the label (defaults to slightly transparent) */
-  labelColor?: string;
-  /** Additional CSS classes */
-  className?: string;
-}
+import type { StatsCardProps } from "../../types";
 
 /**
  * A reusable stats card component for displaying numeric metrics.

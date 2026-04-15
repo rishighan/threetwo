@@ -7,27 +7,7 @@ import {
   useReactTable,
   PaginationState,
 } from "@tanstack/react-table";
-
-/** Props for {@link T2Table}. */
-interface T2TableProps<TData> {
-  /** Row data to render. */
-  sourceData?: TData[];
-  /** Total number of records across all pages, used for pagination display. */
-  totalPages?: number;
-  /** Column definitions (TanStack Table {@link ColumnDef} array). */
-  columns?: ColumnDef<TData>[];
-  /** Callbacks for navigating between pages. */
-  paginationHandlers?: {
-    nextPage?(pageIndex: number, pageSize: number): void;
-    previousPage?(pageIndex: number, pageSize: number): void;
-  };
-  /** Called with the TanStack row object when a row is clicked. */
-  rowClickHandler?(row: Row<TData>): void;
-  /** Returns additional CSS classes for a given row (e.g. for highlight states). */
-  getRowClassName?(row: Row<TData>): string;
-  /** Optional slot rendered in the toolbar area (e.g. a search input). */
-  children?: ReactNode;
-}
+import type { T2TableProps } from "../../types";
 
 /**
  * A paginated data table with a two-row sticky header.

@@ -16,9 +16,9 @@ import Card from "../shared/Carda";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
 import { Link } from "react-router-dom";
 import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
+import type { LibraryGridProps } from "../../types";
 
-interface ILibraryGridProps {}
-export const LibraryGrid = (libraryGridProps: ILibraryGridProps) => {
+export const LibraryGrid = (libraryGridProps: LibraryGridProps) => {
   const data = useSelector(
     (state: RootState) => state.fileOps.recentComics.docs,
   );

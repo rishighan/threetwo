@@ -16,10 +16,9 @@ import {
   LIBRARY_SERVICE_BASE_URI,
 } from "../../constants/endpoints";
 import axios from "axios";
+import type { SearchPageProps } from "../../types";
 
-interface ISearchProps {}
-
-export const Search = ({}: ISearchProps): ReactElement => {
+export const Search = ({}: SearchPageProps): ReactElement => {
   const queryClient = useQueryClient();
   const formData = {
     search: "",

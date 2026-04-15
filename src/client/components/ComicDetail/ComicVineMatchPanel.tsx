@@ -3,15 +3,7 @@ import MatchResult from "./MatchResult";
 import { isEmpty } from "lodash";
 import { useStore } from "../../store";
 import { useShallow } from "zustand/react/shallow";
-
-interface ComicVineMatchPanelProps {
-  props: {
-    comicObjectId: string;
-    comicVineMatches: any[];
-    queryClient?: any;
-    onMatchApplied?: () => void;
-  };
-}
+import type { ComicVineMatchPanelProps } from "../../types";
 
 /** Displays ComicVine search results or a status message while searching. */
 export const ComicVineMatchPanel = ({ props: comicVineData }: ComicVineMatchPanelProps): ReactElement => {

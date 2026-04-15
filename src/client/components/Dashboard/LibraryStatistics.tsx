@@ -1,16 +1,7 @@
 import React, { ReactElement } from "react";
 import Header from "../shared/Header";
 import { GetLibraryStatisticsQuery, DirectorySize } from "../../graphql/generated";
-
-type Stats = Omit<GetLibraryStatisticsQuery["getLibraryStatistics"], "comicDirectorySize"> & {
-  comicDirectorySize: DirectorySize;
-  comicsMissingFiles: number;
-};
-
-/** Props for {@link LibraryStatistics}. */
-interface LibraryStatisticsProps {
-  stats: Stats | null | undefined;
-}
+import type { LibraryStatisticsProps } from "../../types";
 
 /**
  * Displays a snapshot of library metrics: total comic files, tagging coverage,

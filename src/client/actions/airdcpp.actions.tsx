@@ -34,19 +34,7 @@ import {
 import { isNil } from "lodash";
 import axios from "axios";
 
-/**
- * Configuration data for an AirDC++ search operation.
- * @interface SearchData
- * @property {Object} query - Search query parameters
- * @property {string} query.pattern - Search pattern/term (required)
- * @property {string[]|undefined|null} hub_urls - List of hub URLs to search
- * @property {PriorityEnum} priority - Download priority level
- */
-interface SearchData {
-  query: Pick<SearchQuery, "pattern"> & Partial<Omit<SearchQuery, "pattern">>;
-  hub_urls: string[] | undefined | null;
-  priority: PriorityEnum;
-}
+import type { AirDCPPSearchData } from "../types";
 
 /**
  * Creates a promise that resolves after a specified delay.

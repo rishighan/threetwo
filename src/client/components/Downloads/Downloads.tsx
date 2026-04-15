@@ -3,12 +3,9 @@ import { getTransfers } from "../../actions/airdcpp.actions";
 import { isEmpty, isNil, isUndefined } from "lodash";
 import { determineCoverFile } from "../../shared/utils/metadata.utils";
 import MetadataPanel from "../shared/MetadataPanel";
+import type { DownloadsProps } from "../../types";
 
-interface IDownloadsProps {
-  data: any;
-}
-
-export const Downloads = (props: IDownloadsProps): ReactElement => {
+export const Downloads = (props: DownloadsProps): ReactElement => {
   // const airDCPPConfiguration = useContext(AirDCPPSocketContext);
   const {
     airDCPPState: { settings, socket },

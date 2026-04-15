@@ -8,10 +8,9 @@ import DockerVars from "./DockerVars/DockerVars";
 import { ServiceStatuses } from "../ServiceStatuses/ServiceStatuses";
 import settingsObject from "../../constants/settings/settingsMenu.json";
 import { isUndefined, map } from "lodash";
+import type { SettingsProps } from "../../types";
 
-interface ISettingsProps {}
-
-export const Settings = (props: ISettingsProps): ReactElement => {
+export const Settings = (props: SettingsProps): ReactElement => {
   const [active, setActive] = useState("gen-db");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 

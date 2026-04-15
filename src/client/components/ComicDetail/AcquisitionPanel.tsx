@@ -17,16 +17,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { AIRDCPP_SERVICE_BASE_URI } from "../../constants/endpoints";
 import type { Socket } from "socket.io-client";
-
-interface IAcquisitionPanelProps {
-  query: any;
-  comicObjectId: any;
-  comicObject: any;
-  settings: any;
-}
+import type { AcquisitionPanelProps } from "../../types";
 
 export const AcquisitionPanel = (
-  props: IAcquisitionPanelProps,
+  props: AcquisitionPanelProps,
 ): ReactElement => {
   const socketRef = useRef<Socket>();
   const queryClient = useQueryClient();

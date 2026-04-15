@@ -1,9 +1,6 @@
 import * as React from "react";
+import type { ZeroStateProps } from "../../types";
 
-interface ZeroStateProps {
-  header: string;
-  message: string;
-}
 const ZeroState: React.FunctionComponent<ZeroStateProps> = (props) => {
   return (
     <article className="">

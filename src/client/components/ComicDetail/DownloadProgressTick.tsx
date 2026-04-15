@@ -2,32 +2,12 @@ import prettyBytes from "pretty-bytes";
 import React, { ReactElement, useEffect, useRef, useState } from "react";
 import { useStore } from "../../store";
 import type { Socket } from "socket.io-client";
-
-/**
- * @typedef {Object} DownloadProgressTickProps
- * @property {string} bundleId    - The bundle ID to filter ticks by (as string)
- */
-interface DownloadProgressTickProps {
-  bundleId: string;
-}
+import type { DownloadProgressTickProps } from "../../types";
 
 /**
  * Shape of the download tick data received over the socket.
- *
- * @typedef DownloadTickData
- * @property {number} id                 - Unique download ID
- * @property {string} name               - File name (e.g. "movie.mkv")
- * @property {number} downloaded_bytes   - Bytes downloaded so far
- * @property {number} size               - Total size in bytes
- * @property {number} speed              - Current download speed (bytes/sec)
- * @property {number} seconds_left       - Estimated seconds remaining
- * @property {{ id: string; str: string; completed: boolean; downloaded: boolean; failed: boolean; hook_error: any }} status
- *                                           - Status object (e.g. `{ id: "queued", str: "Running (15.1%)", ... }`)
- * @property {{ online: number; total: number; str: string }} sources
- *                                           - Peer count (e.g. `{ online: 1, total: 1, str: "1/1 online" }`)
- * @property {string} target             - Download destination (e.g. "/Downloads/movie.mkv")
  */
-interface DownloadTickData {
+type DownloadTickData = {
   id: number;
   name: string;
   downloaded_bytes: number;
@@ -48,7 +28,7 @@ interface DownloadTickData {
     str: string;
   };
   target: string;
-}
+};
 
 export const DownloadProgressTick: React.FC<DownloadProgressTickProps> = ({
   bundleId,

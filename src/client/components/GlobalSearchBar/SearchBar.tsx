@@ -5,12 +5,9 @@ import Card from "../shared/Carda";
 
 import { searchIssue } from "../../actions/fileops.actions";
 import MetadataPanel from "../shared/MetadataPanel";
+import type { GlobalSearchBarProps } from "../../types";
 
-interface ISearchBarProps {
-  data: any;
-}
-
-export const SearchBar = (data: ISearchBarProps): ReactElement => {
+export const SearchBar = (data: GlobalSearchBarProps): ReactElement => {
   const dispatch = useDispatch();
   const searchResults = useSelector(
     (state: RootState) => state.fileOps.librarySearchResultsFormatted,

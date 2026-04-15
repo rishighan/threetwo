@@ -3,10 +3,7 @@ import PullList from "../PullList/PullList";
 import { Volumes } from "../Volumes/Volumes";
 import WantedComics from "../WantedComics/WantedComics";
 import { Library } from "./Library";
-
-interface ITabulatedContentContainerProps {
-  category: string;
-}
+import type { TabulatedContentContainerProps } from "../../types";
 /**
  * Component to draw the contents of a category in a table.
  *
@@ -18,7 +15,7 @@ interface ITabulatedContentContainerProps {
  */
 
 const TabulatedContentContainer = (
-  props: ITabulatedContentContainerProps,
+  props: TabulatedContentContainerProps,
 ): ReactElement => {
   const { category } = props;
   const renderTabulatedContent = () => {
