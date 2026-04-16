@@ -1,23 +1,15 @@
 import React, { ReactElement } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
-import { getServiceStatus } from "../../actions/fileops.actions";
-
-interface AppRootState {
-  fileOps: {
-    libraryServiceStatus: unknown;
-  };
-}
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { LIBRARY_SERVICE_BASE_URI } from "../../constants/endpoints";
 
 export const ServiceStatuses = (): ReactElement => {
-  const serviceStatus = useSelector(
-    (state: AppRootState) => state.fileOps.libraryServiceStatus,
-  );
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const dispatch = useDispatch<any>();
-  useEffect(() => {
-    dispatch(getServiceStatus());
-  }, [dispatch]);
+  const { data } = useQuery({
+    queryKey: ["serviceStatus"],
+    queryFn: async () =>
+      axios({ url: `${LIBRARY_SERVICE_BASE_URI}/getHealthInformation`, method: "GET" }),
+  });
+  const serviceStatus = data?.data;
   return (
     <div className="is-clearfix">
       <div className="mt-4">

@@ -8,14 +8,14 @@ import {
 import { useTable, usePagination } from "react-table";
 import prettyBytes from "pretty-bytes";
 import ellipsize from "ellipsize";
-import { useDispatch, useSelector } from "react-redux";
-import { getComicBooks } from "../../actions/fileops.actions";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { isNil, isEmpty, isUndefined } from "lodash";
 import Masonry from "react-masonry-css";
 import Card from "../shared/Carda";
 import { detectIssueTypes } from "../../shared/utils/tradepaperback.utils";
 import { Link } from "react-router-dom";
-import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
+import { LIBRARY_SERVICE_HOST, LIBRARY_SERVICE_BASE_URI } from "../../constants/endpoints";
 import type { LibraryGridProps } from "../../types";
 
 interface ComicDoc {
@@ -39,22 +39,21 @@ interface ComicDoc {
   };
 }
 
-interface AppRootState {
-  fileOps: {
-    recentComics: {
-      docs: ComicDoc[];
-      totalDocs: number;
-    };
-  };
-}
-
 export const LibraryGrid = (libraryGridProps: LibraryGridProps) => {
-  const data = useSelector(
-    (state: AppRootState) => state.fileOps.recentComics.docs,
-  );
-  const pageTotal = useSelector(
-    (state: AppRootState) => state.fileOps.recentComics.totalDocs,
-  );
+  const { data: comicsData } = useQuery({
+    queryKey: ["recentComics"],
+    queryFn: async () =>
+      axios({
+        url: `${LIBRARY_SERVICE_BASE_URI}/getComicBooks`,
+        method: "POST",
+        data: {
+          paginationOptions: { size: 25, from: 0 },
+          predicate: {},
+        },
+      }),
+  });
+  const data: ComicDoc[] = comicsData?.data?.docs ?? [];
+  const pageTotal: number = comicsData?.data?.totalDocs ?? 0;
   const breakpointColumnsObj = {
     default: 5,
     1100: 4,

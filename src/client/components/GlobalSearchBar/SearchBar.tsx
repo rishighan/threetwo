@@ -1,44 +1,28 @@
 import { debounce, isEmpty, map } from "lodash";
 import React, { ReactElement, useCallback, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 import Card from "../shared/Carda";
 
-import { searchIssue } from "../../actions/fileops.actions";
 import MetadataPanel from "../shared/MetadataPanel";
+import { SEARCH_SERVICE_BASE_URI } from "../../constants/endpoints";
 import type { GlobalSearchBarProps } from "../../types";
 
-interface AppRootState {
-  fileOps: {
-    librarySearchResultsFormatted: Record<string, unknown>[];
-  };
-}
-
 export const SearchBar = (data: GlobalSearchBarProps): ReactElement => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const dispatch = useDispatch<any>();
-  const searchResults = useSelector(
-    (state: AppRootState) => state.fileOps.librarySearchResultsFormatted,
-  );
+  const [searchResults, setSearchResults] = useState<Record<string, unknown>[]>([]);
 
   const performSearch = useCallback(
-    debounce((e) => {
-      dispatch(
-        searchIssue(
-          {
-            query: {
-              volumeName: e.target.value,
-            },
-          },
-          {
-            pagination: {
-              size: 25,
-              from: 0,
-            },
-            type: "volumeName",
-            trigger: "globalSearchBar",
-          },
-        ),
-      );
+    debounce(async (e) => {
+      const response = await axios({
+        url: `${SEARCH_SERVICE_BASE_URI}/searchIssue`,
+        method: "POST",
+        data: {
+          query: { volumeName: e.target.value },
+          pagination: { size: 25, from: 0 },
+          type: "volumeName",
+          trigger: "globalSearchBar",
+        },
+      });
+      setSearchResults(response.data?.hits ?? []);
     }, 500),
     [data],
   );

@@ -1,10 +1,10 @@
 import { isArray, map } from "lodash";
-import React, { useEffect, ReactElement } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getComicBooksDetailsByIds } from "../../actions/comicinfo.actions";
+import React, { ReactElement } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { Card } from "../shared/Carda";
 import ellipsize from "ellipsize";
-import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
+import { LIBRARY_SERVICE_HOST, LIBRARY_SERVICE_BASE_URI } from "../../constants/endpoints";
 import { escapePoundSymbol } from "../../shared/utils/formatting.utils";
 import prettyBytes from "pretty-bytes";
 
@@ -24,21 +24,18 @@ interface ComicBookMatch {
   };
 }
 
-// Local state type for redux selector
-interface LocalRootState {
-  comicInfo?: {
-    comicBooksDetails?: ComicBookMatch[];
-  };
-}
-
 const PotentialLibraryMatches = (props: PotentialLibraryMatchesProps): ReactElement => {
-  const dispatch = useDispatch();
-  const comicBooks = useSelector(
-    (state: LocalRootState) => state.comicInfo?.comicBooksDetails,
-  );
-  useEffect(() => {
-    dispatch(getComicBooksDetailsByIds(props.matches));
-  }, []);
+  const { data } = useQuery({
+    queryKey: ["comicBooksDetails", props.matches],
+    queryFn: async () =>
+      axios({
+        url: `${LIBRARY_SERVICE_BASE_URI}/getComicBooksByIds`,
+        method: "POST",
+        data: { ids: props.matches },
+      }),
+    enabled: props.matches.length > 0,
+  });
+  const comicBooks: ComicBookMatch[] = data?.data ?? [];
   return (
     <div className="potential-matches-container mt-10">
       {isArray(comicBooks) ? (

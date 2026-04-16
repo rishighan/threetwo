@@ -1,7 +1,9 @@
 import React, { ReactElement, useCallback, useState } from "react";
-import { fetchMetronResource } from "../../../actions/metron.actions";
+import axios from "axios";
+import { isNil } from "lodash";
 import Creatable from "react-select/creatable";
 import { withAsyncPaginate } from "react-select-async-paginate";
+import { METRON_SERVICE_URI } from "../../../constants/endpoints";
 
 const CreatableAsyncPaginate = withAsyncPaginate(Creatable);
 
@@ -20,6 +22,12 @@ interface AdditionalType {
   page: number | null;
 }
 
+interface MetronResultItem {
+  name?: string;
+  __str__?: string;
+  id: number;
+}
+
 export const AsyncSelectPaginate = (props: AsyncSelectPaginateProps): ReactElement => {
   const [isAddingInProgress, setIsAddingInProgress] = useState(false);
 
@@ -29,14 +37,23 @@ export const AsyncSelectPaginate = (props: AsyncSelectPaginateProps): ReactEleme
     additional?: AdditionalType
   ) => {
     const page = additional?.page ?? 1;
-    return fetchMetronResource({
+    const options = {
       method: "GET",
       resource: props.metronResource || "",
-      query: {
-        name: query,
-        page,
+      query: { name: query, page },
+    };
+    const response = await axios.post(`${METRON_SERVICE_URI}/fetchResource`, options);
+    const results = response.data.results.map((result: MetronResultItem) => ({
+      label: result.name || result.__str__,
+      value: result.id,
+    }));
+    return {
+      options: results,
+      hasMore: !isNil(response.data.next),
+      additional: {
+        page: !isNil(response.data.next) ? page + 1 : null,
       },
-    });
+    };
   }, [props.metronResource]);
 
   return (

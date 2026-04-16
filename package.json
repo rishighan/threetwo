@@ -118,7 +118,6 @@
     "@types/prop-types": "^15.7.15",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@types/react-redux": "^7.1.34",
     "@types/react-table": "^7.7.20",
     "autoprefixer": "^10.4.27",
     "docdash": "^2.0.2",

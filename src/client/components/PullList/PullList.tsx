@@ -1,6 +1,5 @@
 import React, { ReactElement, useEffect, useMemo, useState } from "react";
 import T2Table from "../shared/T2Table";
-import { getWeeklyPullList } from "../../actions/comicinfo.actions";
 import Card from "../shared/Carda";
 import ellipsize from "ellipsize";
 import { isNil } from "lodash";
