@@ -56,7 +56,7 @@ export const Dashboard = (): ReactElement => {
 
   return (
     <>
-      <div className="mx-auto max-w-screen-xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
         <PullList />
         {recentComics.length > 0 && <RecentlyImported comics={recentComics} />}
         {/* Wanted comics */}

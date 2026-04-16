@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @config "../tailwind.config.ts";
 
+html, body {
+  overflow-x: hidden;
+}
+
 /* Custom Project Fonts */
 @font-face {
   font-family: "PP Object Sans Regular";

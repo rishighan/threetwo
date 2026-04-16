@@ -133,7 +133,7 @@ export const PullList = (): ReactElement => {
             />
           </div>
         </div>
-      <div className="w-lvw -mr-4 sm:-mr-6 lg:-mr-8">
+      <div className="mr-[calc(-1*(1rem+max(0px,(100vw-80rem)/2)))] sm:mr-[calc(-1*(1.5rem+max(0px,(100vw-80rem)/2)))] lg:mr-[calc(-1*(2rem+max(0px,(100vw-80rem)/2)))]">
         {isSuccess && !isLoading && (
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex">
