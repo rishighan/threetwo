@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Weekly Pull List page — displays comics releasing this week
+ * that the user has marked to follow.
+ * @module components/PullList/PullList
+ */
+
 import React, { ReactElement, useEffect, useMemo, useState } from "react";
 import T2Table from "../shared/T2Table";
 import Card from "../shared/Carda";
@@ -16,6 +22,15 @@ interface PullListComic {
   };
 }
 
+/**
+ * Weekly Pull List page component.
+ *
+ * Displays comics releasing this week that the user tracks.
+ * Fetching is not yet implemented — state is initialised to `null`
+ * so the table renders only when data is available, avoiding an empty-table flash.
+ *
+ * @returns {ReactElement} The pull list page UI
+ */
 export const PullList = (): ReactElement => {
   // Placeholder for pull list comics - would come from API/store
   const [pullListComics, setPullListComics] = useState<PullListComic[] | null>(null);
@@ -32,6 +47,7 @@ export const PullList = (): ReactElement => {
   }, []);
   const nextPageHandler = () => {};
   const previousPageHandler = () => {};
+  // Column def memoised — shape is static, no deps needed
   const columnData = useMemo(
     () => [
       {

@@ -96,7 +96,8 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   const hasAnyMetadata =
     isComicBookMetadataAvailable ||
     !isEmpty(comicInfo) ||
-    !isNil(locg);
+    !isNil(locg) ||
+    areRawFileDetailsAvailable;
 
   const areRawFileDetailsAvailable =
     !isUndefined(rawFileDetails) && !isEmpty(rawFileDetails);

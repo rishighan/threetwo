@@ -6,6 +6,7 @@ import { ReconcilerDrawer } from "./ReconcilerDrawer";
 import { fetcher } from "../../../graphql/fetcher";
 import { useGetComicByIdQuery } from "../../../graphql/generated";
 import type { CanonicalRecord } from "./useReconciler";
+import type { RawFileDetails as RawFileDetailsType } from "../../../graphql/generated";
 
 interface ComicVineMetadata {
   volumeInformation?: Record<string, unknown>;
@@ -28,6 +29,8 @@ interface VolumeInformationData {
   id?: string;
   sourcedMetadata?: SourcedMetadata;
   inferredMetadata?: { issue?: unknown };
+  rawFileDetails?: RawFileDetailsType;
+  createdAt?: string;
   updatedAt?: string;
 }
 
@@ -166,34 +169,37 @@ export const VolumeInformation = (
         );
       return true;
     });
-    if (
-      !isNil(data?.inferredMetadata?.issue) &&
-      !isEmpty(data?.inferredMetadata?.issue)
-    ) {
+    const hasLocalFile =
+      (!isNil(data?.rawFileDetails) && !isEmpty(data?.rawFileDetails)) ||
+      (!isNil(data?.inferredMetadata?.issue) && !isEmpty(data?.inferredMetadata?.issue));
+    if (hasLocalFile) {
       sources.push("inferredMetadata");
     }
     return sources;
-  }, [data?.sourcedMetadata, data?.inferredMetadata]);
+  }, [data?.sourcedMetadata, data?.inferredMetadata, data?.rawFileDetails]);
+
+  const onlyComicvine =
+    presentSources.length === 1 &&
+    !!data.sourcedMetadata?.comicvine?.volumeInformation;
 
   return (
     <div key={1}>
-      {presentSources.length > 1 && (
+      {(presentSources.length > 1 || (presentSources.length === 1 && !onlyComicvine)) && (
         <MetadataSourceChips
           sources={presentSources}
           onOpenReconciler={() => setReconcilerOpen(true)}
         />
       )}
-      {presentSources.length === 1 &&
-        data.sourcedMetadata?.comicvine?.volumeInformation && (
-          <ComicVineDetails
-            data={data.sourcedMetadata.comicvine}
-            updatedAt={data.updatedAt}
-          />
-        )}
+      {onlyComicvine && (
+        <ComicVineDetails
+          data={data.sourcedMetadata!.comicvine!}
+          updatedAt={data.updatedAt}
+        />
+      )}
       <ReconcilerDrawer
         open={isReconcilerOpen}
         onOpenChange={setReconcilerOpen}
-        sourcedMetadata={(data.sourcedMetadata ?? {}) as import("./useReconciler").RawSourcedMetadata}
+        sourcedMetadata={(data.sourcedMetadata ?? {}) as unknown as import("./useReconciler").RawSourcedMetadata}
         inferredMetadata={data.inferredMetadata as import("./useReconciler").RawInferredMetadata | undefined}
         onSave={saveCanonical}
       />

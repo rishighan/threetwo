@@ -145,7 +145,14 @@ export const Import = (): ReactElement => {
   }, [getSocket, queryClient]);
 
   /**
-   * Handles force re-import - re-imports all files to fix indexing issues
+   * Initiates a force re-import of all library files.
+   *
+   * When the queue is already drained, disconnects and reconnects the socket
+   * before triggering the import — ensures the backend receives a fresh session
+   * rather than reusing a stale one that would be ignored.
+   *
+   * Validates directory availability and active session state before proceeding
+   * to prevent duplicate or broken imports.
    */
   const handleForceReImport = async () => {
     setImportError(null);
@@ -194,6 +201,7 @@ export const Import = (): ReactElement => {
     }
   };
 
+  // `undefined` covers the initial state before any import has ever run in this session
   const canStartImport =
     !hasActiveSession &&
     (importJobQueue.status === "drained" || importJobQueue.status === undefined);
