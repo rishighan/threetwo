@@ -2,14 +2,15 @@ import React, { useCallback } from "react";
 import { Form, Field } from "react-final-form";
 import { ValidationErrors } from "final-form";
 
-interface ComicVineSearchFormProps {
-  rawFileDetails?: Record<string, unknown>;
-}
-
-interface SearchFormValues {
+export interface SearchFormValues {
   issueName?: string;
   issueNumber?: string;
   issueYear?: string;
+}
+
+interface ComicVineSearchFormProps {
+  rawFileDetails?: Record<string, unknown>;
+  onSearch?: (values: SearchFormValues) => void;
 }
 
 /**
@@ -22,17 +23,13 @@ interface SearchFormValues {
  * )
  */
 export const ComicVineSearchForm = (props: ComicVineSearchFormProps) => {
+  const { onSearch } = props;
+  
   const onSubmit = useCallback((value: SearchFormValues) => {
-    const userInititatedQuery = {
-      inferredIssueDetails: {
-        name: value.issueName,
-        number: value.issueNumber,
-        subtitle: "",
-        year: value.issueYear,
-      },
-    };
-    // dispatch(fetchComicVineMatches(data, userInititatedQuery));
-  }, []);
+    if (onSearch) {
+      onSearch(value);
+    }
+  }, [onSearch]);
   const validate = (_values: SearchFormValues): ValidationErrors | undefined => {
     return undefined;
   };

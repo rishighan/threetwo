@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ComicVineSearchForm } from "./ComicVineSearchForm";
+import { ComicVineSearchForm, SearchFormValues } from "./ComicVineSearchForm";
 import { ComicVineMatchPanel } from "./ComicVineMatchPanel";
 import { EditMetadataPanel } from "./EditMetadataPanel";
 import type { RawFileDetails, InferredMetadata } from "../../graphql/generated";
@@ -11,14 +11,19 @@ interface CVMatchesPanelProps {
   comicObjectId: string;
   queryClient: any;
   onMatchApplied: () => void;
+  onManualSearch: (formValues: SearchFormValues) => void;
 };
 
 /**
  * Collapsible container for manual ComicVine search form.
  * Allows users to manually search when auto-match doesn't yield results.
  */
-const CollapsibleSearchForm: React.FC<{ rawFileDetails?: RawFileDetails }> = ({
+const CollapsibleSearchForm: React.FC<{
+  rawFileDetails?: RawFileDetails;
+  onManualSearch: (formValues: SearchFormValues) => void;
+}> = ({
   rawFileDetails,
+  onManualSearch,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -47,7 +52,7 @@ const CollapsibleSearchForm: React.FC<{ rawFileDetails?: RawFileDetails }> = ({
       </button>
       {isExpanded && (
         <div className="p-4 bg-white dark:bg-slate-800">
-          <ComicVineSearchForm rawFileDetails={rawFileDetails} />
+          <ComicVineSearchForm rawFileDetails={rawFileDetails} onSearch={onManualSearch} />
         </div>
       )}
     </div>
@@ -71,6 +76,7 @@ export const CVMatchesPanel: React.FC<CVMatchesPanelProps> = ({
   comicObjectId,
   queryClient,
   onMatchApplied,
+  onManualSearch,
 }) => (
   <>
     <div className="border-slate-500 border rounded-lg p-2 mb-3">
@@ -83,7 +89,7 @@ export const CVMatchesPanel: React.FC<CVMatchesPanelProps> = ({
       ) : null}
     </div>
 
-    <CollapsibleSearchForm rawFileDetails={rawFileDetails} />
+    <CollapsibleSearchForm rawFileDetails={rawFileDetails} onManualSearch={onManualSearch} />
 
     <ComicVineMatchPanel
       props={{

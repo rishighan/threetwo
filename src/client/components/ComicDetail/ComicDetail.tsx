@@ -18,19 +18,20 @@ import { createTabConfig } from "./tabConfig";
 import { actionOptions, customStyles, ActionOption } from "./actionMenuConfig";
 import { CVMatchesPanel, EditMetadataPanelWrapper } from "./SlidingPanelContent";
 
-// Styled component - moved outside to prevent recreation
 const StyledSlidingPanel = styled(SlidingPane)`
   background: #ccc;
 `;
 
 /**
- * Displays full comic detail: cover, file info, action menu, and tabbed panels
+ * Displays full comic detail view: cover image, file info, action menu, and tabbed panels
  * for metadata, archive operations, and acquisition.
  *
- * @param data.queryClient - react-query client passed through to the CV match
- *   panel so it can invalidate queries after a match is applied.
- * @param data.comicObjectId - optional override for the comic ID; used when the
- *   component is rendered outside a route that provides the ID via `useParams`.
+ * @param {ComicDetailProps} props - Component props
+ * @param {Object} props.data - Comic book data containing rawFileDetails, inferredMetadata, sourcedMetadata, and acquisition
+ * @param {Object} [props.userSettings] - User preference settings
+ * @param {QueryClient} [props.queryClient] - React Query client for cache invalidation after CV match
+ * @param {string} [props.comicObjectId] - Optional ID override when rendered outside a route
+ * @returns {ReactElement} The rendered comic detail view
  */
 export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   const {
@@ -54,20 +55,17 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
   const { comicVineMatches, prepareAndFetchMatches } = useComicVineMatching();
 
-  // Action event handlers
-  const openDrawerWithCVMatches = () => {
+  const openDrawerWithCVMatches = (): void => {
     prepareAndFetchMatches(rawFileDetails, comicvine);
     setSlidingPanelContentId("CVMatches");
     setVisible(true);
   };
 
-  const openEditMetadataPanel = useCallback(() => {
+  const openEditMetadataPanel = useCallback((): void => {
     setSlidingPanelContentId("editComicBookMetadata");
     setVisible(true);
   }, []);
 
-  // Hide "match on Comic Vine" when there are no raw file details — matching
-  // requires file metadata to seed the search query.
   const filteredActionOptions: ActionOption[] = actionOptions.filter((item) => {
     if (isUndefined(rawFileDetails)) {
       return item.value !== "match-on-comic-vine";
@@ -75,7 +73,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     return true;
   });
 
-  const handleActionSelection = (action: ActionOption | null) => {
+  const handleActionSelection = (action: ActionOption | null): void => {
     if (!action) return;
     switch (action.value) {
       case "match-on-comic-vine":
@@ -89,17 +87,16 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     }
   };
 
-  // Check for metadata availability
-  const isComicBookMetadataAvailable =
+  const isComicBookMetadataAvailable: boolean =
     !isUndefined(comicvine) && !isUndefined(comicvine?.volumeInformation);
 
-  const hasAnyMetadata =
+  const hasAnyMetadata: boolean =
     isComicBookMetadataAvailable ||
     !isEmpty(comicInfo) ||
     !isNil(locg) ||
     areRawFileDetailsAvailable;
 
-  const areRawFileDetailsAvailable =
+  const areRawFileDetailsAvailable: boolean =
     !isUndefined(rawFileDetails) && !isEmpty(rawFileDetails);
 
   const { issueName, url } = determineCoverFile({
@@ -108,13 +105,11 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     locg,
   });
 
-  // Query for airdc++
   const airDCPPQuery = useMemo(() => ({
     issue: { name: issueName },
   }), [issueName]);
 
-  // Create tab configuration
-  const openReconcilePanel = useCallback(() => {
+  const openReconcilePanel = useCallback((): void => {
     setSlidingPanelContentId("metadataReconciliation");
     setVisible(true);
   }, []);
@@ -133,8 +128,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
 
   const filteredTabs = useMemo(() => tabGroup.filter((tab) => tab.shouldShow), [tabGroup]);
 
-  // Sliding panel content mapping
-  const renderSlidingPanelContent = () => {
+  const renderSlidingPanelContent = (): ReactElement | null => {
     switch (slidingPanelContentId) {
       case "CVMatches":
         return (
@@ -149,6 +143,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
               setVisible(false);
               setActiveTab(1);
             }}
+            onManualSearch={(formValues) => prepareAndFetchMatches(rawFileDetails, comicvine, formValues)}
           />
         );
       case "editComicBookMetadata":

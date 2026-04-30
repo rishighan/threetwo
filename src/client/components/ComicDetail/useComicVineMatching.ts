@@ -29,7 +29,6 @@ export const useComicVineMatching = () => {
   const fetchComicVineMatches = async (
     searchPayload: any,
     issueSearchQuery: ComicVineSearchQuery,
-    seriesSearchQuery: ComicVineSearchQuery,
   ) => {
     try {
       const response = await axios({
@@ -70,16 +69,28 @@ export const useComicVineMatching = () => {
   const prepareAndFetchMatches = (
     rawFileDetails: RawFileDetailsType | undefined,
     comicvine: ComicVineMetadata | undefined,
+    manualOverride?: { issueName?: string; issueNumber?: string; issueYear?: string },
   ) => {
-    let seriesSearchQuery: ComicVineSearchQuery = {} as ComicVineSearchQuery;
-    let issueSearchQuery: ComicVineSearchQuery = {} as ComicVineSearchQuery;
+    let issueSearchQuery: ComicVineSearchQuery;
 
-    if (!isUndefined(rawFileDetails) && rawFileDetails.name) {
+    if (manualOverride) {
+      issueSearchQuery = {
+        inferredIssueDetails: {
+          name: manualOverride.issueName || "",
+          number: manualOverride.issueNumber,
+          subtitle: "",
+          year: manualOverride.issueYear,
+        },
+      };
+    } else if (!isUndefined(rawFileDetails) && rawFileDetails.name) {
       issueSearchQuery = refineQuery(rawFileDetails.name) as ComicVineSearchQuery;
     } else if (!isEmpty(comicvine) && comicvine?.name) {
       issueSearchQuery = refineQuery(comicvine.name) as ComicVineSearchQuery;
+    } else {
+      issueSearchQuery = { inferredIssueDetails: { name: "" } };
     }
-    fetchComicVineMatches(rawFileDetails, issueSearchQuery, seriesSearchQuery);
+
+    fetchComicVineMatches(rawFileDetails, issueSearchQuery);
   };
 
   return {
