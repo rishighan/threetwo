@@ -27,9 +27,12 @@ export const T2Table = <TData,>({
   children,
 }: T2TableProps<TData>): ReactElement => {
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const tableRef = useRef<HTMLTableElement>(null);
   const firstHeaderRowRef = useRef<HTMLTableRowElement>(null);
   const [isSticky, setIsSticky] = useState(false);
   const [firstRowHeight, setFirstRowHeight] = useState(0);
+  const [tableRect, setTableRect] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
+  const [columnWidths, setColumnWidths] = useState<Map<string, number>>(new Map());
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -46,6 +49,33 @@ export const T2Table = <TData,>({
     if (firstHeaderRowRef.current)
       setFirstRowHeight(firstHeaderRowRef.current.getBoundingClientRect().height);
   }, []);
+
+  useEffect(() => {
+    const updateTableRect = () => {
+      if (tableRef.current) {
+        const rect = tableRef.current.getBoundingClientRect();
+        setTableRect({ left: rect.left + window.scrollX, width: rect.width });
+
+        // Measure column widths from the original table header cells
+        const headerCells = tableRef.current.querySelectorAll('thead th');
+        const widths = new Map<string, number>();
+        headerCells.forEach((cell) => {
+          const id = cell.getAttribute('data-column-id');
+          if (id) {
+            widths.set(id, cell.getBoundingClientRect().width);
+          }
+        });
+        setColumnWidths(widths);
+      }
+    };
+    updateTableRect();
+    window.addEventListener('resize', updateTableRect);
+    window.addEventListener('scroll', updateTableRect);
+    return () => {
+      window.removeEventListener('resize', updateTableRect);
+      window.removeEventListener('scroll', updateTableRect);
+    };
+  }, [sourceData]);
 
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: 1,
@@ -108,7 +138,44 @@ export const T2Table = <TData,>({
       </div>
 
       <div ref={sentinelRef} />
-      <table className="table-auto w-full text-sm text-gray-900 dark:text-slate-100">
+      {isSticky && (
+        <div
+          className="fixed top-0 z-20"
+          style={{ left: tableRect.left, width: tableRect.width }}
+        >
+          <table className="table-fixed w-full text-sm text-gray-900 dark:text-slate-100">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup, groupIndex) => (
+                <tr key={`sticky-${headerGroup.id}`}>
+                  {headerGroup.headers.map((header) => {
+                    const columnId = `${groupIndex}-${header.id}`;
+                    const width = columnWidths.get(columnId);
+                    return (
+                      <th
+                        key={`sticky-${header.id}`}
+                        colSpan={header.colSpan}
+                        style={width ? { width } : undefined}
+                        className={[
+                          'px-3 py-2 text-[11px] font-semibold tracking-wide uppercase text-left',
+                          'text-gray-500 dark:text-slate-400 bg-white dark:bg-slate-900',
+                          groupIndex === 0
+                            ? 'first:rounded-tl-xl last:rounded-tr-xl'
+                            : 'border-b-2 border-gray-200 dark:border-slate-600 first:rounded-bl-xl last:rounded-br-xl',
+                        ].join(' ')}
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(header.column.columnDef.header, header.getContext())}
+                      </th>
+                    );
+                  })}
+                </tr>
+              ))}
+            </thead>
+          </table>
+        </div>
+      )}
+      <table ref={tableRef} className="table-auto w-full text-sm text-gray-900 dark:text-slate-100">
         <thead>
           {table.getHeaderGroups().map((headerGroup, groupIndex) => (
             <tr key={headerGroup.id} ref={groupIndex === 0 ? firstHeaderRowRef : undefined}>
@@ -116,13 +183,13 @@ export const T2Table = <TData,>({
                 <th
                   key={header.id}
                   colSpan={header.colSpan}
-                  style={groupIndex === 1 ? { top: firstRowHeight } : undefined}
+                  data-column-id={`${groupIndex}-${header.id}`}
                   className={[
-                    'sticky z-10 px-3 py-2 text-[11px] font-semibold tracking-wide uppercase text-left',
+                    'px-3 py-2 text-[11px] font-semibold tracking-wide uppercase text-left',
                     'text-gray-500 dark:text-slate-400 bg-white dark:bg-slate-900',
                     groupIndex === 0
-                      ? `top-0 ${isSticky ? 'first:rounded-tl-xl last:rounded-tr-xl' : ''}`
-                      : `border-b-2 border-gray-200 dark:border-slate-600 shadow-md ${isSticky ? 'first:rounded-bl-xl last:rounded-br-xl' : ''}`,
+                      ? 'first:rounded-tl-xl last:rounded-tr-xl'
+                      : 'border-b-2 border-gray-200 dark:border-slate-600',
                   ].join(' ')}
                 >
                   {header.isPlaceholder
