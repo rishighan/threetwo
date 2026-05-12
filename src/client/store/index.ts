@@ -42,6 +42,10 @@ interface StoreState {
   comicvine: {
     scrapingStatus: string;
   };
+  /** Metron scraping state */
+  metron: {
+    scrapingStatus: string;
+  };
   /** Import job queue state and actions */
   importJobQueue: {
     successfulJobCount: number;
@@ -101,6 +105,10 @@ export const useStore = create<StoreState>((set, get) => ({
       set((s) => ({ comicvine: { ...s.comicvine, scrapingStatus: message } }))
     );
 
+    socket.on("METRON_SCRAPING_STATUS", ({ message }) =>
+      set((s) => ({ metron: { ...s.metron, scrapingStatus: message } }))
+    );
+
     socket.on("searchResultsAvailable", ({ query }) =>
       toast(`Results found for query: ${JSON.stringify(query, null, 2)}`)
     );
@@ -121,6 +129,8 @@ export const useStore = create<StoreState>((set, get) => ({
   },
 
   comicvine: { scrapingStatus: "" },
+
+  metron: { scrapingStatus: "" },
 
   importJobQueue: {
     successfulJobCount: 0,

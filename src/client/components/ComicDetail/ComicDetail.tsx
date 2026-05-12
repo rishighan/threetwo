@@ -14,9 +14,10 @@ import type { ComicDetailProps } from "../../types";
 
 // Extracted modules
 import { useComicVineMatching } from "./useComicVineMatching";
+import { useMetronMatching } from "./useMetronMatching";
 import { createTabConfig } from "./tabConfig";
 import { actionOptions, customStyles, ActionOption } from "./actionMenuConfig";
-import { CVMatchesPanel, EditMetadataPanelWrapper } from "./SlidingPanelContent";
+import { CVMatchesPanel, MetronMatchesPanel, EditMetadataPanelWrapper } from "./SlidingPanelContent";
 
 const StyledSlidingPanel = styled(SlidingPane)`
   background: #ccc;
@@ -39,7 +40,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
       _id,
       rawFileDetails,
       inferredMetadata,
-      sourcedMetadata: { comicvine, locg, comicInfo },
+      sourcedMetadata,
       acquisition,
       createdAt,
     },
@@ -48,16 +49,26 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     comicObjectId: comicObjectIdProp,
   } = data;
 
+  // Safely destructure sourcedMetadata with defaults for optional fields
+  const { comicvine, locg, comicInfo, metron } = sourcedMetadata || {};
+
   const [activeTab, setActiveTab] = useState<number | undefined>(undefined);
   const [visible, setVisible] = useState(false);
   const [slidingPanelContentId, setSlidingPanelContentId] = useState("");
 
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
   const { comicVineMatches, prepareAndFetchMatches } = useComicVineMatching();
+  const { metronMatches, prepareAndFetchMatches: prepareAndFetchMetronMatches } = useMetronMatching();
 
   const openDrawerWithCVMatches = (): void => {
     prepareAndFetchMatches(rawFileDetails, comicvine);
     setSlidingPanelContentId("CVMatches");
+    setVisible(true);
+  };
+
+  const openDrawerWithMetronMatches = (): void => {
+    prepareAndFetchMetronMatches(rawFileDetails, metron);
+    setSlidingPanelContentId("MetronMatches");
     setVisible(true);
   };
 
@@ -68,7 +79,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
 
   const filteredActionOptions: ActionOption[] = actionOptions.filter((item) => {
     if (isUndefined(rawFileDetails)) {
-      return item.value !== "match-on-comic-vine";
+      return item.value !== "match-on-comic-vine" && item.value !== "match-on-metron";
     }
     return true;
   });
@@ -79,6 +90,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
       case "match-on-comic-vine":
         openDrawerWithCVMatches();
         break;
+      case "match-on-metron":
+        openDrawerWithMetronMatches();
+        break;
       case "edit-metdata":
         openEditMetadataPanel();
         break;
@@ -86,6 +100,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
         break;
     }
   };
+
+  const areRawFileDetailsAvailable: boolean =
+    !isUndefined(rawFileDetails) && !isEmpty(rawFileDetails);
 
   const isComicBookMetadataAvailable: boolean =
     !isUndefined(comicvine) && !isUndefined(comicvine?.volumeInformation);
@@ -95,9 +112,6 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     !isEmpty(comicInfo) ||
     !isNil(locg) ||
     areRawFileDetailsAvailable;
-
-  const areRawFileDetailsAvailable: boolean =
-    !isUndefined(rawFileDetails) && !isEmpty(rawFileDetails);
 
   const { issueName, url } = determineCoverFile({
     rawFileDetails,
@@ -146,10 +160,38 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
             onManualSearch={(formValues) => prepareAndFetchMatches(rawFileDetails, comicvine, formValues)}
           />
         );
+      case "MetronMatches":
+        return (
+          <MetronMatchesPanel
+            rawFileDetails={rawFileDetails}
+            inferredMetadata={inferredMetadata}
+            metronMatches={metronMatches}
+            comicObjectId={comicObjectId || _id}
+            queryClient={queryClient}
+            onMatchApplied={() => {
+              setVisible(false);
+              setActiveTab(1);
+            }}
+            onManualSearch={(formValues) => prepareAndFetchMetronMatches(rawFileDetails, metron, formValues)}
+          />
+        );
       case "editComicBookMetadata":
         return <EditMetadataPanelWrapper rawFileDetails={rawFileDetails} />;
       default:
         return null;
+    }
+  };
+
+  const getSlidingPanelTitle = (): string => {
+    switch (slidingPanelContentId) {
+      case "CVMatches":
+        return "Comic Vine Search Matches";
+      case "MetronMatches":
+        return "Metron Search Matches";
+      case "editComicBookMetadata":
+        return "Edit Metadata";
+      default:
+        return "Panel";
     }
   };
 
@@ -205,7 +247,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
             <StyledSlidingPanel
               isOpen={visible}
               onRequestClose={() => setVisible(false)}
-              title={"Comic Vine Search Matches"}
+              title={getSlidingPanelTitle()}
               width={"600px"}
             >
               {renderSlidingPanelContent()}

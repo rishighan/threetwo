@@ -29,6 +29,14 @@ export type {
   VolumeInformationData,
   VolumeInformationProps,
   ScalarCellProps,
+  // Metron types
+  MetronSeries,
+  MetronIssue,
+  MetronMatch,
+  MetronMatchPanelProps,
+  MetronMatchResultProps,
+  MetronMatchesPanelProps,
+  MetronSearchFormValues,
 } from "./comic.types";
 
 // Dashboard types

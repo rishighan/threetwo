@@ -15,6 +15,24 @@ export const CVMatchLabel = (
   </span>
 );
 
+export const MetronMatchLabel = (
+  <span className="inline-flex flex-row items-center gap-2">
+    <div className="w-6 h-6">
+      <i className="icon-[solar--magic-stick-3-bold-duotone] w-6 h-6"></i>
+    </div>
+    <div>Match on Metron</div>
+  </span>
+);
+
+export const GCDMatchLabel = (
+  <span className="inline-flex flex-row items-center gap-2">
+    <div className="w-6 h-6">
+      <i className="icon-[solar--magic-stick-3-bold-duotone] w-6 h-6"></i>
+    </div>
+    <div>Match on GCD</div>
+  </span>
+);
+
 export const editLabel = (
   <span className="inline-flex flex-row items-center gap-2">
     <div className="w-6 h-6">
@@ -35,6 +53,8 @@ export const deleteLabel = (
 
 export const actionOptions: ActionOption[] = [
   { value: "match-on-comic-vine", label: CVMatchLabel },
+  { value: "match-on-metron", label: MetronMatchLabel },
+  { value: "match-on-gcd", label: GCDMatchLabel },
   { value: "edit-metdata", label: editLabel },
   { value: "delete-comic", label: deleteLabel },
 ];

@@ -38,6 +38,7 @@ export type ComicDetailProps = {
       comicvine?: ComicVineMetadata;
       locg?: Record<string, unknown>;
       comicInfo?: Record<string, unknown>;
+      metron?: Record<string, unknown>;
     };
     acquisition?: Acquisition;
     createdAt: string;
@@ -194,6 +195,8 @@ export type SourcedMetadata = {
   comicvine?: ComicVineMetadata;
   locg?: Record<string, unknown>;
   comicInfo?: Record<string, unknown>;
+  metron?: Record<string, unknown>;
+  gcd?: Record<string, unknown>;
 };
 
 /**
@@ -221,4 +224,93 @@ export type ScalarCellProps = {
   value: string | null;
   isSelected?: boolean;
   onClick?: () => void;
+};
+
+// ============================================
+// Metron Types
+// ============================================
+
+/**
+ * Metron series information from search results.
+ */
+export type MetronSeries = {
+  id: number;
+  name: string;
+  sort_name?: string;
+  volume?: number;
+  year_began: number;
+  year_end?: number | null;
+  issue_count: number;
+  publisher?: { id: number; name: string };
+  image: string;
+  resource_url?: string;
+};
+
+/**
+ * Metron issue information from search results.
+ */
+export type MetronIssue = {
+  id: number;
+  issueNumber: string;
+  cover_date: string;
+  store_date?: string | null;
+  image: string;
+  cover_hash?: string;
+  name?: string;
+  desc?: string;
+  series?: { id: number; name: string };
+  resource_url?: string;
+};
+
+/**
+ * Metron match result from volumeBasedSearch endpoint.
+ */
+export type MetronMatch = {
+  score: number;
+  issue: MetronIssue;
+  series: MetronSeries;
+};
+
+/**
+ * Props for MetronMatchPanel component.
+ */
+export type MetronMatchPanelProps = {
+  props: {
+    metronMatches: MetronMatch[];
+    comicObjectId: string;
+    queryClient?: unknown;
+    onMatchApplied?: () => void;
+  };
+};
+
+/**
+ * Props for MetronMatchResult component.
+ */
+export type MetronMatchResultProps = {
+  matchData: MetronMatch[];
+  comicObjectId: string;
+  queryClient?: any;
+  onMatchApplied?: () => void;
+};
+
+/**
+ * Props for MetronMatchesPanel in SlidingPanelContent.
+ */
+export type MetronMatchesPanelProps = {
+  rawFileDetails?: RawFileDetailsType;
+  metronMatches: MetronMatch[];
+  comicObjectId: string;
+  inferredMetadata?: InferredMetadata;
+  queryClient?: unknown;
+  onMatchApplied?: () => void;
+  onManualSearch?: (formValues: { issueName?: string; issueNumber?: string; issueYear?: string }) => void;
+};
+
+/**
+ * Search form values for Metron manual search.
+ */
+export type MetronSearchFormValues = {
+  issueName?: string;
+  issueNumber?: string;
+  issueYear?: string;
 };
