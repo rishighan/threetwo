@@ -1,8 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
 import { isUndefined, isEmpty } from "lodash";
 import { refineQuery } from "filename-parser";
-import { METRON_SERVICE_URI } from "../../constants/endpoints";
+import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
 import { RawFileDetails as RawFileDetailsType } from "../../graphql/generated";
 import type { MetronMatch } from "../../types";
 
@@ -21,8 +20,42 @@ type MetronMetadata = {
 };
 
 /**
+ * GraphQL query for Metron volume-based search
+ */
+const METRON_VOLUME_SEARCH_QUERY = `
+  query MetronVolumeBasedSearch($input: MetronVolumeSearchInput!) {
+    metronVolumeBasedSearch(input: $input) {
+      finalMatches {
+        score
+        nameMatchScore
+        seriesMatchScore
+        issue {
+          id
+          issueNumber
+          cover_date
+          image
+          title
+          desc
+        }
+        series {
+          id
+          name
+          year_began
+          issue_count
+          image
+          publisher {
+            id
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
+/**
  * Hook for managing Metron metadata matching.
- * Fetches and scores potential matches from the Metron API based on
+ * Fetches and scores potential matches from the Metron GraphQL API based on
  * raw file details or manual search parameters.
  *
  * @returns Object containing metronMatches array and prepareAndFetchMatches function
@@ -31,7 +64,7 @@ export const useMetronMatching = () => {
   const [metronMatches, setMetronMatches] = useState<MetronMatch[]>([]);
 
   /**
-   * Fetches matches from the Metron volumeBasedSearch endpoint.
+   * Fetches matches from the Metron metronVolumeBasedSearch GraphQL query.
    *
    * @param searchPayload - Raw file details to include in the request
    * @param issueSearchQuery - Parsed search query with series name, issue number, year
@@ -41,29 +74,40 @@ export const useMetronMatching = () => {
     issueSearchQuery: MetronSearchQuery
   ) => {
     try {
-      const response = await axios({
-        url: `${METRON_SERVICE_URI}/volumeBasedSearch`,
+      const response = await fetch(`${LIBRARY_SERVICE_HOST}/graphql`, {
         method: "POST",
-        data: {
-          scorerConfiguration: {
-            searchParams: {
-              name: issueSearchQuery.inferredIssueDetails.name
-                .replace(/[^a-zA-Z0-9 ]/g, "")
-                .trim(),
-              issueNumber: issueSearchQuery.inferredIssueDetails.number,
-              year: issueSearchQuery.inferredIssueDetails.year,
-              subtitle: issueSearchQuery.inferredIssueDetails.subtitle || "",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: METRON_VOLUME_SEARCH_QUERY,
+          variables: {
+            input: {
+              scorerConfiguration: {
+                searchParams: {
+                  name: issueSearchQuery.inferredIssueDetails.name
+                    .replace(/[^a-zA-Z0-9 ]/g, "")
+                    .trim(),
+                  issueNumber: String(issueSearchQuery.inferredIssueDetails.number || ""),
+                  year: issueSearchQuery.inferredIssueDetails.year || "",
+                  subtitle: issueSearchQuery.inferredIssueDetails.subtitle || "",
+                },
+              },
+              rawFileDetails: searchPayload,
             },
           },
-          rawFileDetails: searchPayload,
-        },
-        transformResponse: (r) => {
-          const data = JSON.parse(r);
-          return data;
-        },
+        }),
       });
 
-      const matches: MetronMatch[] = response.data.finalMatches || [];
+      const json = await response.json();
+
+      if (json.errors) {
+        console.error("GraphQL errors:", json.errors);
+        setMetronMatches([]);
+        return;
+      }
+
+      const matches: MetronMatch[] = json.data?.metronVolumeBasedSearch?.finalMatches || [];
       // Sort by score descending (best matches first)
       const scoredMatches = matches.sort(
         (a: MetronMatch, b: MetronMatch) => b.score - a.score
