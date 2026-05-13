@@ -45,21 +45,18 @@ export type AppSettings = {
   prowlarr?: Maybe<ProwlarrSettings>;
 };
 
-export type ApplyMetadataResponse = {
-  __typename?: 'ApplyMetadataResponse';
-  comicObjectId?: Maybe<Scalars['ID']['output']>;
-  message?: Maybe<Scalars['String']['output']>;
-  success: Scalars['Boolean']['output'];
-  updatedAt?: Maybe<Scalars['String']['output']>;
+export type ApplyMetronMetadataInput = {
+  comicObjectId: Scalars['ID']['input'];
+  metronIssueId: Scalars['Int']['input'];
+  metronSeriesId: Scalars['Int']['input'];
 };
 
-export type ApplyMetronMetadataInput = {
-  /** MongoDB ObjectId of the comic book to update */
-  comicObjectId: Scalars['ID']['input'];
-  /** Metron issue ID to apply metadata from */
-  metronIssueId: Scalars['Int']['input'];
-  /** Metron series ID for series information */
-  metronSeriesId: Scalars['Int']['input'];
+export type ApplyMetronMetadataResult = {
+  __typename?: 'ApplyMetronMetadataResult';
+  comicObjectId: Scalars['ID']['output'];
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+  updatedAt: Scalars['String']['output'];
 };
 
 export type Archive = {
@@ -888,12 +885,7 @@ export type Mutation = {
   addTorrent?: Maybe<AddTorrentResult>;
   analyzeImage: ImageAnalysisResult;
   applyComicVineMatch: Comic;
-  /**
-   * Apply Metron metadata to a comic book in the library.
-   * This fetches the issue and series details from Metron and stores them
-   * in the comic's sourcedMetadata.metron field.
-   */
-  applyMetronMetadata: ApplyMetadataResponse;
+  applyMetronMetadata: ApplyMetronMetadataResult;
   bulkResolveMetadata: Array<Comic>;
   forceCompleteSession: ForceCompleteResult;
   importComic: ImportComicResult;

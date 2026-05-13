@@ -2,14 +2,27 @@ import React from "react";
 import { isNil, map } from "lodash";
 import { convert } from "html-to-text";
 import ellipsize from "ellipsize";
-import { LIBRARY_SERVICE_BASE_URI } from "../../constants/endpoints";
-import axios from "axios";
+import { LIBRARY_SERVICE_HOST } from "../../constants/endpoints";
 import { useGetComicByIdQuery } from "../../graphql/generated";
 import type { MetronMatchResultProps, MetronMatch } from "../../types";
 
 const handleBrokenImage = (e: React.SyntheticEvent<HTMLImageElement>) => {
   e.currentTarget.src = "http://localhost:3050/dist/img/noimage.svg";
 };
+
+/**
+ * GraphQL mutation for applying Metron metadata to a comic
+ */
+const APPLY_METRON_METADATA_MUTATION = `
+  mutation ApplyMetronMetadata($input: ApplyMetronMetadataInput!) {
+    applyMetronMetadata(input: $input) {
+      success
+      message
+      comicObjectId
+      updatedAt
+    }
+  }
+`;
 
 /**
  * Displays individual Metron match results with issue and series information.
@@ -19,18 +32,33 @@ const handleBrokenImage = (e: React.SyntheticEvent<HTMLImageElement>) => {
 export const MetronMatchResult = (props: MetronMatchResultProps) => {
   /**
    * Applies the selected Metron match to the comic document.
-   * Calls the library service to update sourcedMetadata.metron.
+   * Calls the GraphQL mutation to update sourcedMetadata.metron.
    */
   const applyMetronMatch = async (match: MetronMatch, comicObjectId: string) => {
     try {
-      const response = await axios.request({
-        url: `${LIBRARY_SERVICE_BASE_URI}/applyMetronMetadata`,
+      const response = await fetch(`${LIBRARY_SERVICE_HOST}/graphql`, {
         method: "POST",
-        data: {
-          match,
-          comicObjectId,
+        headers: {
+          "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          query: APPLY_METRON_METADATA_MUTATION,
+          variables: {
+            input: {
+              comicObjectId,
+              metronIssueId: match.issue.id,
+              metronSeriesId: match.series.id,
+            },
+          },
+        }),
       });
+
+      const json = await response.json();
+
+      if (json.errors) {
+        console.error("GraphQL errors:", json.errors);
+        throw new Error(json.errors[0]?.message || "Failed to apply Metron metadata");
+      }
 
       // Invalidate and refetch the comic book metadata
       if (props.queryClient) {
@@ -44,7 +72,7 @@ export const MetronMatchResult = (props: MetronMatchResultProps) => {
         props.onMatchApplied();
       }
 
-      return response;
+      return json.data?.applyMetronMetadata;
     } catch (error) {
       console.error("Error applying Metron match:", error);
       throw error;

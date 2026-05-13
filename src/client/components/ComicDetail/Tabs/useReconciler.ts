@@ -218,81 +218,144 @@ function fromComicVine(cv: Record<string, unknown>): AdapterResult {
 
 /**
  * Extract canonical fields from a Metron / MetronInfo payload.
- * Keys are PascalCase mirroring the MetronInfo XSD schema.
+ * Handles both:
+ * - MetronInfo XSD schema format (PascalCase: Series.Name, Number, CoverDate)
+ * - Metron API response format (camelCase: series.name, issueNumber, cover_date)
  */
 function fromMetron(raw: Record<string, unknown>): AdapterResult {
   const s: SourceKey = "metron";
-  const series = raw.Series as Record<string, unknown> | undefined;
-  const pub = raw.Publisher as Record<string, unknown> | undefined;
+  
+  // Handle both MetronInfo XSD format (PascalCase) and Metron API format (camelCase)
+  const series = (raw.Series ?? raw.series ?? raw.seriesInformation) as Record<string, unknown> | undefined;
+  const issue = raw.issue as Record<string, unknown> | undefined;
+  const pub = (raw.Publisher ?? series?.publisher) as Record<string, unknown> | undefined;
 
   const nameList = (arr: unknown[]): ArrayItem[] =>
     arr
       .filter((x): x is Record<string, unknown> => !isNil(x))
-      .map((x) => makeArrayItem(s, x, safeString(x.name) ?? ""));
+      .map((x) => makeArrayItem(s, x, safeString(x.name ?? x.Name) ?? ""));
+
+  // Get series name from various possible locations
+  const seriesName = series?.Name ?? series?.name;
+  
+  // Get issue number from MetronInfo (Number) or API format (issueNumber)
+  const issueNumber = raw.Number ?? raw.issueNumber ?? issue?.issueNumber;
+  
+  // Get cover date from MetronInfo (CoverDate) or API format (cover_date)
+  const coverDate = raw.CoverDate ?? raw.cover_date ?? issue?.cover_date;
+  
+  // Get store date from MetronInfo (StoreDate) or API format (store_date)
+  const storeDate = raw.StoreDate ?? raw.store_date ?? issue?.store_date;
+  
+  // Get description from MetronInfo (Summary) or API format (desc)
+  const description = raw.Summary ?? raw.desc ?? issue?.desc;
+  
+  // Get publisher name
+  const publisherName = pub?.Name ?? pub?.name;
+  
+  // Get cover image
+  const coverImage = raw.image ?? issue?.image;
+  
+  // Get title
+  const title = raw.title ?? issue?.title ?? (raw.Stories as unknown[])?.[0];
+
+  // Handle credits from both formats
+  // MetronInfo format: Credits array with Creator and Roles
+  // API format: credits array with creator string and role array (array of strings or objects)
+  const credits = (raw.Credits ?? raw.credits ?? issue?.credits ?? []) as unknown[];
+  const creditItems: CreditItem[] = credits
+    .filter((c): c is Record<string, unknown> => !isNil(c))
+    .flatMap((c) => {
+      // MetronInfo format: Creator object and Roles array
+      const creator = c.Creator as Record<string, unknown> | undefined;
+      const roles = (c.Roles as unknown[]) ?? [];
+      if (creator && roles.length > 0) {
+        return roles
+          .filter((r) => !isNil(r))
+          .map((r) =>
+            makeCreditItem(
+              s,
+              safeString(creator?.name) ?? "",
+              safeString(typeof r === 'object' && r !== null ? (r as Record<string, unknown>).name : r) ?? "",
+              safeString(creator?.id) ?? undefined,
+            ),
+          );
+      }
+      // API format: creator is string, role is array (of strings or objects with name property)
+      const creatorName = safeString(c.creator);
+      const roleArray = (c.role ?? []) as unknown[];
+      if (creatorName && Array.isArray(roleArray) && roleArray.length > 0) {
+        return roleArray
+          .filter((role) => !isNil(role))
+          .map((role) => {
+            // role can be a string or an object with a name property
+            const roleName = typeof role === 'string'
+              ? role
+              : safeString((role as Record<string, unknown>)?.name) ?? "";
+            return makeCreditItem(s, creatorName, roleName, safeString(c.id) ?? undefined);
+          });
+      }
+      return [];
+    });
+
+  // Handle characters from both formats
+  const characters = (raw.Characters ?? raw.characters ?? issue?.characters ?? []) as unknown[];
+  
+  // Handle teams from both formats
+  const teams = (raw.Teams ?? raw.teams ?? issue?.teams ?? []) as unknown[];
+  
+  // Handle arcs/story arcs from both formats
+  const arcs = (raw.Arcs ?? raw.arcs ?? issue?.arcs ?? []) as unknown[];
 
   return {
-    title: makeScalarCandidate(s, (raw.Stories as unknown[])?.[0]),
-    series: makeScalarCandidate(s, series?.Name),
-    issueNumber: makeScalarCandidate(s, raw.Number),
+    title: makeScalarCandidate(s, title),
+    series: makeScalarCandidate(s, seriesName),
+    issueNumber: makeScalarCandidate(s, issueNumber),
     collectionTitle: makeScalarCandidate(s, raw.CollectionTitle),
-    publisher: makeScalarCandidate(s, pub?.Name),
-    imprint: makeScalarCandidate(s, pub?.Imprint),
-    coverDate: makeScalarCandidate(s, raw.CoverDate),
-    storeDate: makeScalarCandidate(s, raw.StoreDate),
-    description: makeScalarCandidate(s, raw.Summary),
-    notes: makeScalarCandidate(s, raw.Notes),
-    ageRating: makeScalarCandidate(s, raw.AgeRating),
-    pageCount: makeScalarCandidate(s, raw.PageCount),
-    format: makeScalarCandidate(s, series?.Format),
+    publisher: makeScalarCandidate(s, publisherName),
+    imprint: makeScalarCandidate(s, pub?.Imprint ?? pub?.imprint),
+    coverDate: makeScalarCandidate(s, coverDate),
+    storeDate: makeScalarCandidate(s, storeDate),
+    description: makeScalarCandidate(s, description),
+    notes: makeScalarCandidate(s, raw.Notes ?? raw.notes),
+    ageRating: makeScalarCandidate(s, raw.AgeRating ?? (raw.rating as Record<string, unknown>)?.name),
+    pageCount: makeScalarCandidate(s, raw.PageCount ?? raw.page_count ?? issue?.page_count),
+    format: makeScalarCandidate(s, series?.Format ?? (series?.series_type as Record<string, unknown>)?.name),
     language: makeScalarCandidate(s, series?.lang),
-    genres: nameList((raw.Genres as unknown[]) ?? []),
-    tags: ((raw.Tags as unknown[]) ?? [])
+    coverImage: makeScalarCandidate(s, coverImage),
+    genres: nameList((raw.Genres ?? raw.genres ?? []) as unknown[]),
+    tags: ((raw.Tags ?? raw.tags ?? []) as unknown[])
       .filter((t) => !isNil(t))
       .map((t) => makeArrayItem(s, t, safeString(t) ?? "")),
-    characters: nameList((raw.Characters as unknown[]) ?? []),
-    teams: nameList((raw.Teams as unknown[]) ?? []),
-    locations: nameList((raw.Locations as unknown[]) ?? []),
-    universes: ((raw.Universes as unknown[]) ?? [])
+    characters: nameList(characters),
+    teams: nameList(teams),
+    locations: nameList((raw.Locations ?? raw.locations ?? []) as unknown[]),
+    universes: ((raw.Universes ?? raw.universes ?? []) as unknown[])
       .filter((u): u is Record<string, unknown> => !isNil(u))
       .map((u) =>
         makeArrayItem(
           s,
           u,
-          [u.Name, u.Designation].filter(Boolean).join(" — "),
+          [u.Name ?? u.name, u.Designation ?? u.designation].filter(Boolean).join(" — "),
         ),
       ),
-    storyArcs: ((raw.Arcs as unknown[]) ?? [])
+    storyArcs: arcs
       .filter((a): a is Record<string, unknown> => !isNil(a))
       .map((a) =>
         makeArrayItem(
           s,
           a,
-          [a.Name, a.Number ? `#${a.Number}` : null].filter(Boolean).join(" "),
+          [a.Name ?? a.name, (a.Number ?? a.number) ? `#${a.Number ?? a.number}` : null].filter(Boolean).join(" "),
         ),
       ),
-    stories: ((raw.Stories as unknown[]) ?? [])
+    stories: ((raw.Stories ?? []) as unknown[])
       .filter((t) => !isNil(t))
       .map((t) => makeArrayItem(s, t, safeString(t) ?? "")),
-    creators: ((raw.Credits as unknown[]) ?? [])
-      .filter((c): c is Record<string, unknown> => !isNil(c))
-      .flatMap((c) => {
-        const creator = c.Creator as Record<string, unknown> | undefined;
-        const roles = (c.Roles as unknown[]) ?? [];
-        return roles
-          .filter((r): r is Record<string, unknown> => !isNil(r))
-          .map((r) =>
-            makeCreditItem(
-              s,
-              safeString(creator?.name) ?? "",
-              safeString(r.name ?? r) ?? "",
-              safeString(creator?.id) ?? undefined,
-            ),
-          );
-      }),
-    reprints: ((raw.Reprints as unknown[]) ?? [])
-      .filter((r) => !isNil(r))
-      .map((r) => makeArrayItem(s, r, safeString(r) ?? "")),
-    urls: ((raw.URLs as unknown[]) ?? [])
+    creators: creditItems,
+    reprints: ((raw.Reprints ?? raw.reprints ?? issue?.reprints ?? []) as unknown[])
+      .filter((r): r is Record<string, unknown> => !isNil(r))
+      .map((r) => makeArrayItem(s, r, safeString(r.issue ?? r) ?? "")),
+    urls: ((raw.URLs ?? raw.resource_url ? [raw.resource_url] : []) as unknown[])
       .filter((u) => !isNil(u))
       .map((u) => makeArrayItem(s, u, safeString(u) ?? "")),
   };
