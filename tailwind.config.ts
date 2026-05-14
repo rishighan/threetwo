@@ -1,4 +1,4 @@
-import { addDynamicIconSelectors } from "@iconify/tailwind";
+import addDynamicIconSelectors from "@iconify/tailwind4";
 import type { Config } from "tailwindcss";
 
 const config: Config = {

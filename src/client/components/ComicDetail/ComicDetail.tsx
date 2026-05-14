@@ -15,9 +15,10 @@ import type { ComicDetailProps } from "../../types";
 // Extracted modules
 import { useComicVineMatching } from "./useComicVineMatching";
 import { useMetronMatching } from "./useMetronMatching";
+import { useGCDMatching } from "./useGCDMatching";
 import { createTabConfig } from "./tabConfig";
 import { actionOptions, customStyles, ActionOption } from "./actionMenuConfig";
-import { CVMatchesPanel, MetronMatchesPanel, EditMetadataPanelWrapper } from "./SlidingPanelContent";
+import { CVMatchesPanel, MetronMatchesPanel, GCDMatchesPanel, EditMetadataPanelWrapper } from "./SlidingPanelContent";
 
 const StyledSlidingPanel = styled(SlidingPane)`
   background: #ccc;
@@ -51,6 +52,8 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
 
   // Safely destructure sourcedMetadata with defaults for optional fields
   const { comicvine, locg, comicInfo, metron } = sourcedMetadata || {};
+  // GCD metadata may exist in sourcedMetadata
+  const gcd = (sourcedMetadata as Record<string, unknown> | undefined)?.gcd as Record<string, unknown> | undefined;
 
   const [activeTab, setActiveTab] = useState<number | undefined>(undefined);
   const [visible, setVisible] = useState(false);
@@ -59,6 +62,12 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
   const { comicVineMatches, prepareAndFetchMatches } = useComicVineMatching();
   const { metronMatches, prepareAndFetchMatches: prepareAndFetchMetronMatches } = useMetronMatching();
+  const {
+    gcdMatches,
+    isLoading: gcdLoading,
+    error: gcdError,
+    prepareAndFetchMatches: prepareAndFetchGCDMatches
+  } = useGCDMatching();
 
   const openDrawerWithCVMatches = (): void => {
     prepareAndFetchMatches(rawFileDetails, comicvine);
@@ -72,6 +81,12 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     setVisible(true);
   };
 
+  const openDrawerWithGCDMatches = (): void => {
+    prepareAndFetchGCDMatches(rawFileDetails, gcd);
+    setSlidingPanelContentId("GCDMatches");
+    setVisible(true);
+  };
+
   const openEditMetadataPanel = useCallback((): void => {
     setSlidingPanelContentId("editComicBookMetadata");
     setVisible(true);
@@ -79,7 +94,7 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
 
   const filteredActionOptions: ActionOption[] = actionOptions.filter((item) => {
     if (isUndefined(rawFileDetails)) {
-      return item.value !== "match-on-comic-vine" && item.value !== "match-on-metron";
+      return item.value !== "match-on-comic-vine" && item.value !== "match-on-metron" && item.value !== "match-on-gcd";
     }
     return true;
   });
@@ -92,6 +107,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
         break;
       case "match-on-metron":
         openDrawerWithMetronMatches();
+        break;
+      case "match-on-gcd":
+        openDrawerWithGCDMatches();
         break;
       case "edit-metdata":
         openEditMetadataPanel();
@@ -175,6 +193,23 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
             onManualSearch={(formValues) => prepareAndFetchMetronMatches(rawFileDetails, metron, formValues)}
           />
         );
+      case "GCDMatches":
+        return (
+          <GCDMatchesPanel
+            rawFileDetails={rawFileDetails}
+            inferredMetadata={inferredMetadata}
+            gcdMatches={gcdMatches}
+            comicObjectId={comicObjectId || _id}
+            queryClient={queryClient}
+            onMatchApplied={() => {
+              setVisible(false);
+              setActiveTab(1);
+            }}
+            onManualSearch={(formValues) => prepareAndFetchGCDMatches(rawFileDetails, gcd, formValues)}
+            isLoading={gcdLoading}
+            error={gcdError}
+          />
+        );
       case "editComicBookMetadata":
         return <EditMetadataPanelWrapper rawFileDetails={rawFileDetails} />;
       default:
@@ -188,6 +223,8 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
         return "Comic Vine Search Matches";
       case "MetronMatches":
         return "Metron Search Matches";
+      case "GCDMatches":
+        return "Grand Comics Database Matches";
       case "editComicBookMetadata":
         return "Edit Metadata";
       default:

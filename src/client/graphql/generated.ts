@@ -332,6 +332,119 @@ export type ForceCompleteResult = {
   success: Scalars['Boolean']['output'];
 };
 
+export type GcdHealthResponse = {
+  __typename?: 'GCDHealthResponse';
+  configured: Scalars['Boolean']['output'];
+  databasePath?: Maybe<Scalars['String']['output']>;
+  databaseSize?: Maybe<Scalars['String']['output']>;
+  error?: Maybe<Scalars['String']['output']>;
+  lastModified?: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
+};
+
+export type GcdIssue = {
+  __typename?: 'GCDIssue';
+  barcode?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  isbn?: Maybe<Scalars['String']['output']>;
+  issueNumber: Scalars['String']['output'];
+  key_date?: Maybe<Scalars['String']['output']>;
+  notes?: Maybe<Scalars['String']['output']>;
+  page_count?: Maybe<Scalars['Int']['output']>;
+  price?: Maybe<Scalars['String']['output']>;
+  publication_date?: Maybe<Scalars['String']['output']>;
+  series?: Maybe<GcdSeries>;
+  series_id: Scalars['Int']['output'];
+  variant_name?: Maybe<Scalars['String']['output']>;
+  variant_of_id?: Maybe<Scalars['Int']['output']>;
+};
+
+export type GcdIssueSearchInput = {
+  issueNumber?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  series_id?: InputMaybe<Scalars['Int']['input']>;
+  series_name?: InputMaybe<Scalars['String']['input']>;
+  year?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type GcdIssueSearchResult = {
+  __typename?: 'GCDIssueSearchResult';
+  count: Scalars['Int']['output'];
+  results: Array<GcdIssue>;
+};
+
+export type GcdPublisher = {
+  __typename?: 'GCDPublisher';
+  country_id?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  url?: Maybe<Scalars['String']['output']>;
+  year_began?: Maybe<Scalars['Int']['output']>;
+  year_ended?: Maybe<Scalars['Int']['output']>;
+};
+
+export type GcdScorerConfigInput = {
+  searchParams: GcdSearchParamsInput;
+};
+
+export type GcdSearchParamsInput = {
+  issueNumber?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  publisher?: InputMaybe<Scalars['String']['input']>;
+  year?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type GcdSeries = {
+  __typename?: 'GCDSeries';
+  id: Scalars['Int']['output'];
+  issue_count: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  notes?: Maybe<Scalars['String']['output']>;
+  publisher?: Maybe<GcdPublisher>;
+  publisher_id: Scalars['Int']['output'];
+  publishing_format?: Maybe<Scalars['String']['output']>;
+  sort_name?: Maybe<Scalars['String']['output']>;
+  year_began?: Maybe<Scalars['Int']['output']>;
+  year_ended?: Maybe<Scalars['Int']['output']>;
+};
+
+export type GcdSeriesSearchInput = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  name: Scalars['String']['input'];
+  page?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type GcdSeriesSearchResult = {
+  __typename?: 'GCDSeriesSearchResult';
+  count: Scalars['Int']['output'];
+  results: Array<GcdSeries>;
+};
+
+export type GcdStory = {
+  __typename?: 'GCDStory';
+  characters?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  issue_id: Scalars['Int']['output'];
+  page_count?: Maybe<Scalars['Int']['output']>;
+  sequence_number: Scalars['Int']['output'];
+  synopsis?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+  type_id: Scalars['Int']['output'];
+};
+
+export type GcdVolumeSearchInput = {
+  rawFileDetails?: InputMaybe<Scalars['JSON']['input']>;
+  scorerConfiguration: GcdScorerConfigInput;
+};
+
+export type GcdVolumeSearchResult = {
+  __typename?: 'GCDVolumeSearchResult';
+  finalMatches: Array<ScoredGcdMatch>;
+  rawFileDetails?: Maybe<Scalars['JSON']['output']>;
+  scorerConfiguration?: Maybe<Scalars['JSON']['output']>;
+};
+
 export type GtinField = {
   __typename?: 'GTINField';
   isbn?: Maybe<Scalars['String']['output']>;
@@ -1068,11 +1181,21 @@ export type Query = {
   comics: ComicConnection;
   /** Fetch resource from Metron API (legacy) */
   fetchMetronResource: MetronResponse;
+  /** Check GCD service health and database status */
+  gcdHealth: GcdHealthResponse;
+  /** Advanced volume-based search with scoring (mirrors ComicVine volumeBasedSearch) */
+  gcdVolumeBasedSearch: GcdVolumeSearchResult;
   getActiveImportSession?: Maybe<ImportSession>;
   getComicBookGroups: Array<ComicBookGroup>;
   getComicBooks: ComicBooksResult;
   /** Get generic ComicVine resource (issues, volumes, etc.) */
   getComicVineResource: ComicVineResourceResponse;
+  /** Get GCD issue details by ID */
+  getGCDIssueById: GcdIssue;
+  /** Get GCD series details by ID */
+  getGCDSeriesById: GcdSeries;
+  /** Get stories for a GCD issue */
+  getGCDStoriesForIssue: Array<GcdStory>;
   getImportStatistics: ImportStatistics;
   /** Get all issues for a series by comic object ID */
   getIssuesForSeries: IssuesForSeriesResponse;
@@ -1096,6 +1219,10 @@ export type Query = {
   previewCanonicalMetadata?: Maybe<CanonicalMetadata>;
   /** Search ComicVine for volumes, issues, characters, etc. */
   searchComicVine: ComicVineSearchResult;
+  /** Search GCD for issues with filters */
+  searchGCDIssues: GcdIssueSearchResult;
+  /** Search GCD for series by name */
+  searchGCDSeries: GcdSeriesSearchResult;
   searchIssue: SearchIssueResult;
   /** Search Metron for issues with filters */
   searchMetronIssues: MetronIssueSearchResult;
@@ -1141,6 +1268,11 @@ export type QueryFetchMetronResourceArgs = {
 };
 
 
+export type QueryGcdVolumeBasedSearchArgs = {
+  input: GcdVolumeSearchInput;
+};
+
+
 export type QueryGetComicBooksArgs = {
   paginationOptions: PaginationOptionsInput;
   predicate?: InputMaybe<Scalars['PredicateInput']['input']>;
@@ -1149,6 +1281,21 @@ export type QueryGetComicBooksArgs = {
 
 export type QueryGetComicVineResourceArgs = {
   input: GetResourceInput;
+};
+
+
+export type QueryGetGcdIssueByIdArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryGetGcdSeriesByIdArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryGetGcdStoriesForIssueArgs = {
+  issueId: Scalars['Int']['input'];
 };
 
 
@@ -1205,6 +1352,16 @@ export type QueryPreviewCanonicalMetadataArgs = {
 
 export type QuerySearchComicVineArgs = {
   input: SearchInput;
+};
+
+
+export type QuerySearchGcdIssuesArgs = {
+  input: GcdIssueSearchInput;
+};
+
+
+export type QuerySearchGcdSeriesArgs = {
+  input: GcdSeriesSearchInput;
 };
 
 
@@ -1285,6 +1442,16 @@ export type ReprintField = {
   description: Scalars['String']['output'];
   id?: Maybe<Scalars['String']['output']>;
   provenance: Provenance;
+};
+
+export type ScoredGcdMatch = {
+  __typename?: 'ScoredGCDMatch';
+  issue: GcdIssue;
+  issueNumberScore?: Maybe<Scalars['Float']['output']>;
+  nameMatchScore?: Maybe<Scalars['Float']['output']>;
+  score: Scalars['Float']['output'];
+  series: GcdSeries;
+  yearMatchScore?: Maybe<Scalars['Float']['output']>;
 };
 
 export type ScoredMetronMatch = {

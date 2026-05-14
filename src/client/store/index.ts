@@ -46,6 +46,10 @@ interface StoreState {
   metron: {
     scrapingStatus: string;
   };
+  /** GCD (Grand Comics Database) scraping state */
+  gcd: {
+    scrapingStatus: string;
+  };
   /** Import job queue state and actions */
   importJobQueue: {
     successfulJobCount: number;
@@ -109,6 +113,10 @@ export const useStore = create<StoreState>((set, get) => ({
       set((s) => ({ metron: { ...s.metron, scrapingStatus: message } }))
     );
 
+    socket.on("GCD_SCRAPING_STATUS", ({ message }) =>
+      set((s) => ({ gcd: { ...s.gcd, scrapingStatus: message } }))
+    );
+
     socket.on("searchResultsAvailable", ({ query }) =>
       toast(`Results found for query: ${JSON.stringify(query, null, 2)}`)
     );
@@ -131,6 +139,8 @@ export const useStore = create<StoreState>((set, get) => ({
   comicvine: { scrapingStatus: "" },
 
   metron: { scrapingStatus: "" },
+
+  gcd: { scrapingStatus: "" },
 
   importJobQueue: {
     successfulJobCount: 0,
