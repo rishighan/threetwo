@@ -18,7 +18,12 @@ import { useMetronMatching } from "./useMetronMatching";
 import { useGCDMatching } from "./useGCDMatching";
 import { createTabConfig } from "./tabConfig";
 import { actionOptions, customStyles, ActionOption } from "./actionMenuConfig";
-import { CVMatchesPanel, MetronMatchesPanel, GCDMatchesPanel, EditMetadataPanelWrapper } from "./SlidingPanelContent";
+import {
+  CVMatchesPanel,
+  MetronMatchesPanel,
+  GCDMatchesPanel,
+  EditMetadataPanelWrapper,
+} from "./SlidingPanelContent";
 
 const StyledSlidingPanel = styled(SlidingPane)`
   background: #ccc;
@@ -53,7 +58,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   // Safely destructure sourcedMetadata with defaults for optional fields
   const { comicvine, locg, comicInfo, metron } = sourcedMetadata || {};
   // GCD metadata may exist in sourcedMetadata
-  const gcd = (sourcedMetadata as Record<string, unknown> | undefined)?.gcd as Record<string, unknown> | undefined;
+  const gcd = (sourcedMetadata as Record<string, unknown> | undefined)?.gcd as
+    | Record<string, unknown>
+    | undefined;
 
   const [activeTab, setActiveTab] = useState<number | undefined>(undefined);
   const [visible, setVisible] = useState(false);
@@ -61,12 +68,15 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
 
   const { comicObjectId } = useParams<{ comicObjectId: string }>();
   const { comicVineMatches, prepareAndFetchMatches } = useComicVineMatching();
-  const { metronMatches, prepareAndFetchMatches: prepareAndFetchMetronMatches } = useMetronMatching();
+  const {
+    metronMatches,
+    prepareAndFetchMatches: prepareAndFetchMetronMatches,
+  } = useMetronMatching();
   const {
     gcdMatches,
     isLoading: gcdLoading,
     error: gcdError,
-    prepareAndFetchMatches: prepareAndFetchGCDMatches
+    prepareAndFetchMatches: prepareAndFetchGCDMatches,
   } = useGCDMatching();
 
   const openDrawerWithCVMatches = (): void => {
@@ -94,7 +104,11 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
 
   const filteredActionOptions: ActionOption[] = actionOptions.filter((item) => {
     if (isUndefined(rawFileDetails)) {
-      return item.value !== "match-on-comic-vine" && item.value !== "match-on-metron" && item.value !== "match-on-gcd";
+      return (
+        item.value !== "match-on-comic-vine" &&
+        item.value !== "match-on-metron" &&
+        item.value !== "match-on-gcd"
+      );
     }
     return true;
   });
@@ -137,28 +151,48 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     locg,
   });
 
-  const airDCPPQuery = useMemo(() => ({
-    issue: { name: issueName },
-  }), [issueName]);
+  const airDCPPQuery = useMemo(
+    () => ({
+      issue: { name: issueName },
+    }),
+    [issueName],
+  );
 
   const openReconcilePanel = useCallback((): void => {
     setSlidingPanelContentId("metadataReconciliation");
     setVisible(true);
   }, []);
 
-  const tabGroup = useMemo(() => createTabConfig({
-    data: data.data,
-    hasAnyMetadata,
-    areRawFileDetailsAvailable,
-    airDCPPQuery,
-    comicObjectId: _id,
-    userSettings,
-    issueName,
-    acquisition,
-    onReconcileMetadata: openReconcilePanel,
-  }), [data.data, hasAnyMetadata, areRawFileDetailsAvailable, airDCPPQuery, _id, userSettings, issueName, acquisition, openReconcilePanel]);
+  const tabGroup = useMemo(
+    () =>
+      createTabConfig({
+        data: data.data,
+        hasAnyMetadata,
+        areRawFileDetailsAvailable,
+        airDCPPQuery,
+        comicObjectId: _id,
+        userSettings,
+        issueName,
+        acquisition,
+        onReconcileMetadata: openReconcilePanel,
+      }),
+    [
+      data.data,
+      hasAnyMetadata,
+      areRawFileDetailsAvailable,
+      airDCPPQuery,
+      _id,
+      userSettings,
+      issueName,
+      acquisition,
+      openReconcilePanel,
+    ],
+  );
 
-  const filteredTabs = useMemo(() => tabGroup.filter((tab) => tab.shouldShow), [tabGroup]);
+  const filteredTabs = useMemo(
+    () => tabGroup.filter((tab) => tab.shouldShow),
+    [tabGroup],
+  );
 
   const renderSlidingPanelContent = (): ReactElement | null => {
     switch (slidingPanelContentId) {
@@ -175,7 +209,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
               setVisible(false);
               setActiveTab(1);
             }}
-            onManualSearch={(formValues) => prepareAndFetchMatches(rawFileDetails, comicvine, formValues)}
+            onManualSearch={(formValues) =>
+              prepareAndFetchMatches(rawFileDetails, comicvine, formValues)
+            }
           />
         );
       case "MetronMatches":
@@ -190,7 +226,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
               setVisible(false);
               setActiveTab(1);
             }}
-            onManualSearch={(formValues) => prepareAndFetchMetronMatches(rawFileDetails, metron, formValues)}
+            onManualSearch={(formValues) =>
+              prepareAndFetchMetronMatches(rawFileDetails, metron, formValues)
+            }
           />
         );
       case "GCDMatches":
@@ -205,7 +243,9 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
               setVisible(false);
               setActiveTab(1);
             }}
-            onManualSearch={(formValues) => prepareAndFetchGCDMatches(rawFileDetails, gcd, formValues)}
+            onManualSearch={(formValues) =>
+              prepareAndFetchGCDMatches(rawFileDetails, gcd, formValues)
+            }
             isLoading={gcdLoading}
             error={gcdError}
           />
