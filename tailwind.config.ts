@@ -1,6 +1,10 @@
 import addDynamicIconSelectors from "@iconify/tailwind4";
 import type { Config } from "tailwindcss";
 
+/**
+ * Tailwind CSS configuration
+ * @type {Config}
+ */
 const config: Config = {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: "class",
