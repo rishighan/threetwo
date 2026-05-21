@@ -1,0 +1,95 @@
+import React, { lazy } from "react";
+import { isNil, isEmpty } from "lodash";
+import type { TabConfig, TabConfigParams } from "../../../types";
+
+const VolumeInformation = lazy(() => import("./tabs/VolumeInformation").then(m => ({ default: m.VolumeInformation })));
+const ArchiveOperations = lazy(() => import("./tabs/ArchiveOperations").then(m => ({ default: m.ArchiveOperations })));
+const AcquisitionPanel = lazy(() => import("./acquisition/AcquisitionPanel"));
+const TorrentSearchPanel = lazy(() => import("./acquisition/TorrentSearchPanel"));
+const DownloadsPanel = lazy(() => import("./acquisition/DownloadsPanel"));
+
+export const createTabConfig = ({
+  data,
+  hasAnyMetadata,
+  areRawFileDetailsAvailable,
+  airDCPPQuery,
+  comicObjectId,
+  userSettings,
+  issueName,
+  acquisition,
+  onReconcileMetadata,
+}: TabConfigParams): TabConfig[] => {
+  return [
+    {
+      id: 1,
+      name: "Volume Information",
+      icon: (
+        <i className="h-5 w-5 icon-[solar--book-2-bold] text-slate-500 dark:text-slate-300"></i>
+      ),
+      content: hasAnyMetadata ? (
+        <VolumeInformation data={data} onReconcile={onReconcileMetadata} />
+      ) : null,
+      shouldShow: hasAnyMetadata,
+    },
+    {
+      id: 3,
+      icon: (
+        <i className="h-5 w-5 icon-[solar--winrar-bold-duotone] text-slate-500 dark:text-slate-300" />
+      ),
+      name: "Archive Operations",
+      content: <ArchiveOperations data={data} />,
+      shouldShow: areRawFileDetailsAvailable,
+    },
+    {
+      id: 4,
+      icon: (
+        <i className="h-5 w-5 icon-[solar--folder-path-connect-bold-duotone] text-slate-500 dark:text-slate-300" />
+      ),
+      name: "DC++ Search",
+      content: (
+        <AcquisitionPanel
+          query={airDCPPQuery}
+          comicObjectId={comicObjectId}
+          comicObject={data}
+          settings={userSettings}
+        />
+      ),
+      shouldShow: true,
+    },
+    {
+      id: 5,
+      icon: (
+        <span className="inline-flex flex-row">
+          <i className="h-5 w-5 icon-[solar--magnet-bold-duotone] text-slate-500 dark:text-slate-300" />
+        </span>
+      ),
+      name: "Torrent Search",
+      content: <TorrentSearchPanel comicObjectId={comicObjectId} issueName={issueName} />,
+      shouldShow: true,
+    },
+    {
+      id: 6,
+      name: "Downloads",
+      icon: (
+        <>
+          {(acquisition?.directconnect?.downloads?.length || 0) +
+            (acquisition?.torrent?.length || 0)}
+        </>
+      ),
+      content:
+        !isNil(data) && !isEmpty(data) ? (
+          <DownloadsPanel />
+        ) : (
+          <div className="column is-three-fifths">
+            <article className="message is-info">
+              <div className="message-body is-size-6 is-family-secondary">
+                AirDC++ is not configured. Please configure it in{" "}
+                <code>Settings</code>.
+              </div>
+            </article>
+          </div>
+        ),
+      shouldShow: true,
+    },
+  ];
+};
