@@ -19,11 +19,6 @@ import { useGCDMatching } from "./metadata-matching/gcd/useGCDMatching";
 import { createTabConfig } from "./tabConfig";
 import { actionOptions, customStyles, ActionOption } from "./action-menu/actionMenuConfig";
 import { CVMatchesPanel, MetronMatchesPanel, GCDMatchesPanel, EditMetadataPanelWrapper } from "./components/SlidingPanelContent";
->>>>>>> 52eba9e (Reorganization of components):src/client/components/pages/ComicDetail/ComicDetail.tsx
-=======
-import { actionOptions, customStyles, ActionOption } from "./action-menu/actionMenuConfig";
-import { CVMatchesPanel, MetronMatchesPanel, GCDMatchesPanel, EditMetadataPanelWrapper } from "./components/SlidingPanelContent";
->>>>>>> 52eba9e (Reorganization of components):src/client/components/pages/ComicDetail/ComicDetail.tsx
 
 const StyledSlidingPanel = styled(SlidingPane)`
   background: #ccc;

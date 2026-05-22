@@ -13,7 +13,7 @@ import { convert } from "html-to-text";
 import ellipsize from "ellipsize";
 import type { MatchResultCardProps } from "./types";
 import { useApplyMatch, useMatchSource } from "./hooks";
-import { useGetComicByIdQuery } from "../../../graphql/generated";
+import { useGetComicByIdQuery } from "../../../../graphql/generated";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helper Components

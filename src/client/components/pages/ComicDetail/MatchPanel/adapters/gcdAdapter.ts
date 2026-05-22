@@ -12,7 +12,7 @@
  */
 
 import type { NormalizedMatch, BatchMatchAdapter } from "../types";
-import type { ScoredGCDMatch } from "../../../../graphql/gcd.types";
+import type { ScoredGCDMatch } from "../../../../../graphql/gcd.types";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Adapter Implementation

@@ -12,9 +12,9 @@ import { useState, useCallback } from "react";
 import axios from "axios";
 import type { MetadataSource, NormalizedMatch, UseApplyMatchReturn } from "../types";
 import type { RawComicVineMatch } from "../adapters/comicvineAdapter";
-import type { ScoredGCDMatch } from "../../../../graphql/gcd.types";
+import type { ScoredGCDMatch } from "../../../../../graphql/gcd.types";
 import type { MetronMatch } from "../../../../types/comic.types";
-import { LIBRARY_SERVICE_BASE_URI, LIBRARY_SERVICE_HOST } from "../../../../constants/endpoints";
+import { LIBRARY_SERVICE_BASE_URI, LIBRARY_SERVICE_HOST } from "../../../../../constants/endpoints";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GraphQL Mutations

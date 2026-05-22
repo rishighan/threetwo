@@ -14,7 +14,7 @@ import { useShallow } from "zustand/react/shallow";
 import type { MatchPanelProps, MetadataSource } from "./types";
 import { useMatchSource } from "./hooks";
 import { MatchResultCard } from "./MatchResultCard";
-import { useStore } from "../../../store";
+import { useStore } from "../../../../store";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // State Components
