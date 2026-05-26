@@ -2,7 +2,7 @@ import React, { ReactElement } from "react";
 import PullList from "../../PullList/PullList";
 import { Volumes } from "../../Volumes/Volumes";
 import WantedComics from "../../WantedComics/WantedComics";
-import LibraryGrid from "./LibraryGrid";
+import Library from "../Library";
 import type { TabulatedContentContainerProps } from "../../../../types";
 /**
  * Component to draw the contents of a category in a table.
@@ -21,7 +21,7 @@ const TabulatedContentContainer = (
   const renderTabulatedContent = () => {
     switch (category) {
       case "library":
-        return <LibraryGrid />;
+        return <Library />;
       case "pullList":
         return <PullList />;
       case "wanted":

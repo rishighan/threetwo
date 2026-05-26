@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { isEmpty, isNil, isUndefined } from "lodash";
 import MetadataPanel from "../../ui/data-display/MetadataPanel";
 import T2Table from "../../ui/data-display/T2Table";
-import SearchBar from "../Library/SearchBar";
+import SearchBar from "./components/SearchBar";
 import ellipsize from "ellipsize";
 import {
   useQuery,
@@ -317,7 +317,7 @@ export const Library = (): ReactElement => {
             columns={columns}
             sourceData={searchResults?.hits.hits}
             rowClickHandler={navigateToComicDetail}
-            getRowClassName={(row) =>
+                          getRowClassName={(row: any) =>
               missingIdSet.has(row.original._id)
                 ? "bg-card-missing/40 hover:bg-card-missing/20"
                 : "hover:bg-slate-100/30 dark:hover:bg-slate-700/20"
