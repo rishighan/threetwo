@@ -67,13 +67,14 @@ export const Library = (): ReactElement => {
     enabled: activeFilter === "all",
   });
 
-  const { data: missingFilesData, isLoading: isMissingLoading } = useGetWantedComicsQuery(
-    {
-      paginationOptions: { limit: 25, page: 1 },
-      predicate: { "importStatus.isRawFileMissing": true },
-    },
-    { enabled: activeFilter === "missingFiles" },
-  );
+  const { data: missingFilesData, isLoading: isMissingLoading } =
+    useGetWantedComicsQuery(
+      {
+        paginationOptions: { limit: 25, page: 1 },
+        predicate: { "importStatus.isRawFileMissing": true },
+      },
+      { enabled: activeFilter === "missingFiles" },
+    );
 
   const { data: missingIdsData } = useGetWantedComicsQuery(
     {
@@ -85,7 +86,10 @@ export const Library = (): ReactElement => {
 
   /** Set of comic IDs whose raw files are missing, used to highlight rows in the main table. */
   const missingIdSet = useMemo(
-    () => new Set((missingIdsData?.getComicBooks?.docs ?? []).map((doc: any) => doc.id)),
+    () =>
+      new Set(
+        (missingIdsData?.getComicBooks?.docs ?? []).map((doc: any) => doc.id),
+      ),
     [missingIdsData],
   );
 
@@ -96,13 +100,15 @@ export const Library = (): ReactElement => {
    * Navigates to the comic detail page for a regular comic.
    * @param {any} row - The table row containing comic data
    */
-  const navigateToComicDetail = (row: any) => navigate(`/comic/details/${row.original._id}`);
+  const navigateToComicDetail = (row: any) =>
+    navigate(`/comic/details/${row.original._id}`);
 
   /**
    * Navigates to the comic detail page for a comic with missing files.
    * @param {any} row - The table row containing comic data
    */
-  const navigateToMissingComicDetail = (row: any) => navigate(`/comic/details/${row.original.id}`);
+  const navigateToMissingComicDetail = (row: any) =>
+    navigate(`/comic/details/${row.original.id}`);
 
   /**
    * Triggers a search by volume name and resets pagination.
@@ -317,7 +323,9 @@ export const Library = (): ReactElement => {
       <div className="relative">
         <select
           value={activeFilter}
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setActiveFilter(e.target.value as FilterOption)}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+            setActiveFilter(e.target.value as FilterOption)
+          }
           className="appearance-none h-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 pl-3 pr-8 py-1.5 text-sm text-gray-700 dark:text-slate-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           {FILTER_OPTIONS.map((opt) => (
@@ -334,76 +342,86 @@ export const Library = (): ReactElement => {
   const isMissingFilter = activeFilter === "missingFiles";
 
   return (
-    <section>
-      <header>
-        <div className="mx-auto max-w-screen-xl px-4 py-2 sm:px-6 sm:py-8 lg:px-8 lg:py-4">
-          <div className="sm:flex sm:items-center sm:justify-between">
-            <div className="text-center sm:text-left">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
-                Library
-              </h1>
-              <p className="mt-1.5 text-sm text-gray-500 dark:text-white">
-                Browse your comic book collection.
-              </p>
+    <div>
+      <section>
+        <header className="bg-slate-200 dark:bg-slate-500">
+          <div className="mx-auto max-w-screen-xl px-4 py-2 sm:px-6 sm:py-8 lg:px-8 lg:py-4">
+            <div className="sm:flex sm:items-center sm:justify-between">
+              <div className="text-center sm:text-left">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
+                  Library
+                </h1>
+                <p className="mt-1.5 text-sm text-gray-500 dark:text-white">
+                  Browse your comic book collection.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {isMissingFilter ? (
         <div className="mx-auto max-w-screen-xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
-          {isMissingLoading ? (
-            <div className="text-gray-500 dark:text-gray-400">Loading...</div>
-          ) : (
+          {isMissingFilter ? (
+            <>
+              {isMissingLoading ? (
+                <div className="text-gray-500 dark:text-gray-400">
+                  Loading...
+                </div>
+              ) : (
+                <T2Table
+                  totalPages={missingFilesData?.getComicBooks?.totalDocs ?? 0}
+                  columns={missingFilesColumns}
+                  sourceData={missingFilesData?.getComicBooks?.docs ?? []}
+                  rowClickHandler={navigateToMissingComicDetail}
+                  getRowClassName={() =>
+                    "bg-card-missing/40 hover:bg-card-missing/20"
+                  }
+                  paginationHandlers={{
+                    nextPage: () => {},
+                    previousPage: () => {},
+                  }}
+                >
+                  <FilterDropdown />
+                </T2Table>
+              )}
+            </>
+          ) : !isUndefined(searchResults?.hits) ? (
             <T2Table
-              totalPages={missingFilesData?.getComicBooks?.totalDocs ?? 0}
-              columns={missingFilesColumns}
-              sourceData={missingFilesData?.getComicBooks?.docs ?? []}
-              rowClickHandler={navigateToMissingComicDetail}
-              getRowClassName={() => "bg-card-missing/40 hover:bg-card-missing/20"}
-              paginationHandlers={{ nextPage: () => {}, previousPage: () => {} }}
+              totalPages={searchResults.hits.total.value}
+              columns={columns}
+              sourceData={searchResults?.hits.hits}
+              rowClickHandler={navigateToComicDetail}
+              getRowClassName={(row: any) =>
+                missingIdSet.has(row.original._id)
+                  ? "bg-card-missing/40 hover:bg-card-missing/20"
+                  : "hover:bg-slate-100/30 dark:hover:bg-slate-700/20"
+              }
+              paginationHandlers={{ nextPage, previousPage }}
             >
-              <FilterDropdown />
+              <div className="flex items-center gap-2">
+                <FilterDropdown />
+                <SearchBar searchHandler={(e: any) => searchIssues(e)} />
+              </div>
             </T2Table>
+          ) : (
+            <div className="mt-5">
+              <article
+                role="alert"
+                className="rounded-lg max-w-screen-md border-s-4 border-yellow-500 bg-yellow-50 p-4 dark:border-s-4 dark:border-yellow-600 dark:bg-yellow-300 dark:text-slate-600"
+              >
+                <div>
+                  <p>
+                    No comics were found in the library, Elasticsearch reports
+                    no indices. Try importing a few comics into the library and
+                    come back.
+                  </p>
+                </div>
+              </article>
+              <FilterDropdown />
+            </div>
           )}
         </div>
-      ) : !isUndefined(searchResults?.hits) ? (
-        <div className="mx-auto max-w-screen-xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
-          <T2Table
-            totalPages={searchResults.hits.total.value}
-            columns={columns}
-            sourceData={searchResults?.hits.hits}
-            rowClickHandler={navigateToComicDetail}
-                          getRowClassName={(row: any) =>
-              missingIdSet.has(row.original._id)
-                ? "bg-card-missing/40 hover:bg-card-missing/20"
-                : "hover:bg-slate-100/30 dark:hover:bg-slate-700/20"
-            }
-            paginationHandlers={{ nextPage, previousPage }}
-          >
-            <div className="flex items-center gap-2">
-              <FilterDropdown />
-              <SearchBar searchHandler={(e: any) => searchIssues(e)} />
-            </div>
-          </T2Table>
-        </div>
-      ) : (
-        <div className="mx-auto max-w-screen-xl mt-5">
-          <article
-            role="alert"
-            className="rounded-lg max-w-screen-md border-s-4 border-yellow-500 bg-yellow-50 p-4 dark:border-s-4 dark:border-yellow-600 dark:bg-yellow-300 dark:text-slate-600"
-          >
-            <div>
-              <p>
-                No comics were found in the library, Elasticsearch reports no indices. Try
-                importing a few comics into the library and come back.
-              </p>
-            </div>
-          </article>
-          <FilterDropdown />
-        </div>
-      )}
-    </section>
+      </section>
+    </div>
   );
 };
 
