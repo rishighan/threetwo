@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Library page component that displays a paginated, searchable table of comics
+ * in the collection with filtering options for missing files.
+ * @module components/pages/Library/Library
+ */
+
 import React, { useMemo, ReactElement, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { isEmpty, isNil, isUndefined } from "lodash";
@@ -16,6 +22,7 @@ import { useGetWantedComicsQuery } from "../../../graphql/generated";
 
 import type { LibrarySearchQuery, FilterOption } from "../../../types";
 
+/** Filter options available for the library view */
 const FILTER_OPTIONS: { value: FilterOption; label: string }[] = [
   { value: "all", label: "All Comics" },
   { value: "missingFiles", label: "Missing Files" },
@@ -39,7 +46,11 @@ export const Library = (): ReactElement => {
 
   const queryClient = useQueryClient();
 
-  /** Fetches a page of issues from the search API. */
+  /**
+   * Fetches a page of issues from the search API.
+   * @param {LibrarySearchQuery} q - The search query containing pagination, query parameters, and type
+   * @returns {Promise<any>} Promise that resolves to the axios response containing search results
+   */
   const fetchIssues = async (q: LibrarySearchQuery) => {
     const { pagination, query, type } = q;
     return await axios({
@@ -81,10 +92,22 @@ export const Library = (): ReactElement => {
   const searchResults = data?.data;
   const navigate = useNavigate();
 
+  /**
+   * Navigates to the comic detail page for a regular comic.
+   * @param {any} row - The table row containing comic data
+   */
   const navigateToComicDetail = (row: any) => navigate(`/comic/details/${row.original._id}`);
+
+  /**
+   * Navigates to the comic detail page for a comic with missing files.
+   * @param {any} row - The table row containing comic data
+   */
   const navigateToMissingComicDetail = (row: any) => navigate(`/comic/details/${row.original.id}`);
 
-  /** Triggers a search by volume name and resets pagination. */
+  /**
+   * Triggers a search by volume name and resets pagination.
+   * @param {any} e - Search event containing the search query
+   */
   const searchIssues = (e: any) => {
     queryClient.invalidateQueries({ queryKey: ["comics"] });
     setSearchQuery({
@@ -95,7 +118,11 @@ export const Library = (): ReactElement => {
     });
   };
 
-  /** Advances to the next page of results. */
+  /**
+   * Advances to the next page of results.
+   * @param {number} pageIndex - Current page index
+   * @param {number} pageSize - Number of items per page
+   */
   const nextPage = (pageIndex: number, pageSize: number) => {
     if (!isPlaceholderData) {
       queryClient.invalidateQueries({ queryKey: ["comics"] });
@@ -108,7 +135,11 @@ export const Library = (): ReactElement => {
     }
   };
 
-  /** Goes back to the previous page of results. */
+  /**
+   * Goes back to the previous page of results.
+   * @param {number} pageIndex - Current page index
+   * @param {number} pageSize - Number of items per page
+   */
   const previousPage = (pageIndex: number, pageSize: number) => {
     let from = 0;
     if (pageIndex === 2) {
@@ -125,8 +156,17 @@ export const Library = (): ReactElement => {
     });
   };
 
-  const ComicInfoXML = (value: any) =>
-    value.data ? (
+  /**
+   * Renders ComicInfo.xml metadata display component.
+   * @param {any} value - The ComicInfo.xml data object containing series, pagecount, and number
+   * @returns {JSX.Element|null} Styled display of comic metadata or null if no data
+   */
+  const ComicInfoXML = (value: any) => {
+    if (!value.data) {
+      return null;
+    }
+
+    return (
       <dl className="flex flex-col text-xs sm:text-md p-2 sm:p-3 ml-0 sm:ml-4 my-3 rounded-lg dark:bg-yellow-500 bg-yellow-300 w-full sm:w-max max-w-full">
         <span className="inline-flex items-center w-fit bg-slate-50 text-slate-800 text-xs font-medium px-1.5 sm:px-2 rounded-md dark:text-slate-900 dark:bg-slate-400 max-w-full overflow-hidden">
           <span className="pr-0.5 sm:pr-1 pt-1">
@@ -157,8 +197,10 @@ export const Library = (): ReactElement => {
           </span>
         </div>
       </dl>
-    ) : null;
+    );
+  };
 
+  /** Column configuration for displaying comics with missing files */
   const missingFilesColumns = useMemo(
     () => [
       {
@@ -189,6 +231,7 @@ export const Library = (): ReactElement => {
     [],
   );
 
+  /** Column configuration for the main comics table */
   const columns = useMemo(
     () => [
       {
@@ -212,8 +255,12 @@ export const Library = (): ReactElement => {
           {
             header: "ComicInfo.xml",
             accessorKey: "_source.sourcedMetadata.comicInfo",
-            cell: (info: any) =>
-              !isEmpty(info.getValue()) ? <ComicInfoXML data={info.getValue()} /> : null,
+            cell: (info: any) => {
+              if (!isEmpty(info.getValue())) {
+                return <ComicInfoXML data={info.getValue()} />;
+              }
+              return null;
+            },
           },
         ],
       },
@@ -223,13 +270,17 @@ export const Library = (): ReactElement => {
           {
             header: "Date of Import",
             accessorKey: "_source.createdAt",
-            cell: (info: any) =>
-              !isNil(info.getValue()) ? (
-                <div className="text-sm w-max ml-3 my-3 text-slate-600 dark:text-slate-900">
-                  <p>{format(parseISO(info.getValue()), "dd MMMM, yyyy")}</p>
-                  {format(parseISO(info.getValue()), "h aaaa")}
-                </div>
-              ) : null,
+            cell: (info: any) => {
+              if (!isNil(info.getValue())) {
+                return (
+                  <div className="text-sm w-max ml-3 my-3 text-slate-600 dark:text-slate-900">
+                    <p>{format(parseISO(info.getValue()), "dd MMMM, yyyy")}</p>
+                    {format(parseISO(info.getValue()), "h aaaa")}
+                  </div>
+                );
+              }
+              return null;
+            },
           },
           {
             header: "Downloads",
@@ -257,22 +308,28 @@ export const Library = (): ReactElement => {
     [missingIdSet],
   );
 
-  const FilterDropdown = () => (
-    <div className="relative">
-      <select
-        value={activeFilter}
-        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setActiveFilter(e.target.value as FilterOption)}
-        className="appearance-none h-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 pl-3 pr-8 py-1.5 text-sm text-gray-700 dark:text-slate-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        {FILTER_OPTIONS.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
-      <i className="icon-[solar--alt-arrow-down-bold] absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-slate-400 pointer-events-none"></i>
-    </div>
-  );
+  /**
+   * Renders a dropdown filter for selecting between all comics and missing files view.
+   * @returns {JSX.Element} The filter dropdown component
+   */
+  const FilterDropdown = () => {
+    return (
+      <div className="relative">
+        <select
+          value={activeFilter}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setActiveFilter(e.target.value as FilterOption)}
+          className="appearance-none h-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 pl-3 pr-8 py-1.5 text-sm text-gray-700 dark:text-slate-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          {FILTER_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <i className="icon-[solar--alt-arrow-down-bold] absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-slate-400 pointer-events-none"></i>
+      </div>
+    );
+  };
 
   const isMissingFilter = activeFilter === "missingFiles";
 
