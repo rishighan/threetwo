@@ -8,17 +8,275 @@
  * @module components/ComicDetail/Tabs/ReconcilerDrawer
  */
 
-import React, { ReactElement, useMemo, useState } from "react";
+import { ReactElement, useMemo, useState } from "react";
 import { Drawer } from "vaul";
-import { FIELD_CONFIG, FIELD_GROUPS } from "./reconciler.fieldConfig";
-import {
-  useReconciler,
-  SourceKey,
-  SOURCE_LABELS,
-  RawSourcedMetadata,
-  RawInferredMetadata,
-  CanonicalRecord,
-} from "./useReconciler";
+
+// ── Type definitions ───────────────────────────────────────────────────────────
+
+export type SourceKey =
+  | "comicvine"
+  | "metron"
+  | "gcd"
+  | "locg"
+  | "comicInfo"
+  | "inferredMetadata";
+
+export interface RawSourcedMetadata {
+  [key: string]: any;
+}
+
+export interface RawInferredMetadata {
+  [key: string]: any;
+}
+
+export interface CanonicalRecord {
+  [key: string]: any;
+}
+
+// ── Field configuration ────────────────────────────────────────────────────────
+
+type FieldGroup = "Core" | "Publication" | "Story" | "Physical" | "Credits";
+
+interface FieldConfig {
+  label: string;
+  group: FieldGroup;
+  comicInfoKey?: string;
+  renderAs?: "text" | "image" | "longtext";
+}
+
+const FIELD_GROUPS: FieldGroup[] = ["Core", "Publication", "Story", "Physical", "Credits"];
+
+const FIELD_CONFIG: Record<string, FieldConfig> = {
+  title: { label: "Title", group: "Core", comicInfoKey: "Title" },
+  series: { label: "Series", group: "Core", comicInfoKey: "Series" },
+  issueNumber: { label: "Issue Number", group: "Core", comicInfoKey: "Number" },
+  coverImage: { label: "Cover Image", group: "Core", renderAs: "image" },
+  summary: { label: "Summary", group: "Story", comicInfoKey: "Summary", renderAs: "longtext" },
+  publisher: { label: "Publisher", group: "Publication", comicInfoKey: "Publisher" },
+  publicationDate: { label: "Publication Date", group: "Publication", comicInfoKey: "Year" },
+  pageCount: { label: "Page Count", group: "Physical", comicInfoKey: "PageCount" },
+  writers: { label: "Writers", group: "Credits", comicInfoKey: "Writer" },
+  artists: { label: "Artists", group: "Credits", comicInfoKey: "Penciller" },
+};
+
+export const SOURCE_LABELS: Record<SourceKey, string> = {
+  comicvine: "ComicVine",
+  metron: "Metron",
+  gcd: "Grand Comics Database",
+  locg: "League of Comic Geeks",
+  comicInfo: "ComicInfo.xml",
+  inferredMetadata: "Inferred Metadata",
+};
+
+// ── Hook types ─────────────────────────────────────────────────────────────────
+
+interface ScalarFieldState {
+  kind: "scalar";
+  candidates: Array<{ source: SourceKey; value: string }>;
+  selectedSource: SourceKey | null;
+  userValue?: string;
+}
+
+interface ArrayFieldState {
+  kind: "array";
+  items: Array<{
+    itemKey: string;
+    displayValue: string;
+    source: SourceKey;
+    selected: boolean;
+  }>;
+}
+
+interface CreditsFieldState {
+  kind: "credits";
+  items: Array<{
+    itemKey: string;
+    name: string;
+    role: string;
+    source: SourceKey;
+    selected: boolean;
+  }>;
+}
+
+type FieldState = ScalarFieldState | ArrayFieldState | CreditsFieldState;
+
+interface ReconcilerState {
+  [fieldKey: string]: FieldState;
+}
+
+interface UseReconcilerReturn {
+  state: ReconcilerState;
+  unresolvedCount: number;
+  canonicalRecord: CanonicalRecord;
+  selectScalar: (fieldKey: string, source: SourceKey) => void;
+  toggleItem: (fieldKey: string, itemKey: string, selected: boolean) => void;
+  setBaseSource: (source: SourceKey) => void;
+  reset: () => void;
+}
+
+// ── Mock reconciler hook ───────────────────────────────────────────────────────
+
+function useReconciler(
+  sourcedMetadata: RawSourcedMetadata,
+  inferredMetadata?: RawInferredMetadata
+): UseReconcilerReturn {
+  const [state, setState] = useState<ReconcilerState>(() => {
+    // Initialize with mock data for demonstration
+    const initialState: ReconcilerState = {};
+
+    // Add some mock scalar fields
+    Object.entries(FIELD_CONFIG).forEach(([fieldKey, config]) => {
+      if (config.group === "Credits") {
+        // Mock credits field
+        initialState[fieldKey] = {
+          kind: "credits",
+          items: [
+            {
+              itemKey: `${fieldKey}-1`,
+              name: "John Doe",
+              role: config.label.slice(0, -1), // Remove 's' from "Writers" -> "Writer"
+              source: "comicvine",
+              selected: true,
+            },
+          ],
+        };
+      } else if (fieldKey === "coverImage") {
+        // Mock image field
+        initialState[fieldKey] = {
+          kind: "scalar",
+          candidates: [
+            { source: "comicvine", value: "https://example.com/cover.jpg" },
+          ],
+          selectedSource: null,
+        };
+      } else {
+        // Mock other scalar fields
+        initialState[fieldKey] = {
+          kind: "scalar",
+          candidates: [
+            { source: "comicvine", value: `${config.label} from ComicVine` },
+            { source: "metron", value: `${config.label} from Metron` },
+          ],
+          selectedSource: null,
+        };
+      }
+    });
+
+    return initialState;
+  });
+
+  const unresolvedCount = useMemo(() => {
+    return Object.values(state).filter((fs) => {
+      if (fs.kind === "scalar") {
+        return fs.candidates.length > 1 && fs.selectedSource === null && !fs.userValue;
+      }
+      return false;
+    }).length;
+  }, [state]);
+
+  const canonicalRecord = useMemo(() => {
+    const record: CanonicalRecord = {};
+    Object.entries(state).forEach(([fieldKey, fs]) => {
+      if (fs.kind === "scalar" && fs.selectedSource) {
+        const candidate = fs.candidates.find((c) => c.source === fs.selectedSource);
+        if (candidate) record[fieldKey] = candidate.value;
+      } else if (fs.kind === "array") {
+        record[fieldKey] = fs.items.filter((item) => item.selected).map((item) => item.displayValue);
+      } else if (fs.kind === "credits") {
+        record[fieldKey] = fs.items.filter((item) => item.selected).map((item) => ({
+          name: item.name,
+          role: item.role,
+        }));
+      }
+    });
+    return record;
+  }, [state]);
+
+  const selectScalar = (fieldKey: string, source: SourceKey) => {
+    setState((prev) => ({
+      ...prev,
+      [fieldKey]: {
+        ...prev[fieldKey],
+        selectedSource: source,
+      } as ScalarFieldState,
+    }));
+  };
+
+  const toggleItem = (fieldKey: string, itemKey: string, selected: boolean) => {
+    setState((prev) => {
+      const field = prev[fieldKey];
+      if (field.kind === "array") {
+        return {
+          ...prev,
+          [fieldKey]: {
+            ...field,
+            items: field.items.map((item) =>
+              item.itemKey === itemKey ? { ...item, selected } : item
+            ),
+          } as ArrayFieldState,
+        };
+      } else if (field.kind === "credits") {
+        return {
+          ...prev,
+          [fieldKey]: {
+            ...field,
+            items: field.items.map((item) =>
+              item.itemKey === itemKey ? { ...item, selected } : item
+            ),
+          } as CreditsFieldState,
+        };
+      }
+      return prev;
+    });
+  };
+
+  const setBaseSource = (source: SourceKey) => {
+    setState((prev) => {
+      const newState = { ...prev };
+      Object.entries(newState).forEach(([fieldKey, fs]) => {
+        if (fs.kind === "scalar") {
+          const hasCandidate = fs.candidates.some((c) => c.source === source);
+          if (hasCandidate) {
+            (newState[fieldKey] as ScalarFieldState).selectedSource = source;
+          }
+        }
+      });
+      return newState;
+    });
+  };
+
+  const reset = () => {
+    setState((prev) => {
+      const newState = { ...prev };
+      Object.entries(newState).forEach(([fieldKey, fs]) => {
+        if (fs.kind === "scalar") {
+          (newState[fieldKey] as ScalarFieldState).selectedSource = null;
+        } else if (fs.kind === "array") {
+          newState[fieldKey] = {
+            ...fs,
+            items: fs.items.map((item) => ({ ...item, selected: false })),
+          } as ArrayFieldState;
+        } else if (fs.kind === "credits") {
+          newState[fieldKey] = {
+            ...fs,
+            items: fs.items.map((item) => ({ ...item, selected: false })),
+          } as CreditsFieldState;
+        }
+      });
+      return newState;
+    });
+  };
+
+  return {
+    state,
+    unresolvedCount,
+    canonicalRecord,
+    selectScalar,
+    toggleItem,
+    setBaseSource,
+    reset,
+  };
+}
 
 // ── Source styling ─────────────────────────────────────────────────────────────
 
