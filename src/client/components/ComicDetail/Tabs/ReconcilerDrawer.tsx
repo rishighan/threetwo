@@ -116,6 +116,26 @@ interface UseReconcilerReturn {
 
 // ── Mock reconciler hook ───────────────────────────────────────────────────────
 
+/**
+ * Hook for managing metadata reconciliation state and operations.
+ *
+ * This hook handles the complex state management required for reconciling metadata
+ * from multiple sources. It tracks which values have been selected, manages conflicts,
+ * and generates the final canonical record.
+ *
+ * @param {RawSourcedMetadata} sourcedMetadata - Metadata from various external sources (ComicVine, Metron, etc.)
+ * @param {RawInferredMetadata} [inferredMetadata] - Optional metadata inferred from the file itself
+ * @returns {UseReconcilerReturn} Object containing reconciliation state and control functions
+ *
+ * @example
+ * const { state, selectScalar, canonicalRecord } = useReconciler(sourcedData);
+ *
+ * // Select a value for a field
+ * selectScalar('title', 'comicvine');
+ *
+ * // Get the final reconciled data
+ * console.log(canonicalRecord);
+ */
 function useReconciler(
   sourcedMetadata: RawSourcedMetadata,
   inferredMetadata?: RawInferredMetadata
@@ -192,6 +212,16 @@ function useReconciler(
     return record;
   }, [state]);
 
+  /**
+   * Selects a specific source's value for a scalar field.
+   *
+   * When multiple sources provide different values for the same field, this function
+   * allows the user to choose which source's value should be used in the final
+   * canonical record.
+   *
+   * @param {string} fieldKey - The key of the field being selected (e.g., 'title', 'publisher')
+   * @param {SourceKey} source - The source whose value should be selected
+   */
   const selectScalar = (fieldKey: string, source: SourceKey) => {
     setState((prev) => ({
       ...prev,
@@ -202,6 +232,24 @@ function useReconciler(
     }));
   };
 
+  /**
+   * Toggles the selection state of an item in array or credits fields.
+   *
+   * This function is used for fields that can have multiple values selected,
+   * such as tags, genres, or creator credits. It updates the selected state
+   * of a specific item within the field.
+   *
+   * @param {string} fieldKey - The key of the field containing the item
+   * @param {string} itemKey - The unique identifier of the item to toggle
+   * @param {boolean} selected - Whether the item should be selected or deselected
+   *
+   * @example
+   * // Toggle a writer credit
+   * toggleItem('writers', 'writer-123', true);
+   *
+   * // Deselect a tag
+   * toggleItem('tags', 'tag-456', false);
+   */
   const toggleItem = (fieldKey: string, itemKey: string, selected: boolean) => {
     setState((prev) => {
       const field = prev[fieldKey];
@@ -230,6 +278,19 @@ function useReconciler(
     });
   };
 
+  /**
+   * Sets a base source for all scalar fields that have values from that source.
+   *
+   * This is a bulk operation that selects values from a specific source for all
+   * scalar fields where that source has provided a value. Useful for quickly
+   * accepting all values from a trusted source.
+   *
+   * @param {SourceKey} source - The source to use as the base for all applicable fields
+   *
+   * @example
+   * // Use all values from ComicVine where available
+   * setBaseSource('comicvine');
+   */
   const setBaseSource = (source: SourceKey) => {
     setState((prev) => {
       const newState = { ...prev };
@@ -245,6 +306,20 @@ function useReconciler(
     });
   };
 
+  /**
+   * Resets all field selections to their initial state.
+   *
+   * This function clears all selected values across all field types:
+   * - For scalar fields: clears the selected source
+   * - For array fields: deselects all items
+   * - For credits fields: deselects all credits
+   *
+   * @returns {void}
+   *
+   * @example
+   * // Reset all selections after user clicks "Reset" button
+   * reset();
+   */
   const reset = () => {
     setState((prev) => {
       const newState = { ...prev };
@@ -480,8 +555,17 @@ export function ReconcilerDrawer({
   /**
    * Determines whether a field should be displayed based on the current filter mode.
    *
+   * This function implements the filtering logic for the reconciliation view:
+   * - "all": Shows all fields
+   * - "conflicts": Shows only fields where multiple sources provide different values
+   * - "unresolved": Shows only scalar fields with conflicts that haven't been resolved
+   *
    * @param {string} fieldKey - The key of the field to check
    * @returns {boolean} True if the field should be shown, false otherwise
+   *
+   * @example
+   * // Check if title field should be displayed
+   * const showTitle = shouldShow('title');
    */
   function shouldShow(fieldKey: string): boolean {
     const fs = state[fieldKey];
