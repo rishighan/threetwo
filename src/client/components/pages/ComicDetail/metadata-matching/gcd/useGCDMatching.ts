@@ -7,6 +7,7 @@ import type {
   ScoredGCDMatch,
   GCDVolumeSearchInput,
 } from "../../../../../graphql/gcd.types";
+import { useStore } from "../../../../../store";
 
 /**
  * Represents a search query structure for GCD metadata matching.
@@ -329,6 +330,9 @@ export const useGCDMatching = () => {
   const [error, setError] = useState<string | null>(null);
   const [isServiceAvailable, setIsServiceAvailable] = useState<boolean | null>(null);
 
+  // Get the clearScrapingStatus function from the store
+  const clearScrapingStatus = useStore((state) => state.gcd.clearScrapingStatus);
+
   /**
    * Fetches matches from the GCD gcdVolumeBasedSearch GraphQL query.
    *
@@ -389,6 +393,8 @@ export const useGCDMatching = () => {
           setError(errorMessage || "Error fetching GCD matches");
         }
         setGcdMatches([]);
+        // Clear scraping status when error occurs
+        clearScrapingStatus();
         return;
       }
 
@@ -400,10 +406,14 @@ export const useGCDMatching = () => {
         (a: ScoredGCDMatch, b: ScoredGCDMatch) => b.score - a.score
       );
       setGcdMatches(scoredMatches);
+      // Clear scraping status when matches are received
+      clearScrapingStatus();
     } catch (err) {
       console.error("Error fetching GCD matches:", err);
       setError(err instanceof Error ? err.message : "Unknown error");
       setGcdMatches([]);
+      // Clear scraping status when error occurs
+      clearScrapingStatus();
     } finally {
       setIsLoading(false);
     }

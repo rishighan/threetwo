@@ -41,14 +41,17 @@ interface StoreState {
   /** ComicVine scraping state */
   comicvine: {
     scrapingStatus: string;
+    clearScrapingStatus: () => void;
   };
   /** Metron scraping state */
   metron: {
     scrapingStatus: string;
+    clearScrapingStatus: () => void;
   };
   /** GCD (Grand Comics Database) scraping state */
   gcd: {
     scrapingStatus: string;
+    clearScrapingStatus: () => void;
   };
   /** Import job queue state and actions */
   importJobQueue: {
@@ -136,11 +139,20 @@ export const useStore = create<StoreState>((set, get) => ({
     }
   },
 
-  comicvine: { scrapingStatus: "" },
+  comicvine: {
+    scrapingStatus: "",
+    clearScrapingStatus: () => set((s) => ({ comicvine: { ...s.comicvine, scrapingStatus: "" } }))
+  },
 
-  metron: { scrapingStatus: "" },
+  metron: {
+    scrapingStatus: "",
+    clearScrapingStatus: () => set((s) => ({ metron: { ...s.metron, scrapingStatus: "" } }))
+  },
 
-  gcd: { scrapingStatus: "" },
+  gcd: {
+    scrapingStatus: "",
+    clearScrapingStatus: () => set((s) => ({ gcd: { ...s.gcd, scrapingStatus: "" } }))
+  },
 
   importJobQueue: {
     successfulJobCount: 0,

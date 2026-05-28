@@ -170,7 +170,7 @@ export const MatchPanel: React.FC<MatchPanelProps> = ({
       getSocket: state.getSocket,
     }))
   );
-  
+
   // Initialize socket connection when panel mounts to receive scraping status events
   useEffect(() => {
     // This ensures the socket is connected and listening for status events

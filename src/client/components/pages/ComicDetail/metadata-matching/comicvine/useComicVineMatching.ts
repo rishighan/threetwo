@@ -4,6 +4,7 @@ import { isNil, isUndefined, isEmpty } from "lodash";
 import { refineQuery } from "filename-parser";
 import { COMICVINE_SERVICE_URI } from "../../../../../constants/endpoints";
 import { RawFileDetails as RawFileDetailsType } from "../../../../../graphql/generated";
+import { useStore } from "../../../../../store";
 
 /**
  * Represents a search result match from ComicVine API.
@@ -74,6 +75,7 @@ type ComicVineMetadata = {
  */
 export const useComicVineMatching = () => {
   const [comicVineMatches, setComicVineMatches] = useState<ComicVineMatch[]>([]);
+  const { comicvine } = useStore();
 
   /**
    * Fetches matches from the ComicVine volumeBasedSearch API endpoint.
@@ -135,8 +137,11 @@ export const useComicVineMatching = () => {
       }
       const scoredMatches = matches.sort((a: ComicVineMatch, b: ComicVineMatch) => b.score - a.score);
       setComicVineMatches(scoredMatches);
+      comicvine.clearScrapingStatus();
     } catch (err) {
       // Error handling could be added here if needed
+      setComicVineMatches([]);
+      comicvine.clearScrapingStatus();
     }
   };
 

@@ -4,6 +4,7 @@ import { refineQuery } from "filename-parser";
 import { LIBRARY_SERVICE_HOST } from "../../../../../constants/endpoints";
 import { RawFileDetails as RawFileDetailsType } from "../../../../../graphql/generated";
 import type { MetronMatch } from "../../../../../types";
+import { useStore } from "../../../../../store";
 
 /**
  * Represents a search query structure for Metron metadata matching.
@@ -105,6 +106,7 @@ const METRON_VOLUME_SEARCH_QUERY = `
  */
 export const useMetronMatching = () => {
   const [metronMatches, setMetronMatches] = useState<MetronMatch[]>([]);
+  const { metron } = useStore();
 
   /**
    * Fetches matches from the Metron metronVolumeBasedSearch GraphQL query.
@@ -167,6 +169,7 @@ export const useMetronMatching = () => {
       if (json.errors) {
         console.error("GraphQL errors:", json.errors);
         setMetronMatches([]);
+        metron.clearScrapingStatus();
         return;
       }
 
@@ -176,9 +179,11 @@ export const useMetronMatching = () => {
         (a: MetronMatch, b: MetronMatch) => b.score - a.score
       );
       setMetronMatches(scoredMatches);
+      metron.clearScrapingStatus();
     } catch (err) {
       console.error("Error fetching Metron matches:", err);
       setMetronMatches([]);
+      metron.clearScrapingStatus();
     }
   };
 
