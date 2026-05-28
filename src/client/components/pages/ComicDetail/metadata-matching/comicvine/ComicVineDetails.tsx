@@ -6,6 +6,30 @@ import Card from "../../../../ui/data-display/Carda";
 import { convert } from "html-to-text";
 import type { ComicVineDetailsProps } from "../../../../../types";
 
+/**
+ * ComicVine Details Component
+ *
+ * Displays detailed information about a comic issue from ComicVine metadata.
+ * This component renders comprehensive details including volume information,
+ * publisher details, issue metadata, cover art, and description.
+ *
+ * The component handles cases where ComicVine data is missing or incomplete,
+ * and provides fallback displays for various optional fields.
+ *
+ * @param {ComicVineDetailsProps} props - Component props containing ComicVine data and metadata
+ * @param {object} props.data - ComicVine issue and volume data
+ * @param {string} [props.updatedAt] - Timestamp of when the metadata was last updated
+ *
+ * @returns {ReactElement} Rendered ComicVine details component with issue information
+ *
+ * @example
+ * ```tsx
+ * <ComicVineDetails
+ *   data={comicVineData}
+ *   updatedAt="2023-01-01T00:00:00Z"
+ * />
+ * ```
+ */
 export const ComicVineDetails = (props: ComicVineDetailsProps): ReactElement => {
   const { data, updatedAt } = props;
 

@@ -8,23 +8,45 @@ import type {
   GCDVolumeSearchInput,
 } from "../../../../../graphql/gcd.types";
 
+/**
+ * Represents a search query structure for GCD metadata matching.
+ * Contains parsed details from filename or user input for comic issue identification.
+ */
 type GCDSearchQuery = {
+  /** Inferred details about the comic issue */
   inferredIssueDetails: {
+    /** The name/title of the comic series */
     name: string;
+    /** The issue number (can be string or number) */
     number?: string | number;
+    /** The publication year */
     year?: string;
+    /** Optional subtitle or additional descriptor */
     subtitle?: string;
   };
 };
 
+/**
+ * Represents existing GCD metadata structure.
+ * Used when parsing from previously stored metadata.
+ */
 type GCDMetadata = {
+  /** The name/title from existing metadata */
   name?: string;
+  /** Additional metadata properties */
   [key: string]: unknown;
 };
 
 /**
- * GraphQL query for GCD volume-based search
+ * GraphQL query for GCD volume-based search.
+ *
+ * This query searches for comic issues and series in the GCD (Grand Comics Database),
+ * returning scored matches based on the provided search parameters.
+ * The results include both issue and series information with publisher details.
+ *
  * Note: GCD schema now uses camelCase field names
+ *
+ * @constant {string} GCD_VOLUME_SEARCH_QUERY - The GraphQL query string
  */
 const GCD_VOLUME_SEARCH_QUERY = `
   query GCDVolumeBasedSearch($input: GCDVolumeSearchInput!) {
@@ -78,7 +100,12 @@ const GCD_VOLUME_SEARCH_QUERY = `
 `;
 
 /**
- * GraphQL query for GCD health check
+ * GraphQL query for GCD health check.
+ *
+ * This query checks the health and status of the GCD service,
+ * including database connectivity and record counts.
+ *
+ * @constant {string} GCD_HEALTH_QUERY - The GraphQL query string
  */
 const GCD_HEALTH_QUERY = `
   query GCDHealth {
@@ -98,7 +125,12 @@ const GCD_HEALTH_QUERY = `
 `;
 
 /**
- * GraphQL query for getting stories for a GCD issue
+ * GraphQL query for getting stories for a GCD issue.
+ *
+ * This query fetches detailed story information associated with a specific issue,
+ * including creative credits, character information, and story content details.
+ *
+ * @constant {string} GCD_STORIES_QUERY - The GraphQL query string
  */
 const GCD_STORIES_QUERY = `
   query GetGCDStoriesForIssue($issueId: Int!) {
@@ -122,7 +154,12 @@ const GCD_STORIES_QUERY = `
 `;
 
 /**
- * GraphQL query for searching GCD series
+ * GraphQL query for searching GCD series.
+ *
+ * This query searches for comic series in the GCD database based on
+ * various criteria like name, publisher, and year.
+ *
+ * @constant {string} GCD_SEARCH_SERIES_QUERY - The GraphQL query string
  */
 const GCD_SEARCH_SERIES_QUERY = `
   query SearchGCDSeries($input: GCDSeriesSearchInput!) {
@@ -149,7 +186,12 @@ const GCD_SEARCH_SERIES_QUERY = `
 `;
 
 /**
- * GraphQL query for getting a GCD series by ID
+ * GraphQL query for getting a GCD series by ID.
+ *
+ * This query fetches detailed information for a specific series
+ * including publisher and publication details.
+ *
+ * @constant {string} GCD_GET_SERIES_QUERY - The GraphQL query string
  */
 const GCD_GET_SERIES_QUERY = `
   query GetGCDSeriesById($id: Int!) {
@@ -174,7 +216,12 @@ const GCD_GET_SERIES_QUERY = `
 `;
 
 /**
- * GraphQL query for searching GCD issues
+ * GraphQL query for searching GCD issues.
+ *
+ * This query searches for comic issues in the GCD database based on
+ * various criteria like series, issue number, and publication dates.
+ *
+ * @constant {string} GCD_SEARCH_ISSUES_QUERY - The GraphQL query string
  */
 const GCD_SEARCH_ISSUES_QUERY = `
   query SearchGCDIssues($input: GCDIssueSearchInput!) {
@@ -208,7 +255,12 @@ const GCD_SEARCH_ISSUES_QUERY = `
 `;
 
 /**
- * GraphQL query for getting a GCD issue by ID
+ * GraphQL query for getting a GCD issue by ID.
+ *
+ * This query fetches detailed information for a specific issue
+ * including series and publisher details.
+ *
+ * @constant {string} GCD_GET_ISSUE_QUERY - The GraphQL query string
  */
 const GCD_GET_ISSUE_QUERY = `
   query GetGCDIssueById($id: Int!) {
@@ -238,13 +290,38 @@ const GCD_GET_ISSUE_QUERY = `
 
 /**
  * Hook for managing GCD (Grand Comics Database) metadata matching.
- * Fetches and scores potential matches from the GCD GraphQL API based on
- * raw file details or manual search parameters.
+ *
+ * This custom React hook provides functionality to search for comic metadata matches
+ * using the GCD GraphQL API service. It handles the parsing of file details, manual search
+ * overrides, and existing metadata to construct appropriate search queries.
+ *
+ * The hook maintains state for matched results and provides methods to fetch new matches
+ * based on different input sources (filename parsing, manual input, or existing metadata).
  *
  * NOTE: This hook requires the GCD service to be deployed. If the service
  * is not available, it will return a friendly error message.
  *
- * @returns Object containing gcdMatches array and prepareAndFetchMatches function
+ * @returns {object} Hook return object
+ * @returns {ScoredGCDMatch[]} returns.gcdMatches - Array of scored matches from GCD API, sorted by score descending
+ * @returns {boolean} returns.isLoading - Loading state indicator
+ * @returns {string | null} returns.error - Error message if any occurred
+ * @returns {function} returns.prepareAndFetchMatches - Function to initiate search with various input types
+ * @returns {function} returns.clearMatches - Function to clear current matches and errors
+ *
+ * @example
+ * ```typescript
+ * const { gcdMatches, isLoading, error, prepareAndFetchMatches } = useGCDMatching();
+ *
+ * // Search using raw file details
+ * prepareAndFetchMatches(rawFileDetails);
+ *
+ * // Search with manual override
+ * prepareAndFetchMatches(rawFileDetails, undefined, {
+ *   issueName: "Spider-Man",
+ *   issueNumber: "1",
+ *   issueYear: "2023"
+ * });
+ * ```
  */
 export const useGCDMatching = () => {
   const [gcdMatches, setGcdMatches] = useState<ScoredGCDMatch[]>([]);
