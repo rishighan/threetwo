@@ -18,15 +18,15 @@ export const SearchBar = (props: SearchBarProps): ReactElement => {
           <Field name="search">
             {({ input, meta }) => {
               return (
-                <div className="flex flex-row w-full">
-                  <div className="flex flex-row bg-slate-300 dark:bg-slate-500 rounded-l-lg p-2 min-w-full">
+                <div className="flex flex-row w-[28rem]">
+                  <div className="flex flex-row bg-slate-300 dark:bg-slate-500 rounded-l-lg p-2 flex-1">
                     <div className="w-10 text-gray-400">
                       <i className="icon-[solar--magnifer-bold-duotone] h-7 w-7" />
                     </div>
 
                     <input
                       {...input}
-                      className="bg-slate-300 dark:bg-slate-500 outline-none text-lg text-gray-700 w-full"
+                      className="bg-slate-300 dark:bg-slate-500 outline-none text-lg text-gray-700 flex-1"
                       type="text"
                       id="search"
                       placeholder="Type an issue/volume name"

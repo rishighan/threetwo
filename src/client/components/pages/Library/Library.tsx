@@ -326,7 +326,7 @@ export const Library = (): ReactElement => {
           onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
             setActiveFilter(e.target.value as FilterOption)
           }
-          className="appearance-none h-full rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 pl-3 pr-8 py-1.5 text-sm text-gray-700 dark:text-slate-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="appearance-none h-12 rounded-lg bg-slate-300 dark:bg-slate-500 pl-3 pr-8 py-2 text-md text-gray-700 dark:text-gray-200 cursor-pointer focus:outline-none border-0 min-w-[160px]"
         >
           {FILTER_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -334,7 +334,7 @@ export const Library = (): ReactElement => {
             </option>
           ))}
         </select>
-        <i className="icon-[solar--alt-arrow-down-bold] absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-slate-400 pointer-events-none"></i>
+        <i className="icon-[solar--alt-arrow-down-bold] absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-400 pointer-events-none"></i>
       </div>
     );
   };
@@ -397,9 +397,9 @@ export const Library = (): ReactElement => {
               }
               paginationHandlers={{ nextPage, previousPage }}
             >
-              <div className="flex items-center gap-2">
-                <FilterDropdown />
+              <div className="flex items-center gap-4 flex-wrap">
                 <SearchBar searchHandler={(e: any) => searchIssues(e)} />
+                <FilterDropdown />
               </div>
             </T2Table>
           ) : (

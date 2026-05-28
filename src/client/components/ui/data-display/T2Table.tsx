@@ -1,13 +1,11 @@
-import React, { ReactElement, ReactNode, useMemo, useState, useRef, useEffect, useLayoutEffect } from "react";
+import { ReactElement, useMemo, useState, useRef, useEffect } from "react";
 import {
-  ColumnDef,
-  Row,
   flexRender,
   getCoreRowModel,
   useReactTable,
   PaginationState,
 } from "@tanstack/react-table";
-import type { T2TableProps } from "../../types";
+import type { T2TableProps } from "../../../types";
 
 /**
  * A paginated data table with a two-row sticky header.
@@ -30,7 +28,6 @@ export const T2Table = <TData,>({
   const tableRef = useRef<HTMLTableElement>(null);
   const firstHeaderRowRef = useRef<HTMLTableRowElement>(null);
   const [isSticky, setIsSticky] = useState(false);
-  const [firstRowHeight, setFirstRowHeight] = useState(0);
   const [tableRect, setTableRect] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
   const [columnWidths, setColumnWidths] = useState<Map<string, number>>(new Map());
 
@@ -43,11 +40,6 @@ export const T2Table = <TData,>({
     );
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, []);
-
-  useLayoutEffect(() => {
-    if (firstHeaderRowRef.current)
-      setFirstRowHeight(firstHeaderRowRef.current.getBoundingClientRect().height);
   }, []);
 
   useEffect(() => {
