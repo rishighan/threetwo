@@ -20,6 +20,10 @@ import { createTabConfig } from "./tabConfig";
 import { actionOptions, customStyles, ActionOption } from "./action-menu/actionMenuConfig";
 import { CVMatchesPanel, MetronMatchesPanel, GCDMatchesPanel, EditMetadataPanelWrapper } from "./components/SlidingPanelContent";
 
+/**
+ * Styled sliding panel component with custom background color.
+ * Extends the base SlidingPane component with a light gray background.
+ */
 const StyledSlidingPanel = styled(SlidingPane)`
   background: #ccc;
 `;
@@ -28,12 +32,34 @@ const StyledSlidingPanel = styled(SlidingPane)`
  * Displays full comic detail view: cover image, file info, action menu, and tabbed panels
  * for metadata, archive operations, and acquisition.
  *
- * @param {ComicDetailProps} props - Component props
- * @param {Object} props.data - Comic book data containing rawFileDetails, inferredMetadata, sourcedMetadata, and acquisition
- * @param {Object} [props.userSettings] - User preference settings
- * @param {QueryClient} [props.queryClient] - React Query client for cache invalidation after CV match
- * @param {string} [props.comicObjectId] - Optional ID override when rendered outside a route
- * @returns {ReactElement} The rendered comic detail view
+ * This component provides a comprehensive interface for viewing and managing comic book details,
+ * including metadata matching from multiple sources (ComicVine, Metron, GCD), file operations,
+ * and acquisition tracking.
+ *
+ * @param {ComicDetailProps} data - Component props containing comic data and configuration
+ * @param {Object} data.data - Main comic book data object
+ * @param {string} data.data._id - Unique identifier for the comic book record
+ * @param {Object} data.data.rawFileDetails - Raw file information extracted from comic archive
+ * @param {Object} data.data.inferredMetadata - Metadata inferred from filename and file structure
+ * @param {Object} data.data.sourcedMetadata - Metadata from external sources (ComicVine, Metron, etc.)
+ * @param {Object} data.data.acquisition - Acquisition tracking information including downloads
+ * @param {string} data.data.createdAt - Timestamp when the comic was first imported
+ * @param {Object} [data.userSettings] - User preference settings for display and behavior
+ * @param {QueryClient} [data.queryClient] - React Query client for cache invalidation after metadata updates
+ * @param {string} [data.comicObjectId] - Optional ID override when rendered outside a route context
+ *
+ * @returns {ReactElement} The rendered comic detail view with cover, metadata, and interactive panels
+ *
+ * @example
+ * ```tsx
+ * <ComicDetail
+ *   data={{
+ *     data: comicData,
+ *     userSettings: userPrefs,
+ *     queryClient: queryClient
+ *   }}
+ * />
+ * ```
  */
 export const ComicDetail = (data: ComicDetailProps): ReactElement => {
   const {
@@ -74,29 +100,62 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     prepareAndFetchMatches: prepareAndFetchGCDMatches,
   } = useGCDMatching();
 
+  /**
+   * Opens the sliding panel with ComicVine search matches.
+   * Initiates a search using current raw file details and existing ComicVine metadata,
+   * then displays the results in a sliding panel for user selection.
+   *
+   * @returns {void}
+   */
   const openDrawerWithCVMatches = (): void => {
     prepareAndFetchMatches(rawFileDetails, comicvine);
     setSlidingPanelContentId("CVMatches");
     setVisible(true);
   };
 
+  /**
+   * Opens the sliding panel with Metron search matches.
+   * Initiates a search using current raw file details and existing Metron metadata,
+   * then displays the results in a sliding panel for user selection.
+   *
+   * @returns {void}
+   */
   const openDrawerWithMetronMatches = (): void => {
     prepareAndFetchMetronMatches(rawFileDetails, metron);
     setSlidingPanelContentId("MetronMatches");
     setVisible(true);
   };
 
+  /**
+   * Opens the sliding panel with Grand Comics Database (GCD) search matches.
+   * Initiates a search using current raw file details and existing GCD metadata,
+   * then displays the results in a sliding panel for user selection.
+   *
+   * @returns {void}
+   */
   const openDrawerWithGCDMatches = (): void => {
     prepareAndFetchGCDMatches(rawFileDetails, gcd);
     setSlidingPanelContentId("GCDMatches");
     setVisible(true);
   };
 
+  /**
+   * Opens the sliding panel for editing comic book metadata.
+   * Sets the panel content to the edit metadata form and makes the panel visible.
+   * Uses useCallback to prevent unnecessary re-renders.
+   *
+   * @returns {void}
+   */
   const openEditMetadataPanel = useCallback((): void => {
     setSlidingPanelContentId("editComicBookMetadata");
     setVisible(true);
   }, []);
 
+  /**
+   * Filters action menu options based on the availability of raw file details.
+   * Removes metadata matching options when raw file details are not available,
+   * as these operations require file information to perform searches.
+   */
   const filteredActionOptions: ActionOption[] = actionOptions.filter((item) => {
     if (isUndefined(rawFileDetails)) {
       return (
@@ -108,6 +167,13 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     return true;
   });
 
+  /**
+   * Handles action selection from the dropdown menu.
+   * Routes the selected action to the appropriate handler function based on the action value.
+   *
+   * @param {ActionOption | null} action - The selected action option from the dropdown menu
+   * @returns {void}
+   */
   const handleActionSelection = (action: ActionOption | null): void => {
     if (!action) return;
     switch (action.value) {
@@ -128,24 +194,50 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     }
   };
 
+  /**
+   * Determines if raw file details are available and not empty.
+   * Used to conditionally show UI elements that depend on file information.
+   * @type {boolean}
+   */
   const areRawFileDetailsAvailable: boolean =
     !isUndefined(rawFileDetails) && !isEmpty(rawFileDetails);
 
+  /**
+   * Determines if ComicVine metadata is available and contains volume information.
+   * Used to conditionally show ComicVine-specific UI elements and functionality.
+   * @type {boolean}
+   */
   const isComicBookMetadataAvailable: boolean =
     !isUndefined(comicvine) && !isUndefined(comicvine?.volumeInformation);
 
+  /**
+   * Determines if any metadata is available from any source.
+   * Checks ComicVine, ComicInfo, LOCG, and raw file details for available metadata.
+   * Used to conditionally show metadata-dependent UI elements.
+   * @type {boolean}
+   */
   const hasAnyMetadata: boolean =
     isComicBookMetadataAvailable ||
     !isEmpty(comicInfo) ||
     !isNil(locg) ||
     areRawFileDetailsAvailable;
 
+  /**
+   * Extracts the cover image URL and issue name from available metadata sources.
+   * Uses determineCoverFile utility to prioritize sources: rawFileDetails > comicvine > locg.
+   * @type {{ issueName: string, url: string }}
+   */
   const { issueName, url } = determineCoverFile({
     rawFileDetails,
     comicvine,
     locg,
   });
 
+  /**
+   * Memoized AirDC++ query object for acquisition tracking.
+   * Contains the issue name for searching in download clients.
+   * @type {{ issue: { name: string } }}
+   */
   const airDCPPQuery = useMemo(
     () => ({
       issue: { name: issueName },
@@ -153,11 +245,24 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     [issueName],
   );
 
+  /**
+   * Opens the sliding panel for metadata reconciliation.
+   * Sets the panel content to metadata reconciliation and makes the panel visible.
+   * Uses useCallback to prevent unnecessary re-renders.
+   *
+   * @returns {void}
+   */
   const openReconcilePanel = useCallback((): void => {
     setSlidingPanelContentId("metadataReconciliation");
     setVisible(true);
   }, []);
 
+  /**
+   * Memoized configuration object for tab creation.
+   * Creates tab configuration based on available metadata, user settings, and component state.
+   * Includes tabs for metadata display, archive operations, and acquisition tracking.
+   * @type {Array}
+   */
   const tabGroup = useMemo(
     () =>
       createTabConfig({
@@ -184,11 +289,27 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     ],
   );
 
+  /**
+   * Memoized filtered tabs array containing only tabs that should be displayed.
+   * Filters out tabs based on their shouldShow property to conditionally render UI elements.
+   * @type {Array}
+   */
   const filteredTabs = useMemo(
     () => tabGroup.filter((tab) => tab.shouldShow),
     [tabGroup],
   );
 
+  /**
+   * Renders the appropriate content for the sliding panel based on the current panel content ID.
+   *
+   * This function dynamically renders different panel components based on the slidingPanelContentId:
+   * - CVMatches: ComicVine search results panel
+   * - MetronMatches: Metron search results panel
+   * - GCDMatches: Grand Comics Database search results panel
+   * - editComicBookMetadata: Metadata editing form panel
+   *
+   * @returns {ReactElement | null} The rendered panel content component or null if no valid content ID
+   */
   const renderSlidingPanelContent = (): ReactElement | null => {
     switch (slidingPanelContentId) {
       case "CVMatches":
@@ -252,6 +373,11 @@ export const ComicDetail = (data: ComicDetailProps): ReactElement => {
     }
   };
 
+  /**
+   * Returns the appropriate title for the sliding panel based on the current content ID.
+   *
+   * @returns {string} The panel title string corresponding to the current sliding panel content
+   */
   const getSlidingPanelTitle = (): string => {
     switch (slidingPanelContentId) {
       case "CVMatches":
