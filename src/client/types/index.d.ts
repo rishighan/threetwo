@@ -30,6 +30,18 @@ declare module "*.jpg";
 declare module "*.gif";
 
 /**
+ * Module declaration for SVG image imports.
+ * Allows importing .svg files as string URLs.
+ * @example
+ * import logo from './assets/logo.svg';
+ * // logo is typed as string
+ */
+declare module "*.svg" {
+  const value: string;
+  export = value;
+}
+
+/**
  * Module declaration for LESS stylesheet imports.
  * Allows importing .less files.
  */

@@ -7,6 +7,8 @@ import { fetcher } from "../../../../graphql/fetcher";
 import { useGetComicByIdQuery } from "../../../../graphql/generated";
 import type { CanonicalRecord } from "./reconciler/useReconciler";
 import type { RawFileDetails as RawFileDetailsType } from "../../../../graphql/generated";
+import cvLogo from "../../../../assets/img/cvlogo.svg";
+import locgLogo from "../../../../assets/img/locglogo.svg";
 
 interface ComicVineMetadata {
   volumeInformation?: Record<string, unknown>;
@@ -66,12 +68,12 @@ const SOURCE_LABELS: Record<string, string> = {
 };
 
 const SOURCE_ICONS: Record<string, string> = {
-  comicvine: "icon-[solar--database-bold]",
-  locg: "icon-[solar--users-group-rounded-outline]",
+  comicvine: cvLogo,
+  locg: locgLogo,
   comicInfo: "icon-[solar--file-text-outline]",
   metron: "icon-[solar--planet-outline]",
   gcd: "icon-[solar--book-outline]",
-  inferredMetadata: "icon-[solar--folder-outline]",
+  inferredMetadata: "icon-[solar--file-text-outline]",
 };
 
 const MetadataSourceChips = ({
@@ -90,23 +92,29 @@ const MetadataSourceChips = ({
         </span>
       </div>
       <dl className="flex flex-row flex-wrap gap-2">
-        {sources.map((source) => (
-          <dd className="mt-1 text-sm text-gray-500 dark:text-slate-900">
-            <span
-              key={source}
-              className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400"
-            >
-              <span className="pr-1 pt-1">
-                <i
-                  className={`${SOURCE_ICONS[source] ?? "icon-[solar--check-circle-outline]"} w-4 h-4`}
-                />
+        {sources.map((source) => {
+          const iconValue = SOURCE_ICONS[source] ?? "icon-[solar--check-circle-outline]";
+          const isIconClass = iconValue.startsWith("icon-[");
+
+          return (
+            <dd className="mt-1 text-sm text-gray-500 dark:text-slate-900" key={source}>
+              <span
+                className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400"
+              >
+                <span className="pr-1 pt-1">
+                  {isIconClass ? (
+                    <i className={`${iconValue} w-4 h-4`} />
+                  ) : (
+                    <img src={iconValue} alt={SOURCE_LABELS[source]} className="w-5 h-5" />
+                  )}
+                </span>
+                <span className="text-md text-slate-500 dark:text-slate-900">
+                  {SOURCE_LABELS[source] ?? source}
+                </span>
               </span>
-              <span className="text-md text-slate-500 dark:text-slate-900">
-                {SOURCE_LABELS[source] ?? source}
-              </span>
-            </span>
-          </dd>
-        ))}
+            </dd>
+          );
+        })}
       </dl>
       <button
         className="flex space-x-1 mb-2 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-2 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
