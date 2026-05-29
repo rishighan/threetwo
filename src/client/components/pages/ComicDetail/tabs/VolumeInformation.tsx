@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo, useState } from "react";
+import { ReactElement, useMemo, useState } from "react";
 import { isEmpty, isNil } from "lodash";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ComicVineDetails from "../metadata-matching/comicvine/ComicVineDetails";
@@ -86,22 +86,28 @@ const MetadataSourceChips = ({
       <div className="flex flex-row items-center justify-between">
         <span className="text-md text-slate-500 dark:text-slate-400">
           <i className="icon-[solar--database-outline] w-4 h-4 inline-block align-middle mr-1" />
-          {sources.length} metadata sources detected
+          {sources.length} metadata sources detected.
         </span>
       </div>
-      <div className="flex flex-row flex-wrap gap-2">
+      <dl className="flex flex-row flex-wrap gap-2">
         {sources.map((source) => (
-          <span
-            key={source}
-            className="inline-flex items-center gap-1 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium px-2 py-1 rounded-md border border-slate-200 dark:border-slate-600"
-          >
-            <i
-              className={`${SOURCE_ICONS[source] ?? "icon-[solar--check-circle-outline]"} w-3 h-3`}
-            />
-            {SOURCE_LABELS[source] ?? source}
-          </span>
+          <dd className="mt-1 text-sm text-gray-500 dark:text-slate-900">
+            <span
+              key={source}
+              className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400"
+            >
+              <span className="pr-1 pt-1">
+                <i
+                  className={`${SOURCE_ICONS[source] ?? "icon-[solar--check-circle-outline]"} w-4 h-4`}
+                />
+              </span>
+              <span className="text-md text-slate-500 dark:text-slate-900">
+                {SOURCE_LABELS[source] ?? source}
+              </span>
+            </span>
+          </dd>
         ))}
-      </div>
+      </dl>
       <button
         className="flex space-x-1 mb-2 sm:mt-0 sm:flex-row sm:items-center rounded-lg border border-green-400 dark:border-green-200 bg-green-200 px-2 py-1 text-gray-500 hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-indigo-500"
         onClick={onOpenReconciler}
@@ -111,6 +117,25 @@ const MetadataSourceChips = ({
       </button>
     </div>
   );
+};
+
+/**
+ * Checks if a metadata source has valid data.
+ * Special handling for locg which returns an empty object even when no data exists.
+ */
+const hasValidMetadata = (key: string, val: unknown): boolean => {
+  if (isNil(val) || isEmpty(val)) {
+    return false;
+  }
+
+  // locg returns an object even when empty; require at least one non-null value
+  if (key === "locg") {
+    return Object.values(val as Record<string, unknown>).some(
+      (v) => !isNil(v) && v !== "",
+    );
+  }
+
+  return true;
 };
 
 /**
@@ -161,17 +186,12 @@ export const VolumeInformation = (
   const presentSources = useMemo(() => {
     const sources = SOURCED_METADATA_KEYS.filter((key) => {
       const val = (data?.sourcedMetadata ?? {})[key];
-      if (isNil(val) || isEmpty(val)) return false;
-      // locg returns an object even when empty; require at least one non-null value
-      if (key === "locg")
-        return Object.values(val as Record<string, unknown>).some(
-          (v) => !isNil(v) && v !== "",
-        );
-      return true;
+      return hasValidMetadata(key, val);
     });
     const hasLocalFile =
       (!isNil(data?.rawFileDetails) && !isEmpty(data?.rawFileDetails)) ||
-      (!isNil(data?.inferredMetadata?.issue) && !isEmpty(data?.inferredMetadata?.issue));
+      (!isNil(data?.inferredMetadata?.issue) &&
+        !isEmpty(data?.inferredMetadata?.issue));
     if (hasLocalFile) {
       sources.push("inferredMetadata");
     }
@@ -184,7 +204,8 @@ export const VolumeInformation = (
 
   return (
     <div key={1}>
-      {(presentSources.length > 1 || (presentSources.length === 1 && !onlyComicvine)) && (
+      {(presentSources.length > 1 ||
+        (presentSources.length === 1 && !onlyComicvine)) && (
         <MetadataSourceChips
           sources={presentSources}
           onOpenReconciler={() => setReconcilerOpen(true)}
@@ -199,8 +220,15 @@ export const VolumeInformation = (
       <ReconcilerDrawer
         open={isReconcilerOpen}
         onOpenChange={setReconcilerOpen}
-        sourcedMetadata={(data.sourcedMetadata ?? {}) as unknown as import("./useReconciler").RawSourcedMetadata}
-        inferredMetadata={data.inferredMetadata as import("./useReconciler").RawInferredMetadata | undefined}
+        sourcedMetadata={
+          (data.sourcedMetadata ??
+            {}) as unknown as import("./reconciler/useReconciler").RawSourcedMetadata
+        }
+        inferredMetadata={
+          data.inferredMetadata as
+            | import("./reconciler/useReconciler").RawInferredMetadata
+            | undefined
+        }
         onSave={saveCanonical}
       />
     </div>
