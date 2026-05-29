@@ -416,7 +416,6 @@ export const Library = (): ReactElement => {
                   </p>
                 </div>
               </article>
-              <FilterDropdown />
             </div>
           )}
         </div>
