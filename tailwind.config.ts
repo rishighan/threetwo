@@ -20,6 +20,10 @@ const config: Config = {
           missing: "#fee2e2",
           info: "#cdd9eb",
         },
+        comicvine: "#29cc82",
+        metron: "#4258ff",
+        locg: "#fd6401",
+        gcd: "#e49b26",
       },
     },
     fontFamily: {
