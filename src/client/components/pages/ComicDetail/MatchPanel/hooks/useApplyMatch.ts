@@ -10,11 +10,13 @@
 
 import { useState, useCallback } from "react";
 import axios from "axios";
+import { useQueryClient } from "@tanstack/react-query";
 import type { MetadataSource, NormalizedMatch, UseApplyMatchReturn } from "../types";
 import type { RawComicVineMatch } from "../adapters/comicvineAdapter";
 import type { ScoredGCDMatch } from "../../../../../graphql/gcd.types";
-import type { MetronMatch } from "../../../../types/comic.types";
+import type { MetronMatch } from "../../../../../types";
 import { LIBRARY_SERVICE_BASE_URI, LIBRARY_SERVICE_HOST } from "../../../../../constants/endpoints";
+import { useGetComicByIdQuery } from "../../../../../graphql/generated";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GraphQL Mutations
@@ -81,7 +83,7 @@ const applyComicVineMatch = async (
 
 /**
  * Applies a GCD match via GraphQL mutation.
- * 
+ *
  * @param match - The raw GCD scored match data
  * @param comicObjectId - MongoDB ObjectId of the comic
  * @throws Error if the GraphQL mutation returns errors
@@ -180,6 +182,7 @@ const applyMetronMatch = async (
 export const useApplyMatch = (source: MetadataSource): UseApplyMatchReturn => {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const queryClient = useQueryClient();
 
   const applyMatch = useCallback(async (
     match: NormalizedMatch,
@@ -187,27 +190,30 @@ export const useApplyMatch = (source: MetadataSource): UseApplyMatchReturn => {
   ): Promise<void> => {
     setIsPending(true);
     setError(null);
-    
+
     try {
       // The _raw field contains the original API response needed for the mutation
       const rawData = match._raw;
-      
+
       switch (source) {
         case "comicvine":
           await applyComicVineMatch(rawData as RawComicVineMatch, comicObjectId);
           break;
-          
+
         case "gcd":
           await applyGCDMatch(rawData as ScoredGCDMatch, comicObjectId);
           break;
-          
+
         case "metron":
           await applyMetronMatch(rawData as MetronMatch, comicObjectId);
           break;
-          
+
         default:
           throw new Error(`Unknown metadata source: ${source}`);
       }
+
+      // Invalidate the comic query cache to refresh data with new metadata
+
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
       setError(error);
@@ -215,7 +221,7 @@ export const useApplyMatch = (source: MetadataSource): UseApplyMatchReturn => {
     } finally {
       setIsPending(false);
     }
-  }, [source]);
+  }, [source, queryClient]);
 
   return { applyMatch, isPending, error };
 };

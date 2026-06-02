@@ -61,6 +61,12 @@ export function adaptGraphQLComicToLegacy(graphqlComic: GetComicByIdQuery['comic
         : graphqlComic.sourcedMetadata.metron)
     : undefined;
 
+  const gcd = graphqlComic.sourcedMetadata?.gcd
+    ? (typeof graphqlComic.sourcedMetadata.gcd === 'string'
+        ? JSON.parse(graphqlComic.sourcedMetadata.gcd)
+        : graphqlComic.sourcedMetadata.gcd)
+    : undefined;
+
   // Use inferredMetadata from GraphQL response, or build from canonical metadata as fallback
   const inferredMetadata = graphqlComic.inferredMetadata || {
     issue: {
@@ -106,6 +112,7 @@ export function adaptGraphQLComicToLegacy(graphqlComic: GetComicByIdQuery['comic
       locg,
       comicInfo,
       metron,
+      gcd,
     },
     acquisition,
     createdAt: graphqlComic.createdAt || new Date().toISOString(),

@@ -9,6 +9,7 @@ import type { CanonicalRecord } from "./reconciler/useReconciler";
 import type { RawFileDetails as RawFileDetailsType } from "../../../../graphql/generated";
 import cvLogo from "../../../../assets/img/cvlogo.svg";
 import locgLogo from "../../../../assets/img/locglogo.svg";
+import gcdLogo from "../../../../assets/img/gcd_logo.png";
 
 interface ComicVineMetadata {
   volumeInformation?: Record<string, unknown>;
@@ -72,7 +73,7 @@ const SOURCE_ICONS: Record<string, string> = {
   locg: locgLogo,
   comicInfo: "icon-[solar--file-text-outline]",
   metron: "icon-[solar--planet-outline]",
-  gcd: "icon-[solar--book-outline]",
+  gcd: gcdLogo,
   inferredMetadata: "icon-[solar--file-text-outline]",
 };
 
@@ -149,10 +150,31 @@ const MetadataSourceChips = ({
 /**
  * Checks if a metadata source has valid data.
  * Special handling for locg which returns an empty object even when no data exists.
+ * Also handles JSON strings from GraphQL which need to be parsed first.
  */
 const hasValidMetadata = (key: string, val: unknown): boolean => {
   if (isNil(val) || isEmpty(val)) {
     return false;
+  }
+
+  // Handle JSON strings (like gcd, comicvine, metron, comicInfo from GraphQL)
+  if (typeof val === 'string') {
+    try {
+      const parsed = JSON.parse(val);
+      // Check if parsed object has meaningful data
+      if (isNil(parsed) || isEmpty(parsed)) {
+        return false;
+      }
+      // For parsed objects, check if they have any non-empty values
+      if (typeof parsed === 'object') {
+        return Object.values(parsed).some(v => !isNil(v) && v !== "");
+      }
+      return true;
+    } catch (error) {
+      // If JSON parsing fails, treat as invalid
+      console.warn(`Failed to parse JSON for ${key}:`, error);
+      return false;
+    }
   }
 
   // locg returns an object even when empty; require at least one non-null value
@@ -222,6 +244,7 @@ export const VolumeInformation = (
     if (hasLocalFile) {
       sources.push("inferredMetadata");
     }
+
     return sources;
   }, [data?.sourcedMetadata, data?.inferredMetadata, data?.rawFileDetails]);
 

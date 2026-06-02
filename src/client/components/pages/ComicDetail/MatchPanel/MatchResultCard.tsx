@@ -155,17 +155,22 @@ export const MatchResultCard: React.FC<MatchResultCardProps> = ({
   
   /**
    * Handles the Apply Match button click.
-   * Applies the match, invalidates the cache, and calls the callback.
+   * Applies the match, invalidates the cache, waits for refetch, and calls the callback.
    */
   const handleApply = async () => {
     try {
       await applyMatch(match, comicObjectId);
-      
-      // Invalidate and refetch the comic data
+
+      // Invalidate and refetch the comic data - wait for completion
       await queryClient.invalidateQueries({
         queryKey: useGetComicByIdQuery.getKey({ id: comicObjectId }),
       });
-      
+
+      // Force a refetch to ensure we have fresh data before proceeding
+      await queryClient.refetchQueries({
+        queryKey: useGetComicByIdQuery.getKey({ id: comicObjectId }),
+      });
+
       // Notify parent to close panel and switch tabs
       onMatchApplied();
     } catch (error) {
