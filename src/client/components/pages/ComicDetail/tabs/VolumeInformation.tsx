@@ -10,6 +10,7 @@ import type { RawFileDetails as RawFileDetailsType } from "../../../../graphql/g
 import cvLogo from "../../../../assets/img/cvlogo.svg";
 import locgLogo from "../../../../assets/img/locglogo.svg";
 import gcdLogo from "../../../../assets/img/gcd_logo.png";
+import metronLogo from "../../../../assets/img/metron_logo.png";
 
 interface ComicVineMetadata {
   volumeInformation?: Record<string, unknown>;
@@ -72,7 +73,7 @@ const SOURCE_ICONS: Record<string, string> = {
   comicvine: cvLogo,
   locg: locgLogo,
   comicInfo: "icon-[solar--file-text-outline]",
-  metron: "icon-[solar--planet-outline]",
+  metron: metronLogo,
   gcd: gcdLogo,
   inferredMetadata: "icon-[solar--file-text-outline]",
 };
@@ -124,7 +125,7 @@ const MetadataSourceChips = ({
                     <img
                       src={iconValue}
                       alt={SOURCE_LABELS[source]}
-                      className="w-6 h-6"
+                      className="w-5 h-5 object-contain"
                     />
                   )}
                 </span>
@@ -158,7 +159,7 @@ const hasValidMetadata = (key: string, val: unknown): boolean => {
   }
 
   // Handle JSON strings (like gcd, comicvine, metron, comicInfo from GraphQL)
-  if (typeof val === 'string') {
+  if (typeof val === "string") {
     try {
       const parsed = JSON.parse(val);
       // Check if parsed object has meaningful data
@@ -166,8 +167,8 @@ const hasValidMetadata = (key: string, val: unknown): boolean => {
         return false;
       }
       // For parsed objects, check if they have any non-empty values
-      if (typeof parsed === 'object') {
-        return Object.values(parsed).some(v => !isNil(v) && v !== "");
+      if (typeof parsed === "object") {
+        return Object.values(parsed).some((v) => !isNil(v) && v !== "");
       }
       return true;
     } catch (error) {
