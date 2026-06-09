@@ -95,10 +95,9 @@ const MetadataSourceChips = ({
   onOpenReconciler: () => void;
 }): ReactElement => {
   return (
-    <div className="flex flex-col gap-2 mb-5 p-3 w-fit">
+    <div className="flex flex-col gap-2 mb-5 w-fit">
       <div className="flex flex-row items-center justify-between">
         <span className="text-md text-slate-500 dark:text-slate-400">
-          <i className="icon-[solar--database-outline] w-4 h-4 inline-block align-middle mr-1" />
           {sources.length} metadata sources detected.
         </span>
       </div>
