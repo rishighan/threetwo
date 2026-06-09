@@ -24,6 +24,20 @@ const config: Config = {
         metron: "#4258ff",
         locg: "#fd6401",
         gcd: "#e49b26",
+        "control-surface": "#6B5B71",
+        warning: "#b7b784",
+        theme: {
+          light: {
+            bg: "#f1f2f3",
+            accent: "#d2d8df",
+            heading: "#2f3d51",
+          },
+          dark: {
+            bg: "#20252d",
+            accent: "#46566d",
+            heading: "#b7bec8",
+          },
+        },
       },
     },
     fontFamily: {

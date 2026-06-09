@@ -22,10 +22,14 @@ import { CVMatchesPanel, MetronMatchesPanel, GCDMatchesPanel, EditMetadataPanelW
 
 /**
  * Styled sliding panel component with custom background color.
- * Extends the base SlidingPane component with a light gray background.
+ * Extends the base SlidingPane component with the theme background color.
  */
 const StyledSlidingPanel = styled(SlidingPane)`
-  background: #ccc;
+  background: #f1f2f3;
+
+  @media (prefers-color-scheme: dark) {
+    background: #20252d;
+  }
 `;
 
 /**

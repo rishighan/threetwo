@@ -178,9 +178,9 @@ export const MatchResultCard: React.FC<MatchResultCardProps> = ({
     }
   };
   
-  const bgClass = isBestMatch 
-    ? "bg-green-100 dark:bg-green-900" 
-    : "bg-slate-300 dark:bg-slate-700";
+  const bgClass = isBestMatch
+    ? "bg-green-100 dark:bg-green-900"
+    : "bg-white dark:bg-slate-800";
   
   return (
     <div className={`${bgClass} my-5 p-4 rounded-lg`}>
@@ -253,7 +253,7 @@ export const MatchResultCard: React.FC<MatchResultCardProps> = ({
           
           {/* Issue description */}
           {issueDescription && (
-            <div className="text-sm text-slate-700 dark:text-slate-300">
+            <div className="text-sm text-theme-light-heading dark:text-theme-dark-heading">
               {ellipsize(issueDescription, 300)}
             </div>
           )}

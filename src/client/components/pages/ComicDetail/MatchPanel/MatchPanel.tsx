@@ -29,12 +29,12 @@ const LoadingState: React.FC<{ source: MetadataSource; scrapingStatus?: string }
   scrapingStatus
 }) => {
   const config = useMatchSource(source);
-  
+
   return (
     <div className="flex items-center justify-center py-8">
       <div className="flex flex-col items-center gap-3">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600" />
-        <span className="text-sm text-slate-600 dark:text-slate-400">
+        <span className="text-sm text-theme-light-heading dark:text-theme-dark-heading">
           {scrapingStatus || `Searching ${config.displayName}...`}
         </span>
       </div>
@@ -46,7 +46,7 @@ const LoadingState: React.FC<{ source: MetadataSource; scrapingStatus?: string }
  * Scraping status display for showing real-time progress from socket events.
  */
 const ScrapingStatusBanner: React.FC<{ status: string }> = ({ status }) => (
-  <div className="text-md my-5 text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 rounded-lg p-3">
+  <div className="text-md my-5 text-theme-light-heading dark:text-theme-dark-heading bg-theme-light-accent dark:bg-theme-dark-accent rounded-lg p-3">
     <div className="flex items-center gap-2">
       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600" />
       <span>{status}</span>
@@ -102,10 +102,10 @@ const EmptyState: React.FC<{ source: MetadataSource }> = ({ source }) => {
  */
 const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
   <span className="flex items-center mt-6">
-    <span className="text-md text-slate-500 dark:text-slate-500 pr-5">
+    <span className="text-md text-theme-light-heading dark:text-theme-dark-heading pr-5">
       {title}
     </span>
-    <span className="h-px flex-1 bg-slate-200 dark:bg-slate-400" />
+    <span className="h-px flex-1 bg-theme-light-accent dark:bg-theme-dark-accent" />
   </span>
 );
 
@@ -186,25 +186,21 @@ export const MatchPanel: React.FC<MatchPanelProps> = ({
   if (error) {
     return <ErrorState error={error} />;
   }
-  
+
   // Empty state - but first check if we're still receiving scraping updates
   if (isEmpty(matches)) {
     // If there's an active scraping status, show it instead of empty state
     if (scrapingStatus) {
-      return (
-        <div>
-          <ScrapingStatusBanner status={scrapingStatus} />
-        </div>
-      );
+      return <ScrapingStatusBanner status={scrapingStatus} />;
     }
     return <EmptyState source={source} />;
   }
-  
+
   // Populated state - render match cards (scraping status hidden once results arrive)
   return (
     <div>
       <SectionHeader title={`${config.displayName} Matches`} />
-      
+
       {matches.map((match, idx) => (
         <MatchResultCard
           key={match.id}

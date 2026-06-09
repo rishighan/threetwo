@@ -598,7 +598,7 @@ export function ReconcilerDrawer({
         <Drawer.Overlay className="fixed inset-0 bg-black/50 z-40" />
         <Drawer.Content
           aria-describedby={undefined}
-          className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-slate-900 outline-none"
+          className="fixed inset-0 z-50 flex flex-col bg-theme-light-bg dark:bg-theme-dark-bg outline-none"
         >
           <Drawer.Title className="sr-only">
             Reconcile metadata sources
@@ -944,7 +944,7 @@ export function ReconcilerDrawer({
           </div>
 
           {/* ── Footer ── */}
-          <div className="flex-none border-t border-slate-200 dark:border-slate-700 px-4 py-3 flex items-center justify-between bg-white dark:bg-slate-900">
+          <div className="flex-none border-t border-slate-200 dark:border-slate-700 px-4 py-3 flex items-center justify-between bg-theme-light-accent dark:bg-theme-dark-accent">
             <div className="text-sm">
               {allResolved ? (
                 <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400">

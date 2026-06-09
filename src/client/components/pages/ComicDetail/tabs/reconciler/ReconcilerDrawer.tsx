@@ -105,7 +105,7 @@ export function ReconcilerDrawer({
         <Drawer.Overlay className="fixed inset-0 bg-black/50 z-40" />
         <Drawer.Content
           aria-describedby={undefined}
-          className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-slate-900 outline-none"
+          className="fixed inset-0 z-50 flex flex-col bg-theme-light-bg dark:bg-theme-dark-bg outline-none"
         >
           <Drawer.Title className="sr-only">Reconcile metadata sources</Drawer.Title>
 

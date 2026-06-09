@@ -45,7 +45,7 @@ export function ReconcilerFooter({
   const allResolved = unresolvedCount === 0
 
   return (
-    <div className="flex-none border-t border-slate-200 dark:border-slate-700 px-4 py-3 flex items-center justify-between bg-white dark:bg-slate-900">
+    <div className="flex-none border-t border-slate-200 dark:border-slate-700 px-4 py-3 flex items-center justify-between bg-theme-light-accent dark:bg-theme-dark-accent">
       {/* Status indicator */}
       <div className="text-sm">
         {allResolved ? (
