@@ -89,7 +89,7 @@
     "@graphql-codegen/cli": "^6.1.2",
     "@graphql-codegen/typescript": "^5.0.8",
     "@graphql-codegen/typescript-operations": "^5.0.8",
-    "@graphql-codegen/typescript-react-query": "^6.1.2",
+    "@graphql-codegen/typescript-react-query": "^7.0.5",
     "@iconify-json/solar": "^1.2.5",
     "@iconify/json": "^2.2.443",
     "@iconify/tailwind": "^1.2.0",
