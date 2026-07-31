@@ -9,7 +9,7 @@
  */
 
 import type { NormalizedMatch, BatchMatchAdapter } from "../types";
-import type { MetronMatch } from "../../../../types/comic.types";
+import type { MetronMatch } from "../../../../../types/comic.types";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Adapter Implementation

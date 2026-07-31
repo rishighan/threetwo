@@ -41,7 +41,7 @@ const PotentialLibraryMatches = (props: PotentialLibraryMatchesProps): ReactElem
       {isArray(comicBooks) ? (
         map(comicBooks, (match) => {
           const encodedFilePath = encodeURI(
-            `${LIBRARY_SERVICE_HOST}/${match.rawFileDetails.cover.filePath}`,
+            `${LIBRARY_SERVICE_HOST}${match.rawFileDetails.cover.filePath}`,
           );
           const filePath = escapePoundSymbol(encodedFilePath);
           return (

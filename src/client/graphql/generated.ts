@@ -28,6 +28,16 @@ export type AcquisitionSourceInput = {
   wanted?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type AddTorrentInput = {
+  comicObjectId: Scalars['ID']['input'];
+  torrentToDownload: Scalars['String']['input'];
+};
+
+export type AddTorrentResult = {
+  __typename?: 'AddTorrentResult';
+  result?: Maybe<Scalars['JSON']['output']>;
+};
+
 export type AppSettings = {
   __typename?: 'AppSettings';
   bittorrent?: Maybe<BittorrentSettings>;
@@ -230,7 +240,6 @@ export type ComicVineSearchResult = {
   offset: Scalars['Int']['output'];
   results: Array<SearchResultItem>;
   status_code: Scalars['Int']['output'];
-  total: Scalars['Int']['output'];
 };
 
 export type ComicVineVolume = {
@@ -1017,6 +1026,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Placeholder for future mutations */
   _empty?: Maybe<Scalars['String']['output']>;
+  /** Add a torrent to qBittorrent */
+  addTorrent?: Maybe<AddTorrentResult>;
   analyzeImage: ImageAnalysisResult;
   applyComicVineMatch: Comic;
   applyComicVineMetadata: ApplyComicVineMetadataResult;
@@ -1034,6 +1045,11 @@ export type Mutation = {
   uncompressArchive?: Maybe<Scalars['Boolean']['output']>;
   updateSourcedMetadata: Comic;
   updateUserPreferences: UserPreferences;
+};
+
+
+export type MutationAddTorrentArgs = {
+  input: AddTorrentInput;
 };
 
 
@@ -1202,6 +1218,7 @@ export type PublisherStats = {
 
 export type Query = {
   __typename?: 'Query';
+  _empty?: Maybe<Scalars['String']['output']>;
   analyzeMetadataConflicts: Array<MetadataConflict>;
   bundles: Array<Bundle>;
   comic?: Maybe<Comic>;
@@ -1813,26 +1830,8 @@ export type WantedVolumeInput = {
 
 export type WeeklyPullListInput = {
   currentPage: Scalars['Int']['input'];
-  endDate?: InputMaybe<Scalars['String']['input']>;
   pageSize: Scalars['Int']['input'];
-  publisher?: InputMaybe<Scalars['String']['input']>;
   startDate: Scalars['String']['input'];
-};
-
-export type WeeklyPullListItem = {
-  __typename?: 'WeeklyPullListItem';
-  id: Scalars['ID']['output'];
-  issueNumber?: Maybe<Scalars['String']['output']>;
-  publisher?: Maybe<Scalars['String']['output']>;
-  releaseDate?: Maybe<Scalars['String']['output']>;
-  title?: Maybe<Scalars['String']['output']>;
-};
-
-export type WeeklyPullListResult = {
-  __typename?: 'WeeklyPullListResult';
-  message?: Maybe<Scalars['String']['output']>;
-  pullList?: Maybe<Array<WeeklyPullListItem>>;
-  success: Scalars['Boolean']['output'];
 };
 
 export type ProvenanceFullFragment = { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null };
