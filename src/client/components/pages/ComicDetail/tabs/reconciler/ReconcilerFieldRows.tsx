@@ -60,12 +60,15 @@ function ScalarFieldCell({
   const isLongtext = fieldConfig.renderAs === "longtext"
 
   return (
-    <button onClick={onClick} className={getFieldCellClasses(isSelected, candidate.source)}>
+    <button
+      onClick={onClick}
+      className={getFieldCellClasses(isSelected, candidate.source, isImage)}
+    >
       {isImage ? (
         <img
           src={candidate.value}
           alt="cover"
-          className="w-full h-24 object-cover rounded"
+          className="w-50 h-auto object-contain rounded bg-slate-100 dark:bg-slate-900"
           onError={(e) => {
             ;(e.target as HTMLImageElement).style.display = "none"
           }}

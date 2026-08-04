@@ -275,9 +275,10 @@ export const VolumeInformation = (
             {}) as unknown as import("./reconciler/useReconciler").RawSourcedMetadata
         }
         inferredMetadata={
-          data.inferredMetadata as
-            | import("./reconciler/useReconciler").RawInferredMetadata
-            | undefined
+          {
+            ...(data.inferredMetadata as { issue?: unknown } | undefined),
+            rawFileDetails: data.rawFileDetails,
+          } as import("./reconciler/useReconciler").RawInferredMetadata
         }
         onSave={saveCanonical}
       />

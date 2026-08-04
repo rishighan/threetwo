@@ -10,6 +10,8 @@
 
 import { useReducer, useMemo } from "react";
 import { isNil, isEmpty } from "lodash";
+import { LIBRARY_SERVICE_HOST } from "../../../../../constants/endpoints";
+import { escapePoundSymbol } from "../../../../../shared/utils/formatting.utils";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Source Keys & Labels
@@ -190,6 +192,13 @@ export interface RawInferredMetadata {
     number?: number;
     year?: string;
     subtitle?: string;
+  };
+  /** Raw file details for the local comic file, used to surface its cover image. */
+  rawFileDetails?: {
+    name?: string | null;
+    cover?: {
+      filePath?: string | null;
+    } | null;
   };
 }
 
@@ -778,21 +787,33 @@ function fromLocg(locg: Record<string, unknown>): AdapterResult {
 
 /**
  * Extracts canonical fields from inferred metadata (local file analysis).
- * 
- * @param issue - Inferred issue metadata
+ *
+ * Pulls issue details parsed from the filename, plus the local file's own
+ * cover image (built from `rawFileDetails.cover.filePath`) when available.
+ *
+ * @param inferred - Inferred metadata, including the parsed issue and raw file details
  * @returns Adapter result with extracted fields
  */
-function fromInferred(
-  issue: RawInferredMetadata["issue"]
-): AdapterResult {
-  if (!issue) return {};
-
+function fromInferred(inferred: RawInferredMetadata): AdapterResult {
+  const { issue, rawFileDetails } = inferred;
   const source: SourceKey = "inferredMetadata";
-  return {
-    title: makeScalarCandidate(source, issue.name),
-    issueNumber: makeScalarCandidate(source, issue.number),
-    volume: makeScalarCandidate(source, issue.year),
-  };
+  const result: AdapterResult = {};
+
+  if (issue) {
+    result.title = makeScalarCandidate(source, issue.name);
+    result.issueNumber = makeScalarCandidate(source, issue.number);
+    result.volume = makeScalarCandidate(source, issue.year);
+  }
+
+  const filePath = rawFileDetails?.cover?.filePath;
+  if (filePath) {
+    const coverUrl = escapePoundSymbol(
+      encodeURI(`${LIBRARY_SERVICE_HOST}${filePath}`)
+    );
+    result.coverImage = makeScalarCandidate(source, coverUrl);
+  }
+
+  return result;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -1127,8 +1148,8 @@ export function useReconciler(
       adapters.comicInfo = fromComicInfo(comicInfo);
     }
 
-    if (inferredMetadata?.issue) {
-      adapters.inferredMetadata = fromInferred(inferredMetadata.issue);
+    if (inferredMetadata?.issue || inferredMetadata?.rawFileDetails?.cover?.filePath) {
+      adapters.inferredMetadata = fromInferred(inferredMetadata);
     }
 
     return buildState(adapters);

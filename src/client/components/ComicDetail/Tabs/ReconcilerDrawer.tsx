@@ -790,7 +790,7 @@ export function ReconcilerDrawer({
                                   <img
                                     src={candidate.value}
                                     alt="cover"
-                                    className="w-full h-24 object-cover rounded"
+                                    className="w-full h-24 object-contain rounded bg-slate-100 dark:bg-slate-900"
                                     onError={(e) => {
                                       (
                                         e.target as HTMLImageElement

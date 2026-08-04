@@ -63,11 +63,16 @@ export type FilterMode = "all" | "conflicts" | "unresolved"
  *
  * @param isSelected - Whether this cell's value is currently selected
  * @param source - The source key for source-specific styling
+ * @param fitContent - When true, the cell shrink-wraps its content instead of
+ *   stretching to fill the grid column (used for image cells)
  * @returns Combined className string
  */
-export function getFieldCellClasses(isSelected: boolean, source: SourceKey): string {
-  const baseClasses =
-    "w-full text-left text-sm px-2 py-1.5 rounded-md border transition-all"
+export function getFieldCellClasses(
+  isSelected: boolean,
+  source: SourceKey,
+  fitContent = false,
+): string {
+  const baseClasses = `${fitContent ? "w-fit" : "w-full"} text-left text-sm px-2 py-1.5 rounded-md border transition-all`
 
   if (isSelected) {
     return `${baseClasses} border-transparent ${SOURCE_SELECTED[source]}`
