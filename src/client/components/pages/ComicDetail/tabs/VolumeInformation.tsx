@@ -5,12 +5,9 @@ import ComicVineDetails from "../metadata-matching/comicvine/ComicVineDetails";
 import { ReconcilerDrawer } from "./reconciler/ReconcilerDrawer";
 import { fetcher } from "../../../../graphql/fetcher";
 import { useGetComicByIdQuery } from "../../../../graphql/generated";
-import type { CanonicalRecord } from "./reconciler/useReconciler";
+import type { CanonicalRecord, SourceKey } from "./reconciler/useReconciler";
 import type { RawFileDetails as RawFileDetailsType } from "../../../../graphql/generated";
-import cvLogo from "../../../../assets/img/cvlogo.svg";
-import locgLogo from "../../../../assets/img/locglogo.svg";
-import gcdLogo from "../../../../assets/img/gcd_logo.png";
-import metronLogo from "../../../../assets/img/metron_logo.png";
+import { SOURCE_ICONS, SOURCE_BG_COLORS } from "./reconciler/reconciler.utils";
 
 interface ComicVineMetadata {
   volumeInformation?: Record<string, unknown>;
@@ -52,7 +49,7 @@ const SET_METADATA_FIELD = `
 `;
 
 /** Sources stored under `sourcedMetadata` — excludes `inferredMetadata`, which is checked separately. */
-const SOURCED_METADATA_KEYS = [
+const SOURCED_METADATA_KEYS: SourceKey[] = [
   "comicvine",
   "locg",
   "comicInfo",
@@ -69,29 +66,11 @@ const SOURCE_LABELS: Record<string, string> = {
   inferredMetadata: "Local File",
 };
 
-const SOURCE_ICONS: Record<string, string> = {
-  comicvine: cvLogo,
-  locg: locgLogo,
-  comicInfo: "icon-[solar--file-text-outline]",
-  metron: metronLogo,
-  gcd: gcdLogo,
-  inferredMetadata: "icon-[solar--file-text-outline]",
-};
-
-const SOURCE_BG_COLORS: Record<string, string> = {
-  comicvine: "bg-[#f0faf5] dark:bg-[#1a3d2e]",
-  locg: "bg-[#fff5f0] dark:bg-[#3d2a1a]",
-  metron: "bg-[#f0f3ff] dark:bg-[#1a2440]",
-  gcd: "bg-[#fdf8f0] dark:bg-[#3d3520]",
-  comicInfo: "bg-slate-50 dark:bg-slate-700",
-  inferredMetadata: "bg-slate-50 dark:bg-slate-700",
-};
-
 const MetadataSourceChips = ({
   sources,
   onOpenReconciler,
 }: {
-  sources: string[];
+  sources: SourceKey[];
   onOpenReconciler: () => void;
 }): ReactElement => {
   return (
@@ -103,11 +82,9 @@ const MetadataSourceChips = ({
       </div>
       <dl className="flex flex-row flex-wrap gap-2">
         {sources.map((source) => {
-          const iconValue =
-            SOURCE_ICONS[source] ?? "icon-[solar--check-circle-outline]";
+          const iconValue = SOURCE_ICONS[source];
           const isIconClass = iconValue.startsWith("icon-[");
-          const bgColor =
-            SOURCE_BG_COLORS[source] ?? "bg-slate-50 dark:bg-slate-700";
+          const bgColor = SOURCE_BG_COLORS[source];
 
           return (
             <dd
