@@ -22,7 +22,7 @@ export const createTabConfig = ({
   return [
     {
       id: 1,
-      name: "Volume Information",
+      name: "Metadata",
       icon: (
         <i className="h-5 w-5 icon-[solar--book-2-bold] text-slate-500 dark:text-slate-300"></i>
       ),

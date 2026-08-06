@@ -141,7 +141,7 @@ export function ReconcilerBody({
           <div key={group}>
             {/* Group sticky header */}
             <div className="sticky top-0 z-10 px-4 py-2 bg-slate-50 dark:bg-slate-800/90 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700">
-              <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+              <span className="text-md font-bold text-slate-400 dark:text-slate-500">
                 {group}
               </span>
             </div>
@@ -203,4 +203,3 @@ export function ReconcilerBody({
     </div>
   )
 }
-

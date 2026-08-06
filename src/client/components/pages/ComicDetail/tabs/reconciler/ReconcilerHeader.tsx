@@ -60,33 +60,44 @@ export function ReconcilerHeader({
   onSetBaseSource,
 }: ReconcilerHeaderProps): ReactElement {
   const filterModes: FilterMode[] = ["all", "conflicts", "unresolved"]
+  const filterModeIcons: Record<FilterMode, string> = {
+    all: "icon-[solar--list-outline]",
+    conflicts: "icon-[solar--danger-triangle-outline]",
+    unresolved: "icon-[solar--danger-circle-outline]",
+  }
 
   return (
     <div className="flex-none border-b border-slate-200 dark:border-slate-700 shadow-sm">
       {/* Title + controls */}
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
-          <i className="icon-[solar--refresh-circle-outline] w-5 h-5 text-slate-500 dark:text-slate-400" />
-          <span className="font-semibold text-slate-800 dark:text-slate-100 text-base">
+          <span className="font-semibold text-slate-800 dark:text-slate-100 text-lg">
             Reconcile Metadata
           </span>
-          {unresolvedCount > 0 && <ConflictBadge count={unresolvedCount} />}
         </div>
 
         <div className="flex items-center gap-2">
           {/* Filter pill */}
-          <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5 gap-0.5">
+          <div className="inline-flex h-9 items-center rounded-lg bg-slate-100 dark:bg-slate-800 p-1 gap-0.5">
             {filterModes.map((mode) => (
               <button
                 key={mode}
+                type="button"
                 onClick={() => onFilterChange(mode)}
-                className={`px-3 py-1 rounded-md text-xs font-medium transition-colors capitalize ${
+                aria-pressed={filter === mode}
+                className={`group inline-flex h-7 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 align-middle text-xs font-semibold capitalize transition-all duration-300 ease-in-out ${
                   filter === mode
-                    ? "bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm"
-                    : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                    ? "bg-white dark:bg-slate-700 text-slate-950 dark:text-slate-100 shadow-sm"
+                    : "bg-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
                 }`}
               >
+                <i className={`${filterModeIcons[mode]} w-3.5 h-3.5 block`} />
                 {mode}
+                {mode === "unresolved" && unresolvedCount > 0 && (
+                  <span className="inline-flex items-center justify-center min-w-[1.1rem] p-0.5 rounded-sm text-[10px] font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                    {unresolvedCount}
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -114,8 +125,8 @@ export function ReconcilerHeader({
         className="px-4 pb-3"
         style={{ display: "grid", gridTemplateColumns: gridCols, gap: "8px" }}
       >
-        <div className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-end pb-0.5">
-          Field
+        <div className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase flex items-end pb-0.5">
+
         </div>
         {activeSources.map((src) => (
           <div key={src} className="flex flex-col gap-1.5">
@@ -132,4 +143,3 @@ export function ReconcilerHeader({
     </div>
   )
 }
-

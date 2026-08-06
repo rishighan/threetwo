@@ -1,5 +1,9 @@
 import React, { ReactElement } from "react"
 import { SourceKey, SOURCE_LABELS } from "./useReconciler"
+import cvLogo from "../../../../../assets/img/cvlogo.svg"
+import locgLogo from "../../../../../assets/img/locglogo.svg"
+import gcdLogo from "../../../../../assets/img/gcd_logo.png"
+import metronLogo from "../../../../../assets/img/metron_logo.png"
 
 /**
  * Tailwind classes for source badge styling.
@@ -37,6 +41,32 @@ export const SOURCE_SHORT: Record<SourceKey, string> = {
   locg: "LoCG",
   comicInfo: "XML",
   inferredMetadata: "Local",
+}
+
+/**
+ * Icon/logo shown in a SourceBadge for each source.
+ * Values starting with "icon-[" are Iconify classes; everything else is an
+ * imported logo image, matching the treatment in VolumeInformation.tsx.
+ */
+export const SOURCE_ICONS: Record<SourceKey, string> = {
+  comicvine: cvLogo,
+  locg: locgLogo,
+  comicInfo: "icon-[solar--file-text-outline]",
+  metron: metronLogo,
+  gcd: gcdLogo,
+  inferredMetadata: "icon-[solar--file-text-outline]",
+}
+
+/**
+ * Background color for a SourceBadge, matching VolumeInformation.tsx.
+ */
+export const SOURCE_BG_COLORS: Record<SourceKey, string> = {
+  comicvine: "bg-[#f0faf5] dark:bg-[#1a3d2e]",
+  locg: "bg-[#fff5f0] dark:bg-[#3d2a1a]",
+  metron: "bg-[#f0f3ff] dark:bg-[#1a2440]",
+  gcd: "bg-[#fdf8f0] dark:bg-[#3d3520]",
+  comicInfo: "bg-slate-50 dark:bg-slate-700",
+  inferredMetadata: "bg-slate-50 dark:bg-slate-700",
 }
 
 /**
@@ -137,9 +167,23 @@ interface SourceBadgeProps {
  * ```
  */
 export function SourceBadge({ source, short = false }: SourceBadgeProps): ReactElement {
+  const label = short ? SOURCE_SHORT[source] : SOURCE_LABELS[source]
+  const iconValue = SOURCE_ICONS[source]
+  const isIconClass = iconValue.startsWith("icon-[")
+  const bgColor = SOURCE_BG_COLORS[source]
+
   return (
-    <span className={`text-xs font-semibold px-2 py-0.5 rounded w-fit ${SOURCE_BADGE[source]}`}>
-      {short ? SOURCE_SHORT[source] : SOURCE_LABELS[source]}
+    <span
+      className={`inline-flex items-center w-fit ${bgColor} text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-100`}
+    >
+      <span className="pr-1 pt-1">
+        {isIconClass ? (
+          <i className={`${iconValue} w-4 h-4`} />
+        ) : (
+          <img src={iconValue} alt={label} className="w-5 h-5 object-contain" />
+        )}
+      </span>
+      <span className="text-md text-slate-500 dark:text-slate-100">{label}</span>
     </span>
   )
 }
