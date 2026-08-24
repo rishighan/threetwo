@@ -17,6 +17,11 @@ import {
 import axios from "axios";
 import type { SearchPageProps, ComicVineSearchResult } from "../../../types";
 
+/**
+ * Shape of a single ComicVine search result. Fields present depend on
+ * `resource_type` — issue results carry `cover_date`/`issue_number`/`volume`,
+ * while volume results carry `start_year`/`count_of_issues`/`publisher`.
+ */
 interface ComicData {
   id: number;
   api_detail_url: string;
@@ -32,6 +37,12 @@ interface ComicData {
   resource_type?: string;
 }
 
+/**
+ * ComicVine search page. Lets the user search for issues or volumes on
+ * ComicVine and add results to the local wanted list.
+ *
+ * @returns The search page element.
+ */
 export const Search = ({}: SearchPageProps): ReactElement => {
   const queryClient = useQueryClient();
   const formData = {
@@ -53,6 +64,9 @@ export const Search = ({}: SearchPageProps): ReactElement => {
     isPending,
     isSuccess,
   } = useMutation({
+    // Queries the ComicVine proxy service. `field_list` is restricted to the
+    // fields this page actually renders, and `resources` scopes the search
+    // to either "volume" or "issue" per the selected radio option.
     mutationFn: async (data: { search: string; resource: string }) => {
       const { search, resource } = data;
       return await axios({
@@ -72,7 +86,15 @@ export const Search = ({}: SearchPageProps): ReactElement => {
     },
   });
 
-  // add to library
+  /**
+   * Adds a search result to the wanted list.
+   *
+   * For an "issue" result, ComicVine only gives us the issue's own fields,
+   * so we make a second request to fetch the parent volume's metadata
+   * before importing — the library needs volume info even when only one
+   * issue is wanted. For a "volume" result the metadata is already
+   * complete, so no extra fetch is needed.
+   */
   const { data: additionResult, mutate: addToWantedList } = useMutation({
     mutationFn: async ({
       source,
@@ -88,7 +110,7 @@ export const Search = ({}: SearchPageProps): ReactElement => {
       let volumeInformation = {};
       let issues = [];
       switch (resourceType) {
-        case "issue":
+        case "issue": {
           const { id, api_detail_url, image, cover_date, issue_number } =
             comicObject;
           // Add issue metadata
@@ -112,8 +134,9 @@ export const Search = ({}: SearchPageProps): ReactElement => {
           // set volume metadata key
           volumeInformation = response.data?.results;
           break;
+        }
 
-        case "volume":
+        case "volume": {
           const {
             id: volumeId,
             api_detail_url: apiUrl,
@@ -129,6 +152,7 @@ export const Search = ({}: SearchPageProps): ReactElement => {
             publisher,
           };
           break;
+        }
 
         default:
           break;
@@ -159,18 +183,21 @@ export const Search = ({}: SearchPageProps): ReactElement => {
       });
     },
     onSuccess: () => {
-      // Invalidate and refetch wanted comics queries
+      // Refetch the wanted list so the newly added item shows up elsewhere in the app.
       queryClient.invalidateQueries({ queryKey: ["wantedComics"] });
     },
   });
 
+  /** Stores the selected search result in state for later use. */
   const addToLibrary = (sourceName: string, comicData: ComicData) =>
     setComicVineMetadata({ sourceName, comicData });
 
+  /** Wraps an HTML string in the `{ __html }` shape React expects for `dangerouslySetInnerHTML`. */
   const createDescriptionMarkup = (html: string) => {
     return { __html: html };
   };
 
+  /** Combines the submitted search term with the currently selected resource type and runs the search. */
   const onSubmit = async (values: { search: string }) => {
     const formData = { ...values, resource: selectedResource };
     try {
@@ -464,10 +491,10 @@ export const Search = ({}: SearchPageProps): ReactElement => {
             })}
           </div>
         ) : (
-          <div className="mx-auto mx-auto max-w-screen-md px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
+          <div className="mx-auto max-w-screen-md px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
             <article
               role="alert"
-              className="mt-4 rounded-lg max-w-screen-md border-s-4 border-blue-500 bg-blue-50 p-4 dark:border-s-4 dark:border-blue-600 dark:bg-blue-300 dark:text-slate-600"
+              className="mt-4 rounded-lg max-w-screen-md border-s-4 border-blue-500 bg-blue-50 p-4 dark:border-blue-600 dark:bg-blue-300 dark:text-slate-600"
             >
               <div>
                 <p> Search the ComicVine database</p>

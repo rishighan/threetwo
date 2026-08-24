@@ -1,6 +1,5 @@
 import React, { ReactElement, useEffect, useState } from "react";
-import { isEmpty, isNil } from "lodash";
-import { determineCoverFile } from "../../shared/utils/metadata.utils";
+import { isNil } from "lodash";
 import MetadataPanel from "../../ui/data-display/MetadataPanel";
 import type { DownloadsProps } from "../../../types";
 import { useStore } from "../../../store";
