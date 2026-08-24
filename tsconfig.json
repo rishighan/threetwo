@@ -6,16 +6,16 @@
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,
     "skipLibCheck": true,
-    "esModuleInterop": false,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "types": ["node", "vite/client"]
   },
   "settings": {
     "eslint.workingDirectories": [
@@ -25,5 +25,11 @@
       }
     ]
   },
-  "include": ["./src/client/*", "./src/client/types/**/*.d.ts"]
+  "include": ["./src/client/**/*", "./src/client/types/**/*.d.ts"],
+  "exclude": [
+    "./src/client/**/*.test.tsx",
+    "./src/client/**/*.test.ts",
+    "./src/client/**/*.stories.tsx",
+    "./src/client/graphql/generated.ts"
+  ]
 }

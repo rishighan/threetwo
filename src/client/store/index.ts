@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Global Zustand store for application state management.
+ * Manages socket connections, import job tracking, and ComicVine scraping state.
+ * Uses Zustand for lightweight, hook-based state management with React.
+ * @module store
+ */
+
 import { create } from "zustand";
 import io, { Socket } from "socket.io-client";
 import { SOCKET_BASE_URI } from "../constants/endpoints";
@@ -5,10 +12,17 @@ import { QueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+/**
+ * React Query client instance for managing server state.
+ * @constant {QueryClient}
+ */
 const queryClient = new QueryClient();
 
 /**
- * Global application state interface
+ * Global application state interface.
+ * Defines the shape of the Zustand store including socket management,
+ * import job tracking, and external service state.
+ * @interface StoreState
  */
 interface StoreState {
   /** Active socket.io connections by namespace */
@@ -27,6 +41,17 @@ interface StoreState {
   /** ComicVine scraping state */
   comicvine: {
     scrapingStatus: string;
+    clearScrapingStatus: () => void;
+  };
+  /** Metron scraping state */
+  metron: {
+    scrapingStatus: string;
+    clearScrapingStatus: () => void;
+  };
+  /** GCD (Grand Comics Database) scraping state */
+  gcd: {
+    scrapingStatus: string;
+    clearScrapingStatus: () => void;
   };
   /** Import job queue state and actions */
   importJobQueue: {
@@ -87,6 +112,14 @@ export const useStore = create<StoreState>((set, get) => ({
       set((s) => ({ comicvine: { ...s.comicvine, scrapingStatus: message } }))
     );
 
+    socket.on("METRON_SCRAPING_STATUS", ({ message }) =>
+      set((s) => ({ metron: { ...s.metron, scrapingStatus: message } }))
+    );
+
+    socket.on("GCD_SCRAPING_STATUS", ({ message }) =>
+      set((s) => ({ gcd: { ...s.gcd, scrapingStatus: message } }))
+    );
+
     socket.on("searchResultsAvailable", ({ query }) =>
       toast(`Results found for query: ${JSON.stringify(query, null, 2)}`)
     );
@@ -106,7 +139,20 @@ export const useStore = create<StoreState>((set, get) => ({
     }
   },
 
-  comicvine: { scrapingStatus: "" },
+  comicvine: {
+    scrapingStatus: "",
+    clearScrapingStatus: () => set((s) => ({ comicvine: { ...s.comicvine, scrapingStatus: "" } }))
+  },
+
+  metron: {
+    scrapingStatus: "",
+    clearScrapingStatus: () => set((s) => ({ metron: { ...s.metron, scrapingStatus: "" } }))
+  },
+
+  gcd: {
+    scrapingStatus: "",
+    clearScrapingStatus: () => set((s) => ({ gcd: { ...s.gcd, scrapingStatus: "" } }))
+  },
 
   importJobQueue: {
     successfulJobCount: 0,

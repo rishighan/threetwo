@@ -1,3 +1,23 @@
+/**
+ * @fileoverview API endpoint configuration constants.
+ * Builds URIs for all microservices used by the application.
+ * Supports environment-based configuration via Vite environment variables.
+ * @module constants/endpoints
+ */
+
+/**
+ * Constructs a full URI from protocol, host, port, and path components.
+ *
+ * @param {Record<string, string>} options - URI component options
+ * @param {string} options.protocol - Protocol (http, https, ws, wss)
+ * @param {string} options.host - Hostname or IP address
+ * @param {string} options.port - Port number
+ * @param {string} options.apiPath - API path prefix
+ * @returns {string} Complete URI string
+ * @example
+ * hostURIBuilder({ protocol: "http", host: "localhost", port: "3000", apiPath: "/api" })
+ * // Returns "http://localhost:3000/api"
+ */
 export const hostURIBuilder = (options: Record<string, string>): string => {
   return (
     options.protocol +
@@ -9,6 +29,14 @@ export const hostURIBuilder = (options: Record<string, string>): string => {
   );
 };
 
+// =============================================================================
+// SERVICE ENDPOINT CONSTANTS
+// =============================================================================
+
+/**
+ * CORS proxy server URI for bypassing cross-origin restrictions.
+ * @constant {string}
+ */
 export const CORS_PROXY_SERVER_URI = hostURIBuilder({
   protocol: "http",
   host: import.meta.env.VITE_UNDERLYING_HOSTNAME || "localhost",

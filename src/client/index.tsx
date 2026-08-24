@@ -3,19 +3,19 @@ import { createRoot } from "react-dom/client";
 const root = createRoot(document.getElementById("root")!);
 import App from "./components/App";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { ErrorPage } from "./components/shared/ErrorPage";
+import { ErrorPage } from "./components/ui/layout/ErrorPage";
 import "./shared/utils/i18n.util";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-const Settings = lazy(() => import("./components/Settings/Settings"));
-const Import = lazy(() => import("./components/Import/Import"));
-const Dashboard = lazy(() => import("./components/Dashboard/Dashboard"));
-const Search = lazy(() => import("./components/Search/Search"));
-const TabulatedContentContainer = lazy(() => import("./components/Library/TabulatedContentContainer"));
-const ComicDetailContainer = lazy(() => import("./components/ComicDetail/ComicDetailContainer").then(m => ({ default: m.ComicDetailContainer })));
-const Volumes = lazy(() => import("./components/Volumes/Volumes"));
-const VolumeDetails = lazy(() => import("./components/VolumeDetail/VolumeDetail"));
-const WantedComics = lazy(() => import("./components/WantedComics/WantedComics"));
+const Settings = lazy(() => import("./components/pages/Settings/Settings"));
+const Import = lazy(() => import("./components/pages/Import/Import"));
+const Dashboard = lazy(() => import("./components/pages/Dashboard/Dashboard"));
+const Search = lazy(() => import("./components/pages/Search/Search"));
+const TabulatedContentContainer = lazy(() => import("./components/pages/Library/components/TabulatedContentContainer"));
+const ComicDetailContainer = lazy(() => import("./components/pages/ComicDetail/ComicDetailContainer").then(m => ({ default: m.ComicDetailContainer })));
+const Volumes = lazy(() => import("./components/pages/Volumes/Volumes"));
+const VolumeDetails = lazy(() => import("./components/pages/VolumeDetail/VolumeDetail"));
+const WantedComics = lazy(() => import("./components/pages/WantedComics/WantedComics"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,7 +43,7 @@ const router = createBrowserRouter([
         path: "comic/details/:comicObjectId",
         element: <ComicDetailContainer />,
       },
-      { path: "import", element: <Import path={"./comics"} /> },
+      { path: "import", element: <Import /> },
       { path: "search", element: <Search /> },
       { path: "volume/details/:comicObjectId", element: <VolumeDetails /> },
       { path: "volumes", element: <Volumes /> },

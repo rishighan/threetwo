@@ -1,0 +1,65 @@
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+html, body {
+  overflow-x: hidden;
+}
+
+/* Custom Project Fonts */
+@font-face {
+  font-family: "PP Object Sans Regular";
+  src: url("/fonts/PPObjectSans-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PP Object Sans Heavy";
+  src: url("/fonts/PPObjectSans-Heavy.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PP Object Sans Slanted";
+  src: url("/fonts/PPObjectSans-Slanted.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PP Object Sans HeavySlanted";
+  src: url("/fonts/PPObjectSans-HeavySlanted.otf") format("opentype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Hasklig Regular";
+  src: url("/fonts/Hasklig-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Masonry Grid Styles */
+.my-masonry-grid {
+  display: -webkit-box; /* Not needed if autoprefixing */
+  display: -ms-flexbox; /* Not needed if autoprefixing */
+  display: flex;
+  margin-left: -30px; /* gutter size offset */
+  width: auto;
+}
+.my-masonry-grid_column {
+  padding-left: 30px; /* gutter size */
+  background-clip: padding-box;
+}
+
+/* Style your items */
+.my-masonry-grid_column > div { /* change div to reference your elements you put in <Masonry> */
+  margin-bottom: 30px;
+}

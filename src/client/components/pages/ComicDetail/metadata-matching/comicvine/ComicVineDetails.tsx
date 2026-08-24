@@ -1,0 +1,137 @@
+import React, { ReactElement } from "react";
+import { detectIssueTypes } from "../../../../../shared/utils/tradepaperback.utils";
+import dayjs from "dayjs";
+import { isEmpty, isUndefined } from "lodash";
+import Card from "../../../../ui/data-display/Carda";
+import { convert } from "html-to-text";
+import type { ComicVineDetailsProps } from "../../../../../types";
+
+/**
+ * ComicVine Details Component
+ *
+ * Displays detailed information about a comic issue from ComicVine metadata.
+ * This component renders comprehensive details including volume information,
+ * publisher details, issue metadata, cover art, and description.
+ *
+ * The component handles cases where ComicVine data is missing or incomplete,
+ * and provides fallback displays for various optional fields.
+ *
+ * @param {ComicVineDetailsProps} props - Component props containing ComicVine data and metadata
+ * @param {object} props.data - ComicVine issue and volume data
+ * @param {string} [props.updatedAt] - Timestamp of when the metadata was last updated
+ *
+ * @returns {ReactElement} Rendered ComicVine details component with issue information
+ *
+ * @example
+ * ```tsx
+ * <ComicVineDetails
+ *   data={comicVineData}
+ *   updatedAt="2023-01-01T00:00:00Z"
+ * />
+ * ```
+ */
+export const ComicVineDetails = (props: ComicVineDetailsProps): ReactElement => {
+  const { data, updatedAt } = props;
+
+  if (!data || !data.volumeInformation) {
+    return <div className="text-slate-500 dark:text-gray-400">No ComicVine data available</div>;
+  }
+
+  const detectedIssueType = data.volumeInformation.description
+    ? detectIssueTypes(data.volumeInformation.description)
+    : undefined;
+
+  return (
+    <div className="text-slate-500 dark:text-gray-400">
+      <div className="">
+        <div>
+          <div className="flex flex-row gap-4">
+            <div className="min-w-fit">
+              <Card
+                imageUrl={data.volumeInformation.image?.thumb_url}
+                orientation={"cover-only"}
+                hasDetails={false}
+              />
+            </div>
+            <div className="flex flex-col gap-5">
+              <div className="flex flex-row">
+                <div>
+                  {/* Title */}
+                  <div>
+                    <div className="text-lg">{data.name}</div>
+                    <div className="text-sm">
+                      Is a part of{" "}
+                      <span className="has-text-info">
+                        {data.volumeInformation.name}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Comicvine metadata */}
+                  <div className="mt-2">
+                    <div className="text-md">ComicVine Metadata</div>
+                    <div className="text-sm">
+                      Last scraped on{" "}
+                      {updatedAt ? dayjs(updatedAt).format("MMM D YYYY [at] h:mm a") : "Unknown"}
+                    </div>
+                    <div className="text-sm">
+                      ComicVine Issue ID
+                      <span>{data.id}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Publisher details */}
+                <div className="ml-8">
+                  Published by{" "}
+                  <span>{data.volumeInformation.publisher?.name}</span>
+                  <div>
+                    Total issues in this volume{" "}
+                    <span className="inline-flex items-center bg-slate-50 text-slate-800 text-xs font-medium px-2 rounded-md dark:text-slate-900 dark:bg-slate-400">
+                      <span className="text-md text-slate-900 dark:text-slate-900">
+                        {data.volumeInformation.count_of_issues}
+                      </span>
+                    </span>
+                  </div>
+                  <div>
+                    {data.issue_number && (
+                      <div className="">
+                        <span>Issue Number</span>
+                        <span>{data.issue_number}</span>
+                      </div>
+                    )}
+                    {!isUndefined(detectedIssueType) ? (
+                      <div>
+                        <span>Detected Type</span>
+                        <span>
+                          {detectedIssueType.displayName}
+                        </span>
+                      </div>
+                    ) : data.resource_type ? (
+                      <div>
+                        <span>Type</span>
+                        <span>{data.resource_type}</span>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+              {/* Description */}
+              <div className="mt-3 w-3/4">
+                {!isEmpty(data.description) &&
+                  data.description &&
+                  convert(data.description, {
+                    baseElements: {
+                      selectors: ["p"],
+                    },
+                  })}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ComicVineDetails;

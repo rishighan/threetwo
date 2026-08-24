@@ -1,5 +1,6 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   publicDir: "public",
@@ -26,7 +27,6 @@ export default defineConfig({
             "date-fns",
             "dayjs",
             "axios",
-            "rxjs",
             "socket.io-client",
             "i18next",
             "react-i18next",
@@ -45,6 +45,7 @@ export default defineConfig({
   },
   server: { host: true },
   plugins: [
+    tailwindcss(),
     react({
       // Use React plugin in all *.jsx and *.tsx files
       include: "**/*.{jsx,tsx}",

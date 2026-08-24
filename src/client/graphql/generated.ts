@@ -45,6 +45,47 @@ export type AppSettings = {
   prowlarr?: Maybe<ProwlarrSettings>;
 };
 
+export type ApplyComicVineMetadataInput = {
+  comicObjectId: Scalars['ID']['input'];
+  match: ComicVineMatchInput;
+};
+
+export type ApplyComicVineMetadataResult = {
+  __typename?: 'ApplyComicVineMetadataResult';
+  comicObjectId: Scalars['ID']['output'];
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+  updatedAt: Scalars['String']['output'];
+};
+
+export type ApplyGcdMetadataInput = {
+  comicObjectId: Scalars['ID']['input'];
+  gcdIssueId: Scalars['Int']['input'];
+  gcdSeriesId: Scalars['Int']['input'];
+};
+
+export type ApplyGcdMetadataResult = {
+  __typename?: 'ApplyGCDMetadataResult';
+  comicObjectId: Scalars['ID']['output'];
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+  updatedAt: Scalars['String']['output'];
+};
+
+export type ApplyMetronMetadataInput = {
+  comicObjectId: Scalars['ID']['input'];
+  metronIssueId: Scalars['Int']['input'];
+  metronSeriesId: Scalars['Int']['input'];
+};
+
+export type ApplyMetronMetadataResult = {
+  __typename?: 'ApplyMetronMetadataResult';
+  comicObjectId: Scalars['ID']['output'];
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+  updatedAt: Scalars['String']['output'];
+};
+
 export type Archive = {
   __typename?: 'Archive';
   expandedPath?: Maybe<Scalars['String']['output']>;
@@ -93,23 +134,37 @@ export type CanonicalMetadata = {
   __typename?: 'CanonicalMetadata';
   ageRating?: Maybe<MetadataField>;
   characters?: Maybe<Array<MetadataField>>;
+  collectionTitle?: Maybe<MetadataField>;
   communityRating?: Maybe<MetadataField>;
   coverDate?: Maybe<MetadataField>;
   coverImage?: Maybe<MetadataField>;
   creators?: Maybe<Array<Creator>>;
   description?: Maybe<MetadataField>;
+  externalIDs?: Maybe<Array<ExternalId>>;
   format?: Maybe<MetadataField>;
   genres?: Maybe<Array<MetadataField>>;
+  gtin?: Maybe<GtinField>;
+  imprint?: Maybe<MetadataField>;
   issueNumber?: Maybe<MetadataField>;
+  language?: Maybe<MetadataField>;
+  lastModified?: Maybe<MetadataField>;
   locations?: Maybe<Array<MetadataField>>;
+  notes?: Maybe<MetadataField>;
   pageCount?: Maybe<MetadataField>;
+  prices?: Maybe<Array<PriceField>>;
   publicationDate?: Maybe<MetadataField>;
   publisher?: Maybe<MetadataField>;
+  reprints?: Maybe<Array<ReprintField>>;
   series?: Maybe<MetadataField>;
-  storyArcs?: Maybe<Array<MetadataField>>;
+  seriesInfo?: Maybe<SeriesInfo>;
+  storeDate?: Maybe<MetadataField>;
+  stories?: Maybe<Array<MetadataField>>;
+  storyArcs?: Maybe<Array<StoryArcField>>;
   tags?: Maybe<Array<MetadataField>>;
   teams?: Maybe<Array<MetadataField>>;
   title?: Maybe<MetadataField>;
+  universes?: Maybe<Array<UniverseField>>;
+  urls?: Maybe<Array<UrlField>>;
   volume?: Maybe<MetadataField>;
 };
 
@@ -185,7 +240,6 @@ export type ComicVineSearchResult = {
   offset: Scalars['Int']['output'];
   results: Array<SearchResultItem>;
   status_code: Scalars['Int']['output'];
-  total: Scalars['Int']['output'];
 };
 
 export type ComicVineVolume = {
@@ -226,6 +280,7 @@ export type CoverInput = {
 
 export type Creator = {
   __typename?: 'Creator';
+  id?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   provenance: Provenance;
   role: Scalars['String']['output'];
@@ -261,6 +316,14 @@ export type DirectorySize = {
   totalSizeInMB: Scalars['Float']['output'];
 };
 
+export type ExternalId = {
+  __typename?: 'ExternalID';
+  externalId: Scalars['String']['output'];
+  primary?: Maybe<Scalars['Boolean']['output']>;
+  provenance: Provenance;
+  source: MetadataSource;
+};
+
 export type FieldOverride = {
   __typename?: 'FieldOverride';
   field: Scalars['String']['output'];
@@ -293,6 +356,133 @@ export type ForceCompleteResult = {
   __typename?: 'ForceCompleteResult';
   message: Scalars['String']['output'];
   success: Scalars['Boolean']['output'];
+};
+
+export type GcdHealthResponse = {
+  __typename?: 'GCDHealthResponse';
+  configured: Scalars['Boolean']['output'];
+  databasePath?: Maybe<Scalars['String']['output']>;
+  databaseSize?: Maybe<Scalars['String']['output']>;
+  error?: Maybe<Scalars['String']['output']>;
+  lastModified?: Maybe<Scalars['String']['output']>;
+  status: Scalars['String']['output'];
+};
+
+export type GcdIssue = {
+  __typename?: 'GCDIssue';
+  barcode?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  isbn?: Maybe<Scalars['String']['output']>;
+  issueNumber: Scalars['String']['output'];
+  keyDate?: Maybe<Scalars['String']['output']>;
+  notes?: Maybe<Scalars['String']['output']>;
+  pageCount?: Maybe<Scalars['Int']['output']>;
+  price?: Maybe<Scalars['String']['output']>;
+  publicationDate?: Maybe<Scalars['String']['output']>;
+  series?: Maybe<GcdSeries>;
+  seriesId: Scalars['Int']['output'];
+  title?: Maybe<Scalars['String']['output']>;
+  variantName?: Maybe<Scalars['String']['output']>;
+  variantOfId?: Maybe<Scalars['Int']['output']>;
+};
+
+export type GcdIssueSearchInput = {
+  issueNumber?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  series_id?: InputMaybe<Scalars['Int']['input']>;
+  series_name?: InputMaybe<Scalars['String']['input']>;
+  year?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type GcdIssueSearchResult = {
+  __typename?: 'GCDIssueSearchResult';
+  count: Scalars['Int']['output'];
+  results: Array<GcdIssue>;
+};
+
+export type GcdPublisher = {
+  __typename?: 'GCDPublisher';
+  country?: Maybe<Scalars['String']['output']>;
+  countryId?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  url?: Maybe<Scalars['String']['output']>;
+  yearBegan?: Maybe<Scalars['Int']['output']>;
+  yearEnded?: Maybe<Scalars['Int']['output']>;
+};
+
+export type GcdScorerConfigInput = {
+  searchParams: GcdSearchParamsInput;
+};
+
+export type GcdSearchParamsInput = {
+  issueNumber?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  publisher?: InputMaybe<Scalars['String']['input']>;
+  subtitle?: InputMaybe<Scalars['String']['input']>;
+  year?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type GcdSeries = {
+  __typename?: 'GCDSeries';
+  country?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  issueCount: Scalars['Int']['output'];
+  language?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  notes?: Maybe<Scalars['String']['output']>;
+  publicationType?: Maybe<Scalars['String']['output']>;
+  publisher?: Maybe<GcdPublisher>;
+  publisherId: Scalars['Int']['output'];
+  publishingFormat?: Maybe<Scalars['String']['output']>;
+  sortName?: Maybe<Scalars['String']['output']>;
+  yearBegan?: Maybe<Scalars['Int']['output']>;
+  yearEnded?: Maybe<Scalars['Int']['output']>;
+};
+
+export type GcdSeriesSearchInput = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  name: Scalars['String']['input'];
+  page?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type GcdSeriesSearchResult = {
+  __typename?: 'GCDSeriesSearchResult';
+  count: Scalars['Int']['output'];
+  results: Array<GcdSeries>;
+};
+
+export type GcdStory = {
+  __typename?: 'GCDStory';
+  characters?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  issueId: Scalars['Int']['output'];
+  pageCount?: Maybe<Scalars['Int']['output']>;
+  sequenceNumber: Scalars['Int']['output'];
+  synopsis?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+  typeId: Scalars['Int']['output'];
+};
+
+export type GcdVolumeSearchInput = {
+  rawFileDetails?: InputMaybe<Scalars['JSON']['input']>;
+  scorerConfiguration: GcdScorerConfigInput;
+};
+
+export type GcdVolumeSearchResult = {
+  __typename?: 'GCDVolumeSearchResult';
+  finalMatches: Array<ScoredGcdMatch>;
+  rawFileDetails?: Maybe<Scalars['JSON']['output']>;
+  scorerConfiguration?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type GtinField = {
+  __typename?: 'GTINField';
+  isbn?: Maybe<Scalars['String']['output']>;
+  provenance: Provenance;
+  upc?: Maybe<Scalars['String']['output']>;
+  userOverride?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type GetResourceInput = {
@@ -544,13 +734,6 @@ export type MatchedResult = {
   score?: Maybe<Scalars['String']['output']>;
 };
 
-export type MetadataArrayField = {
-  __typename?: 'MetadataArrayField';
-  provenance: Provenance;
-  userOverride?: Maybe<Scalars['Boolean']['output']>;
-  values: Array<Scalars['String']['output']>;
-};
-
 export type MetadataConflict = {
   __typename?: 'MetadataConflict';
   candidates: Array<MetadataField>;
@@ -605,16 +788,238 @@ export enum MetadataSource {
   Metron = 'METRON'
 }
 
+export type MetronArc = {
+  __typename?: 'MetronArc';
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type MetronAssociatedSeries = {
+  __typename?: 'MetronAssociatedSeries';
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type MetronCharacter = {
+  __typename?: 'MetronCharacter';
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type MetronCredit = {
+  __typename?: 'MetronCredit';
+  creator: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  role?: Maybe<Array<Scalars['String']['output']>>;
+};
+
 export type MetronFetchInput = {
   method: Scalars['String']['input'];
   query?: InputMaybe<Scalars['String']['input']>;
   resource: Scalars['String']['input'];
 };
 
+export type MetronGenre = {
+  __typename?: 'MetronGenre';
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type MetronHealthResponse = {
+  __typename?: 'MetronHealthResponse';
+  configured: Scalars['Boolean']['output'];
+  rateLimit?: Maybe<MetronRateLimitState>;
+  status: Scalars['String']['output'];
+};
+
+export type MetronIssue = {
+  __typename?: 'MetronIssue';
+  cover_date?: Maybe<Scalars['String']['output']>;
+  cover_hash?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  image?: Maybe<Scalars['String']['output']>;
+  issueNumber: Scalars['String']['output'];
+  modified?: Maybe<Scalars['String']['output']>;
+  resource_url?: Maybe<Scalars['String']['output']>;
+  series?: Maybe<MetronSeriesRef>;
+  store_date?: Maybe<Scalars['String']['output']>;
+};
+
+export type MetronIssueDetail = {
+  __typename?: 'MetronIssueDetail';
+  arcs?: Maybe<Array<MetronArc>>;
+  characters?: Maybe<Array<MetronCharacter>>;
+  cover_date?: Maybe<Scalars['String']['output']>;
+  cover_hash?: Maybe<Scalars['String']['output']>;
+  credits?: Maybe<Array<MetronCredit>>;
+  cv_id?: Maybe<Scalars['Int']['output']>;
+  desc?: Maybe<Scalars['String']['output']>;
+  gcd_id?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['Int']['output'];
+  image?: Maybe<Scalars['String']['output']>;
+  isbn?: Maybe<Scalars['String']['output']>;
+  issueNumber: Scalars['String']['output'];
+  modified?: Maybe<Scalars['String']['output']>;
+  page_count?: Maybe<Scalars['Int']['output']>;
+  price?: Maybe<Scalars['String']['output']>;
+  rating?: Maybe<MetronRating>;
+  reprints?: Maybe<Array<MetronReprint>>;
+  resource_url?: Maybe<Scalars['String']['output']>;
+  series?: Maybe<MetronSeriesRef>;
+  sku?: Maybe<Scalars['String']['output']>;
+  store_date?: Maybe<Scalars['String']['output']>;
+  teams?: Maybe<Array<MetronTeam>>;
+  title?: Maybe<Scalars['String']['output']>;
+  upc?: Maybe<Scalars['String']['output']>;
+  variants?: Maybe<Array<MetronVariant>>;
+};
+
+export type MetronIssueSearchInput = {
+  cover_month?: InputMaybe<Scalars['Int']['input']>;
+  cover_year?: InputMaybe<Scalars['Int']['input']>;
+  issueNumber?: InputMaybe<Scalars['String']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  series_id?: InputMaybe<Scalars['Int']['input']>;
+  series_name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type MetronIssueSearchResult = {
+  __typename?: 'MetronIssueSearchResult';
+  count: Scalars['Int']['output'];
+  next?: Maybe<Scalars['String']['output']>;
+  previous?: Maybe<Scalars['String']['output']>;
+  results: Array<MetronIssue>;
+};
+
+export type MetronPublisher = {
+  __typename?: 'MetronPublisher';
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type MetronRateLimitState = {
+  __typename?: 'MetronRateLimitState';
+  burstLimit?: Maybe<Scalars['Int']['output']>;
+  burstRemaining?: Maybe<Scalars['Int']['output']>;
+  burstReset?: Maybe<Scalars['Int']['output']>;
+  sustainedLimit?: Maybe<Scalars['Int']['output']>;
+  sustainedRemaining?: Maybe<Scalars['Int']['output']>;
+  sustainedReset?: Maybe<Scalars['Int']['output']>;
+};
+
+export type MetronRating = {
+  __typename?: 'MetronRating';
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type MetronReprint = {
+  __typename?: 'MetronReprint';
+  id: Scalars['Int']['output'];
+  issue: Scalars['String']['output'];
+};
+
 export type MetronResponse = {
   __typename?: 'MetronResponse';
   data?: Maybe<Scalars['JSON']['output']>;
   status: Scalars['Int']['output'];
+};
+
+export type MetronScorerConfigInput = {
+  searchParams: MetronSearchParamsInput;
+};
+
+export type MetronSearchParamsInput = {
+  issueNumber?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  subtitle?: InputMaybe<Scalars['String']['input']>;
+  year?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type MetronSeries = {
+  __typename?: 'MetronSeries';
+  id: Scalars['Int']['output'];
+  image?: Maybe<Scalars['String']['output']>;
+  issue_count?: Maybe<Scalars['Int']['output']>;
+  modified?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  publisher?: Maybe<MetronPublisher>;
+  resource_url?: Maybe<Scalars['String']['output']>;
+  series_type?: Maybe<MetronSeriesType>;
+  sort_name?: Maybe<Scalars['String']['output']>;
+  volume?: Maybe<Scalars['Int']['output']>;
+  year_began?: Maybe<Scalars['Int']['output']>;
+  year_end?: Maybe<Scalars['Int']['output']>;
+};
+
+export type MetronSeriesDetail = {
+  __typename?: 'MetronSeriesDetail';
+  associated?: Maybe<Array<MetronAssociatedSeries>>;
+  desc?: Maybe<Scalars['String']['output']>;
+  genres?: Maybe<Array<MetronGenre>>;
+  id: Scalars['Int']['output'];
+  image?: Maybe<Scalars['String']['output']>;
+  issue_count?: Maybe<Scalars['Int']['output']>;
+  modified?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  publisher?: Maybe<MetronPublisher>;
+  resource_url?: Maybe<Scalars['String']['output']>;
+  series_type?: Maybe<MetronSeriesType>;
+  sort_name?: Maybe<Scalars['String']['output']>;
+  volume?: Maybe<Scalars['Int']['output']>;
+  year_began?: Maybe<Scalars['Int']['output']>;
+  year_end?: Maybe<Scalars['Int']['output']>;
+};
+
+export type MetronSeriesRef = {
+  __typename?: 'MetronSeriesRef';
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type MetronSeriesSearchInput = {
+  name: Scalars['String']['input'];
+  page?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type MetronSeriesSearchResult = {
+  __typename?: 'MetronSeriesSearchResult';
+  count: Scalars['Int']['output'];
+  next?: Maybe<Scalars['String']['output']>;
+  previous?: Maybe<Scalars['String']['output']>;
+  results: Array<MetronSeries>;
+};
+
+export type MetronSeriesType = {
+  __typename?: 'MetronSeriesType';
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type MetronTeam = {
+  __typename?: 'MetronTeam';
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type MetronVariant = {
+  __typename?: 'MetronVariant';
+  image?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  sku?: Maybe<Scalars['String']['output']>;
+  upc?: Maybe<Scalars['String']['output']>;
+};
+
+export type MetronVolumeSearchInput = {
+  rawFileDetails?: InputMaybe<Scalars['JSON']['input']>;
+  scorerConfiguration: MetronScorerConfigInput;
+};
+
+export type MetronVolumeSearchResult = {
+  __typename?: 'MetronVolumeSearchResult';
+  finalMatches: Array<ScoredMetronMatch>;
+  rawFileDetails?: Maybe<Scalars['JSON']['output']>;
+  scorerConfiguration?: Maybe<Scalars['JSON']['output']>;
 };
 
 export type Mutation = {
@@ -625,6 +1030,9 @@ export type Mutation = {
   addTorrent?: Maybe<AddTorrentResult>;
   analyzeImage: ImageAnalysisResult;
   applyComicVineMatch: Comic;
+  applyComicVineMetadata: ApplyComicVineMetadataResult;
+  applyGCDMetadata: ApplyGcdMetadataResult;
+  applyMetronMetadata: ApplyMetronMetadataResult;
   bulkResolveMetadata: Array<Comic>;
   forceCompleteSession: ForceCompleteResult;
   importComic: ImportComicResult;
@@ -653,6 +1061,21 @@ export type MutationAnalyzeImageArgs = {
 export type MutationApplyComicVineMatchArgs = {
   comicObjectId: Scalars['ID']['input'];
   match: ComicVineMatchInput;
+};
+
+
+export type MutationApplyComicVineMetadataArgs = {
+  input: ApplyComicVineMetadataInput;
+};
+
+
+export type MutationApplyGcdMetadataArgs = {
+  input: ApplyGcdMetadataInput;
+};
+
+
+export type MutationApplyMetronMetadataArgs = {
+  input: ApplyMetronMetadataInput;
 };
 
 
@@ -752,6 +1175,14 @@ export type PersonCredit = {
   site_detail_url?: Maybe<Scalars['String']['output']>;
 };
 
+export type PriceField = {
+  __typename?: 'PriceField';
+  amount: Scalars['Float']['output'];
+  country: Scalars['String']['output'];
+  currency?: Maybe<Scalars['String']['output']>;
+  provenance: Provenance;
+};
+
 export type Provenance = {
   __typename?: 'Provenance';
   confidence: Scalars['Float']['output'];
@@ -792,18 +1223,32 @@ export type Query = {
   bundles: Array<Bundle>;
   comic?: Maybe<Comic>;
   comics: ComicConnection;
-  /** Fetch resource from Metron API */
+  /** Fetch resource from Metron API (legacy) */
   fetchMetronResource: MetronResponse;
+  /** Check GCD service health and database status */
+  gcdHealth: GcdHealthResponse;
+  /** Advanced volume-based search with scoring (mirrors ComicVine volumeBasedSearch) */
+  gcdVolumeBasedSearch: GcdVolumeSearchResult;
   getActiveImportSession?: Maybe<ImportSession>;
   getComicBookGroups: Array<ComicBookGroup>;
   getComicBooks: ComicBooksResult;
   /** Get generic ComicVine resource (issues, volumes, etc.) */
   getComicVineResource: ComicVineResourceResponse;
+  /** Get GCD issue details by ID */
+  getGCDIssueById: GcdIssue;
+  /** Get GCD series details by ID */
+  getGCDSeriesById: GcdSeries;
+  /** Get stories for a GCD issue */
+  getGCDStoriesForIssue: Array<GcdStory>;
   getImportStatistics: ImportStatistics;
   /** Get all issues for a series by comic object ID */
   getIssuesForSeries: IssuesForSeriesResponse;
   getJobResultStatistics: Array<JobResultStatistics>;
   getLibraryStatistics: LibraryStatistics;
+  /** Get Metron issue details by ID */
+  getMetronIssueById: MetronIssueDetail;
+  /** Get Metron series details by ID */
+  getMetronSeriesById: MetronSeriesDetail;
   /** Get story arcs for a volume */
   getStoryArcs: Array<StoryArc>;
   /** Get volume details by URI */
@@ -811,10 +1256,22 @@ export type Query = {
   /** Get weekly pull list from League of Comic Geeks */
   getWeeklyPullList: MetadataPullListResponse;
   hubs: Array<Hub>;
+  /** Check Metron service health and configuration status */
+  metronHealth: MetronHealthResponse;
+  /** Advanced volume-based search with scoring (mirrors ComicVine volumeBasedSearch) */
+  metronVolumeBasedSearch: MetronVolumeSearchResult;
   previewCanonicalMetadata?: Maybe<CanonicalMetadata>;
   /** Search ComicVine for volumes, issues, characters, etc. */
   searchComicVine: ComicVineSearchResult;
+  /** Search GCD for issues with filters */
+  searchGCDIssues: GcdIssueSearchResult;
+  /** Search GCD for series by name */
+  searchGCDSeries: GcdSeriesSearchResult;
   searchIssue: SearchIssueResult;
+  /** Search Metron for issues with filters */
+  searchMetronIssues: MetronIssueSearchResult;
+  /** Search Metron for series by name */
+  searchMetronSeries: MetronSeriesSearchResult;
   searchTorrents: Array<TorrentSearchResult>;
   settings?: Maybe<AppSettings>;
   torrentJobs?: Maybe<TorrentJob>;
@@ -855,6 +1312,11 @@ export type QueryFetchMetronResourceArgs = {
 };
 
 
+export type QueryGcdVolumeBasedSearchArgs = {
+  input: GcdVolumeSearchInput;
+};
+
+
 export type QueryGetComicBooksArgs = {
   paginationOptions: PaginationOptionsInput;
   predicate?: InputMaybe<Scalars['PredicateInput']['input']>;
@@ -866,6 +1328,21 @@ export type QueryGetComicVineResourceArgs = {
 };
 
 
+export type QueryGetGcdIssueByIdArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryGetGcdSeriesByIdArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryGetGcdStoriesForIssueArgs = {
+  issueId: Scalars['Int']['input'];
+};
+
+
 export type QueryGetImportStatisticsArgs = {
   directoryPath?: InputMaybe<Scalars['String']['input']>;
 };
@@ -873,6 +1350,16 @@ export type QueryGetImportStatisticsArgs = {
 
 export type QueryGetIssuesForSeriesArgs = {
   comicObjectId: Scalars['ID']['input'];
+};
+
+
+export type QueryGetMetronIssueByIdArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryGetMetronSeriesByIdArgs = {
+  id: Scalars['Int']['input'];
 };
 
 
@@ -896,6 +1383,11 @@ export type QueryHubsArgs = {
 };
 
 
+export type QueryMetronVolumeBasedSearchArgs = {
+  input: MetronVolumeSearchInput;
+};
+
+
 export type QueryPreviewCanonicalMetadataArgs = {
   comicId: Scalars['ID']['input'];
   preferences?: InputMaybe<UserPreferencesInput>;
@@ -907,10 +1399,30 @@ export type QuerySearchComicVineArgs = {
 };
 
 
+export type QuerySearchGcdIssuesArgs = {
+  input: GcdIssueSearchInput;
+};
+
+
+export type QuerySearchGcdSeriesArgs = {
+  input: GcdSeriesSearchInput;
+};
+
+
 export type QuerySearchIssueArgs = {
   pagination?: InputMaybe<SearchPaginationInput>;
   query?: InputMaybe<SearchIssueQueryInput>;
   type: SearchType;
+};
+
+
+export type QuerySearchMetronIssuesArgs = {
+  input: MetronIssueSearchInput;
+};
+
+
+export type QuerySearchMetronSeriesArgs = {
+  input: MetronSeriesSearchInput;
 };
 
 
@@ -967,6 +1479,32 @@ export type RawFileDetailsInput = {
   mimeType?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   pageCount?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ReprintField = {
+  __typename?: 'ReprintField';
+  description: Scalars['String']['output'];
+  id?: Maybe<Scalars['String']['output']>;
+  provenance: Provenance;
+};
+
+export type ScoredGcdMatch = {
+  __typename?: 'ScoredGCDMatch';
+  issue: GcdIssue;
+  issueNumberScore?: Maybe<Scalars['Float']['output']>;
+  nameMatchScore?: Maybe<Scalars['Float']['output']>;
+  score: Scalars['Float']['output'];
+  series: GcdSeries;
+  yearMatchScore?: Maybe<Scalars['Float']['output']>;
+};
+
+export type ScoredMetronMatch = {
+  __typename?: 'ScoredMetronMatch';
+  issue: MetronIssueDetail;
+  nameMatchScore?: Maybe<Scalars['Float']['output']>;
+  score: Scalars['Float']['output'];
+  series: MetronSeries;
+  seriesMatchScore?: Maybe<Scalars['Float']['output']>;
 };
 
 export type ScorerConfigurationInput = {
@@ -1052,6 +1590,17 @@ export enum SearchType {
   Wanted = 'wanted'
 }
 
+export type SeriesInfo = {
+  __typename?: 'SeriesInfo';
+  alternativeNames?: Maybe<Array<MetadataField>>;
+  issueCount?: Maybe<Scalars['Int']['output']>;
+  language?: Maybe<Scalars['String']['output']>;
+  provenance: Provenance;
+  sortName?: Maybe<Scalars['String']['output']>;
+  startYear?: Maybe<Scalars['Int']['output']>;
+  volumeCount?: Maybe<Scalars['Int']['output']>;
+};
+
 export type SourcePriority = {
   __typename?: 'SourcePriority';
   enabled: Scalars['Boolean']['output'];
@@ -1114,6 +1663,14 @@ export type StoryArcCredit = {
   site_detail_url?: Maybe<Scalars['String']['output']>;
 };
 
+export type StoryArcField = {
+  __typename?: 'StoryArcField';
+  id?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  number?: Maybe<Scalars['Int']['output']>;
+  provenance: Provenance;
+};
+
 export type TeamCredit = {
   __typename?: 'TeamCredit';
   api_detail_url?: Maybe<Scalars['String']['output']>;
@@ -1138,6 +1695,21 @@ export type TorrentSearchResult = {
   seeders?: Maybe<Scalars['Int']['output']>;
   size?: Maybe<Scalars['Float']['output']>;
   title?: Maybe<Scalars['String']['output']>;
+};
+
+export type UrlField = {
+  __typename?: 'URLField';
+  primary?: Maybe<Scalars['Boolean']['output']>;
+  provenance: Provenance;
+  url: Scalars['String']['output'];
+};
+
+export type UniverseField = {
+  __typename?: 'UniverseField';
+  designation?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  provenance: Provenance;
 };
 
 export type UserPreferences = {
@@ -1262,12 +1834,16 @@ export type WeeklyPullListInput = {
   startDate: Scalars['String']['input'];
 };
 
+export type ProvenanceFullFragment = { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null };
+
+export type MetadataFieldFullFragment = { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } };
+
 export type GetComicByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type GetComicByIdQuery = { __typename?: 'Query', comic?: { __typename?: 'Comic', id: string, createdAt?: string | null, updatedAt?: string | null, inferredMetadata?: { __typename?: 'InferredMetadata', issue?: { __typename?: 'Issue', name?: string | null, number?: number | null, year?: string | null, subtitle?: string | null } | null } | null, canonicalMetadata?: { __typename?: 'CanonicalMetadata', title?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, series?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, volume?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, issueNumber?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, publisher?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, publicationDate?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, coverDate?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, description?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, creators?: Array<{ __typename?: 'Creator', name: string, role: string, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } }> | null, pageCount?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, coverImage?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null } | null, sourcedMetadata?: { __typename?: 'SourcedMetadata', comicInfo?: string | null, comicvine?: string | null, metron?: string | null, gcd?: string | null, locg?: { __typename?: 'LOCGMetadata', name?: string | null, publisher?: string | null, url?: string | null, cover?: string | null, description?: string | null, price?: string | null, rating?: number | null, pulls?: number | null, potw?: number | null } | null } | null, rawFileDetails?: { __typename?: 'RawFileDetails', name?: string | null, filePath?: string | null, fileSize?: number | null, extension?: string | null, mimeType?: string | null, containedIn?: string | null, pageCount?: number | null, archive?: { __typename?: 'Archive', uncompressed?: boolean | null, expandedPath?: string | null } | null, cover?: { __typename?: 'Cover', filePath?: string | null, stats?: string | null } | null } | null, importStatus?: { __typename?: 'ImportStatus', isImported?: boolean | null, tagged?: boolean | null, matchedResult?: { __typename?: 'MatchedResult', score?: string | null } | null } | null } | null };
+export type GetComicByIdQuery = { __typename?: 'Query', comic?: { __typename?: 'Comic', id: string, createdAt?: string | null, updatedAt?: string | null, inferredMetadata?: { __typename?: 'InferredMetadata', issue?: { __typename?: 'Issue', name?: string | null, number?: number | null, year?: string | null, subtitle?: string | null } | null } | null, canonicalMetadata?: { __typename?: 'CanonicalMetadata', title?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, series?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, volume?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, issueNumber?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, collectionTitle?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, seriesInfo?: { __typename?: 'SeriesInfo', issueCount?: number | null, startYear?: number | null, volumeCount?: number | null, sortName?: string | null, language?: string | null, alternativeNames?: Array<{ __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } }> | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, publisher?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, imprint?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, coverDate?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, storeDate?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, publicationDate?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, language?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, description?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, notes?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, stories?: Array<{ __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } }> | null, storyArcs?: Array<{ __typename?: 'StoryArcField', name: string, number?: number | null, id?: string | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } }> | null, characters?: Array<{ __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } }> | null, teams?: Array<{ __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } }> | null, locations?: Array<{ __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } }> | null, universes?: Array<{ __typename?: 'UniverseField', name: string, designation?: string | null, id?: string | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } }> | null, coverImage?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, creators?: Array<{ __typename?: 'Creator', name: string, role: string, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } }> | null, genres?: Array<{ __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } }> | null, tags?: Array<{ __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } }> | null, ageRating?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, pageCount?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, format?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, prices?: Array<{ __typename?: 'PriceField', amount: number, currency?: string | null, country: string, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } }> | null, gtin?: { __typename?: 'GTINField', isbn?: string | null, upc?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, reprints?: Array<{ __typename?: 'ReprintField', description: string, id?: string | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } }> | null, communityRating?: { __typename?: 'MetadataField', value?: string | null, userOverride?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } } | null, externalIDs?: Array<{ __typename?: 'ExternalID', source: MetadataSource, externalId: string, primary?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } }> | null, urls?: Array<{ __typename?: 'URLField', url: string, primary?: boolean | null, provenance: { __typename?: 'Provenance', source: MetadataSource, sourceId?: string | null, confidence: number, fetchedAt: string, url?: string | null } }> | null } | null, sourcedMetadata?: { __typename?: 'SourcedMetadata', comicInfo?: string | null, comicvine?: string | null, metron?: string | null, gcd?: string | null, locg?: { __typename?: 'LOCGMetadata', name?: string | null, publisher?: string | null, url?: string | null, cover?: string | null, description?: string | null, price?: string | null, rating?: number | null, pulls?: number | null, potw?: number | null } | null } | null, rawFileDetails?: { __typename?: 'RawFileDetails', name?: string | null, filePath?: string | null, fileSize?: number | null, extension?: string | null, mimeType?: string | null, containedIn?: string | null, pageCount?: number | null, archive?: { __typename?: 'Archive', uncompressed?: boolean | null, expandedPath?: string | null } | null, cover?: { __typename?: 'Cover', filePath?: string | null, stats?: string | null } | null } | null, importStatus?: { __typename?: 'ImportStatus', isImported?: boolean | null, tagged?: boolean | null, matchedResult?: { __typename?: 'MatchedResult', score?: string | null } | null } | null } | null };
 
 export type GetComicsQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -1278,14 +1854,14 @@ export type GetComicsQueryVariables = Exact<{
 }>;
 
 
-export type GetComicsQuery = { __typename?: 'Query', comics: { __typename?: 'ComicConnection', totalCount: number, comics: Array<{ __typename?: 'Comic', id: string, inferredMetadata?: { __typename?: 'InferredMetadata', issue?: { __typename?: 'Issue', name?: string | null, number?: number | null, year?: string | null, subtitle?: string | null } | null } | null, rawFileDetails?: { __typename?: 'RawFileDetails', name?: string | null, extension?: string | null, archive?: { __typename?: 'Archive', uncompressed?: boolean | null } | null } | null, sourcedMetadata?: { __typename?: 'SourcedMetadata', comicvine?: string | null, comicInfo?: string | null, locg?: { __typename?: 'LOCGMetadata', name?: string | null, publisher?: string | null, cover?: string | null } | null } | null, canonicalMetadata?: { __typename?: 'CanonicalMetadata', title?: { __typename?: 'MetadataField', value?: string | null } | null, series?: { __typename?: 'MetadataField', value?: string | null } | null, issueNumber?: { __typename?: 'MetadataField', value?: string | null } | null } | null }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, currentPage: number, totalPages: number } } };
+export type GetComicsQuery = { __typename?: 'Query', comics: { __typename?: 'ComicConnection', totalCount: number, comics: Array<{ __typename?: 'Comic', id: string, inferredMetadata?: { __typename?: 'InferredMetadata', issue?: { __typename?: 'Issue', name?: string | null, number?: number | null, year?: string | null, subtitle?: string | null } | null } | null, rawFileDetails?: { __typename?: 'RawFileDetails', name?: string | null, extension?: string | null, archive?: { __typename?: 'Archive', uncompressed?: boolean | null } | null } | null, sourcedMetadata?: { __typename?: 'SourcedMetadata', comicvine?: string | null, comicInfo?: string | null, metron?: string | null, gcd?: string | null, locg?: { __typename?: 'LOCGMetadata', name?: string | null, publisher?: string | null, cover?: string | null } | null } | null, canonicalMetadata?: { __typename?: 'CanonicalMetadata', title?: { __typename?: 'MetadataField', value?: string | null } | null, series?: { __typename?: 'MetadataField', value?: string | null } | null, issueNumber?: { __typename?: 'MetadataField', value?: string | null } | null } | null }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, currentPage: number, totalPages: number } } };
 
 export type GetRecentComicsQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
-export type GetRecentComicsQuery = { __typename?: 'Query', comics: { __typename?: 'ComicConnection', totalCount: number, comics: Array<{ __typename?: 'Comic', id: string, createdAt?: string | null, updatedAt?: string | null, inferredMetadata?: { __typename?: 'InferredMetadata', issue?: { __typename?: 'Issue', name?: string | null, number?: number | null, year?: string | null, subtitle?: string | null } | null } | null, rawFileDetails?: { __typename?: 'RawFileDetails', name?: string | null, extension?: string | null, cover?: { __typename?: 'Cover', filePath?: string | null } | null, archive?: { __typename?: 'Archive', uncompressed?: boolean | null } | null } | null, sourcedMetadata?: { __typename?: 'SourcedMetadata', comicvine?: string | null, comicInfo?: string | null, locg?: { __typename?: 'LOCGMetadata', name?: string | null, publisher?: string | null, cover?: string | null } | null } | null, canonicalMetadata?: { __typename?: 'CanonicalMetadata', title?: { __typename?: 'MetadataField', value?: string | null } | null, series?: { __typename?: 'MetadataField', value?: string | null } | null, issueNumber?: { __typename?: 'MetadataField', value?: string | null } | null, publisher?: { __typename?: 'MetadataField', value?: string | null } | null } | null, importStatus?: { __typename?: 'ImportStatus', isRawFileMissing?: boolean | null } | null }> } };
+export type GetRecentComicsQuery = { __typename?: 'Query', comics: { __typename?: 'ComicConnection', totalCount: number, comics: Array<{ __typename?: 'Comic', id: string, createdAt?: string | null, updatedAt?: string | null, inferredMetadata?: { __typename?: 'InferredMetadata', issue?: { __typename?: 'Issue', name?: string | null, number?: number | null, year?: string | null, subtitle?: string | null } | null } | null, rawFileDetails?: { __typename?: 'RawFileDetails', name?: string | null, extension?: string | null, cover?: { __typename?: 'Cover', filePath?: string | null } | null, archive?: { __typename?: 'Archive', uncompressed?: boolean | null } | null } | null, sourcedMetadata?: { __typename?: 'SourcedMetadata', comicvine?: string | null, comicInfo?: string | null, metron?: string | null, gcd?: string | null, locg?: { __typename?: 'LOCGMetadata', name?: string | null, publisher?: string | null, cover?: string | null } | null } | null, canonicalMetadata?: { __typename?: 'CanonicalMetadata', title?: { __typename?: 'MetadataField', value?: string | null } | null, series?: { __typename?: 'MetadataField', value?: string | null } | null, issueNumber?: { __typename?: 'MetadataField', value?: string | null } | null, publisher?: { __typename?: 'MetadataField', value?: string | null } | null } | null, importStatus?: { __typename?: 'ImportStatus', isRawFileMissing?: boolean | null } | null }> } };
 
 export type GetWantedComicsQueryVariables = Exact<{
   paginationOptions: PaginationOptionsInput;
@@ -1293,7 +1869,7 @@ export type GetWantedComicsQueryVariables = Exact<{
 }>;
 
 
-export type GetWantedComicsQuery = { __typename?: 'Query', getComicBooks: { __typename?: 'ComicBooksResult', totalDocs: number, limit: number, page?: number | null, totalPages: number, hasNextPage: boolean, hasPrevPage: boolean, docs: Array<{ __typename?: 'Comic', id: string, createdAt?: string | null, updatedAt?: string | null, inferredMetadata?: { __typename?: 'InferredMetadata', issue?: { __typename?: 'Issue', name?: string | null, number?: number | null, year?: string | null, subtitle?: string | null } | null } | null, rawFileDetails?: { __typename?: 'RawFileDetails', name?: string | null, extension?: string | null, cover?: { __typename?: 'Cover', filePath?: string | null } | null, archive?: { __typename?: 'Archive', uncompressed?: boolean | null } | null } | null, sourcedMetadata?: { __typename?: 'SourcedMetadata', comicvine?: string | null, comicInfo?: string | null, locg?: { __typename?: 'LOCGMetadata', name?: string | null, publisher?: string | null, cover?: string | null } | null } | null, canonicalMetadata?: { __typename?: 'CanonicalMetadata', title?: { __typename?: 'MetadataField', value?: string | null } | null, series?: { __typename?: 'MetadataField', value?: string | null } | null, issueNumber?: { __typename?: 'MetadataField', value?: string | null } | null } | null }> } };
+export type GetWantedComicsQuery = { __typename?: 'Query', getComicBooks: { __typename?: 'ComicBooksResult', totalDocs: number, limit: number, page?: number | null, totalPages: number, hasNextPage: boolean, hasPrevPage: boolean, docs: Array<{ __typename?: 'Comic', id: string, createdAt?: string | null, updatedAt?: string | null, inferredMetadata?: { __typename?: 'InferredMetadata', issue?: { __typename?: 'Issue', name?: string | null, number?: number | null, year?: string | null, subtitle?: string | null } | null } | null, rawFileDetails?: { __typename?: 'RawFileDetails', name?: string | null, extension?: string | null, cover?: { __typename?: 'Cover', filePath?: string | null } | null, archive?: { __typename?: 'Archive', uncompressed?: boolean | null } | null } | null, sourcedMetadata?: { __typename?: 'SourcedMetadata', comicvine?: string | null, comicInfo?: string | null, metron?: string | null, gcd?: string | null, locg?: { __typename?: 'LOCGMetadata', name?: string | null, publisher?: string | null, cover?: string | null } | null } | null, canonicalMetadata?: { __typename?: 'CanonicalMetadata', title?: { __typename?: 'MetadataField', value?: string | null } | null, series?: { __typename?: 'MetadataField', value?: string | null } | null, issueNumber?: { __typename?: 'MetadataField', value?: string | null } | null } | null }> } };
 
 export type GetVolumeGroupsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1352,10 +1928,27 @@ export type GetLibraryComicsQueryVariables = Exact<{
 }>;
 
 
-export type GetLibraryComicsQuery = { __typename?: 'Query', comics: { __typename?: 'ComicConnection', totalCount: number, comics: Array<{ __typename?: 'Comic', id: string, createdAt?: string | null, updatedAt?: string | null, inferredMetadata?: { __typename?: 'InferredMetadata', issue?: { __typename?: 'Issue', name?: string | null, number?: number | null, year?: string | null, subtitle?: string | null } | null } | null, rawFileDetails?: { __typename?: 'RawFileDetails', name?: string | null, filePath?: string | null, fileSize?: number | null, extension?: string | null, mimeType?: string | null, pageCount?: number | null, archive?: { __typename?: 'Archive', uncompressed?: boolean | null } | null, cover?: { __typename?: 'Cover', filePath?: string | null } | null } | null, sourcedMetadata?: { __typename?: 'SourcedMetadata', comicvine?: string | null, comicInfo?: string | null, locg?: { __typename?: 'LOCGMetadata', name?: string | null, publisher?: string | null, cover?: string | null } | null } | null, canonicalMetadata?: { __typename?: 'CanonicalMetadata', title?: { __typename?: 'MetadataField', value?: string | null } | null, series?: { __typename?: 'MetadataField', value?: string | null } | null, issueNumber?: { __typename?: 'MetadataField', value?: string | null } | null, publisher?: { __typename?: 'MetadataField', value?: string | null } | null, pageCount?: { __typename?: 'MetadataField', value?: string | null } | null } | null, importStatus?: { __typename?: 'ImportStatus', isImported?: boolean | null, tagged?: boolean | null } | null }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, currentPage: number, totalPages: number } } };
+export type GetLibraryComicsQuery = { __typename?: 'Query', comics: { __typename?: 'ComicConnection', totalCount: number, comics: Array<{ __typename?: 'Comic', id: string, createdAt?: string | null, updatedAt?: string | null, inferredMetadata?: { __typename?: 'InferredMetadata', issue?: { __typename?: 'Issue', name?: string | null, number?: number | null, year?: string | null, subtitle?: string | null } | null } | null, rawFileDetails?: { __typename?: 'RawFileDetails', name?: string | null, filePath?: string | null, fileSize?: number | null, extension?: string | null, mimeType?: string | null, pageCount?: number | null, archive?: { __typename?: 'Archive', uncompressed?: boolean | null } | null, cover?: { __typename?: 'Cover', filePath?: string | null } | null } | null, sourcedMetadata?: { __typename?: 'SourcedMetadata', comicvine?: string | null, comicInfo?: string | null, metron?: string | null, gcd?: string | null, locg?: { __typename?: 'LOCGMetadata', name?: string | null, publisher?: string | null, cover?: string | null } | null } | null, canonicalMetadata?: { __typename?: 'CanonicalMetadata', title?: { __typename?: 'MetadataField', value?: string | null } | null, series?: { __typename?: 'MetadataField', value?: string | null } | null, issueNumber?: { __typename?: 'MetadataField', value?: string | null } | null, publisher?: { __typename?: 'MetadataField', value?: string | null } | null, pageCount?: { __typename?: 'MetadataField', value?: string | null } | null } | null, importStatus?: { __typename?: 'ImportStatus', isImported?: boolean | null, tagged?: boolean | null } | null }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, currentPage: number, totalPages: number } } };
 
 
-
+export const ProvenanceFullFragmentDoc = `
+    fragment ProvenanceFull on Provenance {
+  source
+  sourceId
+  confidence
+  fetchedAt
+  url
+}
+    `;
+export const MetadataFieldFullFragmentDoc = `
+    fragment MetadataFieldFull on MetadataField {
+  value
+  provenance {
+    ...ProvenanceFull
+  }
+  userOverride
+}
+    `;
 export const GetComicByIdDocument = `
     query GetComicById($id: ID!) {
   comic(id: $id) {
@@ -1370,125 +1963,150 @@ export const GetComicByIdDocument = `
     }
     canonicalMetadata {
       title {
-        value
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
-        }
-        userOverride
+        ...MetadataFieldFull
       }
       series {
-        value
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
-        }
-        userOverride
+        ...MetadataFieldFull
       }
       volume {
-        value
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
-        }
-        userOverride
+        ...MetadataFieldFull
       }
       issueNumber {
-        value
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
+        ...MetadataFieldFull
+      }
+      collectionTitle {
+        ...MetadataFieldFull
+      }
+      seriesInfo {
+        issueCount
+        startYear
+        volumeCount
+        sortName
+        language
+        alternativeNames {
+          ...MetadataFieldFull
         }
-        userOverride
+        provenance {
+          ...ProvenanceFull
+        }
       }
       publisher {
-        value
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
-        }
-        userOverride
+        ...MetadataFieldFull
       }
-      publicationDate {
-        value
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
-        }
-        userOverride
+      imprint {
+        ...MetadataFieldFull
       }
       coverDate {
-        value
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
-        }
-        userOverride
+        ...MetadataFieldFull
+      }
+      storeDate {
+        ...MetadataFieldFull
+      }
+      publicationDate {
+        ...MetadataFieldFull
+      }
+      language {
+        ...MetadataFieldFull
       }
       description {
-        value
+        ...MetadataFieldFull
+      }
+      notes {
+        ...MetadataFieldFull
+      }
+      stories {
+        ...MetadataFieldFull
+      }
+      storyArcs {
+        name
+        number
+        id
         provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
+          ...ProvenanceFull
         }
-        userOverride
+      }
+      characters {
+        ...MetadataFieldFull
+      }
+      teams {
+        ...MetadataFieldFull
+      }
+      locations {
+        ...MetadataFieldFull
+      }
+      universes {
+        name
+        designation
+        id
+        provenance {
+          ...ProvenanceFull
+        }
+      }
+      coverImage {
+        ...MetadataFieldFull
       }
       creators {
         name
         role
         provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
+          ...ProvenanceFull
         }
+      }
+      genres {
+        ...MetadataFieldFull
+      }
+      tags {
+        ...MetadataFieldFull
+      }
+      ageRating {
+        ...MetadataFieldFull
       }
       pageCount {
-        value
-        provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
-        }
-        userOverride
+        ...MetadataFieldFull
       }
-      coverImage {
-        value
+      format {
+        ...MetadataFieldFull
+      }
+      prices {
+        amount
+        currency
+        country
         provenance {
-          source
-          sourceId
-          confidence
-          fetchedAt
-          url
+          ...ProvenanceFull
         }
+      }
+      gtin {
+        isbn
+        upc
         userOverride
+        provenance {
+          ...ProvenanceFull
+        }
+      }
+      reprints {
+        description
+        id
+        provenance {
+          ...ProvenanceFull
+        }
+      }
+      communityRating {
+        ...MetadataFieldFull
+      }
+      externalIDs {
+        source
+        externalId
+        primary
+        provenance {
+          ...ProvenanceFull
+        }
+      }
+      urls {
+        url
+        primary
+        provenance {
+          ...ProvenanceFull
+        }
       }
     }
     sourcedMetadata {
@@ -1536,7 +2154,8 @@ export const GetComicByIdDocument = `
     updatedAt
   }
 }
-    `;
+    ${MetadataFieldFullFragmentDoc}
+${ProvenanceFullFragmentDoc}`;
 
 export const useGetComicByIdQuery = <
       TData = GetComicByIdQuery,
@@ -1609,6 +2228,8 @@ export const GetComicsDocument = `
       sourcedMetadata {
         comicvine
         comicInfo
+        metron
+        gcd
         locg {
           name
           publisher
@@ -1706,6 +2327,8 @@ export const GetRecentComicsDocument = `
       sourcedMetadata {
         comicvine
         comicInfo
+        metron
+        gcd
         locg {
           name
           publisher
@@ -1805,6 +2428,8 @@ export const GetWantedComicsDocument = `
       sourcedMetadata {
         comicvine
         comicInfo
+        metron
+        gcd
         locg {
           name
           publisher
@@ -2332,6 +2957,8 @@ export const GetLibraryComicsDocument = `
       sourcedMetadata {
         comicvine
         comicInfo
+        metron
+        gcd
         locg {
           name
           publisher

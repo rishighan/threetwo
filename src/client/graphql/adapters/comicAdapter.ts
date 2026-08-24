@@ -1,8 +1,41 @@
+/**
+ * @fileoverview Adapter functions for transforming GraphQL responses to legacy formats.
+ * Enables gradual migration from REST API to GraphQL while maintaining backward
+ * compatibility with existing components and data structures.
+ * @module graphql/adapters/comicAdapter
+ */
+
 import { GetComicByIdQuery } from '../generated';
 
 /**
- * Adapter to transform GraphQL Comic response to legacy REST API format
- * This allows gradual migration while maintaining compatibility with existing components
+ * @typedef {Object} LegacyComicFormat
+ * @property {string} _id - Comic document ID
+ * @property {Object} rawFileDetails - Original file information
+ * @property {Object} inferredMetadata - Auto-detected metadata from parsing
+ * @property {Object} sourcedMetadata - Metadata from external sources (ComicVine, LOCG, etc.)
+ * @property {Object} acquisition - Download/acquisition tracking data
+ * @property {string} createdAt - ISO timestamp of creation
+ * @property {string} updatedAt - ISO timestamp of last update
+ * @property {Object} __graphql - Original GraphQL response for forward compatibility
+ */
+
+/**
+ * Transforms a GraphQL Comic query response to the legacy REST API format.
+ * This adapter enables gradual migration by allowing components to work with
+ * both new GraphQL data and legacy data structures.
+ *
+ * Handles:
+ * - Parsing stringified JSON in sourcedMetadata fields
+ * - Building inferredMetadata from canonical metadata as fallback
+ * - Mapping rawFileDetails to expected structure
+ * - Preserving original GraphQL data for forward compatibility
+ *
+ * @param {GetComicByIdQuery['comic']} graphqlComic - The GraphQL comic response object
+ * @returns {LegacyComicFormat|null} Transformed comic in legacy format, or null if input is null
+ * @example
+ * const { data } = useGetComicByIdQuery({ id: comicId });
+ * const legacyComic = adaptGraphQLComicToLegacy(data?.comic);
+ * // legacyComic now has _id, rawFileDetails, sourcedMetadata, etc.
  */
 export function adaptGraphQLComicToLegacy(graphqlComic: GetComicByIdQuery['comic']) {
   if (!graphqlComic) return null;
@@ -21,6 +54,18 @@ export function adaptGraphQLComicToLegacy(graphqlComic: GetComicByIdQuery['comic
     : undefined;
 
   const locg = graphqlComic.sourcedMetadata?.locg || undefined;
+
+  const metron = graphqlComic.sourcedMetadata?.metron
+    ? (typeof graphqlComic.sourcedMetadata.metron === 'string'
+        ? JSON.parse(graphqlComic.sourcedMetadata.metron)
+        : graphqlComic.sourcedMetadata.metron)
+    : undefined;
+
+  const gcd = graphqlComic.sourcedMetadata?.gcd
+    ? (typeof graphqlComic.sourcedMetadata.gcd === 'string'
+        ? JSON.parse(graphqlComic.sourcedMetadata.gcd)
+        : graphqlComic.sourcedMetadata.gcd)
+    : undefined;
 
   // Use inferredMetadata from GraphQL response, or build from canonical metadata as fallback
   const inferredMetadata = graphqlComic.inferredMetadata || {
@@ -66,6 +111,8 @@ export function adaptGraphQLComicToLegacy(graphqlComic: GetComicByIdQuery['comic
       comicvine,
       locg,
       comicInfo,
+      metron,
+      gcd,
     },
     acquisition,
     createdAt: graphqlComic.createdAt || new Date().toISOString(),

@@ -1,8 +1,19 @@
+/**
+ * @fileoverview Custom React hook for tracking import session status.
+ * Provides real-time import progress monitoring using Socket.IO events
+ * combined with GraphQL queries for reliable state management.
+ * @module hooks/useImportSessionStatus
+ */
+
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useGetActiveImportSessionQuery } from "../graphql/generated";
 import { useStore } from "../store";
 import { useShallow } from "zustand/react/shallow";
 
+/**
+ * Possible states for an import session.
+ * @typedef {"idle"|"running"|"completed"|"failed"|"unknown"} ImportSessionStatus
+ */
 export type ImportSessionStatus =
   | "idle"           // No import in progress
   | "running"        // Import actively processing
@@ -10,6 +21,20 @@ export type ImportSessionStatus =
   | "failed"         // Import finished with errors
   | "unknown";       // Unable to determine status
 
+/**
+ * Complete state object representing the current import session.
+ * @interface ImportSessionState
+ * @property {ImportSessionStatus} status - Current status of the import session
+ * @property {string|null} sessionId - Unique identifier for the active session, or null if none
+ * @property {number} progress - Import progress percentage (0-100)
+ * @property {Object|null} stats - Detailed file processing statistics
+ * @property {number} stats.filesQueued - Total files queued for import
+ * @property {number} stats.filesProcessed - Files that have been processed
+ * @property {number} stats.filesSucceeded - Files successfully imported
+ * @property {number} stats.filesFailed - Files that failed to import
+ * @property {boolean} isComplete - Whether the import session has finished
+ * @property {boolean} isActive - Whether import is currently processing
+ */
 export interface ImportSessionState {
   status: ImportSessionStatus;
   sessionId: string | null;
@@ -25,20 +50,32 @@ export interface ImportSessionState {
 }
 
 /**
- * Custom hook to definitively determine import session completion status
+ * Custom hook to definitively determine import session completion status.
  *
- * Uses Socket.IO events to trigger GraphQL refetches:
- * - IMPORT_SESSION_STARTED: New import started
- * - IMPORT_SESSION_UPDATED: Progress update
- * - IMPORT_SESSION_COMPLETED: Import finished
- * - LS_IMPORT_QUEUE_DRAINED: All jobs processed
+ * Uses Socket.IO events to trigger GraphQL refetches for real-time updates:
+ * - `IMPORT_SESSION_STARTED`: New import started
+ * - `IMPORT_SESSION_UPDATED`: Progress update
+ * - `IMPORT_SESSION_COMPLETED`: Import finished
+ * - `LS_IMPORT_QUEUE_DRAINED`: All jobs processed
  *
  * A session is considered DEFINITIVELY COMPLETE when:
- * - session.status === "completed" OR session.status === "failed"
- * - OR LS_IMPORT_QUEUE_DRAINED event is received AND no active session exists
- * - OR IMPORT_SESSION_COMPLETED event is received
+ * - `session.status === "completed"` OR `session.status === "failed"`
+ * - OR `LS_IMPORT_QUEUE_DRAINED` event is received AND no active session exists
+ * - OR `IMPORT_SESSION_COMPLETED` event is received
  *
- * NO POLLING - relies entirely on Socket.IO events for real-time updates
+ * @returns {ImportSessionState} Current state of the import session including
+ *                                status, progress, and file statistics
+ * @example
+ * const { status, progress, stats, isComplete, isActive } = useImportSessionStatus();
+ *
+ * if (isActive) {
+ *   console.log(`Import progress: ${progress}%`);
+ *   console.log(`Files processed: ${stats?.filesProcessed}/${stats?.filesQueued}`);
+ * }
+ *
+ * if (isComplete && status === "completed") {
+ *   console.log("Import finished successfully!");
+ * }
  */
 export const useImportSessionStatus = (): ImportSessionState => {
   

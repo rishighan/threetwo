@@ -1,5 +1,32 @@
+/**
+ * @fileoverview GraphQL fetcher utility for React Query integration.
+ * Provides a generic fetcher function that handles GraphQL requests
+ * to the library service backend.
+ * @module graphql/fetcher
+ */
+
 import { LIBRARY_SERVICE_HOST } from '../constants/endpoints';
 
+/**
+ * Creates a GraphQL fetcher function for use with React Query.
+ * Handles POST requests to the GraphQL endpoint with proper error handling.
+ *
+ * @template TData - The expected response data type
+ * @template TVariables - The GraphQL variables type
+ * @param {string} query - The GraphQL query string
+ * @param {TVariables} [variables] - Optional query variables
+ * @param {RequestInit['headers']} [options] - Additional request headers
+ * @returns {Function} Async function that executes the GraphQL request and returns TData
+ * @throws {Error} Throws on HTTP errors or GraphQL errors
+ * @example
+ * const { data } = useQuery({
+ *   queryKey: ['comic', id],
+ *   queryFn: fetcher<GetComicQuery, GetComicQueryVariables>(
+ *     GET_COMIC_QUERY,
+ *     { id }
+ *   )
+ * });
+ */
 export function fetcher<TData, TVariables>(
   query: string,
   variables?: TVariables,

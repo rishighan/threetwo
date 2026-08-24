@@ -20,6 +20,8 @@ query GetComics($page: Int, $limit: Int, $search: String, $publisher: String, $s
       sourcedMetadata {
         comicvine
         comicInfo
+        metron
+        gcd
         locg {
           name
           publisher
@@ -73,6 +75,8 @@ query GetRecentComics($limit: Int) {
       sourcedMetadata {
         comicvine
         comicInfo
+        metron
+        gcd
         locg {
           name
           publisher
@@ -128,6 +132,8 @@ query GetWantedComics($paginationOptions: PaginationOptionsInput!, $predicate: P
       sourcedMetadata {
         comicvine
         comicInfo
+        metron
+        gcd
         locg {
           name
           publisher
