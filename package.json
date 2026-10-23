@@ -83,7 +83,7 @@
     "threetwo-ui-typings": "^1.0.14",
     "typescript-eslint": "^8.60.0",
     "vaul": "^1.1.2",
-    "vite": "^7.3.1",
+    "vite": "^7.3.7",
     "vite-plugin-html": "^3.2.2",
     "websocket": "^1.0.35",
     "zustand": "^5.0.11"
