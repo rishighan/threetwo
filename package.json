@@ -149,7 +149,7 @@
     "react-refresh": "^0.18.0",
     "rimraf": "^6.1.3",
     "sass": "^1.97.3",
-    "storybook": "^8.6.17",
+    "storybook": "^8.6.19",
     "tailwindcss": "^4.2.2",
     "ts-jest": "^29.4.6",
     "tui-jsdoc-template": "^1.2.2",
